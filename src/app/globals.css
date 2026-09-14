@@ -1,0 +1,682 @@
+@import "tailwindcss";
+
+@theme {
+  /* ---- surfaces --------------------------------------------------
+     Pure white, matched byte-for-byte to the AeroShards backgroundColor
+     so the canvas layer never shows a seam against the page.         */
+  --color-paper: #ffffff;
+
+  /* ---- type ------------------------------------------------------
+     Black wordmark, black type. The identity is monochrome; tone is
+     carried by opacity steps, never by a second hue.                 */
+  --color-ink: #000000;
+  --color-ash: #55534f;
+  --color-ash-2: #8a8783;
+
+  /* ---- lines ----------------------------------------------------- */
+  --color-hair: rgba(0, 0, 0, 0.1);
+  --color-hair-strong: rgba(0, 0, 0, 0.22);
+
+  --font-title: var(--f-title), ui-sans-serif, system-ui, sans-serif;
+  --font-read: var(--f-read), ui-sans-serif, system-ui, sans-serif;
+
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --gutter: 1.25rem;
+    --shell: 1360px;
+    /* The room above each section, which is the whole gap between two of
+       them: a section brings its head room and leaves no foot padding. */
+    --section-gap: 7.2rem;
+  }
+  @media (min-width: 768px) {
+    :root { --gutter: 2.5rem; --section-gap: 9.6rem; }
+  }
+  @media (min-width: 1280px) {
+    :root { --gutter: 4rem; }
+  }
+
+  * { border-color: var(--color-hair); }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-read);
+    font-synthesis-weight: none;
+    /* clip, not hidden: `hidden` on one axis turns the body into a scroll
+       container and breaks the sticky mark stage. */
+    overflow-x: clip;
+  }
+
+  /* Lenis owns the scroll position while it is running, so the native
+     smooth-scroll and any height the browser wants to impose have to get out
+     of its way. Required by the library, not decoration. */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+  .lenis.lenis-stopped {
+    overflow: clip;
+  }
+
+  /* The opening holds the page still from the very first paint. The inline
+     lock in home.tsx only lands after hydration, and once the page is tall
+     enough to scroll the browser has drawn a scrollbar by then: taking it
+     away widens the viewport, so the centred wordmark slid half a scrollbar
+     to the right before the opening had started, and its flight was
+     measured against the narrower screen. */
+  html:has([data-opening]) {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  ::selection {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  :focus-visible {
+    outline: 1px solid var(--color-ink);
+    outline-offset: 4px;
+  }
+}
+
+@layer components {
+  .shell {
+    width: 100%;
+    max-width: var(--shell);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* Titles: Raleway, tracked in tight at display size so the headline
+     sets as densely as the wordmark it follows. */
+  .display {
+    font-family: var(--font-title);
+    letter-spacing: -0.03em;
+    line-height: 0.94;
+  }
+
+  /* The floor is set by the longest stable line, "We build websites that",
+     which has to hold on one line down to a 375px viewport. */
+  .h1 { font-size: clamp(2rem, 6.6vw, 5.75rem); }
+
+  .lede {
+    font-size: clamp(1.125rem, 1.55vw, 1.375rem);
+    line-height: 1.5;
+    letter-spacing: -0.011em;
+    font-weight: 400;
+  }
+
+  /* ---- services ---------------------------------------------------
+     A near-black card with a faint light pooled in its top corner and a
+     fine grain over it, so it reads as a surface rather than a fill.
+     The sizes live in variables so padding, gap and the photo stack
+     step up together at each breakpoint.                              */
+  .svc-card {
+    --ph: 3rem;
+    --pad: 1rem;
+    --gap: 1rem;
+    /* Wide side padding: the heavy, justified copy needs clear room from
+       the card's edges. Header and body share it so the description starts
+       on the title's line. Three times the vertical padding wherever the
+       titles still fit beside the photos; on a phone that is only twice,
+       or "Design" and "Identity" run into the photo stack. */
+    --pad-x: calc(var(--pad) * 2);
+    min-height: calc(var(--ph) + var(--pad) * 2 + 1.25rem);
+    background:
+      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0) 42%),
+      #0b0b0b;
+  }
+  @media (min-width: 768px) {
+    .svc-card { --ph: 3.5rem; --pad: 1.25rem; --gap: 1.25rem; --pad-x: calc(var(--pad) * 3); }
+  }
+  /* The cards stepped aside into the narrow left column below xl have no
+     room for it either, and carry no description to line up with. */
+  @media (min-width: 1024px) and (max-width: 1279.98px) {
+    .svc-card[data-state="aside"] { --pad-x: calc(var(--pad) * 2); }
+  }
+  @media (min-width: 1280px) {
+    .svc-card { --ph: 3.75rem; --pad: 1.5rem; --gap: 1.5rem; }
+  }
+
+  .svc-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* The glow the card warms with, tinted from its own photos. It answers
+     the click before anything moves.
+
+     Two soft pools of that colour drift on slow loops of different
+     lengths, so the light keeps shifting without ever repeating in step.
+     Only transforms move, and both loops are paused while the glow is
+     not showing. */
+  .svc-aura {
+    opacity: 0;
+    transition: opacity 1.1s var(--ease-out-quint);
+  }
+  .svc-aura::before,
+  .svc-aura::after {
+    content: "";
+    position: absolute;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background: radial-gradient(closest-side, rgb(var(--aura) / 0.46), rgb(var(--aura) / 0.16) 48%, rgb(var(--aura) / 0) 100%);
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-play-state: paused;
+    will-change: transform;
+  }
+  .svc-aura::before {
+    width: max(28rem, 62%);
+    right: -18%;
+    bottom: -70%;
+    animation-name: svc-drift-a;
+    animation-duration: 13s;
+  }
+  .svc-aura::after {
+    width: max(22rem, 46%);
+    right: 24%;
+    bottom: -88%;
+    opacity: 0.7;
+    animation-name: svc-drift-b;
+    animation-duration: 17s;
+    animation-direction: alternate;
+  }
+  .svc-card[data-intent="true"] .svc-aura { opacity: 1; }
+  .svc-card[data-intent="true"] .svc-aura::before,
+  .svc-card[data-intent="true"] .svc-aura::after { animation-play-state: running; }
+
+  @keyframes svc-drift-a {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    33% { transform: translate3d(-16%, -12%, 0) scale(1.12); }
+    66% { transform: translate3d(-4%, -24%, 0) scale(0.94); }
+  }
+  @keyframes svc-drift-b {
+    0% { transform: translate3d(0, 0, 0) scale(0.9); }
+    50% { transform: translate3d(24%, -20%, 0) scale(1.08); }
+    100% { transform: translate3d(-12%, -8%, 0) scale(1); }
+  }
+
+  .svc-spot {
+    background: radial-gradient(26rem circle at var(--mx, 50%) var(--my, 50%), rgb(255 255 255 / 0.07), transparent 65%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  @media (hover: hover) {
+    .svc-card:hover .svc-spot { opacity: 1; }
+    .svc-card:hover .svc-aura { opacity: 0.45; }
+    .svc-card:hover .svc-aura::before,
+    .svc-card:hover .svc-aura::after { animation-play-state: running; }
+    .svc-card[data-intent="true"]:hover .svc-aura { opacity: 1; }
+  }
+
+  .svc-photo {
+    width: var(--ph);
+    height: var(--ph);
+    border-radius: calc(var(--ph) * 0.24);
+    box-shadow: 0 0 0 2px #0b0b0b, -0.5rem 0 1.25rem rgb(0 0 0 / 0.45);
+    transition: transform 0.7s var(--ease-out-quint);
+  }
+  .svc-photo + .svc-photo { margin-left: calc(var(--ph) * -0.45); }
+  .svc-card[data-intent="true"] .svc-photo {
+    transform: translateX(calc(var(--i) * 0.3rem)) rotate(calc((var(--i) - 1) * 4deg));
+  }
+  @media (hover: hover) {
+    .svc-card:hover .svc-photo {
+      transform: translateX(calc(var(--i) * 0.3rem)) rotate(calc((var(--i) - 1) * 4deg));
+    }
+  }
+
+  .svc-toggle {
+    color: rgb(255 255 255 / 0.75);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16);
+    transition: color 0.4s ease, background-color 0.4s ease, box-shadow 0.4s ease;
+  }
+  /* Kept off the open circle: the cursor is almost always still on the card
+     after the click, and this rule outranks the open state below, so it
+     would paint the boomerang white on white. */
+  .svc-card:hover .svc-toggle:not([data-open="true"]) { color: #fff; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.4); }
+  .svc-toggle[data-open="true"] { color: #000; background-color: #fff; box-shadow: inset 0 0 0 1px #fff; }
+
+  /* The description. Grey and regular until the light reaches it, white
+     and heavy once it has passed, and the weight travels with the light
+     rather than landing at the end.
+
+     The extra weight is a stroke laid round each glyph, not a heavier cut
+     of the font. A heavier cut is also wider, so bolding a line in place
+     would shove every word after it along; the stroke thickens the letters
+     without moving one of them, which is what lets a lit copy sit exactly
+     over the grey one. The settled text keeps the same stroke, so nothing
+     shifts when the animation hands over to plain text. */
+  .svc-copy {
+    color: rgb(255 255 255 / 0.42);
+    text-align: justify;
+  }
+  .svc-copy[data-lit="true"],
+  .svc-line-lit {
+    color: #fff;
+    -webkit-text-stroke: 0.028em #fff;
+    paint-order: stroke fill;
+  }
+
+  /* While it is lit, each wrapped line is its own box, and a box's only line
+     is also its last, which justify leaves ragged. So every line but the
+     paragraph's final one is forced to full width, exactly as the plain
+     justified text it hands over to sets it. The lit copy inherits the same
+     rule over the same width, so its words stay on top of the grey ones. */
+  .svc-line {
+    position: relative;
+    display: block;
+    white-space: nowrap;
+    text-align-last: justify;
+  }
+  .svc-line:last-child { text-align-last: auto; }
+
+  /* The lit copy is uncovered by a mask twice the line wide: opaque on its
+     left half, clear on its right, soft between. Sliding it across is the
+     light passing over the words. The box reaches past the tight leading
+     so the mask never crops the tops and tails of the letters. */
+  .svc-line-lit {
+    position: absolute;
+    inset: -0.25em 0;
+    padding-block: 0.25em;
+    -webkit-mask-image: linear-gradient(90deg, #000 0 45%, transparent 55% 100%);
+    mask-image: linear-gradient(90deg, #000 0 45%, transparent 55% 100%);
+    -webkit-mask-size: 225% 100%;
+    mask-size: 225% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+    animation-name: svc-light;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    animation-fill-mode: both;
+  }
+  @keyframes svc-light {
+    to {
+      -webkit-mask-position: 0 0;
+      mask-position: 0 0;
+    }
+  }
+
+  /* ---- studio -----------------------------------------------------
+     The about section is built from the service card: the same surface,
+     grain, glow, boomerang and lit copy. What it adds is geometry.
+
+     From lg up the closed founders card is as wide as one column that
+     stops short of the middle of the shell. The portraits are sized from
+     that column, not from the card, so the card can open out while the
+     portrait that stays holds its size. The wrap is the
+     size container that lets a card changing width still measure the
+     column it started in.                                              */
+  .std-wrap {
+    container-type: inline-size;
+    --std-frame: 0.5rem;
+    --std-col: 100cqw;
+  }
+  @media (min-width: 768px) {
+    .std-wrap { --std-frame: 0.625rem; }
+  }
+  @media (min-width: 1024px) {
+    .std-wrap { --std-col: calc(50cqw - 0.5rem); }
+  }
+
+  /* The founders' copy stands clear of the portrait by the frame already,
+     so its side padding is a single step of the card's own. */
+  .std-card { --pad-x: calc(var(--pad) * 1.25); }
+  @media (min-width: 768px) {
+    .std-card { --pad-x: var(--pad); }
+  }
+
+  /* The statement sits straight on the page and is sized from the width it
+     fills, not from the viewport. Justified type only sets evenly when the
+     words fall well on each line, and a size tied to its own measure breaks
+     the sentence in the same places at every width: four lines wherever
+     there is room, six on a phone. The ratios, tracking and word spacing
+     were picked by measuring how much space each line is left to spread
+     across its gaps. */
+  .std-measure { container-type: inline-size; }
+  .std-statement {
+    font-size: 9.85cqi;
+    line-height: 0.99;
+    letter-spacing: -0.022em;
+  }
+  @container (min-width: 28rem) {
+    .std-statement { font-size: 6.2cqi; }
+  }
+
+  /* The pillar. Under the statement it keeps the service copy's size. From
+     lg it stands beside it, its top level with the statement's and its
+     column held to the right edge of the shell, and it is sized from that
+     column the way the statement is sized from its own: a justified column
+     this narrow only sets evenly where the words fall well, and a size tied
+     to the measure breaks it in the same places at every width. Of the
+     ratios that set it in five lines, 6.1 leaves each line the least to
+     spread across its gaps. The column is 26.4cqw, and the type follows it,
+     so the pillar can be made larger or smaller by its width alone. */
+  .std-pillar {
+    font-size: clamp(1.1875rem, 1.5vw, 1.4375rem);
+    line-height: 1.12;
+    letter-spacing: -0.018em;
+  }
+  .std-pillar-col { margin-top: 1.5rem; }
+  @media (min-width: 768px) {
+    .std-pillar-col { margin-top: 2rem; }
+  }
+  @media (min-width: 1024px) {
+    /* The two first lines share a baseline, which the browser places
+       exactly for both, rounding included. Aligning their boxes instead
+       and offsetting by a share of the size cannot work: the browser
+       rounds each font's ascent and descent to whole pixels, so where a
+       baseline lands in its box drifts by up to a pixel from one width to
+       the next, differently for each size. */
+    .std-lede {
+      display: flex;
+      align-items: first baseline;
+      justify-content: space-between;
+    }
+    .std-lede > .std-copy { flex-shrink: 0; }
+    .std-pillar-col {
+      flex: 0 0 26.4cqw;
+      margin-top: 0;
+      container-type: inline-size;
+    }
+    /* From the shared baseline the pillar is raised until the top of its
+       first line is level with the top of the "g" in "young", the last
+       word of the statement's first line and the letter the pillar sits
+       beside. Lit stroke included on both:
+
+         (g top + stroke/2) x statement size - (line top + stroke/2) x pillar size
+         = ((0.52 + 0.02) x 2.54098 - (0.73 + 0.014)) x pillar size
+
+       0.52em is the top of Instrument Sans's "g" and 0.73em the highest ink
+       on the pillar's first line (the "O" of "Our" and the "f"s), both read
+       off the rendered glyphs. The statement is 2.54098 times the pillar at
+       every width (6.2cqi of 66cqw against 6.1cqi of 26.4cqw), so this is
+       one share of the pillar's size. It is rounded to a whole pixel so the
+       two lines stay on the same pixel grid. Recalculate it if either size,
+       the stroke or either first line changes. */
+    .std-pillar {
+      font-size: 6.1cqi;
+      position: relative;
+      top: round(-0.6281em, 1px);
+    }
+  }
+
+  /* The service copy turned over for the page: grey until the light
+     reaches it, ink once it has passed. Ink on white reads lighter than
+     white on black at the same stroke, so the statement takes a heavier
+     one to carry the weight of the service copy. */
+  .std-ink { color: rgb(0 0 0 / 0.3); }
+  .std-ink[data-lit="true"],
+  .std-ink .svc-line-lit {
+    color: var(--color-ink);
+    -webkit-text-stroke-color: var(--color-ink);
+  }
+  .std-statement[data-lit="true"],
+  .std-statement .svc-line-lit { -webkit-text-stroke-width: 0.04em; }
+
+  /* Each founder has a card of their own, a thin frame round one portrait.
+     The two stand apart by a quarter of a portrait's width and are centred
+     as a pair. From lg the portraits keep the size they had when the two
+     shared one card; below lg that size and the gap would not fit side by
+     side, so the portraits are sized to fill the width with it.
+
+     Opened, the other card is taken away and the chosen one is centred and
+     widened for its founder's words. The portrait keeps its size either
+     way: only the words' column is new. */
+  .std-founders {
+    --std-photo: calc((100cqw - var(--std-frame) * 4) / 2.25);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: calc(var(--std-photo) * 0.25);
+  }
+  .std-founder {
+    width: calc(var(--std-photo) + var(--std-frame) * 2);
+    padding: var(--std-frame);
+    gap: var(--std-frame);
+    grid-template-columns: var(--std-photo);
+    grid-template-areas: "photo";
+  }
+  .std-founder[data-open] {
+    width: 100%;
+    grid-template-columns: var(--std-photo) minmax(0, 1fr);
+  }
+  .std-founder[data-open][data-founder="ec"] { grid-template-areas: "photo head" "body body"; }
+  .std-founder[data-open][data-founder="ap"] {
+    grid-template-columns: minmax(0, 1fr) var(--std-photo);
+    grid-template-areas: "head photo" "body body";
+  }
+  .std-head { grid-area: head; }
+  .std-body { grid-area: body; }
+
+  /* From lg the copy takes two thirds of the shell from its left edge.
+     Opened, the words stand beside the portrait, name over copy, and the
+     card grows evenly both ways by just what they need: a column half the
+     shell wide, never narrower than 34rem. */
+  @media (min-width: 1024px) {
+    .std-copy { width: 66cqw; }
+    .std-founders { --std-photo: calc((var(--std-col) - var(--std-frame) * 3) / 2); }
+    .std-founder[data-open] {
+      width: calc(var(--std-photo) + var(--std-frame) * 3 + max(var(--std-col), 34rem));
+      grid-template-rows: auto 1fr;
+    }
+    .std-founder[data-open][data-founder="ec"] { grid-template-areas: "photo head" "photo body"; }
+    .std-founder[data-open][data-founder="ap"] { grid-template-areas: "head photo" "body photo"; }
+  }
+
+  /* Concentric with the card round it. */
+  .std-photo { border-radius: calc(22px - var(--std-frame)); }
+
+  /* Two boomerangs share this card, so the card's own hover would light
+     both. Each answers to its own portrait instead. */
+  .std-founders:hover .svc-toggle:not([data-open="true"]) {
+    color: rgb(255 255 255 / 0.75);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16);
+  }
+  .std-photo:hover .svc-toggle:not([data-open="true"]) {
+    color: #fff;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.4);
+  }
+
+  /* The glow pools bottom right, under the words when they come in on the
+     right; mirrored when they come in on the left. */
+  .std-founder[data-side="left"] .svc-aura { transform: scaleX(-1); }
+
+  /* ---- comparison -------------------------------------------------
+     A table on the service card's surface. Our column is one raised
+     panel, a tone above the card, from its header to the last row; the
+     lines that part the rows run across the other two columns and stop
+     at the panel's edge.
+
+     It is the same three column table at every width. Where the columns
+     stop fitting, it slides sideways inside the card and the criterion
+     column stays pinned on the left. The widths come from the card's own
+     width, so nothing jumps at a breakpoint:
+
+       criterion  a quarter of the card, never under 8.5rem
+       answers    half of what is left, until that drops under 15rem;
+                  from there each answer holds as much of the view
+                  beside the criterion as it can, up to 15rem, and the
+                  table slides. On a phone, one answer fills the view.  */
+  .cmp-card {
+    --cmp-frame: 0.5rem;
+    --cmp-px: 1rem;
+    --cmp-py: 1.5rem;
+    --cmp-radius: calc(22px - var(--cmp-frame));
+    --cmp-rule: rgb(255 255 255 / 0.08);
+    padding: var(--cmp-frame);
+  }
+  @media (min-width: 768px) {
+    .cmp-card { --cmp-frame: 0.625rem; --cmp-px: 1.25rem; }
+  }
+  @media (min-width: 1024px) {
+    .cmp-card { --cmp-px: 1.5rem; --cmp-py: 1.75rem; }
+  }
+  @media (min-width: 1280px) {
+    .cmp-card { --cmp-px: 1.875rem; --cmp-py: 2rem; }
+  }
+
+  /* The pointer's light, a fifth of the service card's reach. */
+  .cmp-card .svc-spot {
+    background: radial-gradient(5.2rem circle at var(--mx, 50%) var(--my, 50%), rgb(255 255 255 / 0.07), transparent 65%);
+  }
+
+  /* The slide. The fade on the right edge only shows while there is more
+     table to bring in, which is the hint that there is any. */
+  .cmp-scroll {
+    container-type: inline-size;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    border-radius: var(--cmp-radius);
+    scrollbar-width: thin;
+    scrollbar-color: rgb(255 255 255 / 0.18) transparent;
+  }
+  .cmp-scroll[data-more="true"] {
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 3rem), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 3rem), transparent);
+  }
+
+  .cmp-grid {
+    --cmp-crit: max(8.5rem, 24cqw);
+    --cmp-answer: max((100cqw - var(--cmp-crit)) / 2, min(100cqw - var(--cmp-crit), 15rem));
+    width: calc(var(--cmp-crit) + var(--cmp-answer) * 2);
+  }
+
+  .cmp-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  .cmp-table col:first-child { width: var(--cmp-crit); }
+  .cmp-table col + col { width: var(--cmp-answer); }
+
+  .cmp-table th {
+    font-weight: inherit;
+    text-align: left;
+  }
+  .cmp-table th,
+  .cmp-table td {
+    padding: var(--cmp-py) var(--cmp-px);
+    vertical-align: top;
+  }
+  .cmp-table thead th {
+    vertical-align: bottom;
+    padding-block: calc(var(--cmp-py) * 0.9) calc(var(--cmp-py) * 0.75);
+    font-size: 0.875rem;
+    line-height: 1.3;
+    color: rgb(255 255 255 / 0.5);
+  }
+  /* The panel starts a frame clear of the agency's column, and our copy
+     keeps the same distance from the panel's edge as the rest keeps from
+     the card's. */
+  .cmp-table .cmp-us { padding-left: calc(var(--cmp-px) + var(--cmp-frame)); }
+
+  .cmp-table thead th:not(.cmp-us) { border-bottom: 1px solid var(--cmp-rule); }
+  .cmp-table tbody tr + tr > :not(.cmp-us) { border-top: 1px solid var(--cmp-rule); }
+
+  /* Pinned while the table slides. It takes a ground of its own only once
+     the table has moved, so at rest it shares the card's surface and its
+     corner light; slid, the answers pass under it and a hairline marks
+     its edge. */
+  .cmp-table .cmp-crit {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    transition:
+      background-color 0.3s ease,
+      box-shadow 0.3s ease,
+      color 0.5s var(--ease-out-quint);
+  }
+  .cmp-scroll[data-scrolled="true"] .cmp-crit {
+    background-color: #0b0b0b;
+    box-shadow: inset -1px 0 0 var(--cmp-rule), 1rem 0 1.25rem -1rem rgb(0 0 0 / 0.7);
+  }
+
+  /* "decision-making" is kept whole only where the criterion column can
+     hold it; narrower, it breaks at its hyphen rather than spilling over
+     the answer beside it. */
+  @container (min-width: 50rem) {
+    .cmp-keep { white-space: nowrap; }
+  }
+
+  .cmp-mark {
+    display: block;
+    width: auto;
+    height: 1.0625rem;
+  }
+
+  .cmp-text {
+    font-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
+    line-height: 1.5;
+    letter-spacing: -0.006em;
+    color: rgb(255 255 255 / 0.5);
+  }
+  /* Lit like the service copy, but ragged: a table column is too narrow a
+     measure to justify without opening holes between the words. */
+  .cmp-copy { text-align: left; }
+  .cmp-copy .svc-line { text-align-last: auto; }
+  .cmp-copy strong { font-weight: 600; }
+  /* At table size the service copy's stroke fills the counters and leaves
+     the bold lead nothing to stand out from, so the light thickens the
+     answers by half as much. */
+  .cmp-copy[data-lit="true"],
+  .cmp-copy .svc-line-lit { -webkit-text-stroke-width: 0.014em; }
+
+  .cmp-panel {
+    position: absolute;
+    inset-block: 0;
+    right: 0;
+    left: calc(var(--cmp-crit) + var(--cmp-answer) + var(--cmp-frame));
+    border-radius: var(--cmp-radius);
+    background:
+      radial-gradient(120% 40% at 50% 0%, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0) 70%),
+      rgb(255 255 255 / 0.045);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07), inset 0 0 0 1px rgb(255 255 255 / 0.05);
+  }
+
+  /* Pointing at a row brings it forward and sets the others back, so one
+     criterion can be read straight across. The pinned criterion dims by
+     its colour, not its opacity: slid, the answers pass under it and would
+     show through. */
+  @media (hover: hover) {
+    .cmp-table tbody td { transition: opacity 0.5s var(--ease-out-quint); }
+    .cmp-table tbody:hover tr:not(:hover) > td { opacity: 0.42; }
+    .cmp-table tbody:hover tr:not(:hover) > th { color: rgb(255 255 255 / 0.42); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .svc-aura,
+    .svc-spot,
+    .svc-photo,
+    .svc-toggle,
+    .cmp-table td,
+    .cmp-table .cmp-crit { transition: none; }
+    .svc-aura::before,
+    .svc-aura::after { animation: none; }
+  }
+}
