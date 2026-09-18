@@ -89,6 +89,10 @@ export function useHeldChoice<Id extends string>(reduce: boolean) {
     [choose],
   );
 
+  const close = useCallback(() => {
+    if (intentRef.current !== null) choose(null);
+  }, [choose]);
+
   useEffect(() => () => window.clearTimeout(hold.current), []);
 
   useEffect(() => {
@@ -100,7 +104,7 @@ export function useHeldChoice<Id extends string>(reduce: boolean) {
     return () => window.removeEventListener("keydown", onKey);
   }, [intent, choose]);
 
-  return { intent, active, toggle, tried };
+  return { intent, active, toggle, close, tried };
 }
 
 export function Services({ ready }: { ready: boolean }) {

@@ -59,9 +59,9 @@ import { useReducedMotion } from "motion/react";
    ================================================================== */
 
 /** The drop's radius, as a share of the mark's height, within bounds. */
-const RADIUS = 0.5;
-const MIN_RADIUS = 70;
-const MAX_RADIUS = 180;
+const RADIUS = 0.375;
+const MIN_RADIUS = 52.5;
+const MAX_RADIUS = 135;
 /** How much of its distance to the pointer the drop takes per frame at 60fps. */
 const FOLLOW = 0.14;
 /** How far in from an edge the drop is at full size, as a share of its radius. */

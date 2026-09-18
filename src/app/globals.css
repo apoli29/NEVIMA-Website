@@ -49,6 +49,13 @@
   html {
     /* Whatever is scrolled to or focused lands clear of the floating bar. */
     scroll-padding-top: 6rem;
+    /* No scrollbar of the browser's own. The opening holds the page still
+       with none, and one arriving when the page was handed back took its
+       width from the page mid-arrival (everything on the second screen
+       shifted and its field was redrawn); keeping room for it instead left
+       a strip that went from black to white. The page scrolls as before by
+       wheel, touch and keys. */
+    scrollbar-width: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -90,6 +97,7 @@
     overflow: hidden;
     overscroll-behavior: none;
   }
+  html::-webkit-scrollbar { display: none; }
 
   ::selection {
     background: var(--color-ink);
@@ -127,6 +135,46 @@
   /* White type that gives off a little light, for links set on black. */
   .text-glow {
     text-shadow: 0 0 2px rgb(255 255 255 / 0.55), 0 0 12px rgb(255 255 255 / 0.45);
+  }
+
+  /* The second screen's section links. Not the boomerang pass the other
+     bars use: the marks between these words are boomerangs already. For
+     as long as a link is pointed at, a faint key of light comes up behind
+     it, its glow brightens and a hairline draws itself under the word
+     from the left. Slight on purpose, the bar is already lit. */
+  .sec-link {
+    transition:
+      background-color 0.25s ease-out,
+      text-shadow 0.25s ease-out,
+      transform 0.15s ease-out;
+  }
+  .sec-link:hover,
+  .sec-link:focus-visible {
+    background-color: rgb(255 255 255 / 0.09);
+    text-shadow: 0 0 2px rgb(255 255 255 / 0.8), 0 0 16px rgb(255 255 255 / 0.65);
+  }
+  .sec-link-label { position: relative; }
+  .sec-link-label::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.32em;
+    height: 1px;
+    background: currentColor;
+    box-shadow: 0 0 6px rgb(255 255 255 / 0.6);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .sec-link:hover .sec-link-label::after,
+  .sec-link:focus-visible .sec-link-label::after { transform: scaleX(1); }
+  .sec-link:active { transform: scale(0.97); }
+  .sec-link:focus-visible { outline: 1px solid rgb(255 255 255 / 0.5); outline-offset: -1px; }
+  @media (prefers-reduced-motion: reduce) {
+    .sec-link,
+    .sec-link-label::after { transition: none; }
+    .sec-link:active { transform: none; }
   }
 
   .lede {
@@ -756,6 +804,17 @@
   }
   .std-head { grid-area: head; }
   .std-body { grid-area: body; }
+
+  /* Below lg the bio runs the width of a phone, too narrow a measure to
+     justify without opening holes between the words: ragged, as the
+     comparison copy is. */
+  @media (max-width: 1023.98px) {
+    /* The role's baseline stands on the portrait's foot, not the room its
+       line leaves under the letters. */
+    .std-head > p:last-child { text-box: trim-end cap alphabetic; }
+    .std-body .svc-copy { text-align: left; }
+    .std-body .svc-line { text-align-last: auto; }
+  }
 
   /* From lg the copy takes two thirds of the shell from its left edge.
      Opened, the words stand beside the portrait, name over copy, and the

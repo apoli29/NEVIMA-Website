@@ -7,42 +7,44 @@ import { BOOMERANG_PATH } from "./boomerang";
 /* ==================================================================
    Jelly field
 
-   The ground of the second screen, seen through a slab of jelly.
+   The ground of the second screen, seen through a sheet of water.
 
-   Under the slab the ground is white, and on it lie things of black
+   Under the water the ground is white, and on it lie things of black
    glass: the boomerang, huge on the right and tipped as if caught
-   mid-throw, and ten loose drops of no set shape that wander slowly
-   over the whole screen, each one lobed and slowly changing its outline. They are lit as solids, so they read as objects rather
-   than as ink: dark in the body, a rim that catches the white around
-   them, a hard highlight from the top left and a soft shadow thrown
-   down and to the right. Where a drop comes close to another, or to the
-   mark, the two pull together the way two drops of oil do. The mark's
-   edge is softened a few pixels, but its outline is its own.
+   mid-throw, and ten loose drops of no set shape, each one lobed and
+   slowly changing its outline, that wander very slowly round the words.
+   They are lit as solids, so they read as objects rather than as ink:
+   dark in the body, a rim that catches the white around them, a hard
+   highlight from the top left and a soft shadow thrown down and to the
+   right. Where two drops come close they pull together the way two drops
+   of oil do. The mark's edge is softened a few pixels, but its outline is
+   its own, and it stays its own under the water: the water bends the
+   drops fully and the mark only a little, so the mark is plainly under
+   the same water and never loses its shape.
 
    The mark is not there when the screen opens: it drags itself in from
-   past the right edge, quick to start and slow to stop as if the jelly
-   were holding it back, trailing a smear of itself and shoving the slab
-   aside as it goes, and comes to rest where it always stands, with the
-   jelly still wobbling from its arrival.
+   past the right edge, quick to start and slow to stop, trailing a smear
+   of itself and pushing the water aside as it goes, and comes to rest
+   where it always stands, the water still rippling from its arrival.
 
    No drop ever goes behind the words. The drops are based evenly through
    the room the words and the mark leave, whatever the shape of the
    screen, and one that wanders up to the words slides along their edge.
 
-   The slab covers the whole screen and never stops moving: it wobbles
-   in place the way a set jelly does when the plate is touched, just as
-   much in every part of the screen, so everything under it is always
-   visibly bent. The hand does not carry the effect, it touches it. A moving
-   pointer presses a dent into the slab, and the dent is dragged along
-   with it; when the pointer stops or leaves, the jelly springs back,
-   overshoots into a bulge, and wobbles itself flat. The slab is a
-   grid of springs, each tied to its rest and to its neighbours, which
-   is what makes a poke spread a little way and die down rather than
-   travel off like a ripple on water.
+   The water covers the whole screen and never stops moving: a swell of
+   eight waves runs across it from every side, just as much in every part
+   of the screen. It shows on the white as it would on the floor of a
+   pool, a moving net of light and faint shade, and on the black as bent
+   outlines and a sheen. The hand does not carry the effect, it disturbs
+   it: a moving pointer draws a wake through the water, deeper the faster
+   it goes, and a click lets a drop of water fall where it lands; either
+   way the rings run out across the surface and die away. The water is a grid of springs, each tied to its
+   neighbours, stepped at a fixed rate whatever the frame rate, so a slow
+   frame can never make it run away.
 
    Drawn on one WebGL2 canvas, and only while it can be seen. For anyone
    who has asked for less motion it is drawn once and holds still, and
-   the pointer does nothing to it.
+   clicks do nothing to it.
 
    The mark keeps one pose on every screen. Where the screen is wide it
    stands on the right of the copy; where it is upright it lies across the
@@ -53,25 +55,100 @@ import { BOOMERANG_PATH } from "./boomerang";
 const ELBOW = { x: 0, y: 58 };
 /** The slab's springs, one per this many CSS pixels. */
 const CELL = 8;
-/** Pull back to rest, pull towards the neighbours, and loss, per second. */
-const REST = 70;
-const COUPLE = 420;
-const DAMP = 2.4;
-/** How hard a moving pointer presses, in CSS pixels per second squared,
-    and over what radius, in CSS pixels. The slab's height is in CSS pixels. */
-const PRESS = 2600;
-const PRESS_RADIUS = 85;
-/** The pointer speed, in CSS pixels per second, that presses fully. */
-const FULL_SPEED = 900;
-/** How deep the jelly's own wobble is, in CSS pixels, wave by wave. Seven
-    of them together bend what is under it by about 24px on average. */
-const WOBBLE = 12;
-/** How far the slab bends what is under it, in CSS pixels per unit of slope. */
+/** The water's springs, per second: a faint pull back to rest, a strong
+    pull towards the neighbours (which is what carries a ripple outwards,
+    at about 260px a second) and a little loss, so rings run a good way
+    before they die. The slab's height is in CSS pixels. */
+const REST = 6;
+const COUPLE = 1100;
+const DAMP = 0.9;
+/** The springs are stepped this often, whatever the frame rate: a step
+    that grows with a slow frame is what made the water blow up and the
+    screen go black. At most this many steps are caught up per frame. */
+const STEP_S = 1 / 120;
+const MAX_STEPS = 8;
+/** A click lets a drop of water fall: how deep it strikes, in CSS pixels,
+    and how wide, in CSS pixels. Light: a ripple, not a splash. */
+const DROP_DEPTH = 9;
+const DROP_RADIUS = 18;
+/** A moving pointer draws a wake through the water, as a finger would:
+    each touch is at most this deep, in CSS pixels, and this wide, and it
+    is as deep as that only at this pointer speed, in CSS pixels a second.
+    Touches are laid at most this far apart along the way, in CSS pixels. */
+const WAKE_DEPTH = 1.75;
+const WAKE_RADIUS = 22;
+const WAKE_SPEED = 800;
+const WAKE_SPACING = 10;
+/** How deep the water's own swell is, in CSS pixels, wave by wave. */
+const SWELL = 7;
+/** How far the water bends what is under it, in CSS pixels per unit of
+    slope, and how much of that the drops and the mark take. The drops are
+    bent enough to be plainly under water but not so much that the passing
+    swell sets them moving; the mark far less, so it keeps its outline. */
 const REFRACT = 85;
+const DROP_BEND = 0.45;
+const MARK_BEND = 0.18;
+/** How strongly the water throws light and shade on the white under it. */
+const CAUSTIC = 9;
+/** The drops' own slow life (wander, turn, lobes) runs at this share of
+    real time. */
+const DROP_PACE = 0.18;
+/** Every drop's size, as a share of the size it was first drawn at: the
+    user found them all a little big. */
+const DROP_SIZE = 0.83;
 /** How far a drop keeps from the words: its own reach, lobes included,
     as a multiple of its radius, and a margin on top, in CSS pixels. */
 const CLEAR_REACH = 2.3;
 const CLEAR_MARGIN = 22;
+/** The least room, in CSS pixels, kept between a drop at the far end of
+    its roaming and the edge of the screen, the mark and the floating bar. */
+const EDGE_MARGIN = 16;
+const MARK_MARGIN = 56;
+const NAV_GAP = 20;
+/** Every drop keeps room to roam at least this share of the full wander:
+    one set down hard against an edge is drawn in far enough to move. */
+const MIN_ROAM = 0.35;
+/** On an upright screen, a drop bigger than this (as a share of the
+    screen's shorter side) lying in the mark's notch is split in two, each
+    this share of its radius: together a quarter smaller than it was. */
+const SPLIT_ABOVE = 0.07 * DROP_SIZE;
+/** A screen whose shorter side is under this, in CSS pixels, is a phone:
+    it has fewer drops, and the user asked for them there a tenth bigger
+    and set a little further apart. */
+const SMALL = 600;
+const SMALL_GROW = 1.1;
+const SMALL_SPREAD = 1.2;
+
+/* The wide layout, set by hand from the user's own marked-up screenshots
+   rather than worked out, because it is art directed drop by drop and a
+   worked-out layout shifts with every few pixels of screen height. Each
+   entry is a drop (which fixes its size and shape) and where it is based,
+   as shares of the screen's width and height. The usual keeping-clear
+   (words, mark, bar, edges) still applies over it. */
+// Staggered on purpose: no two share a line, across or down.
+const WIDE_LAYOUT: { drop: number; at: [number, number] }[] = [
+  // Top left, just under the left end of the floating bar.
+  { drop: 6, at: [0.182, 0.2] },
+  // Above the headline, left.
+  { drop: 8, at: [0.312, 0.339] },
+  // Above the headline, right.
+  { drop: 9, at: [0.552, 0.222] },
+  // Beside the top of the mark.
+  { drop: 12, at: [0.738, 0.17] },
+  // Left of the headline, the biggest.
+  { drop: 4, at: [0.112, 0.515] },
+  // Bottom left.
+  { drop: 1, at: [0.058, 0.8] },
+  // Under the subtitle.
+  { drop: 10, at: [0.262, 0.885] },
+  // Under the links.
+  { drop: 11, at: [0.468, 0.815] },
+  // Inside the mark's bend.
+  { drop: 3, at: [0.69, 0.752] },
+  // Right of the mark.
+  { drop: 7, at: [0.948, 0.585] },
+];
+const SPLIT_SCALE = Math.sqrt(0.75 / 2);
 /** Below this width to height, the screen counts as upright: the mark lies
     low and the copy sits high (matches the `upright` variant in CSS). */
 const UPRIGHT = 23 / 20;
@@ -86,7 +163,7 @@ const SMEAR = 0.11;
 /** The longest that smear gets, in CSS pixels. */
 const MAX_SMEAR = 90;
 /** How hard the mark shoves the jelly aside on its way in. */
-const SHOVE = 2400;
+const SHOVE = 900;
 const SHOVE_RADIUS = 130;
 
 /** A fixed sequence of numbers that look random, so the drops are the
@@ -114,7 +191,7 @@ const DROPS = (() => {
   return Array.from({ length: 13 }, () => ({
     px: range(55, 125),
     py: range(55, 125),
-    r: range(0.035, 0.085),
+    r: range(0.035, 0.085) * DROP_SIZE,
     aspect: range(1.1, 1.8),
     spin: range(0.03, 0.08) * (r() < 0.5 ? -1 : 1),
     lobes: [0, 1].map(() => ({
@@ -126,6 +203,17 @@ const DROPS = (() => {
     })),
   }));
 })();
+/** How far each drop is seen to reach from its centre, as a multiple of
+    its radius: its body drawn out along its length, or its furthest lobe
+    at its furthest and fullest, whichever is further, but no more than a
+    drop is ever seen to reach (a lobe's long axis mostly lies across the
+    drop, not out from it). */
+const EXTENT = DROPS.map((d) =>
+  Math.min(
+    Math.max(d.aspect * 0.9, ...d.lobes.map((l) => l.reach * 1.15 + l.size * 1.2 * l.aspect * 0.85)),
+    1.9,
+  ),
+);
 /** Three shapes to a drop. */
 const MAX_BLOBS = 13 * 3;
 
@@ -140,6 +228,7 @@ out vec4 outColor;
 uniform vec2 u_size;      // CSS pixels
 uniform float u_dpr;
 uniform float u_t;
+uniform float u_td;        // the drops' own, slower clock
 uniform vec4 u_drop[${MAX_BLOBS}];   // x, y, radius, aspect (CSS pixels)
 uniform float u_turn[${MAX_BLOBS}];
 uniform int u_drops;
@@ -154,8 +243,8 @@ uniform sampler2D u_slab;  // the slab's height, one texel per spring
 float drops(vec2 p) {
   // Two slow warps, a broad one and a tighter one, so no edge is ever a
   // clean curve.
-  vec2 w = p + vec2(sin(p.y * 0.0061 + u_t * 0.31), cos(p.x * 0.0053 - u_t * 0.27)) * 16.0
-             + vec2(sin(p.y * 0.017 - u_t * 0.5), cos(p.x * 0.019 + u_t * 0.45)) * 7.0;
+  vec2 w = p + vec2(sin(p.y * 0.0061 + u_td * 0.31), cos(p.x * 0.0053 - u_td * 0.27)) * 16.0
+             + vec2(sin(p.y * 0.017 - u_td * 0.5), cos(p.x * 0.019 + u_td * 0.45)) * 7.0;
   float f = 0.0;
   for (int i = 0; i < ${MAX_BLOBS}; i++) {
     if (i >= u_drops) break;
@@ -215,30 +304,34 @@ float glass(vec2 g, float steep) {
   return min(0.015 + rim * 0.45 + pow(nh, 90.0) * 0.95 + pow(nh, 10.0) * 0.08, 1.0);
 }
 
-// The springs' height at a point: what the hand and the mark have done.
+// The springs' height at a point: the ripples from clicks and from the
+// mark's arrival.
 float slab(vec2 p) {
   return texture(u_slab, p / u_size).r;
 }
 
-// The slope of the jelly's own wobble, which never stops. Seven waves,
-// one to each of seven directions spread evenly round the half circle and
-// of lengths close to one another, each standing in place and swinging on
-// a clock of its own, with a slow drift under it. Laid over one another
-// like that they have no grain and no calm patches: the jelly moves as
-// much in one part of the screen as in any other, and at every moment.
-vec2 wobble(vec2 p) {
-  vec2 g = vec2(0.0);
-  for (int i = 0; i < 7; i++) {
+// The water's own swell, which never stops: eight waves running across the
+// screen, one to each of eight directions spread evenly round the circle,
+// of lengths close to one another and each at the pace water of that length
+// runs. Laid over one another they have no grain and no calm patches: the
+// water moves as much in one part of the screen as in any other. Returns
+// the slope (xy) and how much the surface curves (z), which is what
+// gathers the light into lines on the white under it.
+vec3 swell(vec2 p) {
+  vec3 g = vec3(0.0);
+  for (int i = 0; i < 8; i++) {
     float fi = float(i);
-    float a = fi * 0.4488 + 0.21;               // pi / 7 apart
+    float a = fi * 0.7854 + 0.31 + 0.2 * sin(fi * 2.3);   // about pi / 4 apart
     vec2 d = vec2(cos(a), sin(a));
-    float len = 300.0 + 60.0 * mod(fi * 3.0, 5.0);
+    float len = 190.0 + 45.0 * mod(fi * 3.0, 5.0);
     float k = 6.2832 / len;
-    float swing = cos(u_t * (1.15 + 0.17 * fi) + fi * 2.4);
-    float s = dot(p, d) * k + fi * 1.9 + u_t * 0.22 * (mod(fi, 2.0) * 2.0 - 1.0);
-    g += d * (k * cos(s) * swing);
+    // Deep-water pace: longer waves run faster.
+    float pace = sqrt(9.81 * 60.0 / k) * 0.006;
+    float s = dot(p, d) * k - u_t * pace * k * 60.0 + fi * 1.9;
+    g.xy += d * (k * cos(s));
+    g.z -= k * k * sin(s);
   }
-  return g * ${WOBBLE.toFixed(1)};
+  return g * ${SWELL.toFixed(1)};
 }
 
 void main() {
@@ -249,10 +342,20 @@ void main() {
   // a slope read across one spring is continuous where a finer one would
   // step at every spring and show the grid.
   float e = ${CELL.toFixed(1)};
-  vec2 gs = vec2(slab(p + vec2(e, 0.0)) - slab(p - vec2(e, 0.0)),
-                 slab(p + vec2(0.0, e)) - slab(p - vec2(0.0, e))) / (2.0 * e);
-  gs += wobble(p);
-  vec2 q = p + gs * ${REFRACT.toFixed(1)};
+  float h0 = slab(p);
+  float hx0 = slab(p - vec2(e, 0.0));
+  float hx1 = slab(p + vec2(e, 0.0));
+  float hy0 = slab(p - vec2(0.0, e));
+  float hy1 = slab(p + vec2(0.0, e));
+  vec2 gs = vec2(hx1 - hx0, hy1 - hy0) / (2.0 * e);
+  float curve = (hx0 + hx1 + hy0 + hy1 - 4.0 * h0) / (e * e);
+  vec3 sw = swell(p);
+  gs += sw.xy;
+  curve += sw.z;
+  // The drops are bent by the water fully; the mark far less, so it
+  // never loses its shape under it.
+  vec2 q = p + gs * ${(REFRACT * DROP_BEND).toFixed(2)};
+  vec2 qm = p + gs * ${(REFRACT * MARK_BEND).toFixed(2)};
   vec3 ns = normalize(vec3(-gs, 1.0));
 
   // What lies under it, at the bent point: the drops, and the mark over
@@ -261,15 +364,15 @@ void main() {
   float fd = drops(q);
   float hd = dome(fd);
   vec2 gd = vec2(dome(drops(q + vec2(d, 0.0))) - hd, dome(drops(q + vec2(0.0, d))) - hd) / d;
-  float fm = mark(q);
-  vec2 gm = vec2(mark(q + vec2(2.0, 0.0)) - mark(q - vec2(2.0, 0.0)),
-                 mark(q + vec2(0.0, 2.0)) - mark(q - vec2(0.0, 2.0))) / 4.0;
+  float fm = mark(qm);
+  vec2 gm = vec2(mark(qm + vec2(2.0, 0.0)) - mark(qm - vec2(2.0, 0.0)),
+                 mark(qm + vec2(0.0, 2.0)) - mark(qm - vec2(0.0, 2.0))) / 4.0;
   float bodyD = smoothstep(0.44, 0.56, fd);
   float bodyM = smoothstep(0.44, 0.56, fm);
 
   // A soft shadow from both, thrown down and to the right.
   vec2 fall = q - vec2(14.0, 20.0);
-  float shade = smoothstep(0.15, 0.9, max(drops(fall), mark(fall))) * 0.1;
+  float shade = smoothstep(0.15, 0.9, max(drops(fall), mark(qm - vec2(14.0, 20.0)))) * 0.1;
   float col = 1.0 - shade;
   col = mix(col, glass(gd, 70.0), bodyD);
   col = mix(col, glass(gm, 150.0), bodyM);
@@ -277,12 +380,14 @@ void main() {
   vec3 l = normalize(LIGHT);
   vec3 h = normalize(l + vec3(0.0, 0.0, 1.0));
 
-  // The slab itself: its slopes lighten and darken the ground a little,
+  // The water itself. Where its surface bulges it spreads the light thin
+  // and the white under it goes a shade grey; where it dips it gathers
+  // the light, and the white stays white: the moving net of light lines a
+  // pool throws on its floor. Its slopes shade the ground a little more,
   // and it has a sheen of its own where it faces the light.
+  col *= 1.0 - clamp(curve * ${CAUSTIC.toFixed(1)}, 0.0, 0.11);
   float lit = dot(ns, l) - l.z;
-  // Strong enough that the jelly can be seen lying over the white, as soft
-  // moving shade, and not only in what it does to the black under it.
-  col *= 1.0 + lit * 0.6;
+  col *= 1.0 + lit * 0.35;
   float sheen = pow(max(dot(ns, h), 0.0), 90.0);
   col += sheen * 0.5 * (1.0 - col);
 
@@ -484,12 +589,15 @@ export function JellyField({
     let height = new Float32Array(0);
     let speed = new Float32Array(0);
 
-    const pointer = { x: 0, y: 0, at: 0, inside: false, fresh: false };
-    let press = 0;
-    let pace = 0;
+    // Touches waiting for the next step: drops let fall by clicks, and the
+    // pointer's wake. Depth and radius in CSS pixels.
+    const falls: { x: number; y: number; depth: number; radius: number }[] = [];
+    const pointer = { x: 0, y: 0, at: 0, inside: false };
+    // Time not yet stepped through, in seconds.
+    let owed = 0;
 
-    // What is pressing on the slab this step: the hand, and the mark while
-    // it drags itself in. In cells.
+    // What is pressing on the slab this step: the mark while it drags
+    // itself in. In cells.
     type Poke = { x: number; y: number; r: number; force: number; q0: number; q1: number; r0: number; r1: number };
     let shove: { x: number; y: number; force: number } | null = null;
 
@@ -510,19 +618,27 @@ export function JellyField({
     };
 
     const stepSlab = (dt: number) => {
-      // The press follows how fast the hand is moving: in quickly, out
-      // more slowly, so a dent outlives the flick that made it by a beat.
-      const want = pointer.inside ? Math.min(pace / FULL_SPEED, 1) : 0;
-      press += (want - press) * (want > press ? 0.35 : 0.1);
-      pace *= 0.8;
+      // A fallen drop strikes the surface once: a small, sharp dip, which
+      // the springs then carry outwards as rings.
+      for (const f of falls.splice(0)) {
+        const k = poke(f.x, f.y, f.radius, 0);
+        for (let r = k.r0; r <= k.r1; r++) {
+          for (let q = k.q0; q <= k.q1; q++) {
+            const dx = q - k.x;
+            const dy = r - k.y;
+            height[r * cols + q] -= f.depth * Math.exp(-(dx * dx + dy * dy) / (k.r * k.r));
+          }
+        }
+      }
 
       const pokes: Poke[] = [];
-      if (press > 0.001) pokes.push(poke(pointer.x, pointer.y, PRESS_RADIUS, press * PRESS));
       if (shove && shove.force > 1) pokes.push(poke(shove.x, shove.y, SHOVE_RADIUS, shove.force));
 
-      // Two half steps keep the springs steady at 60fps.
-      const sub = dt / 2;
-      for (let pass = 0; pass < 2; pass++) {
+      // Always the same small step, however long the frame took, and never
+      // more than a few of them to catch up.
+      owed = Math.min(owed + dt, STEP_S * MAX_STEPS);
+      const sub = STEP_S;
+      for (; owed >= sub; owed -= sub) {
         for (let r = 0; r < rows; r++) {
           const up = r > 0 ? -cols : 0;
           const down = r < rows - 1 ? cols : 0;
@@ -545,6 +661,20 @@ export function JellyField({
         }
         for (let i = 0; i < height.length; i++) height[i] += speed[i] * sub;
       }
+
+      // Should anything ever run away all the same, the water is stilled
+      // rather than left to fill the screen with black.
+      let wild = false;
+      for (let i = 0; i < height.length; i += 97) {
+        if (!Number.isFinite(height[i]) || Math.abs(height[i]) > 400) {
+          wild = true;
+          break;
+        }
+      }
+      if (wild) {
+        height.fill(0);
+        speed.fill(0);
+      }
     };
 
     const sendSlab = () => {
@@ -555,41 +685,45 @@ export function JellyField({
 
     /* ---- the drops ---- */
 
-    // Where the words are, in the section's CSS pixels. It only ever grows
-    // until the screen changes size: the rotating line is measured at each
-    // of its widths in turn, and the drops are kept clear of the widest.
+    /* Where the words are, in the section's CSS pixels: the box of the
+       block they are set in (headline, subtitle and links), read as it
+       stands at rest. Not the words themselves, whose extent changes as the
+       headline's last line turns over, and not where the block happens to
+       be while it rises into place: the drops are laid out round this box,
+       and a box that kept changing had them laid out again and again, drops
+       trading places across the screen. Read again only when the screen
+       changes size or the fonts arrive, and only acted on if it moved. */
     let quiet: DOMRect | null = null;
     const measureQuiet = () => {
       const origin = section.getBoundingClientRect();
-      const range = document.createRange();
       let x0 = Infinity;
       let y0 = Infinity;
       let x1 = -Infinity;
       let y1 = -Infinity;
       for (const el of section.querySelectorAll("[data-jelly-quiet]")) {
-        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
-        for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-          if (!node.textContent?.trim() || node.parentElement?.closest(".sr-only")) continue;
-          range.selectNodeContents(node);
-          const b = range.getBoundingClientRect();
-          if (!b.width) continue;
-          x0 = Math.min(x0, b.left - origin.left);
-          y0 = Math.min(y0, b.top - origin.top);
-          x1 = Math.max(x1, b.right - origin.left);
-          y1 = Math.max(y1, b.bottom - origin.top);
+        const b = el.getBoundingClientRect();
+        if (!b.width) continue;
+        // Undo any lift still being animated on the way in.
+        let lift = 0;
+        for (let a = el.parentElement; a && a !== section; a = a.parentElement) {
+          const t = getComputedStyle(a).transform;
+          if (t && t !== "none") lift += new DOMMatrixReadOnly(t).m42;
         }
+        x0 = Math.min(x0, b.left - origin.left);
+        y0 = Math.min(y0, b.top - origin.top - lift);
+        x1 = Math.max(x1, b.right - origin.left);
+        y1 = Math.max(y1, b.bottom - origin.top - lift);
       }
       if (!Number.isFinite(x0)) return;
-      if (quiet) {
-        const grew =
-          x0 < quiet.left - 4 || y0 < quiet.top - 4 || x1 > quiet.right + 4 || y1 > quiet.bottom + 4;
-        if (!grew) return;
-        x0 = Math.min(x0, quiet.left);
-        y0 = Math.min(y0, quiet.top);
-        x1 = Math.max(x1, quiet.right);
-        y1 = Math.max(y1, quiet.bottom);
-      }
-      quiet = new DOMRect(x0, y0, x1 - x0, y1 - y0);
+      const next = new DOMRect(x0, y0, x1 - x0, y1 - y0);
+      const same =
+        quiet &&
+        Math.abs(quiet.left - next.left) < 2 &&
+        Math.abs(quiet.top - next.top) < 2 &&
+        Math.abs(quiet.right - next.right) < 2 &&
+        Math.abs(quiet.bottom - next.bottom) < 2;
+      if (same) return;
+      quiet = next;
       layoutDrops();
     };
 
@@ -604,8 +738,14 @@ export function JellyField({
       return markMask.data[r * markMask.width + q] > 0.2;
     };
 
+    /** What the drops' sizes are shares of: the screen's shorter side,
+        a tenth more on a phone. */
+    const dropSide = () => {
+      const s = Math.min(w, h);
+      return s < SMALL ? s * SMALL_GROW : s;
+    };
     /** How far drop i keeps from the words. */
-    const clearance = (i: number) => DROPS[i].r * Math.min(w, h) * CLEAR_REACH + CLEAR_MARGIN;
+    const clearance = (i: number) => DROPS[i].r * dropSide() * CLEAR_REACH + CLEAR_MARGIN;
     const inWords = (x: number, y: number, c: number) =>
       !!quiet && x > quiet.left - c && x < quiet.right + c && y > quiet.top - c && y < quiet.bottom + c;
 
@@ -614,11 +754,37 @@ export function JellyField({
        down, weighed by how big the two are, then all are eased apart a
        little more. However the screen is shaped, the drops end up spread
        evenly through the room the words and the mark leave, round the
-       words rather than bunched to one side of them. Each drop then
-       wanders a little way round its base. */
+       words rather than bunched to one side of them.
+
+       That is the layout the user approved, and it is kept exactly: the
+       same spots from the same sequence of numbers. Only the drops it
+       leaves in trouble are then moved, each the least it takes: one an
+       edge cuts into is drawn in until it is whole, and one lying on or
+       against the mark is taken to the nearest spot clear of it. On an
+       upright screen a big drop in the mark's notch is split into two
+       smaller ones. Each drop then roams round its base as far as the
+       room round it allows. */
+    // Indexed by drop: where each is based, and where it is shown now.
     let bases: { x: number; y: number }[] = [];
+    let shown: { x: number; y: number }[] = [];
+    // The drops on screen, in drawing order.
+    let active: number[] = [];
+    // Each drop's size, as a share of its own (only a split drop's is less).
+    let scale: number[] = [];
+    // How far each drop roams round its base: the full wander where it has
+    // open water round it, less where the mark or an edge is near.
+    let roam: number[] = [];
     let wander = 0;
+    // The screen size the drops were last laid out for.
+    let laidFor = "";
+    // Where the mark's elbow is, for knowing which drops lie in its notch.
+    let elbowX = 0;
+    // Where the floating bar sits over the field, in its CSS pixels.
+    let bar: { left: number; right: number; bottom: number } | null = null;
+
     const layoutDrops = () => {
+      // Nothing to lay out on until the field has been given its size.
+      if (!w || !h) return;
       const n = count();
       const pick = seeded(11);
       const x0 = w * 0.03;
@@ -630,14 +796,14 @@ export function JellyField({
 
       // How much room a drop takes: what it reaches, lobes included.
       const side = Math.min(w, h);
-      const reach = (i: number) => DROPS[i].r * side * CLEAR_REACH;
-      // Distance to the nearest edge counts too, so the edges fill as well.
+      const size = dropSide();
+      const reach = (i: number) => DROPS[i].r * size * CLEAR_REACH;
       // Distance to the nearest edge counts for less than distance to a
       // neighbour, so drops are not all drawn to the same margin and lined
       // up along it.
       const edgeGap = (x: number, y: number) => Math.min(x - x0, x1 - x, y - y0, y1 - y) * 3;
 
-      bases = [];
+      const next: { x: number; y: number }[] = [];
       for (let i = 0; i < n; i++) {
         let best = { x: x0 + (x1 - x0) / 2, y: y0 + (y1 - y0) / 2 };
         let bestScore = -Infinity;
@@ -646,8 +812,8 @@ export function JellyField({
           const y = y0 + pick() * (y1 - y0);
           if (!free(x, y, i)) continue;
           let score = edgeGap(x, y);
-          for (let j = 0; j < bases.length; j++) {
-            const d = Math.hypot(x - bases[j].x, y - bases[j].y) - reach(i) - reach(j);
+          for (let j = 0; j < next.length; j++) {
+            const d = Math.hypot(x - next[j].x, y - next[j].y) - reach(i) - reach(j);
             score = Math.min(score, d);
           }
           if (score > bestScore) {
@@ -655,22 +821,24 @@ export function JellyField({
             best = { x, y };
           }
         }
-        bases.push(best);
+        next.push(best);
       }
 
-      const room = Math.sqrt(((x1 - x0) * (y1 - y0) * 0.7) / n);
+      // On a phone the drops are pushed a little further apart.
+      const spread = side < SMALL ? SMALL_SPREAD : 1;
+      const room = Math.sqrt(((x1 - x0) * (y1 - y0) * 0.7) / n) * spread;
       for (let pass = 0; pass < 30; pass++) {
         for (let i = 0; i < n; i++) {
-          const b = bases[i];
+          const b = next[i];
           let fx = 0;
           let fy = 0;
           for (let j = 0; j < n; j++) {
             if (j === i) continue;
-            const dx = b.x - bases[j].x;
-            const dy = b.y - bases[j].y;
+            const dx = b.x - next[j].x;
+            const dy = b.y - next[j].y;
             const d = Math.hypot(dx, dy) || 1;
             // Never closer than the two reach, so neighbours stay apart.
-            const want = Math.max(room, (reach(i) + reach(j)) * 1.2);
+            const want = Math.max(room, (reach(i) + reach(j)) * 1.2 * spread);
             if (d < want) {
               fx += (dx / d) * (want - d);
               fy += (dy / d) * (want - d);
@@ -693,7 +861,7 @@ export function JellyField({
       // Then each is knocked a little off where the spacing left it, so no
       // two sit on the same line.
       for (let i = 0; i < n; i++) {
-        const b = bases[i];
+        const b = next[i];
         const nx = Math.min(Math.max(b.x + (pick() - 0.5) * room * 0.5, x0), x1);
         const ny = Math.min(Math.max(b.y + (pick() - 0.5) * room * 0.5, y0), y1);
         if (free(nx, ny, i)) {
@@ -701,20 +869,162 @@ export function JellyField({
           b.y = ny;
         }
       }
-      wander = Math.min(room * 0.28, Math.min(w, h) * 0.07);
+      // Each drop roams a fair way round its base, not pinned to it.
+      wander = Math.min(room * 0.45, side * 0.12);
+
+      /* ---- the few that need moving ---- */
+
+      scale = new Array<number>(DROPS.length).fill(1);
+      const order = Array.from({ length: n }, (_, i) => i);
+
+      // Upright: a big drop in the mark's notch is two smaller ones, which
+      // between them take a quarter less room than it did.
+      if (w / h < UPRIGHT) {
+        let spare = n;
+        for (const i of order.slice()) {
+          if (DROPS[i].r <= SPLIT_ABOVE || next[i].x <= elbowX || spare >= DROPS.length) continue;
+          const j = spare++;
+          const small = DROPS[i].r * SPLIT_SCALE;
+          scale[i] = SPLIT_SCALE;
+          scale[j] = small / DROPS[j].r;
+          const apart = small * size * EXTENT[i];
+          const b = next[i];
+          // Set well apart, so the two read as two and do not run back into one.
+          next[j] = { x: b.x + apart * 1.4, y: b.y + apart * 0.9 };
+          next[i] = { x: b.x - apart * 1.4, y: b.y - apart * 0.9 };
+          order.push(j);
+        }
+      } else {
+        // Wide: the hand-set layout, in place of the worked-out one.
+        order.length = 0;
+        for (const spot of WIDE_LAYOUT) {
+          next[spot.drop] = { x: spot.at[0] * w, y: spot.at[1] * h };
+          order.push(spot.drop);
+        }
+      }
+
+      const body = (i: number) => DROPS[i].r * scale[i] * size * EXTENT[i];
+      // Whether a drop at this x would pass under the floating bar.
+      const underBar = (x: number, i: number) =>
+        !!bar && x + body(i) > bar.left - NAV_GAP && x - body(i) < bar.right + NAV_GAP;
+      const least = wander * MIN_ROAM;
+      // Clear of the mark all the way round, at this distance.
+      const offMark = (x: number, y: number, c: number) => {
+        if (underMark(x, y)) return false;
+        for (const ring of [0.5, 1]) {
+          for (let k = 0; k < 16; k++) {
+            const a = (k / 16) * Math.PI * 2;
+            if (underMark(x + Math.cos(a) * c * ring, y + Math.sin(a) * c * ring)) return false;
+          }
+        }
+        return true;
+      };
+
+      active = [];
+      for (const i of order) {
+        const b = next[i];
+        const e = body(i) + EDGE_MARGIN + least;
+        // Drawn in from any edge that cuts into it, far enough to roam.
+        if (w > e * 2) b.x = Math.min(Math.max(b.x, e), w - e);
+        if (h > e * 2) b.y = Math.min(Math.max(b.y, e), h - e);
+        // Held below the floating bar, never under it.
+        if (bar && underBar(b.x, i)) b.y = Math.max(b.y, bar.bottom + NAV_GAP + body(i) + least);
+        // Taken off the mark, to the nearest spot that clears it; and a half
+        // of a split drop lying on another drop is moved the same way, so
+        // the two halves stay two.
+        const c = body(i) + MARK_MARGIN;
+        const clash = (x: number, y: number) =>
+          active.some((k) => Math.hypot(x - next[k].x, y - next[k].y) < body(i) + body(k));
+        if (!offMark(b.x, b.y, c) || (scale[i] < 1 && clash(b.x, b.y))) {
+          let found: { x: number; y: number } | null = null;
+          for (let dist = 6; dist <= side * 0.7 && !found; dist += 6) {
+            for (let k = 0; k < 24; k++) {
+              const a = (k / 24) * Math.PI * 2;
+              const x = b.x + Math.cos(a) * dist;
+              const y = b.y + Math.sin(a) * dist;
+              if (x < e || x > w - e || y < e || y > h - e) continue;
+              if (inWords(x, y, clearance(i)) || !offMark(x, y, c)) continue;
+              // Nor onto another drop: two moved off the mark would
+              // otherwise land on the same spot and run into one.
+              if (clash(x, y)) continue;
+              found = { x, y };
+              break;
+            }
+          }
+          // No clear water for it anywhere: better left out than on the mark.
+          if (!found) continue;
+          b.x = found.x;
+          b.y = found.y;
+        }
+        active.push(i);
+      }
+
+      // How far each drop may roam from its base: as far as the wander goes,
+      // but never so far that its body would reach the mark or an edge.
+      roam = new Array<number>(DROPS.length).fill(0);
+      for (const i of active) {
+        const b = next[i];
+        const keep = body(i);
+        let r = Math.min(
+          b.x - keep - EDGE_MARGIN,
+          w - b.x - keep - EDGE_MARGIN,
+          b.y - keep - EDGE_MARGIN,
+          h - b.y - keep - EDGE_MARGIN,
+          wander,
+        );
+        for (let c = keep + MARK_MARGIN; c <= keep + MARK_MARGIN + wander; c += 6) {
+          if (!offMark(b.x, b.y, c)) {
+            r = Math.min(r, c - keep - MARK_MARGIN - 6);
+            break;
+          }
+        }
+        if (bar && underBar(b.x, i)) r = Math.min(r, b.y - keep - bar.bottom - NAV_GAP);
+        // One beside the bar, level with it, roams no further than the bar.
+        else if (bar && b.y - keep < bar.bottom + NAV_GAP + wander) {
+          if (b.x < bar.left) r = Math.min(r, bar.left - NAV_GAP - keep - b.x);
+          else if (b.x > bar.right) r = Math.min(r, b.x - keep - bar.right - NAV_GAP);
+        }
+        roam[i] = Math.max(r, 0);
+      }
+
+      // A new screen size is a fresh layout, set straight down; the same
+      // screen laid out again (the fonts arriving) is glided into.
+      const screen = `${w}x${h}`;
+      const fresh = screen !== laidFor;
+      laidFor = screen;
+      bases = next;
+      if (reduce || fresh) {
+        shown = next.map((b) => ({ ...b }));
+        return;
+      }
+      for (const i of active) {
+        if (!shown[i]) shown[i] = { ...next[i] };
+      }
+    };
+
+    const glideDrops = (dt: number) => {
+      const f = 1 - Math.exp(-dt * 1.6);
+      for (const i of active) {
+        if (!shown[i] || !bases[i]) continue;
+        shown[i].x += (bases[i].x - shown[i].x) * f;
+        shown[i].y += (bases[i].y - shown[i].y) * f;
+      }
     };
 
     const dropData = new Float32Array(MAX_BLOBS * 4);
     const turnData = new Float32Array(MAX_BLOBS);
-    const count = () => (Math.min(w, h) < 600 ? 6 : 10);
+    const count = () => (Math.min(w, h) < SMALL ? 6 : 10);
     const placeDrops = () => {
-      const side = Math.min(w, h);
-      const n = count();
+      const side = dropSide();
       let blobs = 0;
-      for (let i = 0; i < n && i < bases.length; i++) {
+      // The drops live on a slower clock than the water.
+      const slow = seconds * DROP_PACE;
+      for (const i of active) {
+        if (!shown[i]) continue;
         const d = DROPS[i];
-        let x = bases[i].x + wander * Math.sin((seconds * Math.PI * 2) / d.px + i * 1.7);
-        let y = bases[i].y + wander * Math.sin((seconds * Math.PI * 2) / d.py + i * 2.3);
+        const go = roam[i] ?? wander;
+        let x = shown[i].x + go * Math.sin((slow * Math.PI * 2) / d.px + i * 1.7);
+        let y = shown[i].y + go * Math.sin((slow * Math.PI * 2) / d.py + i * 2.3);
         // Never behind the words: a drop that wanders up to them is held
         // at their edge, and slides along it.
         const c = clearance(i);
@@ -728,14 +1038,23 @@ export function JellyField({
           x = out.x;
           y = out.y;
         }
-        const r = d.r * side;
-        const turn = i * 0.9 + seconds * d.spin;
+        const r = d.r * (scale[i] ?? 1) * side;
+        // And never so near an edge that the edge cuts into it, nor up
+        // under the floating bar.
+        const reachOut = r * EXTENT[i];
+        const edge = reachOut + EDGE_MARGIN;
+        if (w > edge * 2) x = Math.min(Math.max(x, edge), w - edge);
+        if (h > edge * 2) y = Math.min(Math.max(y, edge), h - edge);
+        if (bar && x + reachOut > bar.left - NAV_GAP && x - reachOut < bar.right + NAV_GAP) {
+          y = Math.max(y, bar.bottom + NAV_GAP + reachOut);
+        }
+        const turn = i * 0.9 + slow * d.spin;
         dropData.set([x, y, r, d.aspect], blobs * 4);
         turnData[blobs++] = turn;
         d.lobes.forEach((lobe, j) => {
-          const angle = turn + lobe.angle + seconds * lobe.drift;
-          const reach = r * lobe.reach * (1 + 0.15 * Math.sin(seconds * 0.4 + i + j * 2));
-          const size = r * lobe.size * (1 + 0.2 * Math.sin(seconds * 0.33 * (j + 1) + i * 1.3));
+          const angle = turn + lobe.angle + slow * lobe.drift;
+          const reach = r * lobe.reach * (1 + 0.15 * Math.sin(slow * 0.4 + i + j * 2));
+          const size = r * lobe.size * (1 + 0.2 * Math.sin(slow * 0.33 * (j + 1) + i * 1.3));
           dropData.set([x + Math.cos(angle) * reach, y + Math.sin(angle) * reach, size, lobe.aspect], blobs * 4);
           turnData[blobs++] = angle;
         });
@@ -795,6 +1114,14 @@ export function JellyField({
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RG16F, mark.width, mark.height, 0, gl.RG, gl.FLOAT, mark.data);
       away = Math.min(w - mark.left + 60, markPad);
       lead = { x: mark.left, y: mark.elbow.y };
+      elbowX = mark.elbow.x;
+      // The floating bar, read from the page, where it rests at the top.
+      const barEl = document.querySelector("header .shell > div");
+      if (barEl) {
+        const b = barEl.getBoundingClientRect();
+        const o = view.getBoundingClientRect();
+        bar = { left: b.left - o.left, right: b.right - o.left, bottom: b.bottom - o.top };
+      }
       markMask = { data: mark.mask, width: mark.width, height: mark.height, pad: markPad, k: mark.scale };
 
       cols = Math.max(2, Math.ceil(w / CELL));
@@ -802,6 +1129,8 @@ export function JellyField({
       height = new Float32Array(cols * rows);
       speed = new Float32Array(cols * rows);
       sendSlab();
+      // Always laid out afresh for a new size, even if the words' box has
+      // not moved.
       quiet = null;
       measureQuiet();
       if (!quiet) layoutDrops();
@@ -813,6 +1142,7 @@ export function JellyField({
       gl.uniform2f(u("u_size"), w, h);
       gl.uniform1f(u("u_dpr"), dpr);
       gl.uniform1f(u("u_t"), seconds);
+      gl.uniform1f(u("u_td"), seconds * DROP_PACE);
       gl.uniform4fv(u("u_drop"), dropData);
       gl.uniform1fv(u("u_turn"), turnData);
       gl.uniform1i(u("u_drops"), n);
@@ -829,9 +1159,18 @@ export function JellyField({
     let visible = false;
 
     const tick = (t: number) => {
+      // Under the curtain until the mark sets off, nothing here can be seen,
+      // and the water would only be taking frames from the flight above it.
+      // Held, not stopped, so it picks up on the first frame it is due.
+      if (entrance && !arrived && (setOff.current === null || t < setOff.current)) {
+        last = 0;
+        frame = visible ? requestAnimationFrame(tick) : 0;
+        return;
+      }
       const dt = last ? Math.min((t - last) / 1000, 1 / 20) : 1 / 60;
       last = t;
       seconds += dt;
+      glideDrops(dt);
       moveMark(t);
       stepSlab(dt);
       sendSlab();
@@ -858,7 +1197,9 @@ export function JellyField({
     };
     refit();
     document.fonts.ready.then(() => {
-      if (disposed) return;
+      // The fonts can be ready before the field has its size; the first
+      // sizing measures the words then.
+      if (disposed || !w) return;
       measureQuiet();
       if (reduce) render();
     });
@@ -866,9 +1207,6 @@ export function JellyField({
     const resize = new ResizeObserver(refit);
     resize.observe(view);
 
-    // The rotating line changes width as it turns, so the words are
-    // measured again every so often.
-    const remeasure = reduce ? 0 : window.setInterval(measureQuiet, 700);
 
     const seen = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
@@ -876,29 +1214,56 @@ export function JellyField({
     });
     seen.observe(view);
 
+    // A click, or a tap, lets a drop of water fall where it lands.
+    const onDown = (event: PointerEvent) => {
+      if (event.button !== 0) return;
+      const rect = view.getBoundingClientRect();
+      falls.push({
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top,
+        depth: DROP_DEPTH,
+        radius: DROP_RADIUS,
+      });
+    };
+
+    // A moving pointer touches the water all along its way, as deep as it
+    // is fast, so it leaves a wake of small waves behind it that spread
+    // and run out; a pointer at rest leaves the water be.
     const onMove = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse") return;
       const rect = view.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
-      if (pointer.inside && !pointer.fresh) {
+      if (pointer.inside) {
         const gap = Math.max((event.timeStamp - pointer.at) / 1000, 1 / 240);
-        pace = Math.max(pace, Math.hypot(x - pointer.x, y - pointer.y) / gap);
+        const way = Math.hypot(x - pointer.x, y - pointer.y);
+        const depth = WAKE_DEPTH * Math.min(way / gap / WAKE_SPEED, 1);
+        if (depth > 0.05) {
+          const touches = Math.max(1, Math.ceil(way / WAKE_SPACING));
+          for (let i = 1; i <= touches; i++) {
+            const t = i / touches;
+            falls.push({
+              x: pointer.x + (x - pointer.x) * t,
+              y: pointer.y + (y - pointer.y) * t,
+              depth: depth / Math.sqrt(touches),
+              radius: WAKE_RADIUS,
+            });
+          }
+        }
       }
       pointer.x = x;
       pointer.y = y;
       pointer.at = event.timeStamp;
       pointer.inside = true;
-      pointer.fresh = false;
     };
     const onLeave = () => {
       pointer.inside = false;
-      pointer.fresh = true;
     };
 
     if (!reduce) {
+      section.addEventListener("pointerdown", onDown as EventListener);
       section.addEventListener("pointermove", onMove as EventListener);
       section.addEventListener("pointerleave", onLeave);
-      section.addEventListener("pointercancel", onLeave);
     }
 
     const onLost = (event: Event) => event.preventDefault();
@@ -908,12 +1273,11 @@ export function JellyField({
       disposed = true;
       cancelAnimationFrame(frame);
       cancelAnimationFrame(queued);
-      window.clearInterval(remeasure);
       resize.disconnect();
       seen.disconnect();
+      section.removeEventListener("pointerdown", onDown as EventListener);
       section.removeEventListener("pointermove", onMove as EventListener);
       section.removeEventListener("pointerleave", onLeave);
-      section.removeEventListener("pointercancel", onLeave);
       view.removeEventListener("webglcontextlost", onLost);
       gl.deleteTexture(markTex);
       gl.deleteTexture(slabTex);

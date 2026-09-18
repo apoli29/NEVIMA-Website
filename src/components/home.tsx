@@ -14,7 +14,7 @@ import {
 import { Comparison } from "./comparison";
 import { Footer } from "./footer";
 import { BoomerangMark } from "./boomerang";
-import { FloatingNav, PassLink } from "./floating-nav";
+import { FloatingNav } from "./floating-nav";
 import { useGateway } from "./gateway";
 import { JellyField } from "./jelly-field";
 import { Services } from "./services";
@@ -144,10 +144,10 @@ function StatementScreen({
     <div className="pointer-events-none absolute inset-0 z-10 flex items-center pt-24 md:pt-28 upright:items-start upright:pt-[clamp(7rem,19svh,14rem)]">
       {/* data-jelly-quiet: the drops under the jelly keep clear of
           everything in here, links included (see jelly-field.tsx). */}
-      <motion.div style={{ y }} data-jelly-quiet className="shell pointer-events-auto relative">
+      <motion.div style={{ y }} className="shell pointer-events-auto relative">
         {/* As wide as the headline's longest line and no wider, so the row
             under it can end exactly where the headline does. */}
-        <div className="w-fit max-w-full">
+        <div data-jelly-quiet className="w-fit max-w-full">
         <h1 className="display h1 text-ink">
           <span aria-hidden="true" className="block font-light">
             We build websites that
@@ -185,8 +185,8 @@ function StatementScreen({
 
 /* The rest of the page in three words, on a black bar of its own, the
    links lit white on it and spread along it, a small boomerang standing
-   in the middle of each space between them. The same pass as the floating
-   bar's. Pricing is a placeholder: there is no pricing section yet. */
+   in the middle of each space between them. Pointed at, a link lights
+   up (see .sec-link). Pricing is a placeholder: there is no pricing section yet. */
 const SECTION_LINKS = [
   { label: "About us", href: "#studio" },
   { label: "Our services", href: "#services" },
@@ -205,12 +205,14 @@ function SectionLinks() {
             // Turned over, so the elbow points up between the words.
             <BoomerangMark width={17} className="w-[17px] shrink-0 rotate-180 text-paper/45 md:w-[19px]" />
           )}
-          <PassLink
+          {/* No boomerang pass here: the marks between the words are
+              boomerangs already. The link answers with light instead. */}
+          <a
             href={link.href}
-            label={link.label}
-            className="text-glow inline-flex px-2 py-2.5 text-[0.84rem] leading-none text-paper md:px-[0.9em] md:py-[0.85em] md:text-[clamp(0.78rem,min(1.056vw,1.68svh),1.02rem)]"
-            markClassName="text-paper/70"
-          />
+            className="sec-link text-glow inline-flex items-center justify-center whitespace-nowrap rounded-[8px] px-2 py-2.5 text-[0.84rem] leading-none text-paper md:px-[0.9em] md:py-[0.85em] md:text-[clamp(0.78rem,min(1.056vw,1.68svh),1.02rem)]"
+          >
+            <span className="sec-link-label">{link.label}</span>
+          </a>
         </Fragment>
       ))}
     </nav>
@@ -283,14 +285,19 @@ export function Home() {
       // longest at, and the height it will actually take there, read off the
       // bar's copy rather than off the slot it is measured against.
       const height = (hero.width * nav.height) / nav.width;
-      setFlight({
+      const next: Flight = {
         left: hero.left,
         top: hero.top,
         width: hero.width,
         scale: nav.width / hero.width,
         dx: nav.left + nav.width / 2 - (hero.left + hero.width / 2),
         dy: nav.top + nav.height / 2 - (hero.top + height / 2),
-      });
+      };
+      // The same reading again is not a change. Without this the trigger
+      // re-renders the page a second time on the frame the mark sets off.
+      setFlight((prev) =>
+        (Object.keys(next) as (keyof Flight)[]).every((k) => prev[k] === next[k]) ? prev : next,
+      );
     };
 
     measure();
@@ -455,10 +462,15 @@ export function Home() {
           <StatementScreen progress={progress} settled={phase === "open"} />
 
           {/* The curtain. Black over a second screen that is already built,
-              so lifting it is the whole transition. */}
+              so lifting it is the whole transition. Lifted, it is still on
+              top, so from then on it lets the pointer through to the
+              screen's links. */}
           <motion.div
             className="absolute inset-0 z-20 bg-ink"
-            style={{ opacity: curtainOpacity }}
+            style={{
+              opacity: curtainOpacity,
+              pointerEvents: phase === "open" ? "none" : "auto",
+            }}
             aria-hidden="true"
           />
 
@@ -500,6 +512,10 @@ export function Home() {
                 y: markY,
                 scale: markScale,
                 transformOrigin: "center",
+                // Its own layer, rasterised once at the size it starts at and
+                // only scaled from there. Without it the SVG is redrawn at
+                // every step of a five-fold shrink, and the flight stutters.
+                willChange: "transform",
               }}
             />
           ) : (

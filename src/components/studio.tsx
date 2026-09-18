@@ -302,7 +302,7 @@ function LitCopy({
 
 function Founders({ ready }: { ready: boolean }) {
   const reduce = useReducedMotion() ?? false;
-  const { intent, active, toggle, tried } = useHeldChoice<FounderId>(reduce);
+  const { intent, active, toggle, close, tried } = useHeldChoice<FounderId>(reduce);
   // One rectangle four by five, divided into the two cards. The cards are
   // the targets rather than the portraits inside them: a shape that landed
   // on the portrait would have had the card grow a frame around it at the
@@ -343,6 +343,19 @@ function Founders({ ready }: { ready: boolean }) {
     }, MORPH.duration * 1000 + 60);
     return () => window.clearTimeout(release);
   }, [active, host, reduce]);
+
+  /* A card left open closes itself once it is wholly off the screen, the
+     visitor all the way into the section before or after it; never while
+     any of it can still be seen. */
+  useEffect(() => {
+    const cards = host.current;
+    if (!cards || intent === null) return;
+    const watch = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) close();
+    });
+    watch.observe(cards);
+    return () => watch.disconnect();
+  }, [host, intent, close]);
 
   // Kept current through anything else that changes the pair's height
   // (a resize), so a morph always starts from what is on the page.
@@ -592,8 +605,10 @@ function Words({
         layout={slide}
         layoutDependency={layoutKey}
         {...fade}
-        // Below lg the name sits over the copy, so the two share a left edge.
-        className="std-head min-w-0 self-end px-[calc(var(--pad-x)_-_var(--std-frame))] pb-2 sm:pb-3 lg:self-start lg:px-(--pad-x) lg:pt-[calc(var(--pad)*1.15)] lg:pb-0"
+        // Below lg the name sits over the copy, so the two share a left edge,
+        // and stands beside the portrait with its last line on the
+        // portrait's foot, the one line the two share.
+        className="std-head min-w-0 self-end px-[calc(var(--pad-x)_-_var(--std-frame))] lg:self-start lg:px-(--pad-x) lg:pt-[calc(var(--pad)*1.15)]"
       >
         <h3 className="display text-[clamp(1.5rem,5.4vw,2.55rem)] leading-[1.06] tracking-[-0.02em] lg:text-[clamp(1.8rem,2.64vw,2.55rem)]">
           {founder.name}
