@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* A screen that is not clearly wider than it is tall: phones, tablets held
+   upright, square windows. The second screen sets its mark low and its
+   copy high on these (see jelly-field.tsx, which uses the same 23/20). */
+@custom-variant upright (@media (max-aspect-ratio: 23/20));
+
 @theme {
   /* ---- surfaces --------------------------------------------------
      Pure white, matched byte-for-byte to the AeroShards backgroundColor
@@ -42,6 +47,8 @@
   * { border-color: var(--color-hair); }
 
   html {
+    /* Whatever is scrolled to or focused lands clear of the floating bar. */
+    scroll-padding-top: 6rem;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -112,14 +119,179 @@
   }
 
   /* The floor is set by the longest stable line, "We build websites that",
-     which has to hold on one line down to a 375px viewport. */
-  .h1 { font-size: clamp(2rem, 6.6vw, 5.75rem); }
+     which has to hold on one line down to a 375px viewport. On a short,
+     wide screen (a phone on its side) the height is what runs out first,
+     so the size answers to that too. */
+  .h1 { font-size: clamp(2rem, min(6.6vw, 10.5svh), 5.75rem); }
+
+  /* White type that gives off a little light, for links set on black. */
+  .text-glow {
+    text-shadow: 0 0 2px rgb(255 255 255 / 0.55), 0 0 12px rgb(255 255 255 / 0.45);
+  }
 
   .lede {
     font-size: clamp(1.125rem, 1.55vw, 1.375rem);
     line-height: 1.5;
     letter-spacing: -0.011em;
     font-weight: 400;
+  }
+
+  /* ---- footer -----------------------------------------------------
+     Plain black, as the page opens: no grain, no light pooled in it. */
+  .ftr { background: #000; }
+
+  /* The ring is drawn in white down here: the site's black one vanishes
+     on the black of the foot. */
+  .ftr :focus-visible { outline-color: rgb(255 255 255 / 0.9); }
+
+  /* The quietest tone that still clears 4.5:1 on black, with room for
+     the light that the backdrop keeps away from the words. */
+  .ftr-label {
+    font-size: 0.8125rem;
+    line-height: 1.3;
+    letter-spacing: 0.015em;
+    color: rgb(255 255 255 / 0.56);
+  }
+
+  /* The small print, and the small controls set in it. */
+  .ftr-meta {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: rgb(255 255 255 / 0.56);
+  }
+
+  /* The address, set as the largest thing in the foot after the mark:
+     it is the one line on the page that is meant to be acted on. */
+  .ftr-mail {
+    font-family: var(--font-title);
+    font-size: clamp(1.5rem, 3.2vw, 2.5rem);
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+    color: rgb(255 255 255 / 0.92);
+  }
+
+  .ftr-item {
+    font-size: 1.0625rem;
+    color: rgb(255 255 255 / 0.72);
+  }
+
+  /* One rule for every link down here. The line is drawn from the left
+     and taken away to the right, so following a link and leaving it are
+     not the same gesture played backwards. */
+  .ftr-link {
+    position: relative;
+    display: inline-block;
+    transition: color 0.35s var(--ease-out-quint);
+  }
+  .ftr-link::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: -0.14em;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: 100% 50%;
+    transition: transform 0.45s var(--ease-out-quint);
+  }
+  /* A larger target than the words, without moving them: the list items
+     meet edge to edge, and the small print reaches past 40px. */
+  .ftr-link::before {
+    content: "";
+    position: absolute;
+    inset: -6px -6px;
+  }
+  .ftr-meta.ftr-link::before { inset: -12px -8px; }
+  .ftr-link:hover,
+  .ftr-link:focus-visible {
+    color: #ffffff;
+  }
+  .ftr-link:hover::after,
+  .ftr-link:focus-visible::after {
+    transform: scaleX(1);
+    transform-origin: 0 50%;
+  }
+
+  /* The beads the trail is made of. The gradient is what survives the
+     cut — the blur mixes it across the whole body and only the edge is
+     sharpened — so the thing that arrives is lit from the top left and
+     heavier underneath, the way a drop of anything is. */
+  .goo-trail { transition: opacity 0.55s var(--ease-out-quint); }
+  .goo-bead {
+    background: radial-gradient(circle at 32% 26%, #ffffff, #dcdcdc 52%, #8c8c8c 100%);
+    will-change: transform;
+  }
+
+  /* ---- buttons ----------------------------------------------------
+     Pressed out of their own surface rather than filled: a shadow laid
+     along the top left inside the button and a light along the bottom
+     right, which is what makes a flat rectangle read as a key with a
+     face. Pointed at or reached by keyboard, the same pair is laid
+     outside it as well and the key lifts off the page.
+
+     The radius is not set here. Every button on the page already has
+     one and keeps it; this only changes the face.
+
+     Two departures from the recipe this came from. It does not put out
+     the focus ring — the raised state says a button is being pointed
+     at, not that it is the one the keyboard is on, and those are
+     different things to say; the page's own outline still lands on top
+     of this. And it names the properties it moves rather than
+     transitioning all of them, because these buttons also carry a mark
+     that flies across them on hover, and a transition on everything
+     would take hold of the transform that carries it. */
+  .btn-neu {
+    background-color: #e0e0e0;
+    color: #4d4d4d;
+    border: 2px solid rgb(206 206 206);
+    box-shadow:
+      inset 4px 4px 10px #bcbcbc,
+      inset -4px -4px 10px #ffffff;
+    transition:
+      box-shadow 0.2s ease-in-out,
+      background-color 0.2s ease-in-out,
+      color 0.2s ease-in-out;
+  }
+  .btn-neu:hover,
+  .btn-neu:focus-visible {
+    box-shadow:
+      inset 2px 2px 5px #bcbcbc,
+      inset -2px -2px 5px #ffffff,
+      2px 2px 5px #bcbcbc,
+      -2px -2px 5px #ffffff;
+  }
+  /* The label, on a layer of its own. It is what leans forward when the
+     button is pointed at, and it has to be able to do that without the
+     button coming with it: scaling the button would scale its shadows
+     and the key would stop sitting in its own hole. */
+  .btn-neu-face {
+    display: inline-block;
+    transition:
+      transform 0.2s ease-in-out,
+      color 0.2s ease-in-out,
+      text-shadow 0.2s ease-in-out;
+  }
+  .btn-neu:hover .btn-neu-face,
+  .btn-neu:focus-visible .btn-neu-face {
+    color: #000000;
+    transform: scale(1.045);
+    /* The gloss. A light lip along the bottom of every glyph and the
+       softest dark haze above it, which is the button's own lighting
+       read one magnification further in: the face is lit from the top
+       left, so anything cut into it catches the light along its lower
+       edge. Letterpress rather than emboss — the letters read as
+       pressed into the key, which is what a key being pointed at should
+       look like. */
+    text-shadow:
+      0 1px 0 rgb(255 255 255 / 0.95),
+      0 -1px 2px rgb(0 0 0 / 0.16);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-neu,
+    .btn-neu-face { transition: none; }
+    .btn-neu:hover .btn-neu-face,
+    .btn-neu:focus-visible .btn-neu-face { transform: none; }
   }
 
   /* ---- services ---------------------------------------------------
@@ -239,6 +411,51 @@
     transition: transform 0.7s var(--ease-out-quint);
   }
   .svc-photo + .svc-photo { margin-left: calc(var(--ph) * -0.45); }
+
+  /* What is on a card arrives after the card does. The shape that divided
+     into them lifts off first, the surface is left standing on its own for
+     a beat, and only then is the bar written on: the name, and then the
+     photos.
+
+     The delays are counted from the moment the card is switched on, which
+     is where the shape starts to lift, so a card's name waits out the whole
+     of that lift and a little more. Each card down the page waits a little
+     longer again. */
+  .svc-card[data-revealed] > h3 > button {
+    animation: svc-arrive 360ms var(--ease-out-quint) backwards;
+    animation-delay: calc(260ms + var(--card) * 70ms);
+  }
+  @keyframes svc-arrive {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* The photos do not simply fade in with the name above them. They are
+     stood on end and tipped over one after another, each pushing the next,
+     and the chain carries on down the page card after card.
+
+     Filled backwards, not forwards: a forwards fill would hold the last
+     frame's transform over everything the cascade has to say afterwards,
+     and the fan the card opens on hover would never reach them. Backwards
+     only holds the first frame through the delay, which is what keeps a
+     photo standing until its turn comes. */
+  .svc-card[data-revealed] .svc-photo {
+    animation: svc-domino 338ms var(--ease-out-quint) backwards;
+    animation-delay: calc(360ms + var(--card) * 70ms + var(--i) * 56ms);
+  }
+  @keyframes svc-domino {
+    from {
+      transform-origin: 0% 100%;
+      transform: rotate(-26deg);
+      opacity: 0;
+    }
+    30% { opacity: 1; }
+    to {
+      transform-origin: 0% 100%;
+      transform: none;
+      opacity: 1;
+    }
+  }
   .svc-card[data-intent="true"] .svc-photo {
     transform: translateX(calc(var(--i) * 0.3rem)) rotate(calc((var(--i) - 1) * 4deg));
   }
@@ -258,6 +475,31 @@
      would paint the boomerang white on white. */
   .svc-card:hover .svc-toggle:not([data-open="true"]) { color: #fff; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.4); }
   .svc-toggle[data-open="true"] { color: #000; background-color: #fff; box-shadow: inset 0 0 0 1px #fff; }
+
+  /* Until a card in the group has been opened, the closed toggles blink
+     once, slowly and hard, then rest, over and over: the toggle fills white
+     with the boomerang black in it, as it stands when a card is open, and
+     throws a glow round itself, holds it a moment, then lets it go. One card
+     just behind the next down the group, so it is plain that this is
+     where to click. */
+  @keyframes svc-beckon {
+    0%, 42%, 100% {
+      color: rgb(255 255 255 / 0.75);
+      background-color: rgb(255 255 255 / 0);
+      box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16), 0 0 0 0 rgb(255 255 255 / 0);
+    }
+    19%, 28% {
+      color: #000;
+      background-color: rgb(255 255 255 / 0.95);
+      box-shadow: inset 0 0 0 1px #fff, 0 0 26px 7px rgb(255 255 255 / 0.55);
+    }
+  }
+  [data-beckon] .svc-toggle:not([data-open="true"]) {
+    animation: svc-beckon 3.2s ease-in-out infinite;
+  }
+  [data-beckon] > :nth-child(2) .svc-toggle { animation-delay: 0.25s; }
+  [data-beckon] > :nth-child(3) .svc-toggle { animation-delay: 0.5s; }
+  [data-beckon] > :nth-child(4) .svc-toggle { animation-delay: 0.75s; }
 
   /* The description. Grey and regular until the light reaches it, white
      and heavy once it has passed, and the weight travels with the light
@@ -366,19 +608,27 @@
     .std-statement { font-size: 6.2cqi; }
   }
 
-  /* The pillar. Under the statement it keeps the service copy's size. From
-     lg it stands beside it, its top level with the statement's and its
-     column held to the right edge of the shell, and it is sized from that
-     column the way the statement is sized from its own: a justified column
-     this narrow only sets evenly where the words fall well, and a size tied
-     to the measure breaks it in the same places at every width. Of the
-     ratios that set it in five lines, 6.1 leaves each line the least to
-     spread across its gaps. The column is 26.4cqw, and the type follows it,
-     so the pillar can be made larger or smaller by its width alone. */
+  /* The pillar. It stands well under the statement in size, and what it
+     loses there it is given back in ground: everything after the colon
+     the sentence turns on is run through with a black marker and comes
+     back out of it in white.
+
+     Under the statement it keeps a plain reading size. From lg it stands
+     beside it, its top level with the statement's and its column held to
+     the right edge of the shell, and it is sized from that column the way
+     the statement is sized from its own: a justified column this narrow
+     only sets evenly where the words fall well, and a size tied to the
+     measure breaks it in the same places at every width. The column is
+     26.4cqw, and the type follows it, so the pillar can be made larger or
+     smaller by its width alone. */
+  /* Led more openly than the copy it came from: the marker draws a band
+     the height of the type, and at the old leading the bands of two
+     wrapped lines would touch and close back into the block this is not.
+     The gap between them is what makes it read as a marker. */
   .std-pillar {
-    font-size: clamp(1.1875rem, 1.5vw, 1.4375rem);
-    line-height: 1.12;
-    letter-spacing: -0.018em;
+    font-size: clamp(1rem, 1.2vw, 1.1875rem);
+    line-height: 1.42;
+    letter-spacing: -0.014em;
   }
   .std-pillar-col { margin-top: 1.5rem; }
   @media (min-width: 768px) {
@@ -408,20 +658,47 @@
        beside. Lit stroke included on both:
 
          (g top + stroke/2) x statement size - (line top + stroke/2) x pillar size
-         = ((0.52 + 0.02) x 2.54098 - (0.73 + 0.014)) x pillar size
+         = ((0.52 + 0.02) x 2.92454 - (0.73 + 0.014)) x pillar size
 
        0.52em is the top of Instrument Sans's "g" and 0.73em the highest ink
        on the pillar's first line (the "O" of "Our" and the "f"s), both read
-       off the rendered glyphs. The statement is 2.54098 times the pillar at
-       every width (6.2cqi of 66cqw against 6.1cqi of 26.4cqw), so this is
+       off the rendered glyphs. The statement is 2.92454 times the pillar at
+       every width (6.2cqi of 66cqw against 5.3cqi of 26.4cqw), so this is
        one share of the pillar's size. It is rounded to a whole pixel so the
        two lines stay on the same pixel grid. Recalculate it if either size,
        the stroke or either first line changes. */
     .std-pillar {
-      font-size: 6.1cqi;
+      font-size: 5.3cqi;
       position: relative;
-      top: round(-0.6281em, 1px);
+      top: round(-0.8352em, 1px);
     }
+  }
+
+  /* The marker is not there before the light is. Unlit, the tail is the
+     same grey as the rest of the pillar and sits on the same white; the
+     black and the white out of it belong to the lit copy, which the
+     light uncovers left to right. So the stroke is not found already
+     drawn: it is laid down as the words are read, and the marker arrives
+     with the words it marks.
+
+     The padding is kept on both, black or not, so the two copies measure
+     the same and the lit one lands exactly over the grey one. Cloned
+     across line breaks, so a tail that wraps is marked line by line
+     rather than as one ragged block. */
+  .std-pillar mark {
+    background: transparent;
+    color: inherit;
+    padding: 0.06em 0.2em;
+    margin-inline: -0.06em;
+    border-radius: 0.14em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  .std-pillar[data-lit="true"] mark,
+  .std-pillar .svc-line-lit mark {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    -webkit-text-stroke-color: var(--color-paper);
   }
 
   /* The service copy turned over for the page: grey until the light
@@ -437,17 +714,25 @@
   .std-statement[data-lit="true"],
   .std-statement .svc-line-lit { -webkit-text-stroke-width: 0.04em; }
 
-  /* Each founder has a card of their own, a thin frame round one portrait.
-     The two stand apart by a quarter of a portrait's width and are centred
-     as a pair. From lg the portraits keep the size they had when the two
-     shared one card; below lg that size and the gap would not fit side by
-     side, so the portraits are sized to fill the width with it.
+  /* Each founder has a card of their own, a thin frame round one portrait,
+     cut to four by five. The two stand apart by a quarter of a portrait's
+     width and are centred as a pair.
+
+     The pair is described by the room it takes and the portrait follows
+     from it, so the proportion of the crop can be changed without any of
+     these numbers being touched:
+
+       2 x (photo + 2 frames) + photo/4 = pair
+
+     From lg the pair is exactly as wide as the statement above it, and
+     centred under it, so the same measure is read twice.
 
      Opened, the other card is taken away and the chosen one is centred and
      widened for its founder's words. The portrait keeps its size either
      way: only the words' column is new. */
   .std-founders {
-    --std-photo: calc((100cqw - var(--std-frame) * 4) / 2.25);
+    --std-pair: 100cqw;
+    --std-photo: calc((var(--std-pair) - var(--std-frame) * 4) / 2.25);
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -478,7 +763,7 @@
      shell wide, never narrower than 34rem. */
   @media (min-width: 1024px) {
     .std-copy { width: 66cqw; }
-    .std-founders { --std-photo: calc((var(--std-col) - var(--std-frame) * 3) / 2); }
+    .std-founders { --std-pair: 66cqw; }
     .std-founder[data-open] {
       width: calc(var(--std-photo) + var(--std-frame) * 3 + max(var(--std-col), 34rem));
       grid-template-rows: auto 1fr;
@@ -489,6 +774,15 @@
 
   /* Concentric with the card round it. */
   .std-photo { border-radius: calc(22px - var(--std-frame)); }
+
+  /* Centred in the column it stands in, rather than dropped into the top
+     of it. Opened, the card is as tall as the founder's words, which is
+     taller than a four by five portrait: left to fill its place the
+     portrait would take the top of that height and leave all the room it
+     did not need in one lump underneath. Centred, whatever is spare is
+     split evenly above and below and the portrait sits in the middle of
+     its own side. */
+  .std-founder[data-open] .std-photo { align-self: center; }
 
   /* Two boomerangs share this card, so the card's own hover would light
      both. Each answers to its own portrait instead. */
@@ -624,6 +918,40 @@
     .cmp-keep { white-space: nowrap; }
   }
 
+  /* The comparison's answer line, marked and unmarked in a loop (see
+     MarkedLine in comparison.tsx). The same marker as the pillar's. The
+     band overhangs the words by its own padding on the left, so the words
+     still start on the heading's edge. 0.6s in, 5s held, 0.6s out, 5s off. */
+  .cmp-marked {
+    position: relative;
+    display: inline-block;
+    margin-left: -0.2em;
+  }
+  .cmp-marked-text {
+    padding: 0.06em 0.2em;
+    border-radius: 0.14em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  .cmp-marked-ink {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+  .cmp-marked-over {
+    position: absolute;
+    inset: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  .cmp-marked[data-state="held"] .cmp-marked-over { clip-path: inset(0 0 0 0); }
+  .cmp-marked[data-state="running"] .cmp-marked-over {
+    animation: cmp-marker 11.2s ease-in-out 0.8s infinite;
+  }
+  @keyframes cmp-marker {
+    0% { clip-path: inset(0 100% 0 0); }
+    5.357%, 50% { clip-path: inset(0 0 0 0); }
+    55.357%, 100% { clip-path: inset(0 100% 0 0); }
+  }
+
   .cmp-mark {
     display: block;
     width: auto;
@@ -673,10 +1001,16 @@
     .svc-aura,
     .svc-spot,
     .svc-photo,
+    [data-beckon] .svc-toggle:not([data-open="true"]) { animation: none; }
     .svc-toggle,
     .cmp-table td,
     .cmp-table .cmp-crit { transition: none; }
     .svc-aura::before,
     .svc-aura::after { animation: none; }
+    .svc-card[data-revealed] .svc-photo,
+    .svc-card[data-revealed] > h3 > button { animation: none; }
+    .ftr-link,
+    .ftr-link::after,
+    .goo-trail { transition: none; }
   }
 }

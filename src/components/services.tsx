@@ -9,8 +9,18 @@ import {
   useState,
   type PointerEvent,
 } from "react";
-import { MotionConfig, motion, useReducedMotion, type MotionStyle } from "motion/react";
+import {
+  MotionConfig,
+  motion,
+  useReducedMotion,
+  type MotionStyle,
+} from "motion/react";
+import { SERVICES, servicePath, type Service } from "@/lib/services";
 import { BoomerangMark } from "./boomerang";
+import { SlideIn } from "./enter";
+import { PassLink } from "./floating-nav";
+import { RewriteTitle } from "./rewrite-title";
+import { useSplitReveal } from "./split-reveal";
 
 /* ==================================================================
    Services
@@ -43,70 +53,6 @@ const LIGHT_MS = 1500;
 /** How far into one line the next one starts, as a share of a line. */
 const LIGHT_OVERLAP = 0.6;
 
-type Service = {
-  id: string;
-  title: string;
-  /** spelled out under the title where the title is an acronym */
-  full?: string;
-  body: string;
-  /** space-separated RGB, taken from the photos, for the glow the card warms with */
-  aura: string;
-  /** back to front */
-  photos: readonly [string, string, string];
-};
-
-const photo = (id: string) =>
-  `https://images.unsplash.com/photo-${id}?w=320&h=320&fit=crop&auto=format&q=80`;
-
-const SERVICES: Service[] = [
-  {
-    id: "web-design",
-    title: "Web Design",
-    body: "Nevima designs websites focused on making businesses stand out. We follow a strategic process to ensure the best results, from analyzing your audience and market to defining web design practices. This way, the final product goes far beyond your business needs and your stakeholders’ expectations. We also take care of the boring, logistical part after design, such as domain registration and deployment.",
-    aura: "64 190 214",
-    photos: [
-      photo("1581291519195-ef11498d1cf2"),
-      photo("1636215096587-21982fbf5843"),
-      photo("1520445694166-4a2ca1ba362f"),
-    ],
-  },
-  {
-    id: "visual-identity",
-    title: "Visual Identity",
-    body: "This service is provided exclusively as a bundle with our web design service. If you request our web design service and we identify major flaws in your visual identity, we will suggest choosing this bundle over the individual web design service to ensure better results. It only includes the most relevant components of a visual identity, such as logo design and color and typography systems.",
-    aura: "226 86 70",
-    photos: [
-      photo("1699662585308-fcb113a0a4ba"),
-      photo("1600832331197-ad575931911b"),
-      photo("1595142571206-88f8c64a9845"),
-    ],
-  },
-  {
-    id: "seo",
-    title: "SEO",
-    full: "Search Engine Optimization",
-    body: "Regardless of the quality of the web design behind a website, it will only reach the right audience on a wide scale if premium, personalized SEO practices are applied. Nevima delivers this service both for websites designed by us and for external websites. Even though we already apply basic SEO in our web design service, SEO is highly recommended for businesses looking to reach higher positions in their audience’s search results.",
-    aura: "218 158 86",
-    photos: [
-      photo("1614849963640-9cc74b2a826f"),
-      photo("1544383835-bda2bc66a55d"),
-      photo("1518065896235-a4c93e088e7a"),
-    ],
-  },
-  {
-    id: "geo",
-    title: "GEO",
-    full: "Generative Engine Optimization",
-    body: "SEO practices are no longer the only relevant way to reach an audience, as AI is increasingly used to find companies. GEO focuses on getting your business’s name mentioned as a direct source by AI tools, which presents an opportunity to reach an even wider audience.",
-    aura: "84 132 255",
-    photos: [
-      photo("1708311000280-861d2c89305a"),
-      photo("1699500518986-f43f798cde1b"),
-      photo("1706257038615-2d80b92587b7"),
-    ],
-  },
-];
-
 /* ================================================================== */
 
 /** A choice that is answered at once and acted on a beat later. */
@@ -115,6 +61,9 @@ export function useHeldChoice<Id extends string>(reduce: boolean) {
   // `active` is what the layout is doing and follows it a beat later.
   const [intent, setIntent] = useState<Id | null>(null);
   const [active, setActive] = useState<Id | null>(null);
+  // Whether anything has been opened yet. Until it has, the toggles blink
+  // to show that the cards open (see .svc-toggle in globals.css).
+  const [tried, setTried] = useState(false);
   // Read by the click handler, which can fire again inside the hold,
   // before React has re-rendered with the first click.
   const intentRef = useRef<Id | null>(null);
@@ -124,6 +73,7 @@ export function useHeldChoice<Id extends string>(reduce: boolean) {
     (id: Id | null) => {
       intentRef.current = id;
       setIntent(id);
+      if (id !== null) setTried(true);
       window.clearTimeout(hold.current);
       if (reduce) {
         setActive(id);
@@ -150,15 +100,21 @@ export function useHeldChoice<Id extends string>(reduce: boolean) {
     return () => window.removeEventListener("keydown", onKey);
   }, [intent, choose]);
 
-  return { intent, active, toggle };
+  return { intent, active, toggle, tried };
 }
 
-export function Services() {
+export function Services({ ready }: { ready: boolean }) {
   const reduce = useReducedMotion() ?? false;
-  const { intent, active, toggle } = useHeldChoice<string>(reduce);
+  const { intent, active, toggle, tried } = useHeldChoice<string>(reduce);
+  // The four bars arrive as the founders above them do: one shape that
+  // divides into them. Same reveal, same language, a column instead of a
+  // pair. A tighter blur than the founders': these bars stand a sixteenth
+  // of a card apart, and a reach wide enough to hold two portraits would
+  // never let them part at all.
+  const { host, revealed, overlay } = useSplitReveal({ ready, goo: 8 });
 
   // The cards that step aside keep their order down the left column.
-  const aside = SERVICES.filter((service) => service.id !== active);
+  const aside = SERVICES.filter((service) => service.slug !== active);
 
   return (
     <section
@@ -169,31 +125,40 @@ export function Services() {
       className="relative z-10 bg-paper pt-(--section-gap)"
     >
       <div className="shell">
-        <h2
-          id="services-title"
-          className="display text-[clamp(2.25rem,4.4vw,3.75rem)] font-light text-ink"
-        >
-          What we do
-        </h2>
+        <SlideIn ready={ready}>
+          {/* "We only do websites", corrected in place (see rewrite-title.tsx). */}
+          <RewriteTitle
+            ready={ready}
+            id="services-title"
+            className="display text-[clamp(2.25rem,4.4vw,3.75rem)] font-light text-ink"
+          />
+        </SlideIn>
 
         <MotionConfig transition={{ layout: MORPH }}>
           <div
-            className={`mt-10 grid grid-cols-1 gap-3 md:mt-14 lg:gap-4 ${
+            ref={host}
+            data-beckon={!tried || undefined}
+            className={`relative mt-10 grid grid-cols-1 gap-3 md:mt-14 lg:gap-4 ${
               active ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]" : ""
             }`}
           >
-            {SERVICES.map((service) => (
+            {SERVICES.map((service, i) => (
               <ServiceCard
-                key={service.id}
+                key={service.slug}
                 service={service}
-                state={service.id === active ? "active" : active ? "aside" : "idle"}
-                intended={intent === service.id}
+                index={i}
+                state={
+                  service.slug === active ? "active" : active ? "aside" : "idle"
+                }
+                intended={intent === service.slug}
+                revealed={revealed}
                 row={aside.indexOf(service) + 1}
                 layoutKey={active}
                 reduce={reduce}
                 onToggle={toggle}
               />
             ))}
+            {overlay}
           </div>
         </MotionConfig>
       </div>
@@ -218,22 +183,31 @@ const PLACEMENT: Record<CardState, string> = {
 export function followPointer(event: PointerEvent<HTMLElement>) {
   if (event.pointerType !== "mouse") return;
   const box = event.currentTarget.getBoundingClientRect();
-  event.currentTarget.style.setProperty("--mx", `${event.clientX - box.left}px`);
+  event.currentTarget.style.setProperty(
+    "--mx",
+    `${event.clientX - box.left}px`,
+  );
   event.currentTarget.style.setProperty("--my", `${event.clientY - box.top}px`);
 }
 
 function ServiceCard({
   service,
+  index,
   state,
   intended,
+  revealed,
   row,
   layoutKey,
   reduce,
   onToggle,
 }: {
   service: Service;
+  /** where it stands in the list, which is when its photos fall */
+  index: number;
   state: CardState;
   intended: boolean;
+  /** the shape that divides into the cards has handed over */
+  revealed: boolean;
   row: number;
   /** the open card; the only thing allowed to set the layout moving */
   layoutKey: string | null;
@@ -241,7 +215,7 @@ function ServiceCard({
   onToggle: (id: string) => void;
 }) {
   const active = state === "active";
-  const bodyId = `service-${service.id}`;
+  const bodyId = `service-${service.slug}`;
   // One full turn of the boomerang per click, counted rather than toggled so
   // every click spins it the same way round, however quickly they come.
   const [turns, setTurns] = useState(0);
@@ -263,6 +237,17 @@ function ServiceCard({
       onPointerMove={followPointer}
       data-state={state}
       data-intent={intended}
+      data-split-target=""
+      data-revealed={revealed || undefined}
+      // Held out of sight until the shape that divides into these cards is
+      // standing on the same pixels, then switched on whole underneath it
+      // while it is still opaque. No fade: a crossfade would take the card
+      // and the shape through half opacity together and the black would go
+      // grey. Set through Motion rather than CSS, because the card writes
+      // its own opacity inline and a rule would never reach it.
+      initial={false}
+      animate={{ opacity: revealed ? 1 : 0 }}
+      transition={{ layout: MORPH, opacity: { duration: 0 } }}
       className={`svc-card group relative isolate flex flex-col overflow-hidden text-paper has-[:focus-visible]:outline-1 has-[:focus-visible]:outline-offset-4 has-[:focus-visible]:outline-ink ${PLACEMENT[state]}`}
       // Radius and inner lines set here, not in CSS, so Motion can correct
       // them for the scale while the card is mid-move.
@@ -272,19 +257,30 @@ function ServiceCard({
           boxShadow:
             "inset 0 1px 0 rgba(255,255,255,0.08), inset 0 0 0 1px rgba(255,255,255,0.05)",
           "--row": row,
+          "--card": index,
           "--aura": service.aura,
         } as MotionStyle
       }
     >
-      <span aria-hidden="true" className="svc-aura pointer-events-none absolute inset-0 -z-10" />
-      <span aria-hidden="true" className="svc-spot pointer-events-none absolute inset-0 -z-10" />
+      <span
+        aria-hidden="true"
+        className="svc-aura pointer-events-none absolute inset-0 -z-10"
+      />
+      <span
+        aria-hidden="true"
+        className="svc-spot pointer-events-none absolute inset-0 -z-10"
+      />
 
-      <motion.h3 layout={move} {...tie} className={active ? "flex" : "flex flex-1"}>
+      <motion.h3
+        layout={move}
+        {...tie}
+        className={active ? "flex" : "flex flex-1"}
+      >
         <button
           type="button"
           onClick={() => {
             setTurns((n) => n + 1);
-            onToggle(service.id);
+            onToggle(service.slug);
           }}
           aria-expanded={active}
           aria-controls={active ? bodyId : undefined}
@@ -323,7 +319,11 @@ function ServiceCard({
           transition={{
             layout: MORPH,
             opacity: intended
-              ? { delay: reduce ? 0 : BODY_IN_S, duration: 0.5, ease: "easeOut" }
+              ? {
+                  delay: reduce ? 0 : BODY_IN_S,
+                  duration: 0.5,
+                  ease: "easeOut",
+                }
               : { duration: 0.18 },
           }}
           // Straight under the title, not pinned to the foot: the room left
@@ -339,6 +339,18 @@ function ServiceCard({
             reduce={reduce}
             className="svc-copy text-[clamp(1.1875rem,1.5vw,1.4375rem)] leading-[1.12] tracking-[-0.018em]"
           />
+
+          {/* The way out of the card and into the service's own page. Set as
+              the bar's own call to action, boomerang pass and all, so the
+              two read as the same invitation. */}
+          <div className="mt-7 md:mt-9">
+            <PassLink
+              href={servicePath(service.slug)}
+              label={`Explore ${service.title}`}
+              className="btn-neu inline-flex rounded-[8px] px-5 py-3 text-[0.9375rem] leading-none"
+              markClassName="text-[#4d4d4d]/35"
+            />
+          </div>
         </motion.div>
       )}
     </motion.article>
@@ -381,7 +393,15 @@ function PhotoStack({ photos }: { photos: readonly string[] }) {
 const SPIN_TURNS = 3;
 const SPIN_S = 2.7;
 
-export function Toggle({ open, turns, reduce }: { open: boolean; turns: number; reduce: boolean }) {
+export function Toggle({
+  open,
+  turns,
+  reduce,
+}: {
+  open: boolean;
+  turns: number;
+  reduce: boolean;
+}) {
   return (
     <span
       aria-hidden="true"
@@ -394,7 +414,9 @@ export function Toggle({ open, turns, reduce }: { open: boolean; turns: number; 
         animate={{ rotate: turns * 360 * SPIN_TURNS }}
         // Thrown, not wound: fast off the hand, easing into the catch.
         transition={
-          reduce ? { duration: 0 } : { duration: SPIN_S, ease: [0.22, 1, 0.36, 1] }
+          reduce
+            ? { duration: 0 }
+            : { duration: SPIN_S, ease: [0.22, 1, 0.36, 1] }
         }
       >
         <BoomerangMark width="100%" className="block" />
@@ -412,15 +434,18 @@ export function Toggle({ open, turns, reduce }: { open: boolean; turns: number; 
 /* spans are dropped for plain text, which rewraps freely on resize.    */
 /* ================================================================== */
 
-/** One wrapped line: whatever part of the lead fell on it, then the rest. */
-type LitLine = { lead: string; body: string };
+/** One wrapped line: whatever part of the lead fell on it, then the rest,
+    then whatever of the marked tail reached it. */
+type LitLine = { lead: string; body: string; mark: string };
 
 function LineWords({ line }: { line: LitLine }) {
   return (
     <>
       {line.lead && <strong>{line.lead}</strong>}
-      {line.lead && line.body ? " " : null}
+      {line.lead && (line.body || line.mark) ? " " : null}
       {line.body}
+      {line.body && line.mark ? " " : null}
+      {line.mark && <mark>{line.mark}</mark>}
     </>
   );
 }
@@ -428,6 +453,7 @@ function LineWords({ line }: { line: LitLine }) {
 export function Illuminated({
   text,
   lead,
+  mark,
   delayMs,
   reduce,
   className,
@@ -435,6 +461,9 @@ export function Illuminated({
   text: string;
   /** Set in bold ahead of the text and lit with it (the comparison table). */
   lead?: string;
+  /** Run on under the text and struck through with a marker (the pillar).
+      It keeps its own colours, so it is lit as its own ground asks. */
+  mark?: string;
   delayMs: number;
   reduce: boolean;
   className?: string;
@@ -455,6 +484,7 @@ export function Illuminated({
       });
     });
   const leadPieces = lead ? pieces(lead) : [];
+  const markPieces = mark ? pieces(mark) : [];
 
   useLayoutEffect(() => {
     if (lit) return;
@@ -464,15 +494,24 @@ export function Illuminated({
     let top = Number.NaN;
     words.forEach((word) => {
       if (word.offsetTop !== top) {
-        found.push({ lead: "", body: "" });
+        found.push({ lead: "", body: "", mark: "" });
         top = word.offsetTop;
       }
       const line = found[found.length - 1];
-      const part = (word.textContent ?? "") + (word.dataset.glued === undefined ? " " : "");
-      if (word.dataset.lead === undefined) line.body += part;
-      else line.lead += part;
+      const part =
+        (word.textContent ?? "") +
+        (word.dataset.glued === undefined ? " " : "");
+      if (word.dataset.lead !== undefined) line.lead += part;
+      else if (word.dataset.mark !== undefined) line.mark += part;
+      else line.body += part;
     });
-    setLines(found.map((line) => ({ lead: line.lead.trimEnd(), body: line.body.trimEnd() })));
+    setLines(
+      found.map((line) => ({
+        lead: line.lead.trimEnd(),
+        body: line.body.trimEnd(),
+        mark: line.mark.trimEnd(),
+      })),
+    );
     // Measured once per mount: the card remounts this for every opening.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -495,6 +534,8 @@ export function Illuminated({
           {lead && <strong>{lead}</strong>}
           {lead ? " " : null}
           {text}
+          {mark ? " " : null}
+          {mark && <mark>{mark}</mark>}
         </>
       ) : lines ? (
         lines.map((line, i) => (
@@ -511,7 +552,9 @@ export function Illuminated({
                 animationDuration: `${per}ms`,
                 animationDelay: `${delayMs + i * per * LIGHT_OVERLAP}ms`,
               }}
-              onAnimationEnd={i === lines.length - 1 ? () => setLit(true) : undefined}
+              onAnimationEnd={
+                i === lines.length - 1 ? () => setLit(true) : undefined
+              }
             >
               <LineWords line={line} />
             </span>
@@ -526,7 +569,11 @@ export function Illuminated({
               <strong>
                 {leadPieces.map(({ piece, glued }, i) => (
                   <Fragment key={i}>
-                    <span data-word="" data-lead="" data-glued={glued ? "" : undefined}>
+                    <span
+                      data-word=""
+                      data-lead=""
+                      data-glued={glued ? "" : undefined}
+                    >
                       {piece}
                     </span>
                     {glued || i === leadPieces.length - 1 ? null : " "}
@@ -543,6 +590,24 @@ export function Illuminated({
               {glued ? null : " "}
             </Fragment>
           ))}
+          {/* Measured inside its own marker, padding and all, or the words
+              would be read back at widths they are never drawn at. */}
+          {markPieces.length > 0 && (
+            <mark>
+              {markPieces.map(({ piece, glued }, i) => (
+                <Fragment key={i}>
+                  <span
+                    data-word=""
+                    data-mark=""
+                    data-glued={glued ? "" : undefined}
+                  >
+                    {piece}
+                  </span>
+                  {glued || i === markPieces.length - 1 ? null : " "}
+                </Fragment>
+              ))}
+            </mark>
+          )}
         </>
       )}
     </p>

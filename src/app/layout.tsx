@@ -47,7 +47,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-PT" className={`${title.variable} ${read.variable}`}>
+    <html lang="en" className={`${title.variable} ${read.variable}`}>
       <body className="antialiased">{children}</body>
     </html>
   );

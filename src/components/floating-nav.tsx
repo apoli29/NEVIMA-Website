@@ -1,7 +1,14 @@
 "use client";
 
-import type { RefObject } from "react";
-import { motion, useReducedMotion, type MotionValue, type Variants } from "motion/react";
+import { useRef, useState, type RefObject } from "react";
+import {
+  motion,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  type MotionValue,
+  type Variants,
+} from "motion/react";
 import { BoomerangMark } from "./boomerang";
 
 /* ==================================================================
@@ -55,6 +62,8 @@ const mark: Variants = {
   },
 };
 
+/* Exported as PassLink: the service cards use the same call to action, so
+   the pass belongs to both rather than to the bar. */
 function Pass({
   href,
   label,
@@ -92,7 +101,9 @@ function Pass({
           </motion.span>
         </span>
       )}
-      {label}
+      {/* On its own layer so it can lean forward without the button
+          following it (see .btn-neu-face). */}
+      <span className="btn-neu-face">{label}</span>
     </motion.a>
   );
 }
@@ -103,6 +114,7 @@ export function FloatingNav({
   opacity,
   linksOpacity,
   markRef,
+  onMarkLoad,
   markVisible,
 }: {
   /** The bar. It is black on the black curtain, so it can be fully in
@@ -113,11 +125,34 @@ export function FloatingNav({
   linksOpacity: MotionValue<number>;
   /** the wordmark slot the opening mark flies into */
   markRef: RefObject<HTMLImageElement | null>;
+  /** the slot has a width to be measured against */
+  onMarkLoad: () => void;
   markVisible: boolean;
 }) {
+  const reduce = useReducedMotion();
+  const bar = useRef<HTMLDivElement>(null);
+  const { scrollY } = useScroll();
+
+  // The footer carries the same links and the address itself, and once it
+  // is taller than what is left of the screen the bar would sit on top of
+  // them, the address first. So the bar steps out of the way as the footer
+  // reaches it, and comes back as soon as the footer drops below it again.
+  // Measured from the bar's layout box, which its own lift does not move.
+  const [tucked, setTucked] = useState(false);
+  useMotionValueEvent(scrollY, "change", () => {
+    const foot = document.getElementById("contact");
+    const b = bar.current;
+    if (!foot || !b) return;
+    setTucked(foot.getBoundingClientRect().top < b.offsetTop + b.offsetHeight + 16);
+  });
+
   return (
     <motion.header
       style={{ opacity }}
+      animate={{ y: tucked ? "-120%" : "0%" }}
+      transition={{ duration: reduce ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
+      // Out of reach while it is out of sight.
+      inert={tucked}
       className="pointer-events-none fixed inset-x-0 top-0 z-50 pt-4 md:pt-6"
     >
       {/* Same container as the headline, so the two share a left edge. The
@@ -125,7 +160,7 @@ export function FloatingNav({
           puts the wordmark back on the column edge and leaves the difference
           between the gutter and that padding as the float. */}
       <div className="shell">
-        <div className="pointer-events-auto -mx-3 flex items-center justify-between gap-4 rounded-[16px] bg-ink px-3 py-2.5 md:-mx-5 md:gap-8 md:px-5 md:py-3 xl:-mx-8 xl:px-8">
+        <div ref={bar} className="pointer-events-auto -mx-3 flex items-center justify-between gap-4 rounded-[16px] bg-ink px-3 py-2.5 md:-mx-5 md:gap-8 md:px-5 md:py-3 xl:-mx-8 xl:px-8">
           <a
             href="#top"
             aria-label="nevima, home"
@@ -138,6 +173,7 @@ export function FloatingNav({
               ref={markRef}
               src="/nevima-wordmark-white.svg"
               alt="nevima"
+              onLoad={onMarkLoad}
               className="block h-[1.35rem] w-auto md:h-[1.55rem]"
               style={{ opacity: markVisible ? 1 : 0 }}
             />
@@ -161,8 +197,8 @@ export function FloatingNav({
             <Pass
               href="#contact"
               label="Get in touch"
-              className="inline-flex rounded-[8px] bg-paper px-5 py-2.5 text-[0.9375rem] leading-none text-ink"
-              markClassName="text-ink/30"
+              className="btn-neu inline-flex rounded-[8px] px-5 py-2.5 text-[0.9375rem] leading-none"
+              markClassName="text-[#4d4d4d]/35"
             />
           </motion.nav>
         </div>
@@ -171,4 +207,4 @@ export function FloatingNav({
   );
 }
 
-export { NAV };
+export { NAV, Pass as PassLink };

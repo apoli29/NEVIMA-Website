@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   AnimatePresence,
   animate,
@@ -11,9 +11,12 @@ import {
   useTransform,
   type MotionValue,
 } from "motion/react";
-import AeroShards from "../../components/AeroShards";
 import { Comparison } from "./comparison";
-import { FloatingNav, NAV } from "./floating-nav";
+import { Footer } from "./footer";
+import { BoomerangMark } from "./boomerang";
+import { FloatingNav, PassLink } from "./floating-nav";
+import { useGateway } from "./gateway";
+import { JellyField } from "./jelly-field";
 import { Services } from "./services";
 import { useSmoothScroll } from "./smooth-scroll";
 import { Studio } from "./studio";
@@ -136,16 +139,15 @@ function StatementScreen({
   return (
     // Padded clear of the floating bar: the copy centres in what is left of
     // the screen, not under it, which is the only thing that keeps them off
-    // each other on a short viewport.
-    <div className="pointer-events-none absolute inset-0 z-10 flex items-center pt-24 md:pt-28">
-      {/* A soft white wash under the copy: the shard field runs through the
-          middle of the screen and black type needs its own ground. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 left-0 w-full bg-[radial-gradient(120%_80%_at_10%_50%,rgba(255,255,255,0.94)_0%,rgba(255,255,255,0.78)_38%,rgba(255,255,255,0)_72%)] md:w-[78%]"
-      />
-
-      <motion.div style={{ y }} className="shell pointer-events-auto relative">
+    // each other on a short viewport. On an upright screen the mark lies
+    // across the bottom, so the copy is set high instead, above it.
+    <div className="pointer-events-none absolute inset-0 z-10 flex items-center pt-24 md:pt-28 upright:items-start upright:pt-[clamp(7rem,19svh,14rem)]">
+      {/* data-jelly-quiet: the drops under the jelly keep clear of
+          everything in here, links included (see jelly-field.tsx). */}
+      <motion.div style={{ y }} data-jelly-quiet className="shell pointer-events-auto relative">
+        {/* As wide as the headline's longest line and no wider, so the row
+            under it can end exactly where the headline does. */}
+        <div className="w-fit max-w-full">
         <h1 className="display h1 text-ink">
           <span aria-hidden="true" className="block font-light">
             We build websites that
@@ -159,65 +161,59 @@ function StatementScreen({
           </span>
         </h1>
 
-        <h2 className="lede mt-9 max-w-[44ch] font-normal text-ash md:mt-12">
-          Your brand is a story worth telling. We make sure it doesn&rsquo;t go
-          unnoticed.
-        </h2>
+        {/* The subtitle and the section links, side by side. The row takes
+            no width of its own (w-0) and fills the headline's (min-w-full);
+            the links take whatever the subtitle leaves and run to the end of
+            it, so they finish flush with the headline. Their type grows with
+            the screen as the headline's does, so on any desktop they fit
+            beside the subtitle; only on a tablet or a phone, where they
+            cannot, do they drop under it, still ending where it ends. */}
+        <div className="mt-[1.125rem] flex w-0 min-w-full flex-wrap items-center gap-x-6 gap-y-7 md:mt-6">
+          {/* One sentence to a line, set closer than running text, the
+              second a little heavier: it is the promise. */}
+          <h2 className="lede text-[clamp(1.35rem,min(1.86vw,2.95svh),1.65rem)] font-normal leading-[1.3] text-ash">
+            <span className="block">Your brand is a story worth telling.</span>
+            <span className="block font-medium">We make sure it doesn&rsquo;t go unnoticed.</span>
+          </h2>
+          <SectionLinks />
+        </div>
+        </div>
       </motion.div>
     </div>
   );
 }
 
-/* ================================================================== */
-/* Footer                                                              */
-/*                                                                     */
-/* z-10 keeps it over the fixed shard field but under the opening      */
-/* stage, which covers the viewport while the page is held at zero.    */
-/* ================================================================== */
+/* The rest of the page in three words, on a black bar of its own, the
+   links lit white on it and spread along it, a small boomerang standing
+   in the middle of each space between them. The same pass as the floating
+   bar's. Pricing is a placeholder: there is no pricing section yet. */
+const SECTION_LINKS = [
+  { label: "About us", href: "#studio" },
+  { label: "Our services", href: "#services" },
+  { label: "Pricing", href: "#pricing" },
+];
 
-function Footer() {
+function SectionLinks() {
   return (
-    <footer id="contact" className="relative z-10 bg-paper">
-      <div className="shell border-t border-hair py-14 md:py-16">
-        <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
-          <div>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/nevima-wordmark.svg"
-              alt="nevima"
-              className="h-[1.35rem] w-auto"
-            />
-            <p className="mt-5 max-w-[34ch] text-[0.9375rem] leading-relaxed text-ash">
-              A two person studio building websites and visual identities.
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-3 md:items-end">
-            <a
-              href="mailto:ola@nevima.pt"
-              className="text-[1.0625rem] text-ink transition-colors duration-300 hover:text-ash"
-            >
-              ola@nevima.pt
-            </a>
-            <nav aria-label="Footer" className="flex gap-6">
-              {NAV.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  className="text-[0.9375rem] text-ash transition-colors duration-300 hover:text-ink"
-                >
-                  {item.label}
-                </a>
-              ))}
-            </nav>
-          </div>
-        </div>
-
-        <p className="mt-12 text-[0.8125rem] text-ash-2">
-          &copy; {new Date().getFullYear()} nevima
-        </p>
-      </div>
-    </footer>
+    <nav
+      aria-label="Sections"
+      className="ml-auto flex max-w-[34rem] flex-auto items-center justify-between gap-1.5 rounded-[14px] bg-ink px-3 py-1.5 md:gap-2 md:px-4 md:py-2"
+    >
+      {SECTION_LINKS.map((link, i) => (
+        <Fragment key={link.href}>
+          {i > 0 && (
+            // Turned over, so the elbow points up between the words.
+            <BoomerangMark width={17} className="w-[17px] shrink-0 rotate-180 text-paper/45 md:w-[19px]" />
+          )}
+          <PassLink
+            href={link.href}
+            label={link.label}
+            className="text-glow inline-flex px-2 py-2.5 text-[0.84rem] leading-none text-paper md:px-[0.9em] md:py-[0.85em] md:text-[clamp(0.78rem,min(1.056vw,1.68svh),1.02rem)]"
+            markClassName="text-paper/70"
+          />
+        </Fragment>
+      ))}
+    </nav>
   );
 }
 
@@ -227,11 +223,43 @@ function Footer() {
 
 type Phase = "waiting" | "running" | "open";
 
+/** How much of the studio has to be up before it starts to read itself out. */
+const STUDIO_IN = 0.7;
+
+/* Latched: once the section has been seen, drawing it back down again does
+   not unsay it. */
+function useStudioIn(ready: boolean) {
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    if (!ready || inView) return;
+    const studio = document.getElementById("studio");
+    if (!studio) return;
+    const check = () => {
+      if (studio.getBoundingClientRect().top <= window.innerHeight * (1 - STUDIO_IN)) {
+        setInView(true);
+      }
+    };
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    return () => window.removeEventListener("scroll", check);
+  }, [ready, inView]);
+
+  return inView;
+}
+
 export function Home() {
   const reduce = useReducedMotion() ?? false;
   const progress = useMotionValue(0);
   const [phase, setPhase] = useState<Phase>("waiting");
-  useSmoothScroll(phase !== "open");
+  const lenis = useSmoothScroll(phase !== "open");
+  // The second screen and the studio are not scrolled between: the studio is
+  // drawn up over the screen, a share of it per turn of the wheel.
+  useGateway(lenis, phase === "open");
+  // And what is on the studio waits until most of it is up. A section that
+  // began to read itself out while it was still a third of the way onto the
+  // screen would be half over before it was properly there.
+  const studioIn = useStudioIn(phase === "open");
   // The listeners need the current phase without being torn down and rebuilt
   // by it, and they fire before React has re-rendered.
   const phaseRef = useRef<Phase>("waiting");
@@ -241,19 +269,27 @@ export function Home() {
   const heroSlot = useRef<HTMLDivElement>(null);
   const navSlot = useRef<HTMLImageElement>(null);
   const [flight, setFlight] = useState<Flight>(PARKED);
+  // The bar's mark is a file, and until it is in it has no width to measure
+  // against. Without this the first reading is thrown away and the mark is
+  // left parked until something else happens to ask for another one.
+  const [markReady, setMarkReady] = useState(false);
 
   useMeasureEffect(() => {
     const measure = () => {
       const hero = heroSlot.current?.getBoundingClientRect();
       const nav = navSlot.current?.getBoundingClientRect();
       if (!hero || !nav || nav.width === 0) return;
+      // The mark is drawn at the size it spends the flight closest to and
+      // longest at, and the height it will actually take there, read off the
+      // bar's copy rather than off the slot it is measured against.
+      const height = (hero.width * nav.height) / nav.width;
       setFlight({
-        left: nav.left,
-        top: nav.top,
-        width: nav.width,
-        scale: hero.width / nav.width,
-        dx: hero.left + hero.width / 2 - (nav.left + nav.width / 2),
-        dy: hero.top + hero.height / 2 - (nav.top + nav.height / 2),
+        left: hero.left,
+        top: hero.top,
+        width: hero.width,
+        scale: nav.width / hero.width,
+        dx: nav.left + nav.width / 2 - (hero.left + hero.width / 2),
+        dy: nav.top + nav.height / 2 - (hero.top + height / 2),
       });
     };
 
@@ -263,12 +299,20 @@ export function Home() {
     if (phaseRef.current !== "waiting") return;
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
-  }, [phase]);
+  }, [phase, markReady]);
 
   const flown = flight.width > 0;
-  const markX = useTransform(progress, FLIGHT, [flight.dx, 0], { ease: FLIGHT_EASE });
-  const markY = useTransform(progress, FLIGHT, [flight.dy, 0], { ease: FLIGHT_EASE });
-  const markScale = useTransform(progress, FLIGHT, [flight.scale, 1], {
+  /* Out of the middle, not into it. The mark rests at its full size and is
+     taken down to the bar's, rather than resting at the bar's size and being
+     blown up to fill the screen: an <img> of an SVG is rasterised at the size
+     it is laid out at, so a mark parked five times smaller than it is drawn
+     would spend the whole of the first screen as a five-fold enlargement of a
+     bar-sized bitmap. Same measurements, read the other way round; the only
+     difference is that the mark is now sharp where it is biggest and softens
+     on the way into the bar, which is where the bar's own copy takes over. */
+  const markX = useTransform(progress, FLIGHT, [0, flight.dx], { ease: FLIGHT_EASE });
+  const markY = useTransform(progress, FLIGHT, [0, flight.dy], { ease: FLIGHT_EASE });
+  const markScale = useTransform(progress, FLIGHT, [1, flight.scale], {
     ease: FLIGHT_EASE,
   });
 
@@ -364,67 +408,47 @@ export function Home() {
         opacity={barOpacity}
         linksOpacity={linksOpacity}
         markRef={navSlot}
+        onMarkLoad={() => setMarkReady(true)}
         markVisible={phase === "open"}
       />
 
       <main id="top" className="relative">
-        {/* Fixed while the opening owns the viewport, then handed back to the
-            flow at the same place: the page is still at zero, so nothing
-            moves when it lands. */}
-        {/* bg-paper is load bearing. While the stage is fixed it takes up no
-            space, so the footer sits at the top of the page behind it, and
-            mid-transition neither the curtain nor the field is fully opaque:
-            their combined alpha dips and the footer reads through. The stage
-            owning its own ground closes that window. */}
-        {/* data-opening is what locks the page in CSS (globals.css). It is
-            rendered on the server, so the lock is there from the first paint,
-            before the listeners below exist. */}
-        <section
-          data-opening={phase === "open" ? undefined : ""}
-          className={
-            phase === "open"
-              ? "relative h-[100svh] overflow-hidden bg-paper"
-              : "fixed inset-0 z-30 overflow-hidden bg-paper"
-          }
-        >
+        {/* The second screen and the studio share a box, and that is what
+            makes the overlap possible: a stuck element can only stay stuck
+            inside its own container, so the container has to be the one the
+            studio is in. It holds the screen in place for the length of the
+            studio and lets it go underneath it. */}
+        <div className="relative">
+          {/* Stuck, not scrolled. The second screen stays where it is and the
+              studio is drawn up over it, which is the whole of what the two
+              gestures buy: the page does not travel to the next section, the
+              next section closes over this one. It is let go once the studio
+              has gone by, so the jelly field is not left running under the
+              rest of the page. */}
+          {/* bg-paper is load bearing. Mid-transition neither the curtain nor
+              the field is fully opaque: their combined alpha dips, and
+              whatever is behind reads through. The stage owning its own
+              ground closes that window. */}
+          {/* data-opening is what locks the page in CSS (globals.css). It is
+              rendered on the server, so the lock is there from the first
+              paint, before the listeners below exist. */}
+          <section
+            data-opening={phase === "open" ? undefined : ""}
+            className={
+              phase === "open"
+                ? "sticky top-0 h-[100svh] overflow-hidden bg-paper"
+                : "fixed inset-0 z-30 overflow-hidden bg-paper"
+            }
+          >
           <motion.div
             className="absolute inset-0 z-0"
             style={{ opacity: fieldOpacity }}
             aria-hidden="true"
           >
-            <AeroShards
-              backgroundColor="#ffffff"
-              shardColor="#000000"
-              accentColor="#000000"
-              placement="center"
-              flow="stream"
-              material="pearl"
-              detail="balanced"
-              effect="none"
-              scale={0.8}
-              spread={1}
-              depth={1.25}
-              speed={1}
-              spin={2}
-              interaction="repel"
-              density={1.5}
-              shardSize={0.65}
-              stretch={0.7}
-              turbulence={2}
-              glow={2}
-              edgeSoftness={2}
-              bloom={1}
-              grain={0}
-              chromaticAberration={0}
-              transitionDuration={1}
-              interactionRadius={1.5}
-              interactionStrength={0.25}
-              rippleIntensity={1}
-              holdToGather={true}
-              // AeroShards.jsx gives every prop a default except onError, so
-              // TS infers it as required. Passing undefined keeps the
-              // configuration above exactly as specified.
-              onError={undefined}
+            {/* The mark drags itself in as the field comes up. */}
+            <JellyField
+              arrive={phase !== "waiting"}
+              arriveDelay={(FIELD_IN[0] * RUN_MS) / 1000}
             />
           </motion.div>
 
@@ -446,10 +470,12 @@ export function Home() {
               className="invisible aspect-[1103/243] w-[min(78vw,22rem)] md:w-[min(58vw,36rem)]"
             />
           </div>
-        </section>
+          </section>
 
-        <Studio ready={phase === "open"} />
-        <Services />
+          <Studio ready={studioIn} />
+        </div>
+
+        <Services ready={phase === "open"} />
         <Comparison ready={phase === "open"} />
       </main>
 
@@ -477,13 +503,18 @@ export function Home() {
               }}
             />
           ) : (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src="/nevima-wordmark-white.svg"
-              alt=""
-              draggable={false}
-              className="absolute top-1/2 left-1/2 w-[min(78vw,22rem)] -translate-x-1/2 -translate-y-1/2 select-none md:w-[min(58vw,36rem)]"
-            />
+            // Centred the way the slot it stands in is centred, so the two
+            // renderings are the same box and the handover from one to the
+            // other cannot be seen.
+            <div className="absolute inset-0 grid place-items-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/nevima-wordmark-white.svg"
+                alt=""
+                draggable={false}
+                className="w-[min(78vw,22rem)] select-none md:w-[min(58vw,36rem)]"
+              />
+            </div>
           )}
         </div>
       )}
