@@ -38,21 +38,23 @@ import { Studio } from "./studio";
    The black is a curtain, not a backdrop: the second screen is already
    assembled underneath it and the fade simply lifts it off. That is why
    the bar has to be fully in before the curtain starts to go, otherwise
-   the white mark would spend a few frames on white. Only the bar itself
-   comes in that early, and it is black on black; its links come in with
-   the page, on the curtain's own range, so nothing but the mark is seen
-   before the page is.
+   the white mark would spend a few frames on white. The bar comes in
+   under the mark while it is still flying, black on black, so it is all
+   there the moment the mark lands, and the curtain lifts 200ms later:
+   the mark is held in its slot for one beat, no more. The bar's
+   links come in with the page, on the curtain's own range, so nothing
+   but the mark is seen before the page is.
 
    Read left to right, zero to one:
 
    mark   |--------- flight ---------|
-   bar                                |-- in --|
-   field                                       |-- in --|
-   curtain                                      |--- off ---|
-   links                                        |--- in ----|
-   words                                          |- settle -|
+   bar                    |-- in ---|
+   field                         |-- in --|
+   curtain                          |--- off ---|
+   links                            |--- in ----|
+   words                              |- settle -|
    ================================================================== */
-const RUN_MS = 2925;
+const RUN_MS = 2445;
 
 /** A range on the run's clock, given in milliseconds from the trigger. */
 const span = (from: number, to: number): [number, number] => [from / RUN_MS, to / RUN_MS];
@@ -62,16 +64,16 @@ const span = (from: number, to: number): [number, number] => [from / RUN_MS, to 
    too abruptly, and the user asked for it 50% slower than that, so the
    wait is half the first one. The flight itself runs 1481ms (it went to
    748ms, then 1234ms, then 20% slower than that). Everything after it
-   keeps its own length and simply follows the flight, so nothing waits on
-   a mark that has landed. */
+   keeps its own length; the reveal starts 200ms after the mark lands
+   (see the diagram above). */
 const FLIGHT = span(102, 1583);
-const BAR_IN = span(1719, 2263);
+const BAR_IN = span(1039, 1583);
 /* The second screen's arrival runs at 65% of its first length: every range
    from here on was scaled about the moment the curtain starts to lift, so
    the reveal begins exactly when it did and simply takes less time. */
-const FIELD_IN = span(2175, 2617);
-const CURTAIN_OFF = span(2263, 2793);
-const WORDS_IN = span(2395, 2925);
+const FIELD_IN = span(1695, 2137);
+const CURTAIN_OFF = span(1783, 2313);
+const WORDS_IN = span(1915, 2445);
 
 /* Eased at both ends, but quicker out of the start than into the end: it is
    seen to move the moment it is asked to, and still settles into the bar
