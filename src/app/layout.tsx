@@ -1,14 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Sans } from "next/font/google";
+import { Geist_Mono, Instrument_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 
-/* Titles: Raleway, self-hosted from /fonts. The variable file is used so the
-   headline weight is a true Medium (500) and the lighter line above it is a
-   real Light (300) rather than a synthesised one. */
+/* Titles: Satoshi (manual v2), self-hosted from /fonts. The variable file is
+   used so the headline weight is a true Medium (500) and the lighter line
+   above it is a real Light (300) rather than a synthesised one. Its range
+   starts at 300, so nothing on the page asks for a lighter title. */
 const title = localFont({
-  src: "../../fonts/Raleway/Raleway-VariableFont_wght.ttf",
-  weight: "100 900",
+  src: "../../fonts/Satoshi/Satoshi-Variable.woff2",
+  weight: "300 900",
   style: "normal",
   variable: "--f-title",
   display: "swap",
@@ -19,6 +20,15 @@ const title = localFont({
 const read = Instrument_Sans({
   subsets: ["latin"],
   variable: "--f-read",
+  display: "swap",
+});
+
+/* Labels: the gallery's wall captions and the studio's readouts (where,
+   what time, what is on show). A monospace, so figures that change in
+   place, like the clock, hold still. */
+const mono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--f-mono",
   display: "swap",
 });
 
@@ -47,7 +57,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${title.variable} ${read.variable}`}>
+    <html lang="en" className={`${title.variable} ${read.variable} ${mono.variable}`}>
       <body className="antialiased">{children}</body>
     </html>
   );

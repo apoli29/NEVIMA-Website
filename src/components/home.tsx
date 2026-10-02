@@ -1,8 +1,7 @@
 "use client";
 
-import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
-  AnimatePresence,
   animate,
   cubicBezier,
   motion,
@@ -13,11 +12,11 @@ import {
 } from "motion/react";
 import { Comparison } from "./comparison";
 import { Footer } from "./footer";
-import { BoomerangMark } from "./boomerang";
 import { FloatingNav } from "./floating-nav";
 import { useGateway } from "./gateway";
 import { JellyField } from "./jelly-field";
 import { Services } from "./services";
+import { StatementScreen } from "./statement-screen";
 import { useSmoothScroll } from "./smooth-scroll";
 import { Studio } from "./studio";
 
@@ -53,25 +52,32 @@ import { Studio } from "./studio";
    links                                        |--- in ----|
    words                                          |- settle -|
    ================================================================== */
-
-const RUN_MS = 3042;
+const RUN_MS = 2925;
 
 /** A range on the run's clock, given in milliseconds from the trigger. */
 const span = (from: number, to: number): [number, number] => [from / RUN_MS, to / RUN_MS];
 
-const FLIGHT = span(204, 1700);
-const BAR_IN = span(1836, 2380);
+/* The mark sets off 102ms after the gesture lands. It once waited 204ms,
+   which the user found slow to answer; with no wait at all it answered
+   too abruptly, and the user asked for it 50% slower than that, so the
+   wait is half the first one. The flight itself runs 1481ms (it went to
+   748ms, then 1234ms, then 20% slower than that). Everything after it
+   keeps its own length and simply follows the flight, so nothing waits on
+   a mark that has landed. */
+const FLIGHT = span(102, 1583);
+const BAR_IN = span(1719, 2263);
 /* The second screen's arrival runs at 65% of its first length: every range
    from here on was scaled about the moment the curtain starts to lift, so
    the reveal begins exactly when it did and simply takes less time. */
-const FIELD_IN = span(2292, 2734);
-const CURTAIN_OFF = span(2380, 2910);
-const WORDS_IN = span(2512, 3042);
+const FIELD_IN = span(2175, 2617);
+const CURTAIN_OFF = span(2263, 2793);
+const WORDS_IN = span(2395, 2925);
 
-/* Eased at both ends. It leans out of the middle of the screen rather than
-   launching, and settles into the bar rather than arriving at it: over a
-   five-fold change of scale, the two ends are the only parts anyone reads. */
-const FLIGHT_EASE = cubicBezier(0.65, 0, 0.3, 1);
+/* Eased at both ends, but quicker out of the start than into the end: it is
+   seen to move the moment it is asked to, and still settles into the bar
+   rather than arriving at it. Over a five-fold change of scale, the two
+   ends are the only parts anyone reads. */
+const FLIGHT_EASE = cubicBezier(0.4, 0, 0.25, 1);
 
 /** Where the mark starts, relative to where it ends. */
 type Flight = { left: number; top: number; width: number; dx: number; dy: number; scale: number };
@@ -82,142 +88,6 @@ const PARKED: Flight = { left: 0, top: 0, width: 0, dx: 0, dy: 0, scale: 1 };
    drawn twice in two different ways. On the server there is no layout to
    read, and useLayoutEffect would only warn about it. */
 const useMeasureEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
-
-/* ================================================================== */
-/* Screen two — the promise                                            */
-/* ================================================================== */
-
-const ENDINGS = ["matter", "create trust", "bring clients", "grab attention"];
-
-function RotatingEnding({ active }: { active: boolean }) {
-  const reduce = useReducedMotion();
-  const [i, setI] = useState(0);
-
-  // Held on the first ending until the line is actually on screen, so the
-  // visitor never arrives mid-rotation.
-  useEffect(() => {
-    if (!active) return;
-    const id = window.setInterval(
-      () => setI((v) => (v + 1) % ENDINGS.length),
-      2800,
-    );
-    return () => window.clearInterval(id);
-  }, [active]);
-
-  return (
-    // The box is taller than the type so the descenders in "bring" and
-    // "grab" clear the mask that the line slides through.
-    <span aria-hidden="true" className="relative block h-[1.16em] overflow-hidden">
-      <AnimatePresence initial={false}>
-        <motion.span
-          key={i}
-          className="absolute inset-x-0 top-0 block leading-[1.16] whitespace-nowrap"
-          initial={reduce ? { opacity: 0 } : { y: "100%", opacity: 0 }}
-          animate={{ y: "0%", opacity: 1 }}
-          exit={reduce ? { opacity: 0 } : { y: "-100%", opacity: 0 }}
-          transition={{ duration: reduce ? 0.4 : 0.72, ease: [0.16, 1, 0.3, 1] }}
-        >
-          {ENDINGS[i]}
-        </motion.span>
-      </AnimatePresence>
-    </span>
-  );
-}
-
-function StatementScreen({
-  progress,
-  settled,
-}: {
-  progress: MotionValue<number>;
-  settled: boolean;
-}) {
-  const reduce = useReducedMotion();
-  // No fade of its own: the copy is already there and the curtain uncovers
-  // it. All it does is finish rising as the last of the black goes.
-  const y = useTransform(progress, WORDS_IN, reduce ? [0, 0] : [30, 0]);
-
-  return (
-    // Padded clear of the floating bar: the copy centres in what is left of
-    // the screen, not under it, which is the only thing that keeps them off
-    // each other on a short viewport. On an upright screen the mark lies
-    // across the bottom, so the copy is set high instead, above it.
-    <div className="pointer-events-none absolute inset-0 z-10 flex items-center pt-24 md:pt-28 upright:items-start upright:pt-[clamp(7rem,19svh,14rem)]">
-      {/* data-jelly-quiet: the drops under the jelly keep clear of
-          everything in here, links included (see jelly-field.tsx). */}
-      <motion.div style={{ y }} className="shell pointer-events-auto relative">
-        {/* As wide as the headline's longest line and no wider, so the row
-            under it can end exactly where the headline does. */}
-        <div data-jelly-quiet className="w-fit max-w-full">
-        <h1 className="display h1 text-ink">
-          <span aria-hidden="true" className="block font-light">
-            We build websites that
-          </span>
-          <span className="block font-medium">
-            <RotatingEnding active={settled} />
-          </span>
-          <span className="sr-only">
-            We build websites that matter, create trust, bring clients and grab
-            attention.
-          </span>
-        </h1>
-
-        {/* The subtitle and the section links, side by side. The row takes
-            no width of its own (w-0) and fills the headline's (min-w-full);
-            the links take whatever the subtitle leaves and run to the end of
-            it, so they finish flush with the headline. Their type grows with
-            the screen as the headline's does, so on any desktop they fit
-            beside the subtitle; only on a tablet or a phone, where they
-            cannot, do they drop under it, still ending where it ends. */}
-        <div className="mt-[1.125rem] flex w-0 min-w-full flex-wrap items-center gap-x-6 gap-y-7 md:mt-6">
-          {/* One sentence to a line, set closer than running text, the
-              second a little heavier: it is the promise. */}
-          <h2 className="lede text-[clamp(1.35rem,min(1.86vw,2.95svh),1.65rem)] font-normal leading-[1.3] text-ash">
-            <span className="block">Your brand is a story worth telling.</span>
-            <span className="block font-medium">We make sure it doesn&rsquo;t go unnoticed.</span>
-          </h2>
-          <SectionLinks />
-        </div>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
-/* The rest of the page in three words, on a black bar of its own, the
-   links lit white on it and spread along it, a small boomerang standing
-   in the middle of each space between them. Pointed at, a link lights
-   up (see .sec-link). Pricing is a placeholder: there is no pricing section yet. */
-const SECTION_LINKS = [
-  { label: "About us", href: "#studio" },
-  { label: "Our services", href: "#services" },
-  { label: "Pricing", href: "#pricing" },
-];
-
-function SectionLinks() {
-  return (
-    <nav
-      aria-label="Sections"
-      className="ml-auto flex max-w-[34rem] flex-auto items-center justify-between gap-1.5 rounded-[14px] bg-ink px-3 py-1.5 md:gap-2 md:px-4 md:py-2"
-    >
-      {SECTION_LINKS.map((link, i) => (
-        <Fragment key={link.href}>
-          {i > 0 && (
-            // Turned over, so the elbow points up between the words.
-            <BoomerangMark width={17} className="w-[17px] shrink-0 rotate-180 text-paper/45 md:w-[19px]" />
-          )}
-          {/* No boomerang pass here: the marks between the words are
-              boomerangs already. The link answers with light instead. */}
-          <a
-            href={link.href}
-            className="sec-link text-glow inline-flex items-center justify-center whitespace-nowrap rounded-[8px] px-2 py-2.5 text-[0.84rem] leading-none text-paper md:px-[0.9em] md:py-[0.85em] md:text-[clamp(0.78rem,min(1.056vw,1.68svh),1.02rem)]"
-          >
-            <span className="sec-link-label">{link.label}</span>
-          </a>
-        </Fragment>
-      ))}
-    </nav>
-  );
-}
 
 /* ================================================================== */
 /* The page                                                            */
@@ -328,6 +198,9 @@ export function Home() {
   // Exactly the curtain's inverse, so the links and the page arrive as one.
   const linksOpacity = useTransform(progress, CURTAIN_OFF, [0, 1]);
   const fieldOpacity = useTransform(progress, FIELD_IN, [0, 1]);
+  // The words have no fade of their own: the curtain uncovers them. All
+  // they do is finish rising as the last of the black goes.
+  const wordsRise = useTransform(progress, WORDS_IN, reduce ? [0, 0] : [30, 0]);
 
   /* --- the run ------------------------------------------------------ */
 
@@ -452,14 +325,14 @@ export function Home() {
             style={{ opacity: fieldOpacity }}
             aria-hidden="true"
           >
-            {/* The mark drags itself in as the field comes up. */}
+            {/* The drops land on the water as the field comes up. */}
             <JellyField
               arrive={phase !== "waiting"}
               arriveDelay={(FIELD_IN[0] * RUN_MS) / 1000}
             />
           </motion.div>
 
-          <StatementScreen progress={progress} settled={phase === "open"} />
+          <StatementScreen rise={wordsRise} settled={phase === "open"} />
 
           {/* The curtain. Black over a second screen that is already built,
               so lifting it is the whole transition. Lifted, it is still on

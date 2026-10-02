@@ -1,15 +1,13 @@
 "use client";
 
-import { useRef, useState, type RefObject } from "react";
+import { useRef, useState, type ReactNode, type RefObject } from "react";
 import {
   motion,
   useMotionValueEvent,
   useReducedMotion,
   useScroll,
   type MotionValue,
-  type Variants,
 } from "motion/react";
-import { BoomerangMark } from "./boomerang";
 
 /* ==================================================================
    The bar is a black, square-cornered strip floating clear of the page
@@ -27,86 +25,37 @@ const NAV = [
 ];
 
 /* ==================================================================
-   Boomerang pass
-
-   Thrown from the left edge of the item and caught on the right edge,
-   never a pixel outside it, and without the item reserving any space
-   for it: the track is the full width of the item and carries the mark
-   across it, then the mark pulls itself back by exactly its own width,
-   so its trailing edge lands flush with the item's.
-
-   Both halves are percentage transforms of their own boxes, so this
-   holds at any label length with nothing measured.
+   A link set as a button, for the bar and for the calls to action down
+   the page (exported as PassLink). It once threw the boomerang across
+   itself when pointed at; the studio has since asked for no boomerangs
+   on its calls to action, so each button answers in its own way (see
+   .cta-drop and .nav-link).
    ================================================================== */
 
-const MARK_WIDTH = 24;
-const PASS = { duration: 0.72, ease: [0.42, 0, 0.24, 1] } as const;
-
-const track: Variants = {
-  rest: { x: "0%" },
-  pass: { x: "100%", transition: PASS },
-};
-
-const mark: Variants = {
-  rest: { x: "0%", rotate: 0, opacity: 0, transition: { duration: 0.2 } },
-  pass: {
-    x: "-100%",
-    rotate: 380,
-    opacity: [0, 1, 1, 0],
-    transition: {
-      ...PASS,
-      // Held almost to the edge: the mark has to be seen arriving, not
-      // already dissolving halfway across.
-      opacity: { duration: PASS.duration, times: [0, 0.14, 0.88, 1] },
-    },
-  },
-};
-
-/* Exported as PassLink: the service cards use the same call to action, so
-   the pass belongs to both rather than to the bar. */
 function Pass({
   href,
   label,
   className,
-  markClassName,
 }: {
   href: string;
-  label: string;
+  label: ReactNode;
   className: string;
-  markClassName: string;
 }) {
-  const reduce = useReducedMotion();
-
   return (
-    <motion.a
+    <a
       href={href}
-      initial="rest"
-      animate="rest"
-      whileHover="pass"
-      whileFocus="pass"
       // No display utility here on purpose: the caller owns it. Setting one
       // both places leaves Tailwind's source order to decide which wins, and
       // it is not the one written last in the attribute.
-      className={`relative isolate items-center justify-center overflow-hidden whitespace-nowrap ${className}`}
+      className={`relative isolate items-center justify-center whitespace-nowrap ${className}`}
     >
-      {!reduce && (
-        <span aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-          <motion.span
-            variants={track}
-            className="absolute inset-y-0 left-0 flex w-full items-center"
-          >
-            <motion.span variants={mark} className={`block ${markClassName}`}>
-              <BoomerangMark width={MARK_WIDTH} />
-            </motion.span>
-          </motion.span>
-        </span>
-      )}
       {/* On its own layer so it can lean forward without the button
           following it (see .btn-neu-face). */}
       <span className="btn-neu-face">{label}</span>
-    </motion.a>
+    </a>
   );
 }
+
 
 /* ================================================================== */
 
@@ -160,7 +109,8 @@ export function FloatingNav({
           puts the wordmark back on the column edge and leaves the difference
           between the gutter and that padding as the float. */}
       <div className="shell">
-        <div ref={bar} className="pointer-events-auto -mx-3 flex items-center justify-between gap-4 rounded-[16px] bg-ink px-3 py-2.5 md:-mx-5 md:gap-8 md:px-5 md:py-3 xl:-mx-8 xl:px-8">
+        {/* Square-cornered, as everything set on the gallery wall is. */}
+        <div ref={bar} className="pointer-events-auto -mx-3 flex items-center justify-between gap-4 bg-ink px-3 py-2.5 md:-mx-5 md:gap-8 md:px-5 md:py-[0.8125rem] xl:-mx-8 xl:px-8">
           <a
             href="#top"
             aria-label="nevima, home"
@@ -179,27 +129,48 @@ export function FloatingNav({
             />
           </a>
 
+          {/* The links stand in cells, ruled off from one another by
+              hairlines that run the bar's full height, the way the second
+              screen is ruled into columns; each carries its number, as the
+              index there does. */}
           <motion.nav
             aria-label="Primary"
             style={{ opacity: linksOpacity }}
-            className="flex items-center gap-1 md:gap-2"
+            className="-my-2.5 flex items-stretch self-stretch md:-my-[0.8125rem]"
           >
-            {NAV.map((item) => (
+            {NAV.map((item, i) => (
               <Pass
                 key={item.href}
                 href={item.href}
-                label={item.label}
-                className="hidden px-4 py-2.5 text-[0.9375rem] text-paper sm:inline-flex"
-                markClassName="text-paper/70"
+                label={
+                  <>
+                    <span className="mr-2 align-[0.12em] font-mono text-[0.625rem] tracking-[0.06em] text-paper/45 tabular-nums">
+                      0{i + 1}
+                    </span>
+                    <span className="nav-link-label">{item.label}</span>
+                  </>
+                }
+                className="nav-link hidden border-l border-paper/15 px-5 text-[0.9375rem] text-paper sm:inline-flex lg:px-6"
               />
             ))}
-            {/* Rounded less than the bar, as a shape set inside it. */}
-            <Pass
-              href="#contact"
-              label="Get in touch"
-              className="btn-neu inline-flex rounded-[8px] px-5 py-2.5 text-[0.9375rem] leading-none"
-              markClassName="text-[#4d4d4d]/35"
-            />
+            {/* The one thing to press: a white drop (see .cta-drop), in a cell
+                of its own. The cell is padded by what the row took from the
+                bar, so the drop, taller than the words beside it, sets the
+                bar's height. */}
+            <span className="flex items-center border-paper/15 py-2.5 sm:border-l sm:pl-4 md:py-[0.8125rem] md:pl-5">
+              <Pass
+                href="#contact"
+                label={
+                  <>
+                    Get in touch
+                    <span aria-hidden="true" className="ml-2.5 inline-block">
+                      &rarr;
+                    </span>
+                  </>
+                }
+                className="cta-drop cta-drop-light inline-flex text-[0.9375rem] leading-none"
+              />
+            </span>
           </motion.nav>
         </div>
       </div>

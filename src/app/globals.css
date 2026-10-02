@@ -24,6 +24,7 @@
 
   --font-title: var(--f-title), ui-sans-serif, system-ui, sans-serif;
   --font-read: var(--f-read), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--f-mono), ui-monospace, "SFMono-Regular", monospace;
 
   --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -36,6 +37,9 @@
     /* The room above each section, which is the whole gap between two of
        them: a section brings its head room and leaves no foot padding. */
     --section-gap: 7.2rem;
+
+    /* The headline's size (see .h1). */
+    --h1-size: clamp(2rem, min(6.6vw, 9.6svh), 5rem);
   }
   @media (min-width: 768px) {
     :root { --gutter: 2.5rem; --section-gap: 9.6rem; }
@@ -56,6 +60,11 @@
        a strip that went from black to white. The page scrolls as before by
        wheel, touch and keys. */
     scrollbar-width: none;
+    /* Nothing reaches past the sides. Clipping the body alone is not
+       enough on a phone: something set just off the edge to slide in
+       (the studio's pillar, before it is seen) still widened the page
+       the browser lays out, and the whole site was drawn shrunk to fit. */
+    overflow-x: clip;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -118,63 +127,175 @@
     padding-inline: var(--gutter);
   }
 
-  /* Titles: Raleway, tracked in tight at display size so the headline
-     sets as densely as the wordmark it follows. */
+  /* Titles: Satoshi, tracked in tight at display size so the headline
+     sets as densely as the wordmark it follows. Lining figures, so a
+     number in a title stands as tall as the capitals beside it. */
   .display {
     font-family: var(--font-title);
     letter-spacing: -0.03em;
     line-height: 0.94;
+    font-feature-settings: "lnum" 1;
   }
 
-  /* The floor is set by the longest stable line, "We build websites that",
-     which has to hold on one line down to a 375px viewport. On a short,
-     wide screen (a phone on its side) the height is what runs out first,
-     so the size answers to that too. */
-  .h1 { font-size: clamp(2rem, min(6.6vw, 10.5svh), 5.75rem); }
+  /* The headline, as manual v2 sets it but a size smaller (the user found
+     92px too large once it stood alone in its corner). The floor is set by the longest
+     stable line, "We build websites that", which has to hold on one line
+     down to a 375px viewport. On a short, wide screen (a phone on its side)
+     the height is what runs out first, so the size answers to that too.
+     Satoshi takes a little more tightening than the other titles. */
+  .h1 {
+    font-size: var(--h1-size);
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+  /* Set flush to the top of its capitals rather than to the top of its
+     line box, so two blocks of different sizes and leadings set side by
+     side line up by what is seen of them: the headline and the subtitle
+     on the second screen. */
+  .trim-cap { text-box: trim-start cap alphabetic; }
 
   /* White type that gives off a little light, for links set on black. */
   .text-glow {
     text-shadow: 0 0 2px rgb(255 255 255 / 0.55), 0 0 12px rgb(255 255 255 / 0.45);
   }
 
-  /* The second screen's section links. Not the boomerang pass the other
-     bars use: the marks between these words are boomerangs already. For
-     as long as a link is pointed at, a faint key of light comes up behind
-     it, its glow brightens and a hairline draws itself under the word
-     from the left. Slight on purpose, the bar is already lit. */
-  .sec-link {
-    transition:
-      background-color 0.25s ease-out,
-      text-shadow 0.25s ease-out,
-      transform 0.15s ease-out;
+  /* ---- the gallery's labels ----------------------------------------
+     Wall captions and readouts: small, monospaced, in capitals, spaced
+     open as engraved type is. Used on the second screen and for every
+     caption, number and kicker below it, so the page reads as one hang. */
+  .mono-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1.45;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-feature-settings: "zero" 0;
   }
-  .sec-link:hover,
-  .sec-link:focus-visible {
-    background-color: rgb(255 255 255 / 0.09);
-    text-shadow: 0 0 2px rgb(255 255 255 / 0.8), 0 0 16px rgb(255 255 255 / 0.65);
+  @media (min-width: 1280px) {
+    .mono-label { font-size: 0.71875rem; }
   }
-  .sec-link-label { position: relative; }
-  .sec-link-label::after {
+
+  /* Taking work: a green light that breathes. */
+  .live-dot {
+    position: relative;
+    display: block;
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: #18b26b;
+  }
+  .live-dot::after {
     content: "";
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -0.32em;
-    height: 1px;
-    background: currentColor;
-    box-shadow: 0 0 6px rgb(255 255 255 / 0.6);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    inset: 0;
+    border-radius: inherit;
+    background: inherit;
+    animation: live-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
   }
-  .sec-link:hover .sec-link-label::after,
-  .sec-link:focus-visible .sec-link-label::after { transform: scaleX(1); }
-  .sec-link:active { transform: scale(0.97); }
-  .sec-link:focus-visible { outline: 1px solid rgb(255 255 255 / 0.5); outline-offset: -1px; }
+  @keyframes live-ping {
+    0% { transform: scale(1); opacity: 0.55; }
+    70%, 100% { transform: scale(2.8); opacity: 0; }
+  }
+
+  /* The index's title: the readouts' type, set white on a black marker,
+     as the comparison's heading is underlined. */
+  .idx-title {
+    padding: 0.2em 0.5em 0.15em;
+    margin-left: -0.05em;
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  /* A row of the second screen's index. Pointed at, it is inked over from
+     the left, its words come out of the black in white, the name steps
+     along and the arrow turns from pointing on to pointing down, the way
+     the page will go. */
+  .idx-link {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 0.65rem 0.75rem;
+    color: var(--color-ink);
+    transition: color 0.35s ease;
+  }
+  @media (min-width: 768px) {
+    .idx-link { padding-block: 0.8rem; }
+  }
+  @media (min-width: 1280px) {
+    .idx-link { padding-block: 0.95rem; }
+  }
+  .idx-link::before {
+    content: "";
+    position: absolute;
+    inset: -1px 0;
+    z-index: -1;
+    background: var(--color-ink);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+  }
+  .idx-name {
+    font-family: var(--font-title);
+    font-size: clamp(1.125rem, 1.35vw, 1.3125rem);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .idx-arrow { transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+  .idx-link:hover,
+  .idx-link:focus-visible { color: var(--color-paper); }
+  .idx-link:hover::before,
+  .idx-link:focus-visible::before { transform: scaleX(1); transform-origin: left; }
+  .idx-link:hover .idx-name,
+  .idx-link:focus-visible .idx-name { transform: translateX(0.5rem); }
+  .idx-link:hover .idx-arrow,
+  .idx-link:focus-visible .idx-arrow { transform: translateX(-0.35rem) rotate(90deg); }
+  .idx-link:focus-visible { outline: none; }
+
+  /* The row the index leads with, kept inked: its words in white, a
+     green light before its name, a gleam drawn across it every few
+     seconds and its arrow running on ahead and coming back round, over
+     and over, so the eye is brought to it first. */
+  .idx-lead { color: var(--color-paper); }
+  .idx-lead::before { transform: scaleX(1); }
+  .idx-lead::after {
+    content: "";
+    position: absolute;
+    inset: -1px 0;
+    z-index: -1;
+    background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.16) 50%, transparent 70%) no-repeat;
+    background-size: 60% 100%;
+    background-position: -120% 0;
+    animation: idx-gleam 3.6s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+  @keyframes idx-gleam {
+    0%, 55% { background-position: -120% 0; }
+    100% { background-position: 260% 0; }
+  }
+  .idx-lead .idx-arrow {
+    overflow: hidden;
+    padding-inline: 2px;
+  }
+  .idx-lead .idx-arrow svg { animation: idx-run 1.8s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+  @keyframes idx-run {
+    0%, 30% { transform: translateX(0); opacity: 1; }
+    55% { transform: translateX(150%); opacity: 0; }
+    56% { transform: translateX(-150%); opacity: 0; }
+    85%, 100% { transform: translateX(0); opacity: 1; }
+  }
+  .idx-lead:hover .idx-arrow,
+  .idx-lead:focus-visible .idx-arrow { transform: none; }
   @media (prefers-reduced-motion: reduce) {
-    .sec-link,
-    .sec-link-label::after { transition: none; }
-    .sec-link:active { transform: none; }
+    .idx-lead::after,
+    .idx-lead .idx-arrow svg { animation: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .idx-link::before,
+    .idx-name,
+    .idx-arrow,
+    .live-dot::after { transition: none; animation: none; }
   }
 
   .lede {
@@ -340,6 +461,145 @@
     .btn-neu-face { transition: none; }
     .btn-neu:hover .btn-neu-face,
     .btn-neu:focus-visible .btn-neu-face { transform: none; }
+  }
+
+  /* A link in the bar. Pointed at, a hairline draws itself under the word
+     from the left, and its cell lifts a shade out of the black. */
+  .nav-link { transition: background-color 0.3s ease; }
+  .nav-link:hover,
+  .nav-link:focus-visible { background-color: rgb(255 255 255 / 0.06); }
+  .nav-link-label { position: relative; }
+  .nav-link-label::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.3em;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .nav-link:hover .nav-link-label::after,
+  .nav-link:focus-visible .nav-link-label::after { transform: scaleX(1); }
+  @media (prefers-reduced-motion: reduce) {
+    .nav-link,
+    .nav-link-label::after { transition: none; }
+  }
+
+  /* ---- the drop buttons ---------------------------------------------
+     The page's main calls to action, made of the same stuff as the drops
+     on the second screen: a piece of black glass of no set shape, with a
+     rim and a soft shadow down and to the right, and no highlight (the
+     user found a flashing one inside it too loud). The glass breathes:
+     the body fades a little and comes back, over and over. The words stay
+     as they are throughout, so the button is always as legible as at
+     rest. On the black bar it is the same drop inverted, white on black.
+
+     Chunky, as the type round it is: as tall as the words are heavy, and
+     its outline measured in the words' own size, never as a share of the
+     button, so the ends are always full and round and never drawn out to
+     a point however long the label is.
+
+     And irregular, as a drop is. The glass is not the button's own box
+     but a layer of its own, reaching past the box by a different amount
+     on each side, so it bulges where the box does not. Its four corners
+     are cut very differently from one another and keep trading places
+     (drop-shape), and the whole of it leans a degree or two one way and
+     then the other (drop-tilt), each on its own slow clock, so the outline
+     never comes round to the same shape twice in a row. Under the words,
+     the button itself stays a plain round box, for the focus ring. */
+  .cta-drop {
+    position: relative;
+    isolation: isolate;
+    padding: 0.95em 1.6em;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--color-paper);
+    border-radius: 1.45em;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* On the bar, a shade less tall, so the bar keeps its thickness. */
+  .cta-drop-light { padding: 0.8em 1.45em; color: var(--color-ink); }
+  .cta-drop::before {
+    content: "";
+    position: absolute;
+    inset: -0.14em -0.32em -0.24em -0.2em;
+    z-index: -30;
+    border-radius: 2.3em 1.1em 1.9em 1.3em / 1.9em 1.2em 1.4em 1.5em;
+    pointer-events: none;
+    transform-origin: 46% 54%;
+  }
+  /* The body: dark through the middle, lifting towards a rim, with its
+     shadow thrown down and to the right. */
+  .cta-drop::before {
+    background:
+      radial-gradient(130% 120% at 50% 45%, #0a0a0a 52%, #262626 78%, #4a4a4a 100%);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.1),
+      inset -6px -8px 14px -6px rgb(255 255 255 / 0.12),
+      0.6em 0.9em 1.6em -1em rgb(0 0 0 / 0.55);
+    animation:
+      drop-shape 9s ease-in-out infinite alternate,
+      drop-tilt 6.5s ease-in-out infinite alternate,
+      drop-breathe 3.4s ease-in-out infinite;
+  }
+
+  .cta-drop-light::before {
+    background:
+      radial-gradient(130% 120% at 50% 45%, #ffffff 50%, #e9e9e9 78%, #c9c9c9 100%);
+    box-shadow:
+      inset 0 0 0 1px rgb(0 0 0 / 0.06),
+      inset -6px -8px 14px -6px rgb(0 0 0 / 0.16);
+    /* On black, a white drop that fades as far as the black one does
+       turns grey; it breathes less. */
+    animation-name: drop-shape, drop-tilt, drop-breathe-light;
+  }
+
+  .cta-drop:hover,
+  .cta-drop:focus-visible { transform: scale(1.04); }
+  .cta-drop .btn-neu-face > span { display: inline-block; transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+  .cta-drop:hover .btn-neu-face > span,
+  .cta-drop:focus-visible .btn-neu-face > span { transform: translateX(3px); }
+
+  /* The same glass holding other things rather than being pressed: the
+     studio's "Learn more" with its button. It is not a button, so it does
+     not swell when pointed at; it keeps the type it holds as set; its
+     glass reaches a little further past its box; and its clocks run ahead
+     of the drop inside it, so the two never change shape in step. */
+  .drop-shell { font-weight: inherit; letter-spacing: inherit; }
+  .drop-shell:hover { transform: none; }
+  .drop-shell::before {
+    inset: -0.2em -0.42em -0.3em -0.28em;
+    animation-delay: -4.2s, -2.6s, -1.3s;
+  }
+
+  /* Every corner a different curve, none tighter than about a third of the
+     height, so the ends stay round while the shape keeps changing. */
+  @keyframes drop-shape {
+    0%   { border-radius: 2.3em 1.1em 1.9em 1.3em / 1.9em 1.2em 1.4em 1.5em; }
+    25%  { border-radius: 1.2em 2.2em 1.4em 2em / 1.4em 1.8em 1.2em 1.7em; }
+    50%  { border-radius: 1.9em 1.4em 2.4em 1em / 1.2em 1.6em 1.8em 1.3em; }
+    75%  { border-radius: 1.4em 1.9em 1.1em 2.3em / 1.7em 1.3em 1.5em 1.6em; }
+    100% { border-radius: 2.1em 1em 1.7em 1.6em / 1.5em 1.7em 1.3em 1.4em; }
+  }
+  @keyframes drop-tilt {
+    0%   { transform: rotate(-1.6deg) scale(1, 1); }
+    50%  { transform: rotate(0.6deg) scale(1.02, 0.97); }
+    100% { transform: rotate(1.4deg) scale(0.98, 1.03); }
+  }
+  @keyframes drop-breathe {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.72; }
+  }
+  @keyframes drop-breathe-light {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.88; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cta-drop,
+    .cta-drop::before { animation: none; transition: none; }
   }
 
   /* ---- services ---------------------------------------------------
@@ -611,33 +871,9 @@
   }
 
   /* ---- studio -----------------------------------------------------
-     The about section is built from the service card: the same surface,
-     grain, glow, boomerang and lit copy. What it adds is geometry.
-
-     From lg up the closed founders card is as wide as one column that
-     stops short of the middle of the shell. The portraits are sized from
-     that column, not from the card, so the card can open out while the
-     portrait that stays holds its size. The wrap is the
-     size container that lets a card changing width still measure the
-     column it started in.                                              */
-  .std-wrap {
-    container-type: inline-size;
-    --std-frame: 0.5rem;
-    --std-col: 100cqw;
-  }
-  @media (min-width: 768px) {
-    .std-wrap { --std-frame: 0.625rem; }
-  }
-  @media (min-width: 1024px) {
-    .std-wrap { --std-col: calc(50cqw - 0.5rem); }
-  }
-
-  /* The founders' copy stands clear of the portrait by the frame already,
-     so its side padding is a single step of the card's own. */
-  .std-card { --pad-x: calc(var(--pad) * 1.25); }
-  @media (min-width: 768px) {
-    .std-card { --pad-x: var(--pad); }
-  }
+     The statement and the pillar, set straight on the page. The wrap is
+     the size container both are measured against.                     */
+  .std-wrap { container-type: inline-size; }
 
   /* The statement sits straight on the page and is sized from the width it
      fills, not from the viewport. Justified type only sets evenly when the
@@ -762,101 +998,75 @@
   .std-statement[data-lit="true"],
   .std-statement .svc-line-lit { -webkit-text-stroke-width: 0.04em; }
 
-  /* Each founder has a card of their own, a thin frame round one portrait,
-     cut to four by five. The two stand apart by a quarter of a portrait's
-     width and are centred as a pair.
-
-     The pair is described by the room it takes and the portrait follows
-     from it, so the proportion of the crop can be changed without any of
-     these numbers being touched:
-
-       2 x (photo + 2 frames) + photo/4 = pair
-
-     From lg the pair is exactly as wide as the statement above it, and
-     centred under it, so the same measure is read twice.
-
-     Opened, the other card is taken away and the chosen one is centred and
-     widened for its founder's words. The portrait keeps its size either
-     way: only the words' column is new. */
-  .std-founders {
-    --std-pair: 100cqw;
-    --std-photo: calc((var(--std-pair) - var(--std-frame) * 4) / 2.25);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: calc(var(--std-photo) * 0.25);
-  }
-  .std-founder {
-    width: calc(var(--std-photo) + var(--std-frame) * 2);
-    padding: var(--std-frame);
-    gap: var(--std-frame);
-    grid-template-columns: var(--std-photo);
-    grid-template-areas: "photo";
-  }
-  .std-founder[data-open] {
-    width: 100%;
-    grid-template-columns: var(--std-photo) minmax(0, 1fr);
-  }
-  .std-founder[data-open][data-founder="ec"] { grid-template-areas: "photo head" "body body"; }
-  .std-founder[data-open][data-founder="ap"] {
-    grid-template-columns: minmax(0, 1fr) var(--std-photo);
-    grid-template-areas: "head photo" "body body";
-  }
-  .std-head { grid-area: head; }
-  .std-body { grid-area: body; }
-
-  /* Below lg the bio runs the width of a phone, too narrow a measure to
-     justify without opening holes between the words: ragged, as the
-     comparison copy is. */
-  @media (max-width: 1023.98px) {
-    /* The role's baseline stands on the portrait's foot, not the room its
-       line leaves under the letters. */
-    .std-head > p:last-child { text-box: trim-end cap alphabetic; }
-    .std-body .svc-copy { text-align: left; }
-    .std-body .svc-line { text-align-last: auto; }
-  }
-
-  /* From lg the copy takes two thirds of the shell from its left edge.
-     Opened, the words stand beside the portrait, name over copy, and the
-     card grows evenly both ways by just what they need: a column half the
-     shell wide, never narrower than 34rem. */
+  /* From lg the statement takes two thirds of the shell from its left edge. */
   @media (min-width: 1024px) {
     .std-copy { width: 66cqw; }
-    .std-founders { --std-pair: 66cqw; }
-    .std-founder[data-open] {
-      width: calc(var(--std-photo) + var(--std-frame) * 3 + max(var(--std-col), 34rem));
-      grid-template-rows: auto 1fr;
-    }
-    .std-founder[data-open][data-founder="ec"] { grid-template-areas: "photo head" "photo body"; }
-    .std-founder[data-open][data-founder="ap"] { grid-template-areas: "head photo" "body photo"; }
   }
 
-  /* Concentric with the card round it. */
-  .std-photo { border-radius: calc(22px - var(--std-frame)); }
+  /* ---- exhibit: the services index and the co-founders ------------
+     A catalogue rather than cards: type straight on the page, hairlines
+     between the entries and small captions over the names. See
+     exhibit.tsx. */
 
-  /* Centred in the column it stands in, rather than dropped into the top
-     of it. Opened, the card is as tall as the founder's words, which is
-     taller than a four by five portrait: left to fill its place the
-     portrait would take the top of that height and leave all the room it
-     did not need in one lump underneath. Centred, whatever is spare is
-     split evenly above and below and the portrait sits in the middle of
-     its own side. */
-  .std-founder[data-open] .std-photo { align-self: center; }
-
-  /* Two boomerangs share this card, so the card's own hover would light
-     both. Each answers to its own portrait instead. */
-  .std-founders:hover .svc-toggle:not([data-open="true"]) {
-    color: rgb(255 255 255 / 0.75);
-    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16);
-  }
-  .std-photo:hover .svc-toggle:not([data-open="true"]) {
-    color: #fff;
-    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.4);
+  /* The small caption over a name, or under a portrait. */
+  .xs-kicker {
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    letter-spacing: 0.015em;
+    color: var(--color-ash);
   }
 
-  /* The glow pools bottom right, under the words when they come in on the
-     right; mirrored when they come in on the left. */
-  .std-founder[data-side="left"] .svc-aura { transform: scaleX(-1); }
+  .xs-name {
+    transition:
+      opacity 0.45s ease,
+      transform 0.7s var(--ease-out-quint);
+  }
+  /* Pointing at a row quiets the others; so does a row being open. */
+  .xs-list:has(.xs-head:hover) .xs-row:not([data-open]):not(:has(.xs-head:hover)) .xs-name { opacity: 0.2; }
+  .xs-list[data-open] .xs-row:not([data-open]):not(:has(.xs-head:hover)) .xs-name { opacity: 0.28; }
+  @media (hover: hover) {
+    .xs-head:hover .xs-name { transform: translateX(0.12em); }
+  }
+
+  /* The "n" toggle. A ring at rest; filled black when its row is
+     open, with the "n" in white. */
+  .xs-toggle {
+    color: var(--color-ink);
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.18);
+    transition:
+      background-color 0.35s ease,
+      color 0.35s ease,
+      box-shadow 0.35s ease;
+  }
+  .xs-head:hover .xs-toggle { box-shadow: inset 0 0 0 1px var(--color-ink); }
+  .xs-toggle[data-open="true"] {
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+    box-shadow: inset 0 0 0 1px var(--color-ink);
+  }
+
+  /* A drawer. The row is animated through its track rather than a measured
+     height, so it opens to whatever the copy needs at any width. */
+  .xs-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.85s cubic-bezier(0.76, 0, 0.24, 1);
+  }
+  .xs-panel[data-open="true"] { grid-template-rows: 1fr; }
+  .xs-panel > div {
+    min-height: 0;
+    overflow: hidden;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .xs-panel { transition: none; }
+  }
+
+  /* Below lg a column is too narrow a measure to justify without opening
+     holes between the words: ragged, as the comparison copy is. */
+  @media (max-width: 1023.98px) {
+    .xs-copy.svc-copy { text-align: left; }
+    .xs-copy .svc-line { text-align-last: auto; }
+  }
 
   /* ---- comparison -------------------------------------------------
      A table on the service card's surface. Our column is one raised
