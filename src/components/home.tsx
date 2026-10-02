@@ -54,7 +54,7 @@ import { Studio } from "./studio";
    links                            |--- in ----|
    words                              |- settle -|
    ================================================================== */
-const RUN_MS = 2445;
+const RUN_MS = 2242;
 
 /** A range on the run's clock, given in milliseconds from the trigger. */
 const span = (from: number, to: number): [number, number] => [from / RUN_MS, to / RUN_MS];
@@ -62,18 +62,18 @@ const span = (from: number, to: number): [number, number] => [from / RUN_MS, to 
 /* The mark sets off 102ms after the gesture lands. It once waited 204ms,
    which the user found slow to answer; with no wait at all it answered
    too abruptly, and the user asked for it 50% slower than that, so the
-   wait is half the first one. The flight itself runs 1481ms (it went to
-   748ms, then 1234ms, then 20% slower than that). Everything after it
-   keeps its own length; the reveal starts 200ms after the mark lands
-   (see the diagram above). */
-const FLIGHT = span(102, 1583);
-const BAR_IN = span(1039, 1583);
+   wait is half the first one. The flight itself runs 1278ms (it went to
+   748ms, then 1234ms, then 1481ms, then 1111ms, then 15% slower than
+   that). Everything after it keeps its own length; the reveal starts
+   200ms after the mark lands (see the diagram above). */
+const FLIGHT = span(102, 1380);
+const BAR_IN = span(836, 1380);
 /* The second screen's arrival runs at 65% of its first length: every range
    from here on was scaled about the moment the curtain starts to lift, so
    the reveal begins exactly when it did and simply takes less time. */
-const FIELD_IN = span(1695, 2137);
-const CURTAIN_OFF = span(1783, 2313);
-const WORDS_IN = span(1915, 2445);
+const FIELD_IN = span(1492, 1934);
+const CURTAIN_OFF = span(1580, 2110);
+const WORDS_IN = span(1712, 2242);
 
 /* Eased at both ends, but quicker out of the start than into the end: it is
    seen to move the moment it is asked to, and still settles into the bar
@@ -206,6 +206,7 @@ export function Home() {
 
   /* --- the run ------------------------------------------------------ */
 
+  /* Scroll, a key, a swipe or a click: whichever comes first fires it. */
   const open = useCallback(() => {
     if (phaseRef.current !== "waiting") return;
     phaseRef.current = "running";
@@ -266,9 +267,20 @@ export function Home() {
       if (Math.abs((event.touches[0]?.clientY ?? 0) - touchStart) > 6) open();
     };
 
+    // A click anywhere is a trigger too. It is swallowed like the rest: the
+    // bar's links are already there under the curtain, invisible, and a
+    // click that found one would leave the page before the opening had run.
+    const onClick = (event: MouseEvent) => {
+      if (event.button !== 0) return;
+      event.preventDefault();
+      event.stopPropagation();
+      open();
+    };
+
     // Captured, not bubbled: Lenis is listening for the same gestures and the
     // trigger has to be read before anything else has a chance to eat it.
     const capture = { passive: false, capture: true } as const;
+    window.addEventListener("click", onClick, true);
     window.addEventListener("wheel", swallow, capture);
     window.addEventListener("touchstart", onTouchStart, { passive: true, capture: true });
     window.addEventListener("touchmove", onTouchMove, capture);
@@ -277,6 +289,7 @@ export function Home() {
     return () => {
       root.style.overflow = previousOverflow;
       root.style.overscrollBehavior = previousOverscroll;
+      window.removeEventListener("click", onClick, true);
       window.removeEventListener("wheel", swallow, capture);
       window.removeEventListener("touchstart", onTouchStart, true);
       window.removeEventListener("touchmove", onTouchMove, capture);
@@ -372,7 +385,7 @@ export function Home() {
           the slots are measured it simply sits in the hero, which is also
           what the server renders, so the first paint is never empty. */}
       {phase !== "open" && (
-        <div className="pointer-events-none fixed inset-0 z-[60]" aria-hidden="true">
+        <div className="pointer-events-none fixed inset-0 z-[60]">
           {flown ? (
             <motion.img
               src="/nevima-wordmark-white.svg"
@@ -407,8 +420,49 @@ export function Home() {
               />
             </div>
           )}
+          <ScrollCue gone={phase !== "waiting"} reduce={reduce} />
         </div>
       )}
     </>
+  );
+}
+
+/* The one hint on the black screen: a thin chevron under the mark, drifting
+   down and back as if to show which way to go. It comes in after the mark
+   has been seen on its own for a moment, and goes the instant the opening
+   starts, well before the mark has left the middle. It is a button so the
+   opening can be reached from the keyboard; the click itself is read by the
+   page's own listener, like any other click on the black. */
+function ScrollCue({ gone, reduce }: { gone: boolean; reduce: boolean }) {
+  return (
+    <motion.button
+      type="button"
+      aria-label="Scroll to enter"
+      className="pointer-events-auto absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-1/2 -ml-6 grid size-12 cursor-pointer place-items-center text-white/70 transition-colors hover:text-white focus-visible:rounded-full focus-visible:outline focus-visible:outline-1 focus-visible:outline-white/60"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: gone ? 0 : 1 }}
+      transition={gone ? { duration: 0.25 } : { duration: 0.8, delay: 0.6 }}
+      style={{ pointerEvents: gone ? "none" : undefined }}
+      tabIndex={gone ? -1 : 0}
+    >
+      <motion.svg
+        width="34"
+        height="17"
+        viewBox="0 0 34 17"
+        fill="none"
+        aria-hidden="true"
+        animate={reduce ? undefined : { y: [0, 6, 0] }}
+        transition={{ duration: 2.2, ease: "easeInOut", repeat: Infinity }}
+      >
+        <path
+          d="M1 1.5 17 15.5 33 1.5"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          vectorEffect="non-scaling-stroke"
+        />
+      </motion.svg>
+    </motion.button>
   );
 }
