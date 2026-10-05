@@ -926,6 +926,11 @@ export function JellyField({
       if (reduce) render(performance.now());
     });
 
+    // A block of words that changes size on its own (the index turning
+    // into the proposal form) asks for the drops to be laid out again.
+    const onRemeasure = () => measureQuiet();
+    section.addEventListener("jelly:remeasure", onRemeasure);
+
     const resize = new ResizeObserver(refit);
     resize.observe(view);
 
@@ -996,6 +1001,7 @@ export function JellyField({
       cancelAnimationFrame(queued);
       resize.disconnect();
       seen.disconnect();
+      section.removeEventListener("jelly:remeasure", onRemeasure);
       section.removeEventListener("pointerdown", onDown as EventListener);
       section.removeEventListener("pointermove", onMove as EventListener);
       section.removeEventListener("pointerleave", onLeave);

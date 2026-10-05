@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion, type MotionValue } from "motion/react";
 import { useInkAlign } from "./ink-align";
+import { ProposalForm } from "./proposal-form";
 
 /* ==================================================================
    Screen two, hung as a gallery wall
@@ -294,44 +295,183 @@ function WallRule({
    Pointed at, a row is inked over from the left and its words come out
    of it in white (see .idx-link). Pricing leads and stays inked, with a
    live light before its name and its arrow running on ahead of it, over
-   and over (see .idx-lead). */
+   and over (see .idx-lead).
+
+   The last row asks rather than points: "Get your free proposal",
+   written out letter by letter with a text cursor blinking after it, as
+   a field waiting to be filled in (the user's cue, kept apart from
+   Pricing's), and a plus where the others have an arrow. Pressed, the
+   index turns into the form itself, made of the same rows (see
+   proposal-form.tsx), and Close turns it back. The water is told each
+   time, so the drops move clear of the taller form. */
+const ASK = "Get your free proposal";
+
 function SectionIndex({ settled }: { settled: boolean }) {
   const reduce = useReducedMotion() ?? false;
   const on = settled || reduce;
+  const [asking, setAsking] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+  const askButton = useRef<HTMLButtonElement>(null);
+  const backToIndex = useRef(false);
+
+  // The drops keep clear of every [data-jelly-quiet] box, measured once;
+  // when this one changes height they are asked to measure again.
+  const remeasure = useCallback(() => {
+    box.current?.closest("section")?.dispatchEvent(new CustomEvent("jelly:remeasure"));
+  }, []);
+  const close = useCallback(() => {
+    backToIndex.current = true;
+    setAsking(false);
+  }, []);
+
   return (
-    <nav
+    <div
+      ref={box}
       data-jelly-quiet
-      aria-label="Sections"
       className="pointer-events-auto col-span-12 self-end pt-6 pb-6 md:pb-8 lg:col-span-4 lg:col-start-9"
     >
-      <p className="mono-label mb-2.5 flex items-center text-ash-2">
-        <span className="idx-title">Index</span>
-      </p>
-      <ol className="border-b border-ink">
-        {SECTION_LINKS.map((link, i) => (
-          <motion.li
-            key={link.href}
-            className="border-t border-ink"
-            initial={false}
-            animate={{ opacity: on ? 1 : 0, x: on ? 0 : 16 }}
-            transition={{ duration: reduce ? 0 : 0.7, delay: 0.35 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      <AnimatePresence
+        mode="wait"
+        initial={false}
+        onExitComplete={() => {
+          remeasure();
+          if (backToIndex.current) {
+            backToIndex.current = false;
+            askButton.current?.focus({ preventScroll: true });
+          }
+        }}
+      >
+        {asking ? (
+          <ProposalForm key="form" onClose={close} onSettled={remeasure} />
+        ) : (
+          <motion.nav
+            key="index"
+            aria-label="Sections"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, y: 8, transition: { duration: 0.22 } }}
+            transition={{ duration: 0.3 }}
           >
-            <a
-              href={link.href}
-              className={`idx-link ${link.lead ? "idx-lead" : ""}`}
-            >
-              <span className="idx-name flex items-center gap-2.5">
-                {link.lead && <span aria-hidden="true" className="live-dot" />}
-                {link.label}
-              </span>
-              <span aria-hidden="true" className="idx-arrow">
-                <Arrow />
-              </span>
-            </a>
-          </motion.li>
-        ))}
-      </ol>
-    </nav>
+            <p className="mono-label mb-2.5 flex items-center text-ash-2">
+              <span className="idx-title">Index</span>
+            </p>
+            <ol className="border-b border-ink">
+              {SECTION_LINKS.map((link, i) => (
+                <motion.li
+                  key={link.href}
+                  className="border-t border-ink"
+                  initial={false}
+                  animate={{ opacity: on ? 1 : 0, x: on ? 0 : 16 }}
+                  transition={{ duration: reduce ? 0 : 0.7, delay: 0.35 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <a
+                    href={link.href}
+                    className={`idx-link ${link.lead ? "idx-lead" : ""}`}
+                  >
+                    <span className="idx-name flex items-center gap-2.5">
+                      {link.lead && <span aria-hidden="true" className="live-dot" />}
+                      {link.label}
+                    </span>
+                    <span aria-hidden="true" className="idx-arrow">
+                      <Arrow />
+                    </span>
+                  </a>
+                </motion.li>
+              ))}
+              <motion.li
+                className="border-t border-ink"
+                initial={false}
+                animate={{ opacity: on ? 1 : 0, x: on ? 0 : 16 }}
+                transition={{
+                  duration: reduce ? 0 : 0.7,
+                  delay: 0.35 + SECTION_LINKS.length * 0.08,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                <button
+                  ref={askButton}
+                  type="button"
+                  aria-expanded={false}
+                  onClick={() => setAsking(true)}
+                  className="idx-link idx-ask w-full text-left"
+                >
+                  <span className="idx-name">
+                    <span className="sr-only">{ASK}</span>
+                    <Typed text={ASK} active={on && !reduce} />
+                  </span>
+                  <span aria-hidden="true" className="idx-arrow">
+                    <Plus />
+                  </span>
+                </button>
+              </motion.li>
+            </ol>
+          </motion.nav>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* The ask, written out a letter at a time with a cursor after it, held,
+   taken back quickly and written again, over and over. The cursor blinks
+   whenever the words are still (see .idx-caret). For anyone who has
+   asked for less motion it is simply there, with no cursor. */
+function Typed({ text, active }: { text: string; active: boolean }) {
+  const [n, setN] = useState(active ? 0 : text.length);
+  const [still, setStill] = useState(!active);
+
+  useEffect(() => {
+    if (!active) {
+      setN(text.length);
+      setStill(true);
+      return;
+    }
+    let live = true;
+    let timer = 0;
+    const wait = (ms: number) =>
+      new Promise<void>((done) => {
+        timer = window.setTimeout(done, ms);
+      });
+    const run = async () => {
+      await wait(900);
+      while (live) {
+        setStill(false);
+        for (let i = 1; i <= text.length && live; i++) {
+          setN(i);
+          await wait(i === 1 ? 120 : 55);
+        }
+        setStill(true);
+        await wait(6000);
+        if (!live) return;
+        setStill(false);
+        for (let i = text.length - 1; i >= 0 && live; i--) {
+          setN(i);
+          await wait(18);
+        }
+        setStill(true);
+        await wait(500);
+      }
+    };
+    run();
+    return () => {
+      live = false;
+      window.clearTimeout(timer);
+    };
+  }, [active, text]);
+
+  return (
+    <span aria-hidden="true">
+      {text.slice(0, n)}
+      {active && <span className="idx-caret" data-still={still ? "" : undefined} />}
+    </span>
+  );
+}
+
+function Plus() {
+  return (
+    <svg viewBox="0 0 16 16" width="16" height="16" fill="none" className="block">
+      <path d="M8 2v12M2 8h12" stroke="currentColor" strokeWidth="1.25" />
+    </svg>
   );
 }
 
