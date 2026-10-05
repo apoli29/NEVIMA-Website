@@ -32,23 +32,22 @@ const STATEMENT = [
   "Closing that gap is our whole job: two people, the right tools, and nothing standing between your work and the people it is for.",
 ];
 
-/** When each paragraph starts to light, from the moment the fonts are in. */
-const LIGHT_AT_MS = [450, 1500];
+/** The light runs 2.5 times as fast as the service copy's (the user's
+    ask): over each paragraph in this long, starting this long after the
+    fonts are in, the second as the first finishes. */
+const SPEED = 2.5;
+const LIGHT_MS = 1500 / SPEED;
+const LIGHT_AT_MS = [450 / SPEED, 1500 / SPEED];
 
 /** A ground for the statement: one photograph at two widths. */
 export type HeroPhoto = { small: string; large: string };
 
-/* Three grounds, hung one after another for now so the studio can
-   choose (all three from Unsplash, all black and white): stone by Liz
-   Grin, moving water by Madison Oren, a swirl of light by Sudhanshu
-   Singh. */
+/* Two grounds, hung one after another for now so the studio can choose
+   (both from Unsplash, both black and white): stone by Liz Grin, a
+   swirl of light by Sudhanshu Singh. */
 export const STONE: HeroPhoto = {
   small: "/about/stone-1280.jpg",
   large: "/about/stone-2400.jpg",
-};
-export const WATER: HeroPhoto = {
-  small: "/about/water-1280.jpg",
-  large: "/about/water-2400.jpg",
 };
 export const SWIRL: HeroPhoto = {
   small: "/about/swirl-1280.jpg",
@@ -106,6 +105,7 @@ export function AboutHero({
                 key={i}
                 text={text}
                 delayMs={LIGHT_AT_MS[i]}
+                durationMs={LIGHT_MS}
                 reduce={reduce}
                 className="svc-copy abt-statement-p"
               />
