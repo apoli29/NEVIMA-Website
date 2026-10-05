@@ -298,9 +298,10 @@ function WallRule({
    and over (see .idx-lead).
 
    The last row asks rather than points: "Get your free proposal",
-   written out letter by letter with a text cursor blinking after it, as
-   a field waiting to be filled in (the user's cue, kept apart from
-   Pricing's), and a plus where the others have an arrow. Pressed, the
+   inked like Pricing, written out letter by letter with a text cursor
+   blinking after it, as a field waiting to be filled in, with a light
+   passing over it and a slight swell every few seconds (see .idx-ask),
+   and a plus where the others have an arrow. Pressed, the
    index turns into the form itself, made of the same rows (see
    proposal-form.tsx), and Close turns it back. The water is told each
    time, so the drops move clear of the taller form. */
@@ -310,104 +311,90 @@ function SectionIndex({ settled }: { settled: boolean }) {
   const reduce = useReducedMotion() ?? false;
   const on = settled || reduce;
   const [asking, setAsking] = useState(false);
-  const box = useRef<HTMLDivElement>(null);
   const askButton = useRef<HTMLButtonElement>(null);
-  const backToIndex = useRef(false);
-
-  // The drops keep clear of every [data-jelly-quiet] box, measured once;
-  // when this one changes height they are asked to measure again.
-  const remeasure = useCallback(() => {
-    box.current?.closest("section")?.dispatchEvent(new CustomEvent("jelly:remeasure"));
-  }, []);
   const close = useCallback(() => {
-    backToIndex.current = true;
     setAsking(false);
+    // Back on the row that opened it, once the index is up again.
+    window.setTimeout(() => askButton.current?.focus({ preventScroll: true }), 260);
   }, []);
 
   return (
+    // The index and the form share one cell, both set at its foot, so the
+    // box is always as tall as the taller of the two: the drops are laid
+    // out clear of the form from the start and nothing on the water moves
+    // when it opens (the user: they must stay as they are).
     <div
-      ref={box}
       data-jelly-quiet
-      className="pointer-events-auto col-span-12 self-end pt-6 pb-6 md:pb-8 lg:col-span-4 lg:col-start-9"
+      className="pointer-events-auto col-span-12 grid self-end pt-6 pb-6 md:pb-8 lg:col-span-4 lg:col-start-9"
     >
-      <AnimatePresence
-        mode="wait"
+      <div className="col-start-1 row-start-1 self-end">
+        <ProposalForm open={asking} onClose={close} />
+      </div>
+      <motion.nav
+        aria-label="Sections"
+        className="col-start-1 row-start-1 self-end"
         initial={false}
-        onExitComplete={() => {
-          remeasure();
-          if (backToIndex.current) {
-            backToIndex.current = false;
-            askButton.current?.focus({ preventScroll: true });
-          }
-        }}
+        animate={asking ? { opacity: 0, y: 8 } : { opacity: 1, y: 0 }}
+        transition={{ duration: asking ? 0.22 : 0.35, delay: asking ? 0 : 0.15 }}
+        inert={asking}
+        aria-hidden={asking}
+        style={{ pointerEvents: asking ? "none" : undefined }}
       >
-        {asking ? (
-          <ProposalForm key="form" onClose={close} onSettled={remeasure} />
-        ) : (
-          <motion.nav
-            key="index"
-            aria-label="Sections"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, y: 8, transition: { duration: 0.22 } }}
-            transition={{ duration: 0.3 }}
-          >
-            <p className="mono-label mb-2.5 flex items-center text-ash-2">
-              <span className="idx-title">Index</span>
-            </p>
-            <ol className="border-b border-ink">
-              {SECTION_LINKS.map((link, i) => (
-                <motion.li
-                  key={link.href}
-                  className="border-t border-ink"
-                  initial={false}
-                  animate={{ opacity: on ? 1 : 0, x: on ? 0 : 16 }}
-                  transition={{ duration: reduce ? 0 : 0.7, delay: 0.35 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <a
-                    href={link.href}
-                    className={`idx-link ${link.lead ? "idx-lead" : ""}`}
-                  >
-                    <span className="idx-name flex items-center gap-2.5">
-                      {link.lead && <span aria-hidden="true" className="live-dot" />}
-                      {link.label}
-                    </span>
-                    <span aria-hidden="true" className="idx-arrow">
-                      <Arrow />
-                    </span>
-                  </a>
-                </motion.li>
-              ))}
-              <motion.li
-                className="border-t border-ink"
-                initial={false}
-                animate={{ opacity: on ? 1 : 0, x: on ? 0 : 16 }}
-                transition={{
-                  duration: reduce ? 0 : 0.7,
-                  delay: 0.35 + SECTION_LINKS.length * 0.08,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
+        <p className="mono-label mb-2.5 flex items-center text-ash-2">
+          <span className="idx-title">Index</span>
+        </p>
+        <ol className="border-b border-ink">
+          {SECTION_LINKS.map((link, i) => (
+            <motion.li
+              key={link.href}
+              className="border-t border-ink"
+              initial={false}
+              animate={{ opacity: on ? 1 : 0, x: on ? 0 : 16 }}
+              transition={{ duration: reduce ? 0 : 0.7, delay: 0.35 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <a
+                href={link.href}
+                className={`idx-link ${link.lead ? "idx-lead" : ""}`}
               >
-                <button
-                  ref={askButton}
-                  type="button"
-                  aria-expanded={false}
-                  onClick={() => setAsking(true)}
-                  className="idx-link idx-ask w-full text-left"
-                >
-                  <span className="idx-name">
-                    <span className="sr-only">{ASK}</span>
-                    <Typed text={ASK} active={on && !reduce} />
-                  </span>
-                  <span aria-hidden="true" className="idx-arrow">
-                    <Plus />
-                  </span>
-                </button>
-              </motion.li>
-            </ol>
-          </motion.nav>
-        )}
-      </AnimatePresence>
+                <span className="idx-name flex items-center gap-2.5">
+                  {link.lead && <span aria-hidden="true" className="live-dot" />}
+                  {link.label}
+                </span>
+                <span aria-hidden="true" className="idx-arrow">
+                  <Arrow />
+                </span>
+              </a>
+            </motion.li>
+          ))}
+          <motion.li
+            className="border-t border-ink"
+            initial={false}
+            animate={{ opacity: on ? 1 : 0, x: on ? 0 : 16 }}
+            transition={{
+              duration: reduce ? 0 : 0.7,
+              delay: 0.35 + SECTION_LINKS.length * 0.08,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            <button
+              ref={askButton}
+              type="button"
+              aria-expanded={asking}
+                aria-controls="proposal-form"
+              onClick={() => setAsking(true)}
+              className="idx-link idx-ask w-full text-left"
+            >
+              <span className="idx-name">
+                <span className="sr-only">{ASK}</span>
+                <Typed text={ASK} active={on && !reduce} />
+              </span>
+              <span aria-hidden="true" className="idx-arrow">
+                <Plus />
+              </span>
+            </button>
+          </motion.li>
+        </ol>
+      </motion.nav>
     </div>
   );
 }

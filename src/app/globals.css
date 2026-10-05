@@ -317,6 +317,40 @@
   .idx-ask:hover .idx-arrow,
   .idx-ask:focus-visible .idx-arrow { transform: rotate(90deg); }
 
+  /* Inked, as Pricing is (the user wanted it on black too), but called for
+     in its own way: every few seconds a light passes over it, and with it
+     the row swells a hair and settles, so it seems to draw a breath. Both
+     on one clock, out of step with Pricing's gleam. */
+  .idx-ask { color: var(--color-paper); transform-origin: 50% 50%; }
+  .idx-ask::before { transform: scaleX(1); }
+  .idx-ask::after {
+    content: "";
+    position: absolute;
+    inset: -1px 0;
+    z-index: -1;
+    background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.2) 50%, transparent 70%) no-repeat;
+    background-size: 55% 100%;
+    background-position: -120% 0;
+    animation: idx-ask-gleam 4.4s cubic-bezier(0.65, 0, 0.35, 1) 1.2s infinite;
+  }
+  .idx-ask { animation: idx-ask-breathe 4.4s ease-in-out 1.2s infinite; }
+  @keyframes idx-ask-gleam {
+    0%, 62% { background-position: -120% 0; }
+    100% { background-position: 260% 0; }
+  }
+  @keyframes idx-ask-breathe {
+    0%, 62% { transform: scale(1); }
+    78% { transform: scale(1.018); }
+    94%, 100% { transform: scale(1); }
+  }
+  .idx-ask:hover,
+  .idx-ask:focus-visible { animation-play-state: paused; }
+  .idx-ask:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) {
+    .idx-ask,
+    .idx-ask::after { animation: none; }
+  }
+
   /* ---- the free-proposal form (proposal-form.tsx) ----------------
      The index's rows turned to another use: the same height, padding,
      hairlines and type. A row being written in is inked over as an index
