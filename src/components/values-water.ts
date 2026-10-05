@@ -92,6 +92,10 @@ const STILL_T = 24;
 /** How long the four take to come together, in seconds, and how long
     the words then take to come in on the joined piece. */
 const JOIN_S = 1.25;
+/** The room the joined piece leaves round the value's words, in the
+    words' own ems, across and up and down (the user asked for more). The
+    page's callout reads it too, to start at the piece's edge. */
+export const PIECE_PAD = { x: 1.5, y: 1.6 };
 const WORDS_IN_S = 0.38;
 /** The joined piece: how much its outline still wanders and how much of
     its highlight it keeps, as shares of the loose drops'. */
@@ -478,10 +482,10 @@ export function useValuesWater(
         // A margin round the words, so the joined piece's wandering
         // outline never comes in over them.
         const fs = parseFloat(getComputedStyle(m).fontSize) || 16;
-        const left = b.left - o.left - 0.9 * fs;
-        const top = b.top - o.top - 1.1 * fs;
-        const bw = b.width + 1.8 * fs;
-        const bh = b.height + 2.2 * fs;
+        const left = b.left - o.left - PIECE_PAD.x * fs;
+        const top = b.top - o.top - PIECE_PAD.y * fs;
+        const bw = b.width + 2 * PIECE_PAD.x * fs;
+        const bh = b.height + 2 * PIECE_PAD.y * fs;
         if (bw > 0 && bh > 0) meet = meetFor(left + bw / 2, top + bh / 2, bw, bh);
       }
       c.remeasure = false;

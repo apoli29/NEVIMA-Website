@@ -12,7 +12,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { SlideIn } from "./enter";
 import { useInkAlign } from "./ink-align";
 import { useSeen } from "./use-seen";
-import { useValuesWater, type ValuesControl } from "./values-water";
+import { PIECE_PAD, useValuesWater, type ValuesControl } from "./values-water";
 
 /* ==================================================================
    Values
@@ -219,7 +219,7 @@ export function AboutValues() {
         if (joined) part();
       }}
       data-joined={joined ? "" : undefined}
-      className="abt-val relative isolate flex flex-col overflow-hidden bg-paper pt-(--section-gap)"
+      className="abt-val relative isolate flex flex-col overflow-hidden bg-paper pt-[calc(var(--section-gap)*0.85)]"
     >
       <canvas
         ref={canvas}
@@ -227,7 +227,12 @@ export function AboutValues() {
         className="absolute inset-0 -z-10 block size-full"
       />
 
-      <div className="shell flex flex-col pb-10 md:pb-14">
+      {/* A little less room above than a section's usual head room, and
+          below as much as it takes for the space under the drops (whose
+          glass reaches past their buttons) to match the space over the
+          title, so the heading and the drops sit as one piece in the
+          middle of the water. */}
+      <div className="shell flex flex-col pb-[3.25rem] md:pb-[8rem]">
         {/* Side by side from md: the title on the left, the subtitle
             justified on the right, its first line level with the top of
             the title's (see ink-align.ts). */}
@@ -379,8 +384,16 @@ function Callout({
   // window does, so it is always drawn off the drop where it now is.
   useLayoutEffect(() => {
     const measure = () => {
-      const box = section.current?.getBoundingClientRect();
-      if (!box) return setLead(null);
+      const sec = section.current;
+      const box = sec?.getBoundingClientRect();
+      if (!sec || !box) return setLead(null);
+      // The callout keeps inside the page's columns, as everything else
+      // on the wall does: the shell's content edges, in section pixels.
+      const shell = sec.querySelector<HTMLElement>(".shell");
+      const pad = shell ? parseFloat(getComputedStyle(shell).paddingLeft) || 16 : 16;
+      const sb = shell?.getBoundingClientRect();
+      const minX = sb ? sb.left - box.left + pad : 16;
+      const maxX = sb ? sb.right - box.left - pad : box.width - 16;
       if (aim.kind === "drop") {
         const el = slots[aim.i];
         if (!el) return setLead(null);
@@ -388,13 +401,13 @@ function Callout({
         const cx = b.left - box.left + b.width / 2;
         const cy = b.top - box.top + b.height / 2;
         // Off the right of the drop, unless that would run off the screen.
-        const dir: 1 | -1 = cx + b.width * 0.4 + RISE + RUN > box.width - 16 ? -1 : 1;
+        const dir: 1 | -1 = cx + b.width * 0.4 + RISE + RUN > maxX ? -1 : 1;
         // From the drop's edge, up and outwards at forty-five degrees.
         const reach = b.width * 0.3;
         const ax = cx + dir * reach;
         const ay = cy - reach;
         const bx = ax + dir * RISE;
-        const room = dir === 1 ? box.width - 16 - bx : bx - 16;
+        const room = dir === 1 ? maxX - bx : bx - minX;
         setLead({ ax, ay, bx, by: ay - RISE, run: Math.min(RUN, room), dir });
       } else {
         const el = piece.current;
@@ -404,10 +417,10 @@ function Callout({
         // out with (see measure() in values-water.ts).
         const fs = parseFloat(getComputedStyle(el).fontSize) || 16;
         const b = {
-          left: r.left - 0.9 * fs,
-          right: r.right + 0.9 * fs,
-          top: r.top - 1.1 * fs,
-          width: r.width + 1.8 * fs,
+          left: r.left - PIECE_PAD.x * fs,
+          right: r.right + PIECE_PAD.x * fs,
+          top: r.top - PIECE_PAD.y * fs,
+          width: r.width + 2 * PIECE_PAD.x * fs,
         };
         const left = b.left - box.left;
         const right = b.right - box.left;
@@ -417,19 +430,19 @@ function Callout({
         let ax: number;
         let ay = b.top - box.top - 4;
         let dir: 1 | -1;
-        if (box.width - right >= need) {
+        if (maxX - right >= need) {
           dir = 1;
           ax = right + 4;
-        } else if (left >= need) {
+        } else if (left - minX >= need) {
           dir = -1;
           ax = left - 4;
         } else {
-          dir = right > box.width - left ? -1 : 1;
+          dir = right - minX > maxX - left ? -1 : 1;
           ax = dir === -1 ? right - b.width * 0.18 : left + b.width * 0.18;
           ay = b.top - box.top - 2;
         }
         const bx = ax + dir * RISE;
-        const room = dir === 1 ? box.width - 16 - bx : bx - 16;
+        const room = dir === 1 ? maxX - bx : bx - minX;
         setLead({ ax, ay, bx, by: ay - RISE, run: Math.min(RUN + 24, room), dir });
       }
     };
