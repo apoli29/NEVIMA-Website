@@ -15,16 +15,20 @@ import { useEffect, type RefObject } from "react";
    their buttons, so the words under them and the glass above them are
    always in the same place.
 
+   Until one is chosen they call for it: every few seconds one of them,
+   in turn, swells and strikes the water, as if just touched, and the
+   one under the pointer swells and stays swollen. (The user asked for a
+   cue that would almost never be missed.)
+
    Choosing a value pulls all four together. The one chosen sets off
    first and the others follow it, each a beat later, along a slight
    arc; where they meet they run into one another as oil does, and the
-   lobes are drawn in so the four become one smooth piece. While they
-   travel the glass loses its highlight, because the piece they become
-   is the site's call-to-action drop, and that one has none: the four
-   are laid out to the size of that drop (worked out below so that the
-   joined field fills its box), and once they have met, the drawn glass
-   hands over to the real one, which carries the value in white. Letting
-   go runs the same way backwards.
+   four become one long, uneven piece of glass, its outline still
+   wandering a little and its highlight down to a glint, laid out to the
+   size of the value's words (worked out below so that the joined field
+   fills their box) so the words can be set on it in white. The user
+   preferred this joined piece to the call-to-action drop it once handed
+   over to. Letting go runs the same way backwards.
 
    The shader is the home page's, kept in step with it by hand: if the
    glass or the water there changes, this should follow.
@@ -38,12 +42,20 @@ export type ValuesControl = {
   lead: number;
   /** The four drops' buttons, which they are drawn on. */
   slots: (HTMLElement | null)[];
-  /** The joined drop, the real one, laid out where the four meet. */
+  /** The value's words, laid out where the four meet: the joined piece is
+      sized to them, and they come in on it once it has formed. */
   merged: HTMLElement | null;
+  /** Calling for a first choice: one drop at a time swells and strikes
+      the water. Off for good once a value has been chosen. */
+  beckon: boolean;
+  /** The drop under the pointer, or -1. */
+  hover: number;
   /** Read the boxes again before the next frame. */
   remeasure: boolean;
-  /** The four have met and the real drop is fully in. */
+  /** The four have met and the words are fully in. */
   onJoined: () => void;
+  /** Drop i has just been made to call. */
+  onBeckon: (i: number) => void;
   /** The four are back where they rest. */
   onParted: () => void;
 };
@@ -74,9 +86,23 @@ const STILL_T = 24;
 /* ---- the four ---------------------------------------------------------- */
 
 /** How long the four take to come together, in seconds, and how long
-    the drawn glass then takes to hand over to the real drop. */
+    the words then take to come in on the joined piece. */
 const JOIN_S = 1.25;
-const HAND_OVER_S = 0.38;
+const WORDS_IN_S = 0.38;
+/** The joined piece: how much its outline still wanders and how much of
+    its highlight it keeps, as shares of the loose drops'. */
+const JOINED_WARP = 0.5;
+const JOINED_SPEC = 0.18;
+/** The call: one drop every BECKON_S, in turn, swelling by BECKON_SWELL
+    over PULSE_S and striking the water this deep; the first after
+    BECKON_WAIT_S of being seen. The drop under the pointer swells by
+    HOVER_SWELL. */
+const BECKON_S = 2.4;
+const BECKON_WAIT_S = 0.9;
+const PULSE_S = 0.9;
+const BECKON_SWELL = 0.16;
+const BECKON_DEPTH = 7;
+const HOVER_SWELL = 0.09;
 /** How much later than the one chosen the last of the others sets off,
     as a share of the join. */
 const FOLLOW = 0.16;
@@ -135,8 +161,7 @@ uniform float u_td;
 uniform vec4 u_drop[${BLOBS}];
 uniform float u_turn[${BLOBS}];
 uniform float u_warp;   // how far the outline wanders: less as they join
-uniform float u_spec;   // the highlight: none on the joined drop
-uniform float u_show;   // the drawn glass, handing over to the real drop
+uniform float u_spec;   // the highlight: down to a glint once joined
 uniform sampler2D u_slab;
 
 float drops(vec2 p) {
@@ -209,17 +234,14 @@ void main() {
   vec2 q = p + gs * ${(REFRACT * DROP_BEND).toFixed(2)};
   vec3 ns = normalize(vec3(-gs, 1.0));
 
-  float col = 1.0;
-  if (u_show > 0.001) {
-    float d = 1.5;
-    float fd = drops(q);
-    float hd = dome(fd);
-    vec2 gd = vec2(dome(drops(q + vec2(d, 0.0))) - hd, dome(drops(q + vec2(0.0, d))) - hd) / d;
-    float bodyD = smoothstep(0.44, 0.56, fd) * u_show;
-    float shade = smoothstep(0.15, 0.9, drops(q - vec2(14.0, 20.0))) * 0.1 * u_show;
-    col = 1.0 - shade;
-    col = mix(col, glass(gd, 70.0), bodyD);
-  }
+  float d = 1.5;
+  float fd = drops(q);
+  float hd = dome(fd);
+  vec2 gd = vec2(dome(drops(q + vec2(d, 0.0))) - hd, dome(drops(q + vec2(0.0, d))) - hd) / d;
+  float bodyD = smoothstep(0.44, 0.56, fd);
+  float shade = smoothstep(0.15, 0.9, drops(q - vec2(14.0, 20.0))) * 0.1;
+  float col = 1.0 - shade;
+  col = mix(col, glass(gd, 70.0), bodyD);
 
   vec3 l = normalize(LIGHT);
   vec3 h = normalize(l + vec3(0.0, 0.0, 1.0));
@@ -440,13 +462,13 @@ export function useValuesWater(
       const m = c.merged;
       if (m) {
         const b = m.getBoundingClientRect();
-        // The real drop's glass reaches past its box (see .abt-val-drop::before):
-        // the four meet to the glass, not to the box.
+        // A margin round the words, so the joined piece's wandering
+        // outline never comes in over them.
         const fs = parseFloat(getComputedStyle(m).fontSize) || 16;
-        const left = b.left - o.left - 0.36 * fs;
-        const top = b.top - o.top - 0.3 * fs;
-        const bw = b.width + 0.86 * fs;
-        const bh = b.height + 0.72 * fs;
+        const left = b.left - o.left - 0.9 * fs;
+        const top = b.top - o.top - 1.1 * fs;
+        const bw = b.width + 1.8 * fs;
+        const bh = b.height + 2.2 * fs;
         if (bw > 0 && bh > 0) meet = meetFor(left + bw / 2, top + bh / 2, bw, bh);
       }
       c.remeasure = false;
@@ -454,10 +476,9 @@ export function useValuesWater(
 
     /* ---- the join ---- */
 
-    // 0 at rest, 1 when the four have met, 1 + HAND_OVER when the real drop
-    // has taken over. Driven toward the target at a steady pace; each
+    // 0 at rest, 1 when the four have met, END when the words are in. Driven toward the target at a steady pace; each
     // drop eases its own share of it.
-    const END = 1 + HAND_OVER_S / JOIN_S;
+    const END = 1 + WORDS_IN_S / JOIN_S;
     let k = 0;
     let wasMet = false;
     let reported: "joined" | "parted" = "parted";
@@ -473,6 +494,36 @@ export function useValuesWater(
       );
       const delay = i === c.lead ? 0 : FOLLOW * (0.35 + 0.65 * (dist / most));
       return easeInOut(clamp01((Math.min(k, 1) - delay) / (1 - delay)));
+    };
+
+    /* ---- the call, and the pointer ---- */
+
+    // Seconds spent calling, and which call last struck the water.
+    let calling = -BECKON_WAIT_S;
+    let lastCall = -1;
+    /** How far into its swell drop i is, 0 to 1 and back. */
+    const pulse = (i: number) => {
+      if (!control.current.beckon || calling < 0) return 0;
+      const n = Math.floor(calling / BECKON_S);
+      if (n % DROPS.length !== i) return 0;
+      const t = (calling - n * BECKON_S) / PULSE_S;
+      return t < 1 ? Math.sin(Math.PI * t) ** 2 : 0;
+    };
+    const hovered = DROPS.map(() => 0);
+
+    const call = (dt: number) => {
+      const c = control.current;
+      if (!c.beckon || c.target || k > 0) return;
+      calling += dt;
+      const n = Math.floor(calling / BECKON_S);
+      if (calling < 0 || n === lastCall) return;
+      // A third of the way into the swell, the drop strikes the water.
+      if (calling - n * BECKON_S < PULSE_S * 0.3) return;
+      lastCall = n;
+      const i = n % DROPS.length;
+      const home = homes[i];
+      if (home) falls.push({ x: home.x, y: home.y, depth: BECKON_DEPTH, radius: home.r * 1.1 });
+      c.onBeckon(i);
     };
 
     const dropData = new Float32Array(BLOBS * 4);
@@ -511,7 +562,7 @@ export function useValuesWater(
         const go = home.r * 0.08 * (1 - m);
         const x = home.x + go * Math.sin((slow * Math.PI * 2) / d.px + i * 1.7);
         const y = home.y + go * Math.sin((slow * Math.PI * 2) / d.py + i * 2.3);
-        const r = home.r * d.size;
+        const r = home.r * d.size * (1 + BECKON_SWELL * pulse(i) + HOVER_SWELL * hovered[i]);
         const turn = d.tilt + slow * d.spin;
         // Along a slight arc rather than a ruled line: the whole drop is
         // bowed sideways off its way, most half-way along it.
@@ -567,7 +618,7 @@ export function useValuesWater(
 
     const draw = () => {
       placeDrops();
-      const hand = clamp01((k - 1) / (END - 1));
+      const words = clamp01((k - 1) / (END - 1));
       const joined = clamp01(k);
       gl.viewport(0, 0, view.width, view.height);
       gl.uniform2f(u("u_size"), w, h);
@@ -576,14 +627,13 @@ export function useValuesWater(
       gl.uniform1f(u("u_td"), seconds * DROP_PACE);
       gl.uniform4fv(u("u_drop"), dropData);
       gl.uniform1fv(u("u_turn"), turnData);
-      gl.uniform1f(u("u_warp"), 1 - 0.75 * joined);
-      gl.uniform1f(u("u_spec"), 1 - joined);
-      gl.uniform1f(u("u_show"), 1 - hand);
+      gl.uniform1f(u("u_warp"), lerp(1, JOINED_WARP, joined));
+      gl.uniform1f(u("u_spec"), lerp(1, JOINED_SPEC, joined));
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
-      // The real drop comes in exactly as the drawn one goes.
+      // The words come in once the piece has formed, and go first.
       const merged = control.current.merged;
-      if (merged) merged.style.opacity = String(hand);
+      if (merged) merged.style.opacity = String(words);
     };
 
     /** Moves the join on by dt, strikes the water when the four meet and
@@ -591,6 +641,11 @@ export function useValuesWater(
     const advance = (dt: number) => {
       const c = control.current;
       if (c.remeasure) measure();
+      const ease = 1 - Math.exp(-dt * 10);
+      hovered.forEach((v, i) => {
+        hovered[i] = v + ((c.hover === i && k === 0 ? 1 : 0) - v) * ease;
+      });
+      if (!reduce) call(dt);
       const goal = c.target ? END : 0;
       if (reduce) k = goal;
       else if (k < goal) k = Math.min(goal, k + dt / JOIN_S);
