@@ -522,8 +522,10 @@
     border-radius: 1.45em;
     transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  /* On the bar, a shade less tall, so the bar keeps its thickness. */
-  .cta-drop-light { padding: 0.8em 1.45em; color: var(--color-ink); }
+  /* On the bar, a shade less tall, so the bar keeps its thickness, and
+     its glass a tenth slimmer than the others' (the user found it too
+     chunky up there). */
+  .cta-drop-light { padding: 0.72em 1.45em; color: var(--color-ink); }
   .cta-drop::before {
     content: "";
     position: absolute;
@@ -543,6 +545,7 @@
       drop-breathe 3.4s ease-in-out infinite;
   }
   .cta-drop-light::before {
+    inset: -0.54em -0.85em -0.63em -0.8em;
     filter: url(#cta-glass-light);
     /* On black, a white drop that fades as far as the black one does
        turns grey; it breathes less. */
@@ -554,18 +557,6 @@
   .cta-drop .btn-neu-face > span { display: inline-block; transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
   .cta-drop:hover .btn-neu-face > span,
   .cta-drop:focus-visible .btn-neu-face > span { transform: translateX(3px); }
-
-  /* The same glass holding other things rather than being pressed: the
-     studio's "Learn more" with its link. It is not a button, so it does
-     not swell when pointed at; it keeps the type it holds as set; its
-     glass reaches a little further past its box; and its clocks run ahead
-     of the buttons', so the two never change shape in step. */
-  .drop-shell { font-weight: inherit; letter-spacing: inherit; }
-  .drop-shell:hover { transform: none; }
-  .drop-shell::before {
-    inset: -0.7em -0.95em -0.8em -0.9em;
-    animation-delay: -4.2s, -2.6s, -1.3s;
-  }
 
   /* The spots trade places a little: the fuller end swaps sides and the
      waist wanders, so the piece changes shape without ever pinching. */
@@ -1291,17 +1282,17 @@
      and the words carry a faint shade of their own. Tested against a
      plain dim, a darker spot and a fade into the page below; this is the
      one that stopped looking pasted on. */
-  .abt-hero-photo {
-    opacity: 0.5;
-    filter: grayscale(1) brightness(0.95) contrast(0.82) blur(0.8px);
-    /* The blur would pull a hairline of black in from each edge. */
-    transform: scale(1.015);
-  }
+  /* The softening (contrast eased, a slight blur) is baked into the
+     files: run as a CSS filter it had to be redrawn on every frame of
+     the photos' crossing, and the crossing stuttered. Here it is only
+     dimmed, which the compositor does for free. */
+  .abt-hero-photo { opacity: 0.5; }
   /* The two photographs take turns: each crosses into the other over
      most of a second and a half. */
   .abt-hero-slide {
     opacity: 0;
-    transition: opacity 1.4s ease-in-out;
+    transition: opacity 1.6s cubic-bezier(0.45, 0, 0.55, 1);
+    will-change: opacity;
   }
   .abt-hero-slide[data-shown] { opacity: 1; }
   @media (prefers-reduced-motion: reduce) {
@@ -1316,7 +1307,9 @@
     mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-  .abt-statement { text-shadow: 0 0 30px rgb(0 0 0 / 0.55); }
+  /* The shade is laid on once the words are lit: under the light's sweep
+     it had to be blurred again for every line on every frame. */
+  .abt-statement [data-lit="true"] { text-shadow: 0 0 30px rgb(0 0 0 / 0.55); }
 
   /* Justified as one block, centred in the screen, with each paragraph's
      last line centred under it. The measure is held in ems so a line
@@ -1351,10 +1344,11 @@
 
   /* Mission and vision: the title face, light, at the size of a piece on
      a wall rather than a headline. */
-  /* Sized for the studio's own statements, which run to four or five
-     lines at this measure. */
+  /* Sized for the studio's own statements, which run to five or six
+     lines at this measure, and justified (the user's ask): a size down
+     from a headline puts enough words on a line to close the gaps. */
   .abt-piece {
-    font-size: clamp(1.5rem, 2.5vw, 2.375rem);
+    font-size: clamp(1.375rem, 2.15vw, 2.125rem);
     line-height: 1.08;
     letter-spacing: -0.028em;
   }
@@ -1409,31 +1403,48 @@
 
   /* The value, set in white on the piece the four become. Its size is
      what the piece is laid out to (see values-water.ts). */
+  /* The name on the left and the sentence beside it on the right,
+     justified, the two set level by the tops of their capitals (the
+     user's layout). On a phone there is no width for two columns, so the
+     sentence goes under the name. */
   .abt-val-drop {
     font-size: clamp(1.25rem, 1.8vw, 1.625rem);
-    width: min(100% - 4.5rem, 21em);
+    width: min(100% - 4.5rem, 30em);
     padding: 0.4em 0.6em;
-    text-align: center;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 0.7em;
+    text-align: left;
     pointer-events: none;
     cursor: pointer;
   }
+  @media (min-width: 640px) {
+    .abt-val-drop {
+      grid-template-columns: auto minmax(0, 1fr);
+      column-gap: 1.2em;
+      align-items: start;
+    }
+  }
   .abt-val-drop[data-joined] { pointer-events: auto; }
   .abt-val-name {
+    max-width: 5.5em;
     font-size: clamp(2rem, 3vw, 3rem);
     font-weight: 500;
     line-height: 1;
     letter-spacing: -0.03em;
     color: var(--color-paper);
+    text-wrap: balance;
+    text-box: trim-start cap alphabetic;
   }
   .abt-val-text {
-    margin-top: 0.85rem;
     font-family: var(--font-read);
     font-size: clamp(1.0625rem, 1.35vw, 1.375rem);
     font-weight: 400;
     line-height: 1.45;
     letter-spacing: -0.006em;
     color: rgb(255 255 255 / 0.85);
-    text-wrap: pretty;
+    text-align: justify;
+    text-box: trim-start cap alphabetic;
   }
   .abt-val-drop:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 2.2em; }
 

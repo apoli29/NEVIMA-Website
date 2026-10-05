@@ -27,10 +27,11 @@ import { useValuesWater, type ValuesControl } from "./values-water";
    kind films draw over a camera feed when a target is picked out: from
    the edge of one drop a fine line runs off at an angle, turns level,
    and "Click here" is written along the level stretch, the line under it
-   as its underline. Until a first choice it moves from drop to drop, a
-   ring striking the water where it lands; the drop under the pointer
-   takes it and swells a little; once the four are together it points
-   at the piece they made and says how to let them go.
+   as its underline. It never stops while the four are apart: it moves
+   from drop to drop, a ring striking the water where it lands, two up
+   at once; the drop under the pointer gets one of its own and swells a
+   little; once the four are together it points at the piece they made
+   and says how to let them go.
 
    Choosing one pulls all four together into a single uneven piece of
    glass, and the value chosen is set on it in white (see
@@ -103,19 +104,24 @@ export function AboutValues() {
     if (!window.matchMedia("(hover: hover)").matches) setPress("Tap");
   }, []);
 
-  // The callout: on the drop under the pointer if there is one, else on
-  // the drop that is calling, else (once joined) on the piece.
+  // The callouts. While the four are apart they never stop: each drop
+  // that calls keeps its callout through the next call, so two are up at
+  // once, the older one going a moment before a third comes (timed by the
+  // water, see values-water.ts). The drop under the pointer has one too.
+  // Once joined, a single one points at the piece.
   const [hovered, setHovered] = useState<number | null>(null);
-  const [calling, setCalling] = useState<number | null>(null);
-  const aim: Aim = joined
-    ? { kind: "piece" }
+  const [calls, setCalls] = useState<{ i: number; id: number }[]>([]);
+
+  const aims: { key: string; aim: NonNullable<Aim> }[] = joined
+    ? [{ key: "piece", aim: { kind: "piece" } }]
     : chosen !== null
-      ? null
-      : hovered !== null
-        ? { kind: "drop", i: hovered }
-        : calling !== null
-          ? { kind: "drop", i: calling }
-          : null;
+      ? []
+      : [
+          ...calls.map((c) => ({ key: `call-${c.id}`, aim: { kind: "drop" as const, i: c.i } })),
+          ...(hovered !== null && !calls.some((c) => c.i === hovered)
+            ? [{ key: `hover-${hovered}`, aim: { kind: "drop" as const, i: hovered } }]
+            : []),
+        ];
 
   const control = useRef<ValuesControl>({
     target: 0,
@@ -128,6 +134,7 @@ export function AboutValues() {
     onJoined: () => {},
     onParted: () => {},
     onBeckon: () => {},
+    onBeckonEnd: () => {},
   });
 
   const tell = useCallback((name: string, detail?: number) => {
@@ -140,7 +147,10 @@ export function AboutValues() {
     returnFocus.current = false;
     setChosen(null);
   };
-  control.current.onBeckon = (i) => setCalling(i);
+  control.current.onBeckon = (i, id) =>
+    setCalls((c) => [...c.filter((x) => x.i !== i), { i, id }]);
+  control.current.onBeckonEnd = (id) => setCalls((c) => c.filter((x) => x.id !== id));
+
 
   // Once the piece they made can be pressed, it holds the focus.
   useEffect(() => {
@@ -166,13 +176,11 @@ export function AboutValues() {
   const choose = (i: number, event: MouseEvent<HTMLButtonElement>) => {
     if (chosen !== null) return;
     setChosen(i);
-    setCalling(null);
+    setCalls([]);
     setHovered(null);
     control.current.lead = i;
     control.current.target = 1;
     control.current.hover = -1;
-    // Found once, the drops have done their asking.
-    control.current.beckon = false;
     // From the keyboard there is no click on the water, so the drop
     // strikes it itself.
     if (event.detail === 0) tell("values:pick", i);
@@ -211,7 +219,7 @@ export function AboutValues() {
         if (joined) part();
       }}
       data-joined={joined ? "" : undefined}
-      className="abt-val relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-paper pt-(--section-gap)"
+      className="abt-val relative isolate flex flex-col overflow-hidden bg-paper pt-(--section-gap)"
     >
       <canvas
         ref={canvas}
@@ -219,7 +227,7 @@ export function AboutValues() {
         className="absolute inset-0 -z-10 block size-full"
       />
 
-      <div className="shell flex flex-1 flex-col pb-[clamp(2.5rem,7svh,5rem)]">
+      <div className="shell flex flex-col pb-10 md:pb-14">
         {/* Side by side from md: the title on the left, the subtitle
             justified on the right, its first line level with the top of
             the title's (see ink-align.ts). */}
@@ -242,7 +250,9 @@ export function AboutValues() {
           </SlideIn>
         </div>
 
-        <div ref={field} className="relative flex flex-1 items-center py-14 md:py-16">
+        {/* Room above the drops for the callouts, and enough height
+            either way for the piece the four become. */}
+        <div ref={field} className="relative flex items-center pt-24 pb-10 md:pt-28 md:pb-12">
           <ul
             aria-label="Values: choose one to read it"
             data-chosen={chosen === null ? undefined : ""}
@@ -315,13 +325,18 @@ export function AboutValues() {
       </div>
 
       {!reduce && on && (
-        <Callout
-          aim={aim}
-          label={aim?.kind === "piece" ? `${press} to close` : `${press} here`}
-          section={section}
-          slots={control.current.slots}
-          piece={mergedRef}
-        />
+        <AnimatePresence>
+          {aims.map(({ key, aim }) => (
+            <Callout
+              key={key}
+              aim={aim}
+              label={aim.kind === "piece" ? `${press} to close` : `${press} here`}
+              section={section}
+              slots={control.current.slots}
+              piece={mergedRef}
+            />
+          ))}
+        </AnimatePresence>
       )}
 
       <p className="sr-only" aria-live="polite">
@@ -351,21 +366,21 @@ function Callout({
   slots,
   piece,
 }: {
-  aim: Aim;
+  aim: NonNullable<Aim>;
   label: string;
   section: React.RefObject<HTMLElement | null>;
   slots: (HTMLElement | null)[];
   piece: React.RefObject<HTMLButtonElement | null>;
 }) {
   const [lead, setLead] = useState<Lead | null>(null);
-  const key = aim ? (aim.kind === "drop" ? `drop-${aim.i}` : "piece") : "none";
+  const key = aim.kind === "drop" ? `drop-${aim.i}` : "piece";
 
   // Measured from the page whenever the target changes, and again if the
   // window does, so it is always drawn off the drop where it now is.
   useLayoutEffect(() => {
     const measure = () => {
       const box = section.current?.getBoundingClientRect();
-      if (!aim || !box) return setLead(null);
+      if (!box) return setLead(null);
       if (aim.kind === "drop") {
         const el = slots[aim.i];
         if (!el) return setLead(null);
@@ -423,49 +438,45 @@ function Callout({
     return () => window.removeEventListener("resize", measure);
   }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  if (!lead) return null;
   return (
-    <AnimatePresence>
-      {aim && lead && (
-        <motion.svg
-          key={key}
-          aria-hidden="true"
-          className="abt-callout pointer-events-none absolute inset-0 z-10 size-full overflow-visible"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.18 } }}
-        >
-          {/* The mark on the target: a dot in a ring. */}
-          <motion.circle
-            cx={lead.ax}
-            cy={lead.ay}
-            r={7}
-            className="abt-callout-ring"
-            initial={{ scale: 2.2, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            style={{ transformOrigin: `${lead.ax}px ${lead.ay}px` }}
-          />
-          <circle cx={lead.ax} cy={lead.ay} r={2.5} className="abt-callout-dot" />
-          {/* The leader: up and out at an angle, then level. */}
-          <motion.path
-            d={`M ${lead.ax} ${lead.ay} L ${lead.bx} ${lead.by} L ${lead.bx + lead.dir * lead.run} ${lead.by}`}
-            className="abt-callout-line"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 0.45, delay: 0.1, ease: [0.65, 0, 0.35, 1] }}
-          />
-          {/* Written along the level run, the line under it as its
-              underline, as it is drawn out. */}
-          <text
-            x={lead.dir === 1 ? lead.bx + 2 : lead.bx - 2}
-            y={lead.by - 8}
-            textAnchor={lead.dir === 1 ? "start" : "end"}
-            className="abt-callout-text"
-          >
-            <Typed text={label} delayMs={400} />
-          </text>
-        </motion.svg>
-      )}
-    </AnimatePresence>
+    <motion.svg
+      aria-hidden="true"
+      className="abt-callout pointer-events-none absolute inset-0 z-10 size-full overflow-visible"
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.18 } }}
+    >
+      {/* The mark on the target: a dot in a ring. */}
+      <motion.circle
+        cx={lead.ax}
+        cy={lead.ay}
+        r={7}
+        className="abt-callout-ring"
+        initial={{ scale: 2.2, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        style={{ transformOrigin: `${lead.ax}px ${lead.ay}px` }}
+      />
+      <circle cx={lead.ax} cy={lead.ay} r={2.5} className="abt-callout-dot" />
+      {/* The leader: up and out at an angle, then level. */}
+      <motion.path
+        d={`M ${lead.ax} ${lead.ay} L ${lead.bx} ${lead.by} L ${lead.bx + lead.dir * lead.run} ${lead.by}`}
+        className="abt-callout-line"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 0.45, delay: 0.1, ease: [0.65, 0, 0.35, 1] }}
+      />
+      {/* Written along the level run, the line under it as its
+          underline, as it is drawn out. */}
+      <text
+        x={lead.dir === 1 ? lead.bx + 2 : lead.bx - 2}
+        y={lead.by - 8}
+        textAnchor={lead.dir === 1 ? "start" : "end"}
+        className="abt-callout-text"
+      >
+        <Typed text={label} delayMs={400} />
+      </text>
+    </motion.svg>
   );
 }
 

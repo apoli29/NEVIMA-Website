@@ -146,30 +146,26 @@ function Statement({ ready }: { ready: boolean }) {
   );
 }
 
-/* An invitation under the pillar, on a black drop of its own, the same
-   glass as the buttons (see .drop-shell): "Learn more" is only words, and
-   "about us" after it, in the drop's own white with an arrow, is the link.
-   It goes to the about page. */
+/* An invitation under the pillar: one black drop, the same glass as the
+   site's other buttons, reading "Learn more about us" in one weight, one
+   run of words, with an arrow. It once split the line in two (the plain
+   words beside a heavier link) and the gap and the change of weight
+   between them read as mistakes; it is all one link now, to the about
+   page. */
 function LearnMore() {
   return (
-    <div className="cta-drop drop-shell mt-2 inline-flex items-center gap-2 py-3 pr-6 pl-5 md:mt-3 md:gap-2.5 md:py-3.5 md:pr-7 md:pl-6">
-      <span className="text-glow text-[0.8125rem] leading-none text-paper md:text-[0.9375rem]">
-        Learn more
-      </span>
+    <div className="mt-3 md:mt-4">
       <PassLink
         href="/about"
         label={
           <>
-            about us
-            <span
-              aria-hidden="true"
-              className="ml-1.5 inline-block transition-transform duration-300 group-hover:translate-x-[3px] group-focus-visible:translate-x-[3px]"
-            >
+            Learn more about us
+            <span aria-hidden="true" className="ml-2 inline-block">
               &rarr;
             </span>
           </>
         }
-        className="group inline-flex text-[0.8125rem] leading-none font-medium text-paper md:text-[0.9375rem]"
+        className="cta-drop inline-flex text-[0.875rem] leading-none md:text-[0.9375rem]"
       />
     </div>
   );

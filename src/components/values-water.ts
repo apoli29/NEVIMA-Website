@@ -45,8 +45,9 @@ export type ValuesControl = {
   /** The value's words, laid out where the four meet: the joined piece is
       sized to them, and they come in on it once it has formed. */
   merged: HTMLElement | null;
-  /** Calling for a first choice: one drop at a time swells and strikes
-      the water. Off for good once a value has been chosen. */
+  /** Calling to be chosen: one drop at a time strikes the water and is
+      pointed out. It never stops while the four are apart (the user
+      asked for it constant); it only waits while they are together. */
   beckon: boolean;
   /** The drop under the pointer, or -1. */
   hover: number;
@@ -54,8 +55,11 @@ export type ValuesControl = {
   remeasure: boolean;
   /** The four have met and the words are fully in. */
   onJoined: () => void;
-  /** Drop i has just been made to call. */
-  onBeckon: (i: number) => void;
+  /** Call n has just started, on drop i. */
+  onBeckon: (i: number, n: number) => void;
+  /** Call n is over: its callout goes. Timed on the water's own clock,
+      so a slow frame cannot leave two calls' callouts out of step. */
+  onBeckonEnd: (n: number) => void;
   /** The four are back where they rest. */
   onParted: () => void;
 };
@@ -102,6 +106,9 @@ const BECKON_WAIT_S = 0.9;
 const PULSE_S = 0.9;
 const BECKON_SWELL = 0;
 const BECKON_DEPTH = 5;
+/** How long a call stays pointed out: through the next call, and over a
+    little before the one after, so two are up at once and never three. */
+const CALL_LIFE_S = BECKON_S * 2 - 0.45;
 const HOVER_SWELL = 0.09;
 /** How much later than the one chosen the last of the others sets off,
     as a share of the join. */
@@ -162,6 +169,7 @@ uniform vec4 u_drop[${BLOBS}];
 uniform float u_turn[${BLOBS}];
 uniform float u_warp;   // how far the outline wanders: less as they join
 uniform float u_spec;   // the highlight: down to a glint once joined
+uniform float u_join;   // 0 apart, 1 joined
 uniform sampler2D u_slab;
 
 float drops(vec2 p) {
@@ -189,12 +197,15 @@ float dome(float f) {
   return sqrt(1.0 - exp(-max(f - 0.44, 0.0) * 2.2));
 }
 
-float glass(vec2 g, float steep) {
+float glass(vec2 g, float steep, float f) {
   vec3 n = normalize(vec3(-g * steep, 1.0));
   vec3 h = normalize(normalize(LIGHT) + vec3(0.0, 0.0, 1.0));
   float nh = max(dot(n, h), 0.0);
   float rim = pow(1.0 - n.z, 3.0);
-  return min(0.015 + rim * 0.45 + (pow(nh, 90.0) * 0.95 + pow(nh, 10.0) * 0.08) * u_spec, 1.0);
+  // Joined, the light is kept to the edge: the twelve shapes inside the
+  // piece leave faint ridges, and lit, they ran as streaks behind the words.
+  float lit = mix(1.0, 1.0 - smoothstep(0.6, 1.3, f), u_join);
+  return min(0.015 + (rim * 0.45 + (pow(nh, 90.0) * 0.95 + pow(nh, 10.0) * 0.08) * u_spec) * lit, 1.0);
 }
 
 float slab(vec2 p) {
@@ -241,7 +252,7 @@ void main() {
   float bodyD = smoothstep(0.44, 0.56, fd);
   float shade = smoothstep(0.15, 0.9, drops(q - vec2(14.0, 20.0))) * 0.1;
   float col = 1.0 - shade;
-  col = mix(col, glass(gd, 70.0), bodyD);
+  col = mix(col, glass(gd, 70.0, fd), bodyD);
 
   vec3 l = normalize(LIGHT);
   vec3 h = normalize(l + vec3(0.0, 0.0, 1.0));
@@ -249,6 +260,8 @@ void main() {
   float lit = dot(ns, l) - l.z;
   col *= 1.0 + lit * 0.35;
   float sheen = pow(max(dot(ns, h), 0.0), 90.0);
+  // Not over the joined piece, where it would glint behind the words.
+  sheen *= 1.0 - bodyD * u_join * 0.9;
   col += sheen * 0.5 * (1.0 - col);
 
   outColor = vec4(vec3(clamp(col, 0.0, 1.0)), 1.0);
@@ -498,9 +511,11 @@ export function useValuesWater(
 
     /* ---- the call, and the pointer ---- */
 
-    // Seconds spent calling, and which call last struck the water.
+    // Seconds spent calling, which call last struck the water, and the
+    // calls still pointed out, with when each is over.
     let calling = -BECKON_WAIT_S;
     let lastCall = -1;
+    let open: { n: number; until: number }[] = [];
     /** How far into its swell drop i is, 0 to 1 and back. */
     const pulse = (i: number) => {
       if (!control.current.beckon || calling < 0) return 0;
@@ -513,8 +528,15 @@ export function useValuesWater(
 
     const call = (dt: number) => {
       const c = control.current;
-      if (!c.beckon || c.target || k > 0) return;
+      if (!c.beckon || c.target || k > 0) {
+        // Together: the page drops the drops' callouts itself, and the
+        // calling picks up where it left off once they part.
+        open = [];
+        return;
+      }
       calling += dt;
+      for (const o of open) if (calling >= o.until) c.onBeckonEnd(o.n);
+      open = open.filter((o) => calling < o.until);
       const n = Math.floor(calling / BECKON_S);
       if (calling < 0 || n === lastCall) return;
       // A third of the way into the swell, the drop strikes the water.
@@ -523,7 +545,8 @@ export function useValuesWater(
       const i = n % DROPS.length;
       const home = homes[i];
       if (home) falls.push({ x: home.x, y: home.y, depth: BECKON_DEPTH, radius: home.r * 1.1 });
-      c.onBeckon(i);
+      open.push({ n, until: calling + CALL_LIFE_S });
+      c.onBeckon(i, n);
     };
 
     const dropData = new Float32Array(BLOBS * 4);
@@ -629,6 +652,7 @@ export function useValuesWater(
       gl.uniform1fv(u("u_turn"), turnData);
       gl.uniform1f(u("u_warp"), lerp(1, JOINED_WARP, joined));
       gl.uniform1f(u("u_spec"), lerp(1, JOINED_SPEC, joined));
+      gl.uniform1f(u("u_join"), joined);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
       // The words come in once the piece has formed, and go first.
