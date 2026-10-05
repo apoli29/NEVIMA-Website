@@ -4,6 +4,8 @@ What was decided for the about page (`/about`), and why. Same rules as `homepage
 
 The page was built on 2026-10-05 as a **template**: structure and look are meant to stay, the copy is a stand-in the studio will rewrite. Order: statement on stone, mission and vision, values on the water, how we work, FAQ, then the shared footer. No opening on this page: the bar (`FloatingNav` with no props) is simply there.
 
+The page is `noindex` (`robots: { index: false, follow: true }` in `src/app/about/page.tsx`), asked by the user, while its copy is a stand-in. Remove it when the real copy goes in.
+
 ## Routing
 
 - `FloatingNav` takes its opacity props optionally now, and its links are route-aware through `homeSection()` (exported from `floating-nav.tsx`, also used by the footer): `#…` links get `/` in front off the home page, anything else is left alone. The mark links to `/` off the home page.
