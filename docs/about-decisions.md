@@ -27,6 +27,8 @@ The page is `noindex` (`robots: { index: false, follow: true }` in `src/app/abou
 
 - Smoothness (user: "não está nada suave"): the softening (contrast 0.82, slight blur) is now baked into the JPGs instead of a CSS filter, so the crossfade is opacity only (`will-change`, 1.6s); the statement's text-shadow is only applied once lit, not under the light's sweep.
 
+- The stone photo has a little more contrast and deeper blacks (rebaked: contrast 1.02, brightness −0.035, gamma 0.88, same blur); the swirl is unchanged.
+
 ## 2a. Mission and vision (`about-mission.tsx`)
 
 - White, gallery hang: mission high left (8 cols), vision lower right (cols 6-12), each with a black-marker mono label, a tense label on the right and a hairline drawn in. Lit grey to black, ragged (`.abt-ragged`).
@@ -50,6 +52,8 @@ The page is `noindex` (`robots: { index: false, follow: true }` in `src/app/abou
 - The cue is now a **callout** (user's idea, from films where a camera picks out a person): a dot in a ring on the drop's edge, a leader slanting up and out at 45° then running level, and "Click here" ("Tap here" on touch) typed out along the level run as if underlined by it. It hops from drop to drop with a small water ring until the first choice, takes the hovered drop, and once joined points at the piece: "Click to close". It picks the side with room and shortens its run to fit. The drops no longer swell on the call (`BECKON_SWELL` 0); the black tag is gone.
 - Callouts never stop while the drops are apart (user: "constante e em loop"); each call's callout lives through the next call (`CALL_LIFE_S` = 2 calls − 0.45s, on the water's clock via `onBeckon`/`onBeckonEnd`), so two are up at once and the oldest leaves before a third appears. Calling pauses while joined and resumes after.
 - The value inside the joined piece: **name on the left, sentence on the right, justified, both cap-trimmed so their tops are level** (this, not the section header, was what the user meant by H1/H2). Stacked below 640px. The joined piece's interior is kept free of rim, highlight and water sheen (`u_join`) so nothing glints behind the words.
+- Padding pass (user): values head room 0.85× the section gap; foot room grown until the space under the drops' glass matches the space over the title (md:pb-[8rem]), so heading and drops read as one centred piece. Mission/vision top and bottom room also 0.85×.
+- Inside the joined piece: the name is smaller and on one line (nowrap, up to 1.875rem), the sentence bigger (up to 1.5rem) and wider (piece up to 34em), so the name is always shorter than the text box; the piece leaves more room round the words (`PIECE_PAD` 1.5em × 1.6em, shared with the callout). Callouts stay inside the shell's content edges.
 - The section is no longer a full screen: its height is the heading plus the drops' row with callout room (~700px at 1440x900).
 
 ## CTAs, site-wide
