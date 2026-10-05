@@ -20,7 +20,8 @@ The page is `noindex` (`robots: { index: false, follow: true }` in `src/app/abou
 - Lit grey to white with `Illuminated`, once the fonts are in.
 
 - 2026-10-05 (later): the user found the photo looked like a "fundo forçado". Tested a plain dim, a darker spot, a fade into the white page and a soft version; the soft one won: photo at 50% opacity over black, contrast eased (0.82), a 0.8px blur to calm the stone's specks, a light edge vignette, grain down to 0.06, a faint shadow on the words (`.abt-hero-photo`, `.abt-hero-scrim`, `.abt-grain`, `.abt-statement`).
-- Temporary: the section is shown three times, on three photos the user uploaded to choose between (`STONE`, `WATER` by Madison Oren, `SWIRL` by Sudhanshu Singh, in `about-hero.tsx`; files in `public/about/`, originals removed from the repo root). Only the first carries the h1; the others light their text when seen. Keep one and delete the other two `<AboutHero>` lines in `about.tsx`.
+- Temporary: the section was shown three times, on three photos the user uploaded to choose between (`STONE`, `WATER` by Madison Oren, `SWIRL` by Sudhanshu Singh, in `about-hero.tsx`; files in `public/about/`, originals removed from the repo root). Only the first carries the h1; the others light their text when seen. Keep one and delete the other two `<AboutHero>` lines in `about.tsx`. Later the user dropped the water photo (files removed), leaving stone and swirl.
+- The statement's light runs 2.5x faster than the service copy's (user): 600ms per paragraph, via the new optional `durationMs` on `Illuminated` (default unchanged, so the home page is untouched).
 
 ## 2a. Mission and vision (`about-mission.tsx`)
 

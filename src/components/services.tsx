@@ -486,6 +486,7 @@ export function Illuminated({
   lead,
   mark,
   delayMs,
+  durationMs = LIGHT_MS,
   reduce,
   className,
 }: {
@@ -496,6 +497,8 @@ export function Illuminated({
       It keeps its own colours, so it is lit as its own ground asks. */
   mark?: string;
   delayMs: number;
+  /** How long the light takes over the whole paragraph, in ms. */
+  durationMs?: number;
   reduce: boolean;
   className?: string;
 }) {
@@ -556,7 +559,7 @@ export function Illuminated({
     return () => window.removeEventListener("resize", finish);
   }, [lit]);
 
-  const per = lines ? LIGHT_MS / (1 + LIGHT_OVERLAP * (lines.length - 1)) : 0;
+  const per = lines ? durationMs / (1 + LIGHT_OVERLAP * (lines.length - 1)) : 0;
 
   return (
     <p ref={ref} className={className} data-lit={lit}>
