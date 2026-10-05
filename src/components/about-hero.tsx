@@ -1,8 +1,9 @@
 "use client";
 
+import { useRef } from "react";
 import { useReducedMotion } from "motion/react";
 import { Illuminated } from "./services";
-import { useFontsReady } from "./use-seen";
+import { useFontsReady, useSeen } from "./use-seen";
 
 /* ==================================================================
    About, the opening statement
@@ -34,36 +35,73 @@ const STATEMENT = [
 /** When each paragraph starts to light, from the moment the fonts are in. */
 const LIGHT_AT_MS = [450, 1500];
 
-export function AboutHero() {
+/** A ground for the statement: one photograph at two widths. */
+export type HeroPhoto = { small: string; large: string };
+
+/* Three grounds, hung one after another for now so the studio can
+   choose (all three from Unsplash, all black and white): stone by Liz
+   Grin, moving water by Madison Oren, a swirl of light by Sudhanshu
+   Singh. */
+export const STONE: HeroPhoto = {
+  small: "/about/stone-1280.jpg",
+  large: "/about/stone-2400.jpg",
+};
+export const WATER: HeroPhoto = {
+  small: "/about/water-1280.jpg",
+  large: "/about/water-2400.jpg",
+};
+export const SWIRL: HeroPhoto = {
+  small: "/about/swirl-1280.jpg",
+  large: "/about/swirl-2400.jpg",
+};
+
+export function AboutHero({
+  photo = STONE,
+  first = true,
+}: {
+  photo?: HeroPhoto;
+  /** The page's first screen, which carries its h1. The others (only
+      while the photographs are being compared) are labelled, not titled. */
+  first?: boolean;
+}) {
   const reduce = useReducedMotion() ?? false;
   const fonts = useFontsReady();
+  const ref = useRef<HTMLElement>(null);
+  // The first is lit on arrival; the others when they come into view.
+  const seen = useSeen(ref, { threshold: 0.4, ready: !first });
+  const lit = fonts && (first || seen);
 
   return (
     <section
-      aria-labelledby="about-title"
+      ref={ref}
+      aria-labelledby={first ? "about-title" : undefined}
+      aria-label={first ? undefined : "About Nevima, another photograph"}
       className="abt-hero relative isolate flex min-h-[100svh] items-center overflow-hidden bg-ink text-paper"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/about/stone-2400.jpg"
-        srcSet="/about/stone-1280.jpg 1280w, /about/stone-2400.jpg 2400w"
+        src={photo.large}
+        srcSet={`${photo.small} 1280w, ${photo.large} 2400w`}
         sizes="100vw"
         alt=""
         aria-hidden="true"
         draggable={false}
-        fetchPriority="high"
+        fetchPriority={first ? "high" : "auto"}
+        loading={first ? "eager" : "lazy"}
         className="abt-hero-photo absolute inset-0 -z-20 size-full object-cover select-none"
       />
       <span aria-hidden="true" className="abt-hero-scrim absolute inset-0 -z-10" />
       <span aria-hidden="true" className="abt-grain absolute inset-0 -z-10" />
 
       <div className="shell flex w-full justify-center pt-28 pb-20 md:pt-32 md:pb-24">
-        <h1 id="about-title" className="sr-only">
-          About Nevima
-        </h1>
+        {first && (
+          <h1 id="about-title" className="sr-only">
+            About Nevima
+          </h1>
+        )}
         <div className="abt-statement">
           {STATEMENT.map((text, i) =>
-            fonts && !reduce ? (
+            lit && !reduce ? (
               <Illuminated
                 key={i}
                 text={text}

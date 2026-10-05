@@ -44,7 +44,10 @@ export function AboutMission() {
     <section
       id="mission"
       aria-labelledby="mission-title"
-      className="relative bg-paper pt-(--section-gap)"
+      // Its own foot room too: the values below are a full screen of water
+      // from their very top edge, and with no room here the vision ran
+      // straight into it.
+      className="relative bg-paper py-(--section-gap)"
     >
       <div className="shell">
         <h2 id="mission-title" className="sr-only">

@@ -1286,24 +1286,32 @@
   /* ---- about --------------------------------------------------------
      See about.tsx and the sections it lists. */
 
-  /* The opening statement's ground: the stone, in black and white, taken
-     well down so the white type is the brightest thing on it, and darker
-     still through the middle, where the words are. */
+  /* The opening statement's ground. A photograph pushed down with a
+     filter and a dark spot over the middle read as a backdrop laid in
+     behind the words (the user: "fundo forçado"). It is let go instead:
+     half seen over the black, its contrast eased and the sharp specks of
+     the stone softened a touch, so the type is the only hard thing on the
+     screen and the photo sits behind it like the room it is in. The edges
+     settle a little darker than the middle, as a lens would leave them,
+     and the words carry a faint shade of their own. Tested against a
+     plain dim, a darker spot and a fade into the page below; this is the
+     one that stopped looking pasted on. */
   .abt-hero-photo {
-    filter: grayscale(1) brightness(0.62) contrast(1.08);
+    opacity: 0.5;
+    filter: grayscale(1) brightness(0.95) contrast(0.82) blur(0.8px);
+    /* The blur would pull a hairline of black in from each edge. */
+    transform: scale(1.015);
   }
   .abt-hero-scrim {
-    background:
-      radial-gradient(60% 55% at 50% 50%, rgb(0 0 0 / 0.55), rgb(0 0 0 / 0.2) 70%, rgb(0 0 0 / 0.35)),
-      linear-gradient(180deg, rgb(0 0 0 / 0.45), transparent 22%, transparent 78%, rgb(0 0 0 / 0.5));
+    background: radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(0 0 0 / 0.35));
   }
-  /* A fine grain over the photograph: it is enlarged on wide screens, and
-     the grain is what the eye reads as its texture there, not the blur. */
+  /* Only a trace of grain: the stone has its own. */
   .abt-grain {
-    opacity: 0.16;
+    opacity: 0.06;
     mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
+  .abt-statement { text-shadow: 0 0 30px rgb(0 0 0 / 0.55); }
 
   /* Justified as one block, centred in the screen, with each paragraph's
      last line centred under it. The measure is held in ems so a line
@@ -1357,71 +1365,43 @@
 
   /* ---- the values ---- */
 
-  /* A drop's button: the round the glass is drawn on, and the label under
-     it. Nothing of its own is painted: the canvas draws the drop. */
+  /* A drop's button: the round the glass is drawn on. Nothing of its own
+     is painted: the canvas draws the drop. */
   .abt-val-hit {
-    width: clamp(6.25rem, 12.5vw, 11rem);
+    width: clamp(7rem, 13vw, 11.5rem);
     aspect-ratio: 1;
   }
-  .abt-val-slot { cursor: pointer; outline-offset: 10px; }
+  .abt-val-slot { display: block; cursor: pointer; border-radius: 999px; }
   .abt-val-slot:focus-visible { outline: none; }
   .abt-val-slot:focus-visible .abt-val-hit { outline: 1px solid var(--color-ink); outline-offset: 10px; }
-  .abt-val-label {
-    position: relative;
-    padding-bottom: 0.3em;
-    transition: opacity 0.4s ease;
-  }
-  .abt-val-label::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 1px;
-    background: currentColor;
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.45s var(--ease-out-quint);
-  }
-  .abt-val-slot:hover .abt-val-label::after,
-  .abt-val-slot:focus-visible .abt-val-label::after { transform: scaleX(1); }
-  /* While the four are together, their names step back. */
-  .abt-val-list[data-chosen] .abt-val-label { opacity: 0; }
   .abt-val-list[data-chosen] .abt-val-slot { cursor: default; }
+  /* While the four are together, a press anywhere lets them go. */
+  .abt-val[data-joined] { cursor: pointer; }
 
-  /* The drop the four become: the site's call-to-action drop, grown to
-     carry a value. Its outline is in its own ems (see .cta-drop), so the
-     size is set here and the words inside are set in rem. */
+  /* The cue: a small black tag with the gallery's label type in white,
+     beside a drop that is calling or just behind the pointer. */
+  .abt-val-tag {
+    font-size: 0.8125rem;
+    padding: 0.5em 0.85em 0.45em;
+    border-radius: 999px;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    white-space: nowrap;
+    transform-origin: 0 100%;
+    box-shadow: 0 6px 18px -8px rgb(0 0 0 / 0.5);
+  }
+
+  /* The value, set in white on the piece the four become. Its size is
+     what the piece is laid out to (see values-water.ts). */
   .abt-val-drop {
-    font-size: clamp(1.25rem, 1.7vw, 1.5rem);
-    width: min(100%, 21em);
-    padding: 1.15em 1.6em 1.25em;
+    font-size: clamp(1.125rem, 1.5vw, 1.375rem);
+    width: min(100% - 4.5rem, 19em);
+    padding: 0.4em 0.6em;
     text-align: center;
     pointer-events: none;
     cursor: pointer;
   }
   .abt-val-drop[data-joined] { pointer-events: auto; }
-  /* Grown this big, the button's own corners would leave it a rounded
-     box; a drop this size needs corners as deep as the call-to-action's
-     are for its height, so its ends stay full and round. And it breathes
-     only as far as the white one does: it has just been black glass, and
-     a fade as deep as the small drop's would read as it greying out. */
-  .abt-val-drop::before {
-    inset: -0.3em -0.5em -0.42em -0.36em;
-    border-radius: 4.6em 3.2em 4.1em 3.5em / 3.9em 3.1em 3.4em 3.6em;
-    animation-name: val-drop-shape, drop-tilt, drop-breathe-light;
-    animation-delay: -3.1s, -1.7s, -0.9s;
-  }
-  @keyframes val-drop-shape {
-    0%   { border-radius: 4.6em 3.2em 4.1em 3.5em / 3.9em 3.1em 3.4em 3.6em; }
-    25%  { border-radius: 3.3em 4.5em 3.4em 4.2em / 3.2em 3.8em 3em 3.7em; }
-    50%  { border-radius: 4.2em 3.5em 4.7em 3.1em / 3em 3.6em 3.8em 3.3em; }
-    75%  { border-radius: 3.4em 4.2em 3.2em 4.6em / 3.7em 3.2em 3.5em 3.6em; }
-    100% { border-radius: 4.4em 3.1em 3.9em 3.8em / 3.5em 3.7em 3.2em 3.4em; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .abt-val-drop::before { animation: none; }
-  }
   .abt-val-name {
     font-size: clamp(1.625rem, 2.3vw, 2.25rem);
     font-weight: 500;
@@ -1436,10 +1416,10 @@
     font-weight: 400;
     line-height: 1.45;
     letter-spacing: -0.006em;
-    color: rgb(255 255 255 / 0.82);
+    color: rgb(255 255 255 / 0.85);
     text-wrap: pretty;
   }
-  .abt-val-drop:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 12px; }
+  .abt-val-drop:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 2.2em; }
 
   /* ---- how we work ---- */
 
