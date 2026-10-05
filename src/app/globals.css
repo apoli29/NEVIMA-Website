@@ -1074,7 +1074,7 @@
     --cmp-frame: 0.5rem;
     --cmp-px: 1rem;
     --cmp-py: 1.5rem;
-    --cmp-radius: calc(22px - var(--cmp-frame));
+    --cmp-radius: 0px;
     --cmp-rule: rgb(255 255 255 / 0.08);
     padding: var(--cmp-frame);
   }
@@ -1086,11 +1086,6 @@
   }
   @media (min-width: 1280px) {
     .cmp-card { --cmp-px: 1.875rem; --cmp-py: 2rem; }
-  }
-
-  /* The pointer's light, a fifth of the service card's reach. */
-  .cmp-card .svc-spot {
-    background: radial-gradient(5.2rem circle at var(--mx, 50%) var(--my, 50%), rgb(255 255 255 / 0.07), transparent 65%);
   }
 
   /* The slide. The fade on the right edge only shows while there is more
@@ -1133,11 +1128,10 @@
     padding: var(--cmp-py) var(--cmp-px);
     vertical-align: top;
   }
+  /* The column heads in the gallery's label type (see .mono-label). */
   .cmp-table thead th {
     vertical-align: bottom;
     padding-block: calc(var(--cmp-py) * 0.9) calc(var(--cmp-py) * 0.75);
-    font-size: 0.875rem;
-    line-height: 1.3;
     color: rgb(255 255 255 / 0.5);
   }
   /* The panel starts a frame clear of the agency's column, and our copy

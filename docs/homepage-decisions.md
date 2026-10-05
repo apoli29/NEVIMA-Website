@@ -331,3 +331,5 @@ rejecting the shatter.
   so the second screen's section links got no hover/click. It now has pointer-events none once
   `phase === "open"`. Those links (`.sec-link`) also show a faint white key (bg white/9%) and a
   stronger glow while hovered, plus a hairline drawn L→R under the word. They do NOT use the boomerang pass (user: the separators are already boomerangs; wanted something different).
+- 2026-10-05: comparison table brought in line with the gallery look the site now has. The user kept the colours (near-black card, raised Nevima panel, grey agency text, lit answers) and declined moving it onto white. Changed: square corners (card and panel, `--cmp-radius` 0), column heads in `.mono-label`, the pointer-following light removed (`followPointer` and the `.cmp-card .svc-spot` rule are gone).
+- 2026-10-05: every `.cta-drop` now has the about page's joined-drops outline (see `docs/about-decisions.md`, "CTAs, site-wide"). The studio's "Learn more about us" is one `.cta-drop` link; the black `drop-shell` around a plain "Learn more" and a heavier "about us" link is gone (the user flagged the double gap and mixed weights).
