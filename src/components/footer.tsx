@@ -5,7 +5,7 @@ import { motion, useReducedMotion, useScroll, useTransform } from "motion/react"
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SERVICES, servicePath } from "@/lib/services";
-import { NAV } from "./floating-nav";
+import { NAV, homeSection } from "./floating-nav";
 import { LiquidLens } from "./liquid-lens";
 
 /** How far the mark rises into place, as a share of its own height. */
@@ -47,7 +47,7 @@ export function Footer() {
   // The menu points at sections of the home page, so anywhere else it has
   // to go there first.
   const onHome = usePathname() === "/";
-  const section = (href: string) => (onHome ? href : `/${href}`);
+  const section = (href: string) => homeSection(href, onHome);
 
   const [still, setStill] = useState(false);
   useEffect(() => {

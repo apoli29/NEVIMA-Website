@@ -9,7 +9,7 @@ The original brief is imported below. Parts of it were written before the build 
 - Site copy is English (`lang="en"`). The metadata/OG text in `src/app/layout.tsx` is still Portuguese and untranslated.
 - Titles are set in Satoshi (self-hosted in `fonts/Satoshi/`, via `--f-title`); mono labels in Geist Mono (`--font-mono`, `.mono-label`).
 - The default branch is `main`. Work on a branch and merge back through a pull request.
-- The full history of homepage decisions, section by section, is in `docs/homepage-decisions.md`. Read the part about a section before changing it.
+- The full history of homepage decisions, section by section, is in `docs/homepage-decisions.md`; the about page's is in `docs/about-decisions.md`. Read the part about a section before changing it.
 
 ## Working with the user
 
