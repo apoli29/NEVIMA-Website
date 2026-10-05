@@ -20,6 +20,11 @@ import { motion, useReducedMotion } from "motion/react";
    the form first): sending opens the visitor's own email, addressed to
    the studio, with everything they wrote already in it, and says so,
    so nobody is left thinking a message went that did not.
+
+   It is always there, unseen, in the same box as the index (see
+   SectionIndex): the box is as tall as the form from the first paint,
+   so the water's drops are laid out clear of it once and never have to
+   move when it opens. Opening it only shows it.
    ================================================================== */
 
 const EMAIL = "ola@nevima.pt";
@@ -31,13 +36,13 @@ const ROW = {
 };
 
 export function ProposalForm({
+  open,
   onClose,
-  onSettled,
 }: {
+  /** Shown, in place of the index. */
+  open: boolean;
   /** Back to the index. */
   onClose: () => void;
-  /** The form has finished coming in, or changed height. */
-  onSettled: () => void;
 }) {
   const reduce = useReducedMotion() ?? false;
   const [needs, setNeeds] = useState<string[]>([]);
@@ -46,12 +51,18 @@ export function ProposalForm({
 
   // Escape is the way back, as it is everywhere else something opens.
   useEffect(() => {
+    if (!open) return;
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  }, [open, onClose]);
+
+  // Closed, it starts afresh next time.
+  useEffect(() => {
+    if (!open) setSent(false);
+  }, [open]);
 
   const toggle = (need: string) =>
     setNeeds((was) => (was.includes(need) ? was.filter((n) => n !== need) : [...was, need]));
@@ -74,21 +85,21 @@ export function ProposalForm({
     setSent(true);
   };
 
-  useEffect(() => {
-    onSettled();
-  }, [sent, onSettled]);
-
   return (
     <motion.div
-      initial="hidden"
-      animate="shown"
-      exit={{ opacity: 0, transition: { duration: 0.2 } }}
-      variants={{ shown: { transition: { staggerChildren: reduce ? 0 : 0.06 } } }}
+      initial={false}
+      animate={open ? "shown" : "hidden"}
+      variants={{
+        hidden: { transition: { duration: 0.2 } },
+        shown: { transition: { staggerChildren: reduce ? 0 : 0.06, delayChildren: 0.18 } },
+      }}
+      // Unseen and out of reach while the index is up; still laid out, so
+      // the box keeps its height.
+      inert={!open}
+      aria-hidden={!open}
+      className={open ? "" : "pointer-events-none"}
       onAnimationComplete={(def) => {
-        if (def === "shown") {
-          onSettled();
-          first.current?.focus({ preventScroll: true });
-        }
+        if (def === "shown") first.current?.focus({ preventScroll: true });
       }}
     >
       <motion.p variants={ROW} className="mono-label mb-2.5 flex items-center justify-between text-ash-2">
@@ -116,7 +127,7 @@ export function ProposalForm({
           </button>
         </motion.div>
       ) : (
-        <form onSubmit={submit} aria-label="Get your free proposal" className="border-b border-ink">
+        <form id="proposal-form" onSubmit={submit} aria-label="Get your free proposal" className="border-b border-ink">
           <motion.label variants={ROW} className="prop-row">
             <span className="mono-label prop-label">Name</span>
             <input
