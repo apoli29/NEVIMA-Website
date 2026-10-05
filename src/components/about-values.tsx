@@ -7,9 +7,10 @@ import {
   useRef,
   useState,
   type MouseEvent,
-  type PointerEvent,
 } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { SlideIn } from "./enter";
+import { useInkAlign } from "./ink-align";
 import { useSeen } from "./use-seen";
 import { useValuesWater, type ValuesControl } from "./values-water";
 
@@ -17,17 +18,19 @@ import { useValuesWater, type ValuesControl } from "./values-water";
    Values
 
    The second screen's water again, white under a moving sheet of it,
-   with four drops of black glass lying on it, one to a value, and
-   nothing else: no title, no names. What each drop stands for is only
-   found by choosing it (the user asked for the four on their own).
+   with the section's title and its subtitle at the head (title on the
+   left, subtitle justified on the right, level with it), and under them
+   four drops of black glass lying on the water, one to a value, with no
+   names: what each drop stands for is only found by choosing it.
 
-   So the drops have to ask to be pressed, and the cue is laid on three
-   ways at once, because the user wanted it all but impossible to miss.
-   Until a first choice, one drop at a time swells and strikes the water
-   as if touched, and a small black tag saying "Click" (or "Tap", where
-   there is no pointer to hover with) comes up beside it; the drop under
-   the pointer swells and holds; and over a drop the tag follows the
-   pointer itself. The pointer is the hand.
+   So the drops have to ask to be pressed. The cue is a callout of the
+   kind films draw over a camera feed when a target is picked out: from
+   the edge of one drop a fine line runs off at an angle, turns level,
+   and "Click here" is written along the level stretch, the line under it
+   as its underline. Until a first choice it moves from drop to drop, a
+   ring striking the water where it lands; the drop under the pointer
+   takes it and swells a little; once the four are together it points
+   at the piece they made and says how to let them go.
 
    Choosing one pulls all four together into a single uneven piece of
    glass, and the value chosen is set on it in white (see
@@ -69,19 +72,19 @@ const VALUES = [
   },
 ] as const;
 
-/** How long the tag stays up beside a drop that is calling, in ms. */
-const CALL_TAG_MS = 1700;
-
-/** Where the tag is, in the section's pixels, and what it says. */
-type Tag = { x: number; y: number; label: string; key: string } | null;
+/** What the callout points at: a drop, or the piece the four made. */
+type Aim = { kind: "drop"; i: number } | { kind: "piece" } | null;
 
 export function AboutValues() {
   const reduce = useReducedMotion() ?? false;
   const section = useRef<HTMLElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const subRef = useRef<HTMLParagraphElement>(null);
   const field = useRef<HTMLDivElement>(null);
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const mergedRef = useRef<HTMLButtonElement>(null);
+  useInkAlign(titleRef, subRef);
   const seen = useSeen(field, { threshold: 0.35 });
 
   // The value on show, from the moment it is chosen until the four are
@@ -100,11 +103,19 @@ export function AboutValues() {
     if (!window.matchMedia("(hover: hover)").matches) setPress("Tap");
   }, []);
 
-  // The tag: following the pointer over a drop, or up beside the drop
-  // that is calling. The pointer's place wins.
-  const [pointerTag, setPointerTag] = useState<Tag>(null);
-  const [callTag, setCallTag] = useState<Tag>(null);
-  const tag = pointerTag ?? callTag;
+  // The callout: on the drop under the pointer if there is one, else on
+  // the drop that is calling, else (once joined) on the piece.
+  const [hovered, setHovered] = useState<number | null>(null);
+  const [calling, setCalling] = useState<number | null>(null);
+  const aim: Aim = joined
+    ? { kind: "piece" }
+    : chosen !== null
+      ? null
+      : hovered !== null
+        ? { kind: "drop", i: hovered }
+        : calling !== null
+          ? { kind: "drop", i: calling }
+          : null;
 
   const control = useRef<ValuesControl>({
     target: 0,
@@ -129,26 +140,7 @@ export function AboutValues() {
     returnFocus.current = false;
     setChosen(null);
   };
-  control.current.onBeckon = (i) => {
-    const hit = control.current.slots[i];
-    const box = section.current?.getBoundingClientRect();
-    if (!hit || !box) return;
-    const b = hit.getBoundingClientRect();
-    // Up and to the right of the drop, where a hand would come from.
-    setCallTag({
-      x: b.right - box.left - b.width * 0.12,
-      y: b.top - box.top + b.height * 0.08,
-      label: press,
-      key: `call-${i}-${Date.now()}`,
-    });
-  };
-
-  // A call's tag comes down again after a moment.
-  useEffect(() => {
-    if (!callTag) return;
-    const id = window.setTimeout(() => setCallTag(null), CALL_TAG_MS);
-    return () => window.clearTimeout(id);
-  }, [callTag]);
+  control.current.onBeckon = (i) => setCalling(i);
 
   // Once the piece they made can be pressed, it holds the focus.
   useEffect(() => {
@@ -174,8 +166,8 @@ export function AboutValues() {
   const choose = (i: number, event: MouseEvent<HTMLButtonElement>) => {
     if (chosen !== null) return;
     setChosen(i);
-    setCallTag(null);
-    setPointerTag(null);
+    setCalling(null);
+    setHovered(null);
     control.current.lead = i;
     control.current.target = 1;
     control.current.hover = -1;
@@ -192,7 +184,6 @@ export function AboutValues() {
     returnFocus.current = mergedRef.current === document.activeElement;
     control.current.target = 0;
     setJoined(false);
-    setPointerTag(null);
     tell("values:change");
   }, [tell]);
 
@@ -205,26 +196,6 @@ export function AboutValues() {
     return () => window.removeEventListener("keydown", onKey);
   }, [chosen, part]);
 
-  /* The tag follows a mouse that is over a drop, or anywhere on the water
-     while the four are together (where a press lets them go). */
-  const onPointerMove = (event: PointerEvent<HTMLElement>) => {
-    if (event.pointerType !== "mouse" || reduce) return;
-    const box = section.current?.getBoundingClientRect();
-    if (!box) return;
-    const over = (event.target as HTMLElement).closest<HTMLElement>("[data-drop]");
-    const label = joined ? "Close" : chosen === null && over ? press : null;
-    if (!label) {
-      if (pointerTag) setPointerTag(null);
-      return;
-    }
-    setPointerTag({
-      x: event.clientX - box.left + 20,
-      y: event.clientY - box.top - 40,
-      label,
-      key: "pointer",
-    });
-  };
-
   const value = VALUES[chosen ?? 0];
   const on = seen || reduce;
 
@@ -233,8 +204,6 @@ export function AboutValues() {
       ref={section}
       id="values"
       aria-labelledby="values-title"
-      onPointerMove={onPointerMove}
-      onPointerLeave={() => setPointerTag(null)}
       // While the four are together, a press anywhere on the water lets
       // them go: on a phone there is no Esc, and the piece is not the only
       // thing a thumb will aim at.
@@ -242,7 +211,7 @@ export function AboutValues() {
         if (joined) part();
       }}
       data-joined={joined ? "" : undefined}
-      className="abt-val relative isolate flex min-h-[100svh] items-center overflow-hidden bg-paper"
+      className="abt-val relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-paper pt-(--section-gap)"
     >
       <canvas
         ref={canvas}
@@ -250,105 +219,274 @@ export function AboutValues() {
         className="absolute inset-0 -z-10 block size-full"
       />
 
-      <h2 id="values-title" className="sr-only">
-        Our values
-      </h2>
-
-      <div ref={field} className="shell relative py-24">
-        <ul
-          aria-label="Values: choose one to read it"
-          data-chosen={chosen === null ? undefined : ""}
-          className="abt-val-list grid w-full grid-cols-2 gap-y-16 md:grid-cols-4"
-        >
-          {VALUES.map((v, i) => (
-            <motion.li
-              key={v.id}
-              className="flex justify-center"
-              initial={false}
-              animate={{ opacity: on ? 1 : 0 }}
-              transition={{ duration: 0.6, delay: reduce ? 0 : 0.2 + i * 0.12 }}
+      <div className="shell flex flex-1 flex-col pb-[clamp(2.5rem,7svh,5rem)]">
+        {/* Side by side from md: the title on the left, the subtitle
+            justified on the right, its first line level with the top of
+            the title's (see ink-align.ts). */}
+        <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between md:gap-10">
+          <SlideIn ready>
+            <h2
+              ref={titleRef}
+              id="values-title"
+              className="display text-[clamp(2.25rem,4.2vw,4.25rem)] text-ink"
             >
-              <button
-                ref={(el) => {
-                  buttons.current[i] = el;
-                }}
-                type="button"
-                data-drop=""
-                aria-pressed={chosen === i}
-                aria-controls="value-drop"
-                aria-label={v.name}
-                // While the four are together, the piece they made is the
-                // one thing to press.
-                disabled={chosen !== null}
-                onClick={(event) => choose(i, event)}
-                onPointerEnter={() => {
-                  if (chosen === null) control.current.hover = i;
-                  tell("values:change");
-                }}
-                onPointerLeave={() => {
-                  if (control.current.hover === i) control.current.hover = -1;
-                }}
-                className="abt-val-slot"
-              >
-                <span
-                  ref={(el) => {
-                    control.current.slots[i] = el;
-                  }}
-                  aria-hidden="true"
-                  className="abt-val-hit block rounded-full"
-                />
-              </button>
-            </motion.li>
-          ))}
-        </ul>
+              <span className="block font-light">Four values.</span>
+              <span className="block font-medium">One way of working.</span>
+            </h2>
+          </SlideIn>
+          <SlideIn ready from="right" delay={0.12} className="w-full max-w-[20rem] shrink-0">
+            <p ref={subRef} className="abt-val-sub text-[0.9375rem] leading-[1.45] text-ash">
+              Pick one to see what it means. None of them works alone, so
+              they never stay apart for long.
+            </p>
+          </SlideIn>
+        </div>
 
-        {/* The value, set on the piece the four become. Always laid out,
-            so they always know the size they are going to; seen only once
-            they have met (its opacity is set by the water, frame by frame). */}
-        <div className="pointer-events-none absolute inset-0 grid place-items-center px-1">
-          <button
-            ref={mergedRef}
-            id="value-drop"
-            type="button"
-            onClick={part}
-            inert={!joined}
-            data-joined={joined ? "" : undefined}
-            style={{ opacity: 0 }}
-            className="abt-val-drop"
+        <div ref={field} className="relative flex flex-1 items-center py-14 md:py-16">
+          <ul
+            aria-label="Values: choose one to read it"
+            data-chosen={chosen === null ? undefined : ""}
+            className="abt-val-list grid w-full grid-cols-2 gap-y-16 md:grid-cols-4"
           >
-            <span className="abt-val-name display block">{value.name}</span>
-            <span className="abt-val-text block">{value.text}</span>
-            <span className="sr-only">. Press to see all four values again.</span>
-          </button>
+            {VALUES.map((v, i) => (
+              <motion.li
+                key={v.id}
+                className="flex justify-center"
+                initial={false}
+                animate={{ opacity: on ? 1 : 0 }}
+                transition={{ duration: 0.6, delay: reduce ? 0 : 0.2 + i * 0.12 }}
+              >
+                <button
+                  ref={(el) => {
+                    buttons.current[i] = el;
+                  }}
+                  type="button"
+                  aria-pressed={chosen === i}
+                  aria-controls="value-drop"
+                  aria-label={v.name}
+                  // While the four are together, the piece they made is the
+                  // one thing to press.
+                  disabled={chosen !== null}
+                  onClick={(event) => choose(i, event)}
+                  onPointerEnter={(event) => {
+                    if (event.pointerType !== "mouse" || chosen !== null) return;
+                    control.current.hover = i;
+                    setHovered(i);
+                    tell("values:change");
+                  }}
+                  onPointerLeave={() => {
+                    if (control.current.hover === i) control.current.hover = -1;
+                    setHovered((h) => (h === i ? null : h));
+                  }}
+                  className="abt-val-slot"
+                >
+                  <span
+                    ref={(el) => {
+                      control.current.slots[i] = el;
+                    }}
+                    aria-hidden="true"
+                    className="abt-val-hit block rounded-full"
+                  />
+                </button>
+              </motion.li>
+            ))}
+          </ul>
+
+          {/* The value, set on the piece the four become. Always laid out,
+              so they always know the size they are going to; seen only
+              once they have met (its opacity is set by the water). */}
+          <div className="pointer-events-none absolute inset-0 grid place-items-center px-1">
+            <button
+              ref={mergedRef}
+              id="value-drop"
+              type="button"
+              onClick={part}
+              inert={!joined}
+              data-joined={joined ? "" : undefined}
+              style={{ opacity: 0 }}
+              className="abt-val-drop"
+            >
+              <span className="abt-val-name display block">{value.name}</span>
+              <span className="abt-val-text block">{value.text}</span>
+              <span className="sr-only">. Press to see all four values again.</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* The tag. Drawn for the eye only: the buttons carry the names. */}
-      <AnimatePresence>
-        {tag && !reduce && (
-          <motion.span
-            key={tag.key}
-            aria-hidden="true"
-            className="abt-val-tag mono-label pointer-events-none absolute top-0 left-0 z-10"
-            initial={{ opacity: 0, scale: 0.85, x: tag.x, y: tag.y + 6 }}
-            animate={{ opacity: 1, scale: 1, x: tag.x, y: tag.y }}
-            exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-            transition={{
-              opacity: { duration: 0.2 },
-              scale: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
-              // Close behind the pointer, not stuck to it.
-              x: { type: "spring", stiffness: 900, damping: 60 },
-              y: { type: "spring", stiffness: 900, damping: 60 },
-            }}
-          >
-            {tag.label}
-          </motion.span>
-        )}
-      </AnimatePresence>
+      {!reduce && on && (
+        <Callout
+          aim={aim}
+          label={aim?.kind === "piece" ? `${press} to close` : `${press} here`}
+          section={section}
+          slots={control.current.slots}
+          piece={mergedRef}
+        />
+      )}
 
       <p className="sr-only" aria-live="polite">
         {joined ? `${value.name}. ${value.text}` : ""}
       </p>
     </section>
   );
+}
+
+/* ================================================================== */
+/* The callout                                                          */
+/* ================================================================== */
+
+/** Where the callout is drawn, in the section's pixels: the point on the
+    target it starts from, the corner where it turns level, how long the
+    level run is and which way it goes. */
+type Lead = { ax: number; ay: number; bx: number; by: number; run: number; dir: 1 | -1 };
+
+/** How far up and out the slanted stretch runs, and the level run. */
+const RISE = 46;
+const RUN = 128;
+
+function Callout({
+  aim,
+  label,
+  section,
+  slots,
+  piece,
+}: {
+  aim: Aim;
+  label: string;
+  section: React.RefObject<HTMLElement | null>;
+  slots: (HTMLElement | null)[];
+  piece: React.RefObject<HTMLButtonElement | null>;
+}) {
+  const [lead, setLead] = useState<Lead | null>(null);
+  const key = aim ? (aim.kind === "drop" ? `drop-${aim.i}` : "piece") : "none";
+
+  // Measured from the page whenever the target changes, and again if the
+  // window does, so it is always drawn off the drop where it now is.
+  useLayoutEffect(() => {
+    const measure = () => {
+      const box = section.current?.getBoundingClientRect();
+      if (!aim || !box) return setLead(null);
+      if (aim.kind === "drop") {
+        const el = slots[aim.i];
+        if (!el) return setLead(null);
+        const b = el.getBoundingClientRect();
+        const cx = b.left - box.left + b.width / 2;
+        const cy = b.top - box.top + b.height / 2;
+        // Off the right of the drop, unless that would run off the screen.
+        const dir: 1 | -1 = cx + b.width * 0.4 + RISE + RUN > box.width - 16 ? -1 : 1;
+        // From the drop's edge, up and outwards at forty-five degrees.
+        const reach = b.width * 0.3;
+        const ax = cx + dir * reach;
+        const ay = cy - reach;
+        const bx = ax + dir * RISE;
+        const room = dir === 1 ? box.width - 16 - bx : bx - 16;
+        setLead({ ax, ay, bx, by: ay - RISE, run: Math.min(RUN, room), dir });
+      } else {
+        const el = piece.current;
+        if (!el) return setLead(null);
+        const r = el.getBoundingClientRect();
+        // The piece reaches past the words' box by the margin it is laid
+        // out with (see measure() in values-water.ts).
+        const fs = parseFloat(getComputedStyle(el).fontSize) || 16;
+        const b = {
+          left: r.left - 0.9 * fs,
+          right: r.right + 0.9 * fs,
+          top: r.top - 1.1 * fs,
+          width: r.width + 1.8 * fs,
+        };
+        const left = b.left - box.left;
+        const right = b.right - box.left;
+        const need = RISE + RUN + 24;
+        // Off whichever end of the piece has room; where neither has (a
+        // phone), up off its top, towards the wider side.
+        let ax: number;
+        let ay = b.top - box.top - 4;
+        let dir: 1 | -1;
+        if (box.width - right >= need) {
+          dir = 1;
+          ax = right + 4;
+        } else if (left >= need) {
+          dir = -1;
+          ax = left - 4;
+        } else {
+          dir = right > box.width - left ? -1 : 1;
+          ax = dir === -1 ? right - b.width * 0.18 : left + b.width * 0.18;
+          ay = b.top - box.top - 2;
+        }
+        const bx = ax + dir * RISE;
+        const room = dir === 1 ? box.width - 16 - bx : bx - 16;
+        setLead({ ax, ay, bx, by: ay - RISE, run: Math.min(RUN + 24, room), dir });
+      }
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return (
+    <AnimatePresence>
+      {aim && lead && (
+        <motion.svg
+          key={key}
+          aria-hidden="true"
+          className="abt-callout pointer-events-none absolute inset-0 z-10 size-full overflow-visible"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0, transition: { duration: 0.18 } }}
+        >
+          {/* The mark on the target: a dot in a ring. */}
+          <motion.circle
+            cx={lead.ax}
+            cy={lead.ay}
+            r={7}
+            className="abt-callout-ring"
+            initial={{ scale: 2.2, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            style={{ transformOrigin: `${lead.ax}px ${lead.ay}px` }}
+          />
+          <circle cx={lead.ax} cy={lead.ay} r={2.5} className="abt-callout-dot" />
+          {/* The leader: up and out at an angle, then level. */}
+          <motion.path
+            d={`M ${lead.ax} ${lead.ay} L ${lead.bx} ${lead.by} L ${lead.bx + lead.dir * lead.run} ${lead.by}`}
+            className="abt-callout-line"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.45, delay: 0.1, ease: [0.65, 0, 0.35, 1] }}
+          />
+          {/* Written along the level run, the line under it as its
+              underline, as it is drawn out. */}
+          <text
+            x={lead.dir === 1 ? lead.bx + 2 : lead.bx - 2}
+            y={lead.by - 8}
+            textAnchor={lead.dir === 1 ? "start" : "end"}
+            className="abt-callout-text"
+          >
+            <Typed text={label} delayMs={400} />
+          </text>
+        </motion.svg>
+      )}
+    </AnimatePresence>
+  );
+}
+
+/* Written out a letter at a time, as a readout on a screen is. */
+function Typed({ text, delayMs }: { text: string; delayMs: number }) {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    setN(0);
+    let id = 0;
+    const start = window.setTimeout(() => {
+      id = window.setInterval(() => {
+        setN((v) => {
+          if (v >= text.length) window.clearInterval(id);
+          return Math.min(v + 1, text.length);
+        });
+      }, 32);
+    }, delayMs);
+    return () => {
+      window.clearTimeout(start);
+      window.clearInterval(id);
+    };
+  }, [text, delayMs]);
+  return <>{text.slice(0, n)}</>;
 }

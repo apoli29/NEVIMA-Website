@@ -15,11 +15,9 @@ import { useSeen } from "./use-seen";
    label over it: what it is on the left, the tense it speaks in on the
    right, on a black hairline drawn in as it is seen.
 
-   Both come from the one idea the studio is built on, leverage: size
-   does not decide what a business can do. The mission is that idea
-   applied to the client today; the vision is the same idea applied to
-   the whole market. The type is lit as the rest of the site's copy is,
-   grey to black, so the page reads as one material.
+   The words are the studio's own (written in Portuguese, translated
+   here as closely as English allows). The type is lit as the rest of
+   the site's copy is, grey to black, so the page reads as one material.
    ================================================================== */
 
 const PIECES = [
@@ -27,14 +25,14 @@ const PIECES = [
     id: "mission",
     label: "Mission",
     tense: "What we do, today",
-    text: "Give small and medium businesses a website and a brand that perform like a big agency’s work, built directly by the people they talk to, with the right tools and nothing in between.",
+    text: "To provide small and medium-sized businesses around the world with top-tier web development services that are efficient, complete and free from the bureaucracy and complications usual in the sector, through the most cutting-edge technologies and know-how available.",
     place: "lg:col-span-8",
   },
   {
     id: "vision",
     label: "Vision",
     tense: "Where it leads",
-    text: "A web where how a business shows up depends on the quality of its work, not on the size of its budget or its team.",
+    text: "To make Nevima a reference in web development, able to take on projects of different sizes through constantly evolving know-how and the best, most advanced technologies.",
     place: "lg:col-span-7 lg:col-start-6 lg:mt-[clamp(4rem,9vw,8.5rem)]",
   },
 ] as const;

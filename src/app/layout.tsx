@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Instrument_Sans } from "next/font/google";
 import localFont from "next/font/local";
+import { CtaGlassFilters } from "@/components/cta-glass";
 import "./globals.css";
 
 /* Titles: Satoshi (manual v2), self-hosted from /fonts. The variable file is
@@ -58,7 +59,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${title.variable} ${read.variable} ${mono.variable}`}>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <CtaGlassFilters />
+        {children}
+      </body>
     </html>
   );
 }

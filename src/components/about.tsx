@@ -1,7 +1,7 @@
 "use client";
 
 import { AboutFaq } from "./about-faq";
-import { AboutHero, STONE, SWIRL } from "./about-hero";
+import { AboutHero } from "./about-hero";
 import { AboutMission } from "./about-mission";
 import { AboutProcess } from "./about-process";
 import { AboutValues } from "./about-values";
@@ -25,10 +25,7 @@ export function About() {
     <>
       <FloatingNav />
       <main id="top" className="relative">
-        {/* Temporary: the same statement on each of the two photographs
-            the studio is choosing between. Keep one. */}
-        <AboutHero photo={STONE} />
-        <AboutHero photo={SWIRL} first={false} />
+        <AboutHero />
         <AboutMission />
         <AboutValues />
         <AboutProcess />
