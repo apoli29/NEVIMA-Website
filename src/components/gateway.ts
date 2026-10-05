@@ -223,6 +223,10 @@ export function useGateway(lenis: RefObject<Lenis | null>, active: boolean) {
       if (!instance) return;
       const down = DOWN_KEYS.has(event.key);
       if (!down && !UP_KEYS.has(event.key)) return;
+      // Keys typed into a field are the field's: a space in the proposal
+      // form's name was being taken as a turn of the page.
+      const at = event.target as HTMLElement | null;
+      if (at?.closest("input, textarea, select, [contenteditable]")) return;
       if (stalled(event)) return;
       if (!opening(instance, down)) return;
       event.preventDefault();

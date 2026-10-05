@@ -298,6 +298,126 @@
     .live-dot::after { transition: none; animation: none; }
   }
 
+  /* The index's last row, which asks: its words are written out with a
+     text cursor after them that blinks while they are still (see Typed in
+     statement-screen.tsx), and pointed at, its plus turns a quarter. */
+  .idx-caret {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    margin-left: 3px;
+    vertical-align: -0.12em;
+    background: currentColor;
+  }
+  .idx-caret[data-still] { animation: idx-blink 1.05s steps(1, end) infinite; }
+  @keyframes idx-blink {
+    0%, 50% { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+  }
+  .idx-ask:hover .idx-arrow,
+  .idx-ask:focus-visible .idx-arrow { transform: rotate(90deg); }
+
+  /* ---- the free-proposal form (proposal-form.tsx) ----------------
+     The index's rows turned to another use: the same height, padding,
+     hairlines and type. A row being written in is inked over as an index
+     row is when pointed at, its words and placeholder coming out white. */
+  .prop-row {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: 3.75rem minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    border-top: 1px solid var(--color-ink);
+    color: var(--color-ink);
+    cursor: text;
+    transition: color 0.35s ease;
+  }
+  @media (min-width: 768px) {
+    .prop-row { padding-block: 0.8rem; }
+  }
+  @media (min-width: 1280px) {
+    .prop-row { padding-block: 0.95rem; }
+  }
+  .prop-row::before {
+    content: "";
+    position: absolute;
+    inset: -1px 0;
+    z-index: -1;
+    background: var(--color-ink);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+  }
+  .prop-row:not(.prop-row-plain):focus-within { color: var(--color-paper); }
+  .prop-row:not(.prop-row-plain):focus-within::before { transform: scaleX(1); transform-origin: left; }
+  .prop-row-plain { cursor: default; margin: 0; min-width: 0; align-items: center; }
+  .prop-label { color: var(--color-ash-2); transition: color 0.35s ease; }
+  .prop-row:focus-within .prop-label { color: rgb(255 255 255 / 0.6); }
+  .prop-row-plain:focus-within .prop-label { color: var(--color-ash-2); }
+
+  .prop-input {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-family: var(--font-title);
+    font-size: clamp(1.125rem, 1.35vw, 1.3125rem);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    outline: none;
+  }
+  .prop-input::placeholder { color: rgb(0 0 0 / 0.32); transition: color 0.35s ease; }
+  .prop-row:focus-within .prop-input::placeholder { color: rgb(255 255 255 / 0.42); }
+  .prop-text { resize: none; line-height: 1.25; display: block; }
+
+  /* What is needed: four small square keys in the label type, inked when
+     chosen. */
+  .prop-chip {
+    padding: 0.42em 0.5em 0.36em;
+    border: 1px solid var(--color-ink);
+    color: var(--color-ink);
+    background: transparent;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+  .prop-chip:hover { background: rgb(0 0 0 / 0.06); }
+  .prop-chip[aria-pressed="true"] { background: var(--color-ink); color: var(--color-paper); }
+  .prop-chip:focus-visible { outline-offset: 2px; }
+
+  /* The row to press, inked from the start as Pricing is, without its
+     light or its running arrow: it is where the form ends, not a lure. */
+  .idx-send { color: var(--color-paper); border-top: 1px solid var(--color-ink); }
+  .idx-send::before { transform: scaleX(1); }
+  .idx-send:hover .idx-arrow,
+  .idx-send:focus-visible .idx-arrow { transform: translateX(0.25rem); }
+  .idx-send:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 3px; }
+
+  .prop-close {
+    color: var(--color-ash-2);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-family: var(--font-mono);
+    font-size: inherit;
+    transition: color 0.25s ease;
+  }
+  .prop-close:hover { color: var(--color-ink); }
+  .prop-done {
+    font-family: var(--font-title);
+    font-size: clamp(1.0625rem, 1.25vw, 1.25rem);
+    line-height: 1.3;
+    letter-spacing: -0.012em;
+    color: var(--color-ink);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .idx-caret[data-still] { animation: none; }
+    .prop-row,
+    .prop-row::before,
+    .prop-chip { transition: none; }
+  }
+
   .lede {
     font-size: clamp(1.125rem, 1.55vw, 1.375rem);
     line-height: 1.5;
