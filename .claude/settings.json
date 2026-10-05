@@ -1,0 +1,19 @@
+{
+  "extraKnownMarketplaces": {
+    "minhas-skills": {
+      "source": { "source": "github", "repo": "apoli29/minhas-skills" }
+    },
+    "impeccable": {
+      "source": { "source": "github", "repo": "pbakaus/impeccable" }
+    },
+    "taste-skill": {
+      "source": { "source": "git", "url": "https://github.com/Leonxlnx/taste-skill.git" }
+    }
+  },
+  "enabledPlugins": {
+    "minhas-skills@minhas-skills": true,
+    "impeccable@impeccable": true,
+    "taste-skill@taste-skill": true,
+    "frontend-design@claude-plugins-official": true
+  }
+}
