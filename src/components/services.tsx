@@ -7,7 +7,6 @@ import {
   useLayoutEffect,
   useRef,
   useState,
-  type PointerEvent,
 } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { SERVICES, servicePath, type Service } from "@/lib/services";
@@ -442,18 +441,6 @@ export function Chevron({
       </motion.span>
     </span>
   );
-}
-
-/* Written straight to the element: a light that follows the pointer has no
-   business re-rendering React on every move. Used by the comparison card. */
-export function followPointer(event: PointerEvent<HTMLElement>) {
-  if (event.pointerType !== "mouse") return;
-  const box = event.currentTarget.getBoundingClientRect();
-  event.currentTarget.style.setProperty(
-    "--mx",
-    `${event.clientX - box.left}px`,
-  );
-  event.currentTarget.style.setProperty("--my", `${event.clientY - box.top}px`);
 }
 
 /* ================================================================== */

@@ -3,7 +3,7 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
 import { SlideIn } from "./enter";
-import { Illuminated, followPointer } from "./services";
+import { Illuminated } from "./services";
 
 /* The answer to the question above it, run through with the same black
    marker as the pillar in the studio, and not left there: the marker is
@@ -49,8 +49,11 @@ function MarkedLine({ text }: { text: string }) {
    Comparison
 
    The last argument on the page, set as a table on the service card's
-   surface: the grain, the corner light, the spot that follows the
-   pointer.
+   surface: the same near-black, the grain, the corner light. Hung the
+   way everything else on the site now is (2026-10-05, the user kept the
+   colours and asked for the rest to follow the site): square cornered,
+   ruled with hairlines, its column heads in the gallery's mono labels,
+   and no light chasing the pointer.
 
    Our column is one raised panel, a tone above the card, from its
    header to the last row. The lines that part the rows run across the
@@ -71,9 +74,10 @@ function MarkedLine({ text }: { text: string }) {
    It runs once.
    ================================================================== */
 
-/* Radius and inner lines as on the service and founders cards. */
+/* Square, as the bar and every label on the wall are; the inner lines
+   as on the service cards. */
 const SURFACE = {
-  borderRadius: 22,
+  borderRadius: 0,
   boxShadow:
     "inset 0 1px 0 rgba(255,255,255,0.08), inset 0 0 0 1px rgba(255,255,255,0.05)",
 };
@@ -239,14 +243,9 @@ export function Comparison({ ready }: { ready: boolean }) {
 
         <SlideIn ready={ready} distance={0} className="mt-10 md:mt-14">
           <div
-            onPointerMove={followPointer}
             className="svc-card cmp-card relative isolate overflow-hidden text-paper"
             style={SURFACE}
           >
-            <span
-              aria-hidden="true"
-              className="svc-spot pointer-events-none absolute inset-0 -z-10"
-            />
 
             {/* Focusable so the slide can be driven from the keyboard too. */}
             <div
@@ -271,10 +270,12 @@ export function Comparison({ ready }: { ready: boolean }) {
 
                   <thead>
                     <tr>
-                      <th scope="col" className="cmp-crit">
+                      <th scope="col" className="cmp-crit mono-label">
                         Criterion
                       </th>
-                      <th scope="col">{THEM}</th>
+                      <th scope="col" className="mono-label">
+                        {THEM}
+                      </th>
                       <th scope="col" className="cmp-us">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
