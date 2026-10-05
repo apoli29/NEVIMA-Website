@@ -25,10 +25,13 @@ The page is `noindex` (`robots: { index: false, follow: true }` in `src/app/abou
 
 - 2026-10-05 (later): the two photos (stone, swirl) now share one section, crossfading every 4s (`HOLD_MS`, `.abt-hero-slide` 1.4s fade); reduced motion keeps the first. The separate copies are gone.
 
+- Smoothness (user: "não está nada suave"): the softening (contrast 0.82, slight blur) is now baked into the JPGs instead of a CSS filter, so the crossfade is opacity only (`will-change`, 1.6s); the statement's text-shadow is only applied once lit, not under the light's sweep.
+
 ## 2a. Mission and vision (`about-mission.tsx`)
 
 - White, gallery hang: mission high left (8 cols), vision lower right (cols 6-12), each with a black-marker mono label, a tense label on the right and a hairline drawn in. Lit grey to black, ragged (`.abt-ragged`).
 - 2026-10-05 (later): the studio supplied its own mission and vision in Portuguese; translated as closely as English allows (user declined a shorter rewrite). `.abt-piece` sized down to fit the longer statements.
+- Mission and vision are **justified** (user); size down to clamp(1.375rem, 2.15vw, 2.125rem) and the vision column widened to 8 cols so the gaps close.
 
 ## 2b. Values (`about-values.tsx`, `values-water.ts`)
 
@@ -45,10 +48,14 @@ The page is `noindex` (`robots: { index: false, follow: true }` in `src/app/abou
 - Revised again: "only the balls" did not mean dropping the section's heading. Title ("Four values. / One way of working.") is back on the left with the subtitle **justified** beside it, levelled by `useInkAlign` (which now skips a trailing full stop when picking the title's last letter). Value names stay hidden until chosen.
 - Drops, the joined piece and its words are bigger (`.abt-val-hit` up to 14rem, `BODY` 0.36, `.abt-val-name` up to 3rem, `.abt-val-text` up to 1.375rem). Joined highlight down to 0.06.
 - The cue is now a **callout** (user's idea, from films where a camera picks out a person): a dot in a ring on the drop's edge, a leader slanting up and out at 45° then running level, and "Click here" ("Tap here" on touch) typed out along the level run as if underlined by it. It hops from drop to drop with a small water ring until the first choice, takes the hovered drop, and once joined points at the piece: "Click to close". It picks the side with room and shortens its run to fit. The drops no longer swell on the call (`BECKON_SWELL` 0); the black tag is gone.
+- Callouts never stop while the drops are apart (user: "constante e em loop"); each call's callout lives through the next call (`CALL_LIFE_S` = 2 calls − 0.45s, on the water's clock via `onBeckon`/`onBeckonEnd`), so two are up at once and the oldest leaves before a third appears. Calling pauses while joined and resumes after.
+- The value inside the joined piece: **name on the left, sentence on the right, justified, both cap-trimmed so their tops are level** (this, not the section header, was what the user meant by H1/H2). Stacked below 640px. The joined piece's interior is kept free of rim, highlight and water sheen (`u_join`) so nothing glints behind the words.
+- The section is no longer a full screen: its height is the heading plus the drops' row with callout room (~700px at 1440x900).
 
 ## CTAs, site-wide
 
-- 2026-10-05: the user asked for the joined-drops shape on **every** CTA (`.cta-drop`, incl. the white nav one and the studio's drop-shell). Built as metaballs in CSS: the glass layer is three soft radial spots in a row; the SVG filter `#cta-glass` / `#cta-glass-light` (`src/components/cta-glass.tsx`, rendered once in `layout.tsx`) blurs, thresholds, and lights them (body, inner rim, shadow on black). The spots drift (`cta-melt`), plus the old tilt and breathing. Replaced the em border-radius morph (`drop-shape`), which is gone. Still no inner highlight.
+- 2026-10-05: the user asked for the joined-drops shape on **every** CTA (`.cta-drop`, incl. the white nav one). Built as metaballs in CSS: the glass layer is three soft radial spots in a row; the SVG filter `#cta-glass` / `#cta-glass-light` (`src/components/cta-glass.tsx`, rendered once in `layout.tsx`) blurs, thresholds, and lights them (body, inner rim, shadow on black). The spots drift (`cta-melt`), plus the old tilt and breathing. Replaced the em border-radius morph (`drop-shape`), which is gone. Still no inner highlight.
+- The nav's white CTA is 10% less chunky (padding 0.72em, glass inset trimmed). The studio's "Learn more about us" is one link in one weight now (it was plain words beside a heavier link, with a double gap); `.drop-shell` was removed.
 
 ## 3. How we work (`about-process.tsx`)
 

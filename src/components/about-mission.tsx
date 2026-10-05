@@ -33,7 +33,7 @@ const PIECES = [
     label: "Vision",
     tense: "Where it leads",
     text: "To make Nevima a reference in web development, able to take on projects of different sizes through constantly evolving know-how and the best, most advanced technologies.",
-    place: "lg:col-span-7 lg:col-start-6 lg:mt-[clamp(4rem,9vw,8.5rem)]",
+    place: "lg:col-span-8 lg:col-start-5 lg:mt-[clamp(4rem,9vw,8.5rem)]",
   },
 ] as const;
 
@@ -112,12 +112,12 @@ function Piece({
             text={piece.text}
             delayMs={500 + index * 150}
             reduce={reduce}
-            className="svc-copy std-ink abt-ragged abt-piece display"
+            className="svc-copy std-ink abt-piece display"
           />
         ) : (
           <p
             data-lit={reduce ? "true" : undefined}
-            className="svc-copy std-ink abt-ragged abt-piece display"
+            className="svc-copy std-ink abt-piece display"
           >
             {piece.text}
           </p>
