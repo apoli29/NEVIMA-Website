@@ -413,7 +413,7 @@ function Row({
 /* The studio's "n" standing in for the chevron of an accordion. It always
    comes to rest upright; every click spins it once all the way round, and
    the ring it stands in, filled black, is what says the row is open. */
-function Chevron({
+export function Chevron({
   open,
   turns,
   reduce,

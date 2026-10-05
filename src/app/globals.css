@@ -1282,4 +1282,179 @@
     .ftr-link::after,
     .goo-trail { transition: none; }
   }
+
+  /* ---- about --------------------------------------------------------
+     See about.tsx and the sections it lists. */
+
+  /* The opening statement's ground: the stone, in black and white, taken
+     well down so the white type is the brightest thing on it, and darker
+     still through the middle, where the words are. */
+  .abt-hero-photo {
+    filter: grayscale(1) brightness(0.62) contrast(1.08);
+  }
+  .abt-hero-scrim {
+    background:
+      radial-gradient(60% 55% at 50% 50%, rgb(0 0 0 / 0.55), rgb(0 0 0 / 0.2) 70%, rgb(0 0 0 / 0.35)),
+      linear-gradient(180deg, rgb(0 0 0 / 0.45), transparent 22%, transparent 78%, rgb(0 0 0 / 0.5));
+  }
+  /* A fine grain over the photograph: it is enlarged on wide screens, and
+     the grain is what the eye reads as its texture there, not the blur. */
+  .abt-grain {
+    opacity: 0.16;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Justified as one block, centred in the screen, with each paragraph's
+     last line centred under it. The measure is held in ems so a line
+     always carries about the same number of words, whatever the size:
+     that is what keeps justified type at this size free of holes. */
+  .abt-statement {
+    width: min(100%, 25.5em);
+    font-size: clamp(1.3125rem, 2.35vw, 2.625rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.9em;
+  }
+  .abt-statement-p {
+    line-height: 1.14;
+    letter-spacing: -0.018em;
+    text-align-last: center;
+    hyphens: manual;
+    /* No word left alone on a paragraph's last line. */
+    text-wrap: pretty;
+  }
+  .abt-statement-p .svc-line:last-child { text-align-last: center; }
+  @media (max-width: 639.98px) {
+    /* A phone's measure is too short to justify a slab without holes
+       unless the long words may break. */
+    .abt-statement-p { hyphens: auto; }
+  }
+
+  /* Copy lit like the service copy but set ragged: a principle, a piece
+     or an answer reads better with its lines left as they fall. */
+  .abt-ragged { text-align: left; }
+  .abt-ragged .svc-line { text-align-last: auto; }
+
+  /* Mission and vision: the title face, light, at the size of a piece on
+     a wall rather than a headline. */
+  .abt-piece {
+    font-size: clamp(1.75rem, 3.1vw, 3rem);
+    line-height: 1.08;
+    letter-spacing: -0.028em;
+  }
+  .abt-piece[data-lit="true"],
+  .abt-piece .svc-line-lit { -webkit-text-stroke-width: 0.012em; }
+
+  .abt-answer {
+    font-size: clamp(1rem, 1.15vw, 1.125rem);
+    line-height: 1.5;
+    letter-spacing: -0.006em;
+    max-width: 44em;
+  }
+  .abt-answer[data-lit="true"],
+  .abt-answer .svc-line-lit { -webkit-text-stroke-width: 0.012em; }
+
+  /* ---- the values ---- */
+
+  /* A drop's button: the round the glass is drawn on, and the label under
+     it. Nothing of its own is painted: the canvas draws the drop. */
+  .abt-val-hit {
+    width: clamp(6.25rem, 12.5vw, 11rem);
+    aspect-ratio: 1;
+  }
+  .abt-val-slot { cursor: pointer; outline-offset: 10px; }
+  .abt-val-slot:focus-visible { outline: none; }
+  .abt-val-slot:focus-visible .abt-val-hit { outline: 1px solid var(--color-ink); outline-offset: 10px; }
+  .abt-val-label {
+    position: relative;
+    padding-bottom: 0.3em;
+    transition: opacity 0.4s ease;
+  }
+  .abt-val-label::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s var(--ease-out-quint);
+  }
+  .abt-val-slot:hover .abt-val-label::after,
+  .abt-val-slot:focus-visible .abt-val-label::after { transform: scaleX(1); }
+  /* While the four are together, their names step back. */
+  .abt-val-list[data-chosen] .abt-val-label { opacity: 0; }
+  .abt-val-list[data-chosen] .abt-val-slot { cursor: default; }
+
+  /* The drop the four become: the site's call-to-action drop, grown to
+     carry a value. Its outline is in its own ems (see .cta-drop), so the
+     size is set here and the words inside are set in rem. */
+  .abt-val-drop {
+    font-size: clamp(1.25rem, 1.7vw, 1.5rem);
+    width: min(100%, 21em);
+    padding: 1.15em 1.6em 1.25em;
+    text-align: center;
+    pointer-events: none;
+    cursor: pointer;
+  }
+  .abt-val-drop[data-joined] { pointer-events: auto; }
+  /* Grown this big, the button's own corners would leave it a rounded
+     box; a drop this size needs corners as deep as the call-to-action's
+     are for its height, so its ends stay full and round. And it breathes
+     only as far as the white one does: it has just been black glass, and
+     a fade as deep as the small drop's would read as it greying out. */
+  .abt-val-drop::before {
+    inset: -0.3em -0.5em -0.42em -0.36em;
+    border-radius: 4.6em 3.2em 4.1em 3.5em / 3.9em 3.1em 3.4em 3.6em;
+    animation-name: val-drop-shape, drop-tilt, drop-breathe-light;
+    animation-delay: -3.1s, -1.7s, -0.9s;
+  }
+  @keyframes val-drop-shape {
+    0%   { border-radius: 4.6em 3.2em 4.1em 3.5em / 3.9em 3.1em 3.4em 3.6em; }
+    25%  { border-radius: 3.3em 4.5em 3.4em 4.2em / 3.2em 3.8em 3em 3.7em; }
+    50%  { border-radius: 4.2em 3.5em 4.7em 3.1em / 3em 3.6em 3.8em 3.3em; }
+    75%  { border-radius: 3.4em 4.2em 3.2em 4.6em / 3.7em 3.2em 3.5em 3.6em; }
+    100% { border-radius: 4.4em 3.1em 3.9em 3.8em / 3.5em 3.7em 3.2em 3.4em; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .abt-val-drop::before { animation: none; }
+  }
+  .abt-val-name {
+    font-size: clamp(1.625rem, 2.3vw, 2.25rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--color-paper);
+  }
+  .abt-val-text {
+    margin-top: 0.75rem;
+    font-family: var(--font-read);
+    font-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
+    font-weight: 400;
+    line-height: 1.45;
+    letter-spacing: -0.006em;
+    color: rgb(255 255 255 / 0.82);
+    text-wrap: pretty;
+  }
+  .abt-val-drop:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 12px; }
+
+  /* ---- how we work ---- */
+
+  /* A stage's stop on the rail: a hollow ring until it has been reached,
+     then filled. */
+  .abt-stop {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--color-paper);
+    box-shadow: inset 0 0 0 1px var(--color-ink);
+    transition: background-color 0.5s ease;
+  }
+  @media (min-width: 768px) {
+    .abt-stop { width: 11px; height: 11px; }
+  }
+  .abt-stop[data-on] { background: var(--color-ink); }
 }

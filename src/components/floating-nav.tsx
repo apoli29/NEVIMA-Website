@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, type ReactNode, type RefObject } from "react";
+import { usePathname } from "next/navigation";
 import {
   motion,
   useMotionValueEvent,
@@ -14,15 +15,22 @@ import {
    edges. It holds the white wordmark, which is where the opening mark
    flies to, so the slot below is measured rather than guessed.
 
-   The labels are still the placeholders the studio asked for and none
-   of them route anywhere yet.
+   The labels are still the placeholders the studio asked for. Studio is
+   the one that goes somewhere of its own, the about page; the others
+   point at sections of the home page.
    ================================================================== */
 
 const NAV = [
   { label: "Work", href: "#work" },
   { label: "Services", href: "#services" },
-  { label: "Studio", href: "#studio" },
+  { label: "Studio", href: "/about" },
 ];
+
+/** A link to a section of the home page, from wherever the bar is: off the
+    home page it has to go there first. Anything else is left as it is. */
+export function homeSection(href: string, onHome: boolean) {
+  return href.startsWith("#") && !onHome ? `/${href}` : href;
+}
 
 /* ==================================================================
    A link set as a button, for the bar and for the calls to action down
@@ -60,25 +68,27 @@ function Pass({
 /* ================================================================== */
 
 export function FloatingNav({
-  opacity,
-  linksOpacity,
+  opacity = 1,
+  linksOpacity = 1,
   markRef,
   onMarkLoad,
-  markVisible,
+  markVisible = true,
 }: {
   /** The bar. It is black on the black curtain, so it can be fully in
-      under the landed mark without anyone seeing it arrive. */
-  opacity: MotionValue<number>;
+      under the landed mark without anyone seeing it arrive. Left out (on
+      a page with no opening), it is simply there. */
+  opacity?: MotionValue<number> | number;
   /** The links. They are what would show on the curtain, so they come in
       with the page rather than with the bar. */
-  linksOpacity: MotionValue<number>;
+  linksOpacity?: MotionValue<number> | number;
   /** the wordmark slot the opening mark flies into */
-  markRef: RefObject<HTMLImageElement | null>;
+  markRef?: RefObject<HTMLImageElement | null>;
   /** the slot has a width to be measured against */
-  onMarkLoad: () => void;
-  markVisible: boolean;
+  onMarkLoad?: () => void;
+  markVisible?: boolean;
 }) {
   const reduce = useReducedMotion();
+  const onHome = usePathname() === "/";
   const bar = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
 
@@ -112,7 +122,7 @@ export function FloatingNav({
         {/* Square-cornered, as everything set on the gallery wall is. */}
         <div ref={bar} className="pointer-events-auto -mx-3 flex items-center justify-between gap-4 bg-ink px-3 py-2.5 md:-mx-5 md:gap-8 md:px-5 md:py-[0.8125rem] xl:-mx-8 xl:px-8">
           <a
-            href="#top"
+            href={onHome ? "#top" : "/"}
             aria-label="nevima, home"
             className="flex shrink-0 items-center"
           >
@@ -141,7 +151,7 @@ export function FloatingNav({
             {NAV.map((item, i) => (
               <Pass
                 key={item.href}
-                href={item.href}
+                href={homeSection(item.href, onHome)}
                 label={
                   <>
                     <span className="mr-2 align-[0.12em] font-mono text-[0.625rem] tracking-[0.06em] text-paper/45 tabular-nums">

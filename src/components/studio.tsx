@@ -149,7 +149,7 @@ function Statement({ ready }: { ready: boolean }) {
 /* An invitation under the pillar, on a black drop of its own, the same
    glass as the buttons (see .drop-shell): "Learn more" is only words, and
    "about us" after it, in the drop's own white with an arrow, is the link.
-   There is no page about the studio yet, so it goes nowhere for now. */
+   It goes to the about page. */
 function LearnMore() {
   return (
     <div className="cta-drop drop-shell mt-2 inline-flex items-center gap-2 py-3 pr-6 pl-5 md:mt-3 md:gap-2.5 md:py-3.5 md:pr-7 md:pl-6">
@@ -157,7 +157,7 @@ function LearnMore() {
         Learn more
       </span>
       <PassLink
-        href="#about"
+        href="/about"
         label={
           <>
             about us

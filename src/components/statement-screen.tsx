@@ -31,7 +31,7 @@ const ENDINGS = ["matter.", "create trust.", "bring clients.", "grab attention."
 const SECTION_LINKS = [
   // A placeholder: there is no pricing section yet.
   { label: "Pricing", href: "#pricing", lead: true },
-  { label: "About us", href: "#studio", lead: false },
+  { label: "About us", href: "/about", lead: false },
   { label: "Our services", href: "#services", lead: false },
 ];
 
