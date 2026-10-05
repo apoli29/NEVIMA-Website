@@ -15,10 +15,10 @@ import { useEffect, type RefObject } from "react";
    their buttons, so the words under them and the glass above them are
    always in the same place.
 
-   Until one is chosen they call for it: every few seconds one of them,
-   in turn, swells and strikes the water, as if just touched, and the
-   one under the pointer swells and stays swollen. (The user asked for a
-   cue that would almost never be missed.)
+   Until one is chosen they call for it: every few seconds the page's
+   callout moves on to the next of them (see about-values.tsx) and a
+   ring strikes the water where it lands; the one under the pointer
+   swells and stays swollen.
 
    Choosing a value pulls all four together. The one chosen sets off
    first and the others follow it, each a beat later, along a slight
@@ -92,23 +92,23 @@ const WORDS_IN_S = 0.38;
 /** The joined piece: how much its outline still wanders and how much of
     its highlight it keeps, as shares of the loose drops'. */
 const JOINED_WARP = 0.5;
-const JOINED_SPEC = 0.18;
-/** The call: one drop every BECKON_S, in turn, swelling by BECKON_SWELL
-    over PULSE_S and striking the water this deep; the first after
-    BECKON_WAIT_S of being seen. The drop under the pointer swells by
-    HOVER_SWELL. */
+const JOINED_SPEC = 0.06;
+/** The call: one drop every BECKON_S, in turn, striking the water this
+    deep (it once also swelled by BECKON_SWELL over PULSE_S; the user
+    preferred the callout alone); the first after BECKON_WAIT_S of being
+    seen. The drop under the pointer swells by HOVER_SWELL. */
 const BECKON_S = 2.4;
 const BECKON_WAIT_S = 0.9;
 const PULSE_S = 0.9;
-const BECKON_SWELL = 0.16;
-const BECKON_DEPTH = 7;
+const BECKON_SWELL = 0;
+const BECKON_DEPTH = 5;
 const HOVER_SWELL = 0.09;
 /** How much later than the one chosen the last of the others sets off,
     as a share of the join. */
 const FOLLOW = 0.16;
 /** The body's radius as a share of its button's width: the field is half
     strength at about 0.83 of it, and the lobes reach a little past that. */
-const BODY = 0.34;
+const BODY = 0.36;
 /** The rings the drops strike as they meet, and as one is chosen. */
 const MEET_DEPTH = 6;
 const PICK_DEPTH = 4;

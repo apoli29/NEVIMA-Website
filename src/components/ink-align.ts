@@ -140,7 +140,9 @@ export function useInkAlign(
       // Only where the subtitle stands beside the title, not under it.
       const beside = sb.left >= tb.right - 1 && sb.top < tb.bottom;
       if (!beside) return;
-      const line = firstLine(t).filter((l) => l.ch.trim());
+      // The last letter, not a full stop after it: a stop's ink is down
+      // at the baseline, and a subtitle levelled with it sank a line.
+      const line = firstLine(t).filter((l) => /[\p{L}\p{N}]/u.test(l.ch));
       const last = line[line.length - 1];
       const own = firstLine(s).filter((l) => l.ch.trim());
       if (!last || !own.length) return;

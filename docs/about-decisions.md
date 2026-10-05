@@ -23,9 +23,12 @@ The page is `noindex` (`robots: { index: false, follow: true }` in `src/app/abou
 - Temporary: the section was shown three times, on three photos the user uploaded to choose between (`STONE`, `WATER` by Madison Oren, `SWIRL` by Sudhanshu Singh, in `about-hero.tsx`; files in `public/about/`, originals removed from the repo root). Only the first carries the h1; the others light their text when seen. Keep one and delete the other two `<AboutHero>` lines in `about.tsx`. Later the user dropped the water photo (files removed), leaving stone and swirl.
 - The statement's light runs 2.5x faster than the service copy's (user): 600ms per paragraph, via the new optional `durationMs` on `Illuminated` (default unchanged, so the home page is untouched).
 
+- 2026-10-05 (later): the two photos (stone, swirl) now share one section, crossfading every 4s (`HOLD_MS`, `.abt-hero-slide` 1.4s fade); reduced motion keeps the first. The separate copies are gone.
+
 ## 2a. Mission and vision (`about-mission.tsx`)
 
-- White, gallery hang: mission high left (8 cols), vision lower right (cols 6-12), each with a black-marker mono label, a tense label on the right and a hairline drawn in. Copy written from the leverage thesis (the user delegated it). Lit grey to black, ragged (`.abt-ragged`).
+- White, gallery hang: mission high left (8 cols), vision lower right (cols 6-12), each with a black-marker mono label, a tense label on the right and a hairline drawn in. Lit grey to black, ragged (`.abt-ragged`).
+- 2026-10-05 (later): the studio supplied its own mission and vision in Portuguese; translated as closely as English allows (user declined a shorter rewrite). `.abt-piece` sized down to fit the longer statements.
 
 ## 2b. Values (`about-values.tsx`, `values-water.ts`)
 
@@ -39,6 +42,13 @@ The page is `noindex` (`robots: { index: false, follow: true }` in `src/app/abou
 - 2026-10-05 (later), user's revision: the section is **only the four drops**: no title, subtitle or names (sr-only h2 and button labels remain). The joined shape is now the organic piece the drops form on the canvas, not the CTA drop (user preferred it): no hand-over, outline still wandering at half (`JOINED_WARP`), highlight down to a glint (`JOINED_SPEC`), the value's words fade in on it, sized with a margin so the outline never crosses them. A press anywhere on the water, the piece itself, or Esc parts them.
 - Cue to click (user wanted near-certain discovery), three layers: until the first choice one drop at a time swells and strikes a water ring every 2.4s (`BECKON_*`) with a black "Click"/"Tap" tag beside it; the hovered drop swells (`HOVER_SWELL`); over a drop the tag follows the pointer ("Close" over the water once joined). The calling stops for good after the first choice.
 - The mission section now has foot padding too, so the vision no longer runs into the values' water.
+- Revised again: "only the balls" did not mean dropping the section's heading. Title ("Four values. / One way of working.") is back on the left with the subtitle **justified** beside it, levelled by `useInkAlign` (which now skips a trailing full stop when picking the title's last letter). Value names stay hidden until chosen.
+- Drops, the joined piece and its words are bigger (`.abt-val-hit` up to 14rem, `BODY` 0.36, `.abt-val-name` up to 3rem, `.abt-val-text` up to 1.375rem). Joined highlight down to 0.06.
+- The cue is now a **callout** (user's idea, from films where a camera picks out a person): a dot in a ring on the drop's edge, a leader slanting up and out at 45° then running level, and "Click here" ("Tap here" on touch) typed out along the level run as if underlined by it. It hops from drop to drop with a small water ring until the first choice, takes the hovered drop, and once joined points at the piece: "Click to close". It picks the side with room and shortens its run to fit. The drops no longer swell on the call (`BECKON_SWELL` 0); the black tag is gone.
+
+## CTAs, site-wide
+
+- 2026-10-05: the user asked for the joined-drops shape on **every** CTA (`.cta-drop`, incl. the white nav one and the studio's drop-shell). Built as metaballs in CSS: the glass layer is three soft radial spots in a row; the SVG filter `#cta-glass` / `#cta-glass-light` (`src/components/cta-glass.tsx`, rendered once in `layout.tsx`) blurs, thresholds, and lights them (body, inner rim, shadow on black). The spots drift (`cta-melt`), plus the old tilt and breathing. Replaced the em border-radius morph (`drop-shape`), which is gone. Still no inner highlight.
 
 ## 3. How we work (`about-process.tsx`)
 

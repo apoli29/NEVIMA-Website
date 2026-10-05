@@ -490,26 +490,28 @@
 
   /* ---- the drop buttons ---------------------------------------------
      The page's main calls to action, made of the same stuff as the drops
-     on the second screen: a piece of black glass of no set shape, with a
-     rim and a soft shadow down and to the right, and no highlight (the
-     user found a flashing one inside it too loud). The glass breathes:
-     the body fades a little and comes back, over and over. The words stay
-     as they are throughout, so the button is always as legible as at
-     rest. On the black bar it is the same drop inverted, white on black.
+     on the water: a piece of black glass with a rim and a soft shadow
+     down and to the right, and no highlight (the user found a flashing
+     one inside it too loud). The glass breathes: the body fades a little
+     and comes back, over and over. The words stay as they are
+     throughout, so the button is always as legible as at rest. On the
+     black bar it is the same glass inverted, white on black.
 
-     Chunky, as the type round it is: as tall as the words are heavy, and
-     its outline measured in the words' own size, never as a share of the
-     button, so the ends are always full and round and never drawn out to
-     a point however long the label is.
-
-     And irregular, as a drop is. The glass is not the button's own box
-     but a layer of its own, reaching past the box by a different amount
-     on each side, so it bulges where the box does not. Its four corners
-     are cut very differently from one another and keep trading places
-     (drop-shape), and the whole of it leans a degree or two one way and
-     then the other (drop-tilt), each on its own slow clock, so the outline
-     never comes round to the same shape twice in a row. Under the words,
-     the button itself stays a plain round box, for the focus ring. */
+     Its outline is the one the four value drops make when they run
+     together on the about page (the user asked for that shape here):
+     long, uneven, one end fuller than the other, the edge never quite
+     straight. It is built the way that one is, as drops that melt into
+     one another. The glass is a layer of its own reaching past the
+     button's box, painted with three soft round spots in a row; the
+     #cta-glass filter (in layout.tsx) melts them together, cuts the
+     result at half strength into one hard-edged piece, and lights it:
+     body, a rim just inside the edge, and the shadow. The spots drift
+     slowly against one another (cta-melt) and the whole leans a degree
+     or two (drop-tilt), each on its own clock, so the outline never
+     comes round to the same shape twice in a row. Everything is sized
+     from the button, so the ends stay full and round at any length.
+     Under the words, the button itself stays a plain round box, for the
+     focus ring. */
   .cta-drop {
     position: relative;
     isolation: isolate;
@@ -525,36 +527,26 @@
   .cta-drop::before {
     content: "";
     position: absolute;
-    inset: -0.14em -0.32em -0.24em -0.2em;
+    inset: -0.6em -0.85em -0.7em -0.8em;
     z-index: -30;
-    border-radius: 2.3em 1.1em 1.9em 1.3em / 1.9em 1.2em 1.4em 1.5em;
     pointer-events: none;
     transform-origin: 46% 54%;
-  }
-  /* The body: dark through the middle, lifting towards a rim, with its
-     shadow thrown down and to the right. */
-  .cta-drop::before {
+    /* Only the spots' strength matters: the filter paints the colour. */
     background:
-      radial-gradient(130% 120% at 50% 45%, #0a0a0a 52%, #262626 78%, #4a4a4a 100%);
-    box-shadow:
-      inset 0 0 0 1px rgb(255 255 255 / 0.1),
-      inset -6px -8px 14px -6px rgb(255 255 255 / 0.12),
-      0.6em 0.9em 1.6em -1em rgb(0 0 0 / 0.55);
+      radial-gradient(closest-side, #000, rgb(0 0 0 / 0)) -6% 42% / 58% 150% no-repeat,
+      radial-gradient(closest-side, #000, rgb(0 0 0 / 0)) 50% 58% / 64% 130% no-repeat,
+      radial-gradient(closest-side, #000, rgb(0 0 0 / 0)) 106% 48% / 58% 162% no-repeat;
+    filter: url(#cta-glass);
     animation:
-      drop-shape 9s ease-in-out infinite alternate,
+      cta-melt 11s ease-in-out infinite alternate,
       drop-tilt 6.5s ease-in-out infinite alternate,
       drop-breathe 3.4s ease-in-out infinite;
   }
-
   .cta-drop-light::before {
-    background:
-      radial-gradient(130% 120% at 50% 45%, #ffffff 50%, #e9e9e9 78%, #c9c9c9 100%);
-    box-shadow:
-      inset 0 0 0 1px rgb(0 0 0 / 0.06),
-      inset -6px -8px 14px -6px rgb(0 0 0 / 0.16);
+    filter: url(#cta-glass-light);
     /* On black, a white drop that fades as far as the black one does
        turns grey; it breathes less. */
-    animation-name: drop-shape, drop-tilt, drop-breathe-light;
+    animation-name: cta-melt, drop-tilt, drop-breathe-light;
   }
 
   .cta-drop:hover,
@@ -564,25 +556,28 @@
   .cta-drop:focus-visible .btn-neu-face > span { transform: translateX(3px); }
 
   /* The same glass holding other things rather than being pressed: the
-     studio's "Learn more" with its button. It is not a button, so it does
+     studio's "Learn more" with its link. It is not a button, so it does
      not swell when pointed at; it keeps the type it holds as set; its
      glass reaches a little further past its box; and its clocks run ahead
-     of the drop inside it, so the two never change shape in step. */
+     of the buttons', so the two never change shape in step. */
   .drop-shell { font-weight: inherit; letter-spacing: inherit; }
   .drop-shell:hover { transform: none; }
   .drop-shell::before {
-    inset: -0.2em -0.42em -0.3em -0.28em;
+    inset: -0.7em -0.95em -0.8em -0.9em;
     animation-delay: -4.2s, -2.6s, -1.3s;
   }
 
-  /* Every corner a different curve, none tighter than about a third of the
-     height, so the ends stay round while the shape keeps changing. */
-  @keyframes drop-shape {
-    0%   { border-radius: 2.3em 1.1em 1.9em 1.3em / 1.9em 1.2em 1.4em 1.5em; }
-    25%  { border-radius: 1.2em 2.2em 1.4em 2em / 1.4em 1.8em 1.2em 1.7em; }
-    50%  { border-radius: 1.9em 1.4em 2.4em 1em / 1.2em 1.6em 1.8em 1.3em; }
-    75%  { border-radius: 1.4em 1.9em 1.1em 2.3em / 1.7em 1.3em 1.5em 1.6em; }
-    100% { border-radius: 2.1em 1em 1.7em 1.6em / 1.5em 1.7em 1.3em 1.4em; }
+  /* The spots trade places a little: the fuller end swaps sides and the
+     waist wanders, so the piece changes shape without ever pinching. */
+  @keyframes cta-melt {
+    0%   { background-position: -6% 42%, 50% 58%, 106% 48%;
+           background-size: 58% 150%, 64% 130%, 58% 162%; }
+    35%  { background-position: -4% 54%, 46% 44%, 104% 56%;
+           background-size: 60% 158%, 62% 128%, 56% 148%; }
+    70%  { background-position: -7% 48%, 54% 54%, 105% 40%;
+           background-size: 57% 162%, 66% 134%, 58% 150%; }
+    100% { background-position: -5% 58%, 48% 46%, 107% 50%;
+           background-size: 59% 146%, 63% 132%, 57% 160%; }
   }
   @keyframes drop-tilt {
     0%   { transform: rotate(-1.6deg) scale(1, 1); }
@@ -1302,6 +1297,16 @@
     /* The blur would pull a hairline of black in from each edge. */
     transform: scale(1.015);
   }
+  /* The two photographs take turns: each crosses into the other over
+     most of a second and a half. */
+  .abt-hero-slide {
+    opacity: 0;
+    transition: opacity 1.4s ease-in-out;
+  }
+  .abt-hero-slide[data-shown] { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) {
+    .abt-hero-slide { transition: none; }
+  }
   .abt-hero-scrim {
     background: radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(0 0 0 / 0.35));
   }
@@ -1346,8 +1351,10 @@
 
   /* Mission and vision: the title face, light, at the size of a piece on
      a wall rather than a headline. */
+  /* Sized for the studio's own statements, which run to four or five
+     lines at this measure. */
   .abt-piece {
-    font-size: clamp(1.75rem, 3.1vw, 3rem);
+    font-size: clamp(1.5rem, 2.5vw, 2.375rem);
     line-height: 1.08;
     letter-spacing: -0.028em;
   }
@@ -1368,7 +1375,7 @@
   /* A drop's button: the round the glass is drawn on. Nothing of its own
      is painted: the canvas draws the drop. */
   .abt-val-hit {
-    width: clamp(7rem, 13vw, 11.5rem);
+    width: clamp(8rem, 16vw, 14rem);
     aspect-ratio: 1;
   }
   .abt-val-slot { display: block; cursor: pointer; border-radius: 999px; }
@@ -1378,24 +1385,33 @@
   /* While the four are together, a press anywhere lets them go. */
   .abt-val[data-joined] { cursor: pointer; }
 
-  /* The cue: a small black tag with the gallery's label type in white,
-     beside a drop that is calling or just behind the pointer. */
-  .abt-val-tag {
+  /* The subtitle beside the title, justified (the user's ask). */
+  .abt-val-sub { text-align: justify; }
+
+  /* The callout: a fine black leader off a drop, a dot in a ring where it
+     starts, and the words written along its level run. */
+  .abt-callout-line {
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: 1.25;
+    stroke-linecap: square;
+    stroke-linejoin: miter;
+  }
+  .abt-callout-ring { fill: none; stroke: var(--color-ink); stroke-width: 1.25; }
+  .abt-callout-dot { fill: var(--color-ink); }
+  .abt-callout-text {
+    fill: var(--color-ink);
+    font-family: var(--font-mono);
     font-size: 0.8125rem;
-    padding: 0.5em 0.85em 0.45em;
-    border-radius: 999px;
-    background: var(--color-ink);
-    color: var(--color-paper);
-    white-space: nowrap;
-    transform-origin: 0 100%;
-    box-shadow: 0 6px 18px -8px rgb(0 0 0 / 0.5);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
 
   /* The value, set in white on the piece the four become. Its size is
      what the piece is laid out to (see values-water.ts). */
   .abt-val-drop {
-    font-size: clamp(1.125rem, 1.5vw, 1.375rem);
-    width: min(100% - 4.5rem, 19em);
+    font-size: clamp(1.25rem, 1.8vw, 1.625rem);
+    width: min(100% - 4.5rem, 21em);
     padding: 0.4em 0.6em;
     text-align: center;
     pointer-events: none;
@@ -1403,16 +1419,16 @@
   }
   .abt-val-drop[data-joined] { pointer-events: auto; }
   .abt-val-name {
-    font-size: clamp(1.625rem, 2.3vw, 2.25rem);
+    font-size: clamp(2rem, 3vw, 3rem);
     font-weight: 500;
     line-height: 1;
     letter-spacing: -0.03em;
     color: var(--color-paper);
   }
   .abt-val-text {
-    margin-top: 0.75rem;
+    margin-top: 0.85rem;
     font-family: var(--font-read);
-    font-size: clamp(0.9375rem, 1.05vw, 1.0625rem);
+    font-size: clamp(1.0625rem, 1.35vw, 1.375rem);
     font-weight: 400;
     line-height: 1.45;
     letter-spacing: -0.006em;

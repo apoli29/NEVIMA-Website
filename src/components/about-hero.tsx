@@ -1,21 +1,24 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useState } from "react";
 import { useReducedMotion } from "motion/react";
 import { Illuminated } from "./services";
-import { useFontsReady, useSeen } from "./use-seen";
+import { useFontsReady } from "./use-seen";
 
 /* ==================================================================
    About, the opening statement
 
-   One screen of stone, in black and white, with the statement set over
-   it in the middle: justified, each paragraph's last line centred under
-   the block, so the words stand as one slab on the slab.
+   One screen with the statement set over it in the middle: justified,
+   each paragraph's last line centred under the block, so the words
+   stand as one slab.
 
-   The photograph (Liz Grin, on Unsplash) is ground, not picture: taken
-   well down and looked at through a fine grain, so the white type is the
-   brightest thing on it and the stone only shows where the words leave
-   room.
+   Behind them, two black-and-white photographs take turns, each held
+   for four seconds and crossing slowly into the other (the user's ask,
+   for now: stone by Liz Grin and a swirl of light by Sudhanshu Singh,
+   both on Unsplash). They are ground, not picture: half seen over the
+   black and softened, so the white type is the only hard thing on the
+   screen. For anyone who has asked for less motion the first one simply
+   stays.
 
    The copy is lit as the service copy is, grey to white, one line after
    another, the second paragraph picking the light up as the first one
@@ -42,65 +45,65 @@ const LIGHT_AT_MS = [450 / SPEED, 1500 / SPEED];
 /** A ground for the statement: one photograph at two widths. */
 export type HeroPhoto = { small: string; large: string };
 
-/* Two grounds, hung one after another for now so the studio can choose
-   (both from Unsplash, both black and white): stone by Liz Grin, a
-   swirl of light by Sudhanshu Singh. */
-export const STONE: HeroPhoto = {
+const STONE: HeroPhoto = {
   small: "/about/stone-1280.jpg",
   large: "/about/stone-2400.jpg",
 };
-export const SWIRL: HeroPhoto = {
+const SWIRL: HeroPhoto = {
   small: "/about/swirl-1280.jpg",
   large: "/about/swirl-2400.jpg",
 };
+const PHOTOS = [STONE, SWIRL];
 
-export function AboutHero({
-  photo = STONE,
-  first = true,
-}: {
-  photo?: HeroPhoto;
-  /** The page's first screen, which carries its h1. The others (only
-      while the photographs are being compared) are labelled, not titled. */
-  first?: boolean;
-}) {
+/** How long each photograph is held, in ms (the crossing is in CSS, see
+    .abt-hero-slide). */
+const HOLD_MS = 4000;
+
+export function AboutHero() {
   const reduce = useReducedMotion() ?? false;
   const fonts = useFontsReady();
-  const ref = useRef<HTMLElement>(null);
-  // The first is lit on arrival; the others when they come into view.
-  const seen = useSeen(ref, { threshold: 0.4, ready: !first });
-  const lit = fonts && (first || seen);
+  const [shown, setShown] = useState(0);
+
+  useEffect(() => {
+    if (reduce) return;
+    const id = window.setInterval(() => setShown((i) => (i + 1) % PHOTOS.length), HOLD_MS);
+    return () => window.clearInterval(id);
+  }, [reduce]);
 
   return (
     <section
-      ref={ref}
-      aria-labelledby={first ? "about-title" : undefined}
-      aria-label={first ? undefined : "About Nevima, another photograph"}
+      aria-labelledby="about-title"
       className="abt-hero relative isolate flex min-h-[100svh] items-center overflow-hidden bg-ink text-paper"
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={photo.large}
-        srcSet={`${photo.small} 1280w, ${photo.large} 2400w`}
-        sizes="100vw"
-        alt=""
-        aria-hidden="true"
-        draggable={false}
-        fetchPriority={first ? "high" : "auto"}
-        loading={first ? "eager" : "lazy"}
-        className="abt-hero-photo absolute inset-0 -z-20 size-full object-cover select-none"
-      />
+      {PHOTOS.map((photo, i) => (
+        <span
+          key={photo.large}
+          aria-hidden="true"
+          data-shown={i === shown ? "" : undefined}
+          className="abt-hero-slide absolute inset-0 -z-20"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={photo.large}
+            srcSet={`${photo.small} 1280w, ${photo.large} 2400w`}
+            sizes="100vw"
+            alt=""
+            draggable={false}
+            fetchPriority={i === 0 ? "high" : "auto"}
+            className="abt-hero-photo size-full object-cover select-none"
+          />
+        </span>
+      ))}
       <span aria-hidden="true" className="abt-hero-scrim absolute inset-0 -z-10" />
       <span aria-hidden="true" className="abt-grain absolute inset-0 -z-10" />
 
       <div className="shell flex w-full justify-center pt-28 pb-20 md:pt-32 md:pb-24">
-        {first && (
-          <h1 id="about-title" className="sr-only">
-            About Nevima
-          </h1>
-        )}
+        <h1 id="about-title" className="sr-only">
+          About Nevima
+        </h1>
         <div className="abt-statement">
           {STATEMENT.map((text, i) =>
-            lit && !reduce ? (
+            fonts && !reduce ? (
               <Illuminated
                 key={i}
                 text={text}
