@@ -2,6 +2,8 @@
 
 What was decided for the about page (`/about`), and why. Same rules as `homepage-decisions.md`: newest notes sit lower, the later one wins, and read a section's part before changing it.
 
+On 2026-10-06 the co-founders (from the home page's studio section) became the about page's second section, before mission and vision, and How we work moved to the home page. Order now: statement, co-founders, mission and vision, values, FAQ.
+
 The page was built on 2026-10-05 as a **template**: structure and look are meant to stay, the copy is a stand-in the studio will rewrite. Order: statement on stone, mission and vision, values on the water, how we work, FAQ, then the shared footer. No opening on this page: the bar (`FloatingNav` with no props) is simply there.
 
 The page is `noindex` (`robots: { index: false, follow: true }` in `src/app/about/page.tsx`), asked by the user, while its copy is a stand-in. Remove it when the real copy goes in.
@@ -62,7 +64,7 @@ The page is `noindex` (`robots: { index: false, follow: true }` in `src/app/abou
 - 2026-10-05: the user asked for the joined-drops shape on **every** CTA (`.cta-drop`, incl. the white nav one). Built as metaballs in CSS: the glass layer is three soft radial spots in a row; the SVG filter `#cta-glass` / `#cta-glass-light` (`src/components/cta-glass.tsx`, rendered once in `layout.tsx`) blurs, thresholds, and lights them (body, inner rim, shadow on black). The spots drift (`cta-melt`), plus the old tilt and breathing. Replaced the em border-radius morph (`drop-shape`), which is gone. Still no inner highlight.
 - The nav's white CTA is 10% less chunky (padding 0.72em, glass inset trimmed). The studio's "Learn more about us" is one link in one weight now (it was plain words beside a heavier link, with a double gap); `.drop-shell` was removed.
 
-## 3. How we work (`about-process.tsx`)
+## 3. How we work (moved to the home page on 2026-10-06; see homepage-decisions.md)
 
 - The user asked for the philosophy first, numbers second: each stage is headed with a principle; time and deliverable are mono small print. Order shown by a scroll-filled rail with stops, not numbers on titles. Figures are invented stand-ins (user allowed).
 

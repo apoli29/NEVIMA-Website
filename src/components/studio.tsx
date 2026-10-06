@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { CoFounders } from "./cofounders";
 import { ENTER_EASE } from "./enter";
 import { PassLink } from "./floating-nav";
 import { Illuminated } from "./services";
@@ -12,7 +11,8 @@ import { Illuminated } from "./services";
 
    The section has no title. It opens on a statement set straight on
    the page, two thirds of the shell wide from its left edge, with the
-   pillar beside it from lg; the co-founders hang underneath (see
+   pillar beside it from lg. The co-founders once hung underneath; on
+   2026-10-06 the user moved them to the about page (see
    cofounders.tsx).
 
    The statement is one sentence in two parts, and the two come in from
@@ -62,7 +62,6 @@ export function Studio({ ready }: { ready: boolean }) {
 
         <div className="std-wrap flex flex-col gap-11 md:gap-16">
           <Statement ready={ready} />
-          <CoFounders ready={ready} />
         </div>
       </div>
     </section>
