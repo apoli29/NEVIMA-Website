@@ -75,7 +75,16 @@ const FOUNDERS: Founder[] = [
 
 /* ================================================================== */
 
-export function CoFounders({ ready }: { ready: boolean }) {
+export function CoFounders({
+  ready,
+  standalone = false,
+}: {
+  ready: boolean;
+  /** A section of its own (the about page), rather than the studio's
+      second half: no lead-in room, and its title is the section's. */
+  standalone?: boolean;
+}) {
+  const Title = standalone ? "h2" : "h3";
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subRef = useRef<HTMLParagraphElement>(null);
   useInkAlign(titleRef, subRef);
@@ -86,19 +95,21 @@ export function CoFounders({ ready }: { ready: boolean }) {
       aria-labelledby="cofounders-title"
       // Its own head room on top of the gap the studio leaves after the
       // statement, so the two together make one section's rhythm.
-      className="mt-[calc(var(--section-gap)-2.75rem)] md:mt-[calc(var(--section-gap)-4rem)]"
+      className={
+        standalone ? undefined : "mt-[calc(var(--section-gap)-2.75rem)] md:mt-[calc(var(--section-gap)-4rem)]"
+      }
     >
       {/* Side by side from lg, the subtitle's first line level with the top
           of the title's last letter (see ink-align.ts). */}
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
         <SlideIn ready={ready} className="flex items-start gap-2 md:gap-3">
-          <h3
+          <Title
             ref={titleRef}
             id="cofounders-title"
             className="display text-[clamp(2.25rem,4.2vw,4.25rem)] font-light text-ink"
           >
             Co-founders
-          </h3>
+          </Title>
         </SlideIn>
         <SlideIn
           ready={ready}

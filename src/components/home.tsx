@@ -15,6 +15,7 @@ import { Footer } from "./footer";
 import { FloatingNav } from "./floating-nav";
 import { useGateway } from "./gateway";
 import { JellyField } from "./jelly-field";
+import { Process } from "./process";
 import { Services } from "./services";
 import { StatementScreen } from "./statement-screen";
 import { useSmoothScroll } from "./smooth-scroll";
@@ -376,6 +377,7 @@ export function Home() {
         </div>
 
         <Services ready={phase === "open"} />
+        <Process ready={phase === "open"} />
         <Comparison ready={phase === "open"} />
       </main>
 
