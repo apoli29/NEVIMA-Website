@@ -89,9 +89,14 @@ export function ProposalForm({
     <motion.div
       initial={false}
       animate={open ? "shown" : "hidden"}
+      // Wholly unseen while closed, its own rules included (the form's
+      // foot rule once showed under the index on arrival).
       variants={{
-        hidden: { transition: { duration: 0.2 } },
-        shown: { transition: { staggerChildren: reduce ? 0 : 0.06, delayChildren: 0.18 } },
+        hidden: { opacity: 0, transition: { duration: 0.2 } },
+        shown: {
+          opacity: 1,
+          transition: { duration: 0.01, staggerChildren: reduce ? 0 : 0.06, delayChildren: 0.18 },
+        },
       }}
       // Unseen and out of reach while the index is up; still laid out, so
       // the box keeps its height.

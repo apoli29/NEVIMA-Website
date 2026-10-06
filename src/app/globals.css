@@ -298,31 +298,20 @@
     .live-dot::after { transition: none; animation: none; }
   }
 
-  /* The index's last row, which asks: its words are written out with a
-     text cursor after them that blinks while they are still (see Typed in
-     statement-screen.tsx), and pointed at, its plus turns a quarter. */
-  .idx-caret {
-    display: inline-block;
-    width: 2px;
-    height: 1em;
-    margin-left: 3px;
-    vertical-align: -0.12em;
-    background: currentColor;
-  }
-  .idx-caret[data-still] { animation: idx-blink 1.05s steps(1, end) infinite; }
-  @keyframes idx-blink {
-    0%, 50% { opacity: 1; }
-    50.01%, 100% { opacity: 0; }
-  }
+  /* The index's last row, which asks. Pointed at, its plus turns a
+     quarter. Inked, as Pricing is (the user wanted it on black too), but
+     called for in its own way: every few seconds a light passes over it
+     and its black swells a hair and settles, as if drawing a breath. Only
+     the black and the light move: the words are never scaled, so they
+     stay sharp (scaling the whole row softened them). Both on one clock,
+     out of step with Pricing's gleam. */
   .idx-ask:hover .idx-arrow,
   .idx-ask:focus-visible .idx-arrow { transform: rotate(90deg); }
-
-  /* Inked, as Pricing is (the user wanted it on black too), but called for
-     in its own way: every few seconds a light passes over it, and with it
-     the row swells a hair and settles, so it seems to draw a breath. Both
-     on one clock, out of step with Pricing's gleam. */
-  .idx-ask { color: var(--color-paper); transform-origin: 50% 50%; }
-  .idx-ask::before { transform: scaleX(1); }
+  .idx-ask { color: var(--color-paper); }
+  .idx-ask::before {
+    transform: scaleX(1);
+    animation: idx-ask-breathe 4.4s ease-in-out 1.2s infinite;
+  }
   .idx-ask::after {
     content: "";
     position: absolute;
@@ -331,23 +320,26 @@
     background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.2) 50%, transparent 70%) no-repeat;
     background-size: 55% 100%;
     background-position: -120% 0;
-    animation: idx-ask-gleam 4.4s cubic-bezier(0.65, 0, 0.35, 1) 1.2s infinite;
+    animation:
+      idx-ask-gleam 4.4s cubic-bezier(0.65, 0, 0.35, 1) 1.2s infinite,
+      idx-ask-breathe 4.4s ease-in-out 1.2s infinite;
   }
-  .idx-ask { animation: idx-ask-breathe 4.4s ease-in-out 1.2s infinite; }
   @keyframes idx-ask-gleam {
     0%, 62% { background-position: -120% 0; }
     100% { background-position: 260% 0; }
   }
   @keyframes idx-ask-breathe {
-    0%, 62% { transform: scale(1); }
-    78% { transform: scale(1.018); }
-    94%, 100% { transform: scale(1); }
+    0%, 62% { transform: scale(1, 1); }
+    78% { transform: scale(1.018, 1.07); }
+    94%, 100% { transform: scale(1, 1); }
   }
-  .idx-ask:hover,
-  .idx-ask:focus-visible { animation-play-state: paused; }
+  .idx-ask:hover::before,
+  .idx-ask:hover::after,
+  .idx-ask:focus-visible::before,
+  .idx-ask:focus-visible::after { animation-play-state: paused; }
   .idx-ask:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 3px; }
   @media (prefers-reduced-motion: reduce) {
-    .idx-ask,
+    .idx-ask::before,
     .idx-ask::after { animation: none; }
   }
 
@@ -446,7 +438,6 @@
     color: var(--color-ink);
   }
   @media (prefers-reduced-motion: reduce) {
-    .idx-caret[data-still] { animation: none; }
     .prop-row,
     .prop-row::before,
     .prop-chip { transition: none; }
