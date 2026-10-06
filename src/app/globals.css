@@ -347,6 +347,25 @@
      The index's rows turned to another use: the same height, padding,
      hairlines and type. A row being written in is inked over as an index
      row is when pointed at, its words and placeholder coming out white. */
+  /* The form's pane: frosted glass, a little wider than the form all
+     round, like the mat round a hung work. Opaque enough that the drops
+     behind it are only soft shadows. */
+  .prop-pane {
+    position: absolute;
+    inset: -1rem -1rem -0.75rem;
+    z-index: -1;
+    background: rgb(255 255 255 / 0.8);
+    -webkit-backdrop-filter: blur(28px) saturate(1.05);
+    backdrop-filter: blur(28px) saturate(1.05);
+    border: 1px solid rgb(0 0 0 / 0.07);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.7),
+      0 1.5rem 3rem -1.75rem rgb(0 0 0 / 0.28);
+  }
+  @media (min-width: 768px) {
+    .prop-pane { inset: -1.5rem -1.5rem -1.25rem; }
+  }
+
   .prop-row {
     position: relative;
     isolation: isolate;
@@ -379,9 +398,10 @@
   .prop-row:not(.prop-row-plain):focus-within { color: var(--color-paper); }
   .prop-row:not(.prop-row-plain):focus-within::before { transform: scaleX(1); transform-origin: left; }
   .prop-row-plain { cursor: default; margin: 0; min-width: 0; align-items: center; }
-  .prop-label { color: var(--color-ash-2); transition: color 0.35s ease; }
-  .prop-row:focus-within .prop-label { color: rgb(255 255 255 / 0.6); }
-  .prop-row-plain:focus-within .prop-label { color: var(--color-ash-2); }
+  /* In the tone and weight of the subtitle's second line (user). */
+  .prop-label { color: var(--color-ash); font-weight: 500; transition: color 0.35s ease; }
+  .prop-row:focus-within .prop-label { color: rgb(255 255 255 / 0.72); }
+  .prop-row-plain:focus-within .prop-label { color: var(--color-ash); }
 
   .prop-input {
     width: 100%;

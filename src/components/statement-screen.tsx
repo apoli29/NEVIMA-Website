@@ -351,7 +351,10 @@ function SectionIndex({ settled }: { settled: boolean }) {
       <div className="col-start-1 row-start-1 self-end">
         <ProposalForm open={asking} onClose={close} />
       </div>
+      {/* The drops perch above the index itself, not above the form's
+          room round it (see jelly-field.tsx). */}
       <motion.nav
+        data-jelly-perch
         aria-label="Sections"
         className="col-start-1 row-start-1 self-end"
         initial={false}
