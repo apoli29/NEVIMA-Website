@@ -123,6 +123,25 @@ function useStudioIn(ready: boolean) {
   return inView;
 }
 
+/* The studio's top has reached the top of the screen: the second screen,
+   stuck under it, is wholly covered by the studio and the services. */
+function useCovered(ready: boolean) {
+  const [covered, setCovered] = useState(false);
+  useEffect(() => {
+    if (!ready) return;
+    const studio = document.getElementById("studio");
+    if (!studio) return;
+    const check = () => {
+      const now = studio.getBoundingClientRect().top <= 0;
+      setCovered((was) => (was === now ? was : now));
+    };
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    return () => window.removeEventListener("scroll", check);
+  }, [ready]);
+  return covered;
+}
+
 export function Home() {
   const reduce = useReducedMotion() ?? false;
   const progress = useMotionValue(0);
@@ -135,6 +154,9 @@ export function Home() {
   // began to read itself out while it was still a third of the way onto the
   // screen would be half over before it was properly there.
   const studioIn = useStudioIn(phase === "open");
+  // Once the studio has closed over the whole of the second screen, the
+  // water under it is held still (see JellyField's covered).
+  const covered = useCovered(phase === "open");
   // The listeners need the current phase without being torn down and rebuilt
   // by it, and they fire before React has re-rendered.
   const phaseRef = useRef<Phase>("waiting");
@@ -313,14 +335,14 @@ export function Home() {
             makes the overlap possible: a stuck element can only stay stuck
             inside its own container, so the container has to be the one the
             studio is in. It holds the screen in place for the length of the
-            studio and lets it go underneath it. */}
+            studio and the services, and lets it go underneath them. */}
         <div className="relative">
           {/* Stuck, not scrolled. The second screen stays where it is and the
               studio is drawn up over it, which is the whole of what the two
               gestures buy: the page does not travel to the next section, the
-              next section closes over this one. It is let go once the studio
-              has gone by, so the jelly field is not left running under the
-              rest of the page. */}
+              next section closes over this one. It is held under the studio
+              and the services and let go after them; once covered, the jelly
+              field under it is held still rather than run for nobody. */}
           {/* bg-paper is load bearing. Mid-transition neither the curtain nor
               the field is fully opaque: their combined alpha dips, and
               whatever is behind reads through. The stage owning its own
@@ -345,6 +367,7 @@ export function Home() {
             <JellyField
               arrive={phase !== "waiting"}
               arriveDelay={(FIELD_IN[0] * RUN_MS) / 1000}
+              covered={covered}
             />
           </motion.div>
 
@@ -374,9 +397,14 @@ export function Home() {
           </section>
 
           <Studio ready={studioIn} />
+          {/* The services are drawn over the screen too. The studio alone
+              is shorter than the screen since the co-founders moved to the
+              about page, and a stuck element only stays stuck while its
+              box still has room: the screen came loose half covered and
+              slid away under the studio instead of being closed over. */}
+          <Services ready={phase === "open"} />
         </div>
 
-        <Services ready={phase === "open"} />
         <Process ready={phase === "open"} />
         <Comparison ready={phase === "open"} />
       </main>

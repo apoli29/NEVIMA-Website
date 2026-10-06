@@ -349,8 +349,13 @@ export function JellyField({
   className,
   arrive,
   arriveDelay = 0,
+  covered = false,
 }: {
   className?: string;
+  /** Something opaque has been drawn over the whole field (the sections
+      that close over the second screen): it is on the screen but cannot
+      be seen, so it is held still rather than drawn for nobody. */
+  covered?: boolean;
   /** Given, the drops wait out of sight until this turns true, and then
       land on the water one by one. Left out, they are simply there. */
   arrive?: boolean;
@@ -359,6 +364,12 @@ export function JellyField({
 }) {
   const reduce = useReducedMotion() ?? false;
   const canvas = useRef<HTMLCanvasElement>(null);
+  const coveredRef = useRef(covered);
+  const wakeRef = useRef<() => void>(() => {});
+  useEffect(() => {
+    coveredRef.current = covered;
+    wakeRef.current();
+  }, [covered]);
   const entrance = arrive !== undefined;
   // When the first drop lands, on the performance clock; null until then.
   const setOff = useRef<number | null>(null);
@@ -983,6 +994,8 @@ export function JellyField({
     let frame = 0;
     let last = 0;
     let visible = false;
+    /** On the screen and not covered over. */
+    const onScreen = () => visible && !coveredRef.current;
 
     const tick = (t: number) => {
       // Under the curtain until the drops start to land, nothing here can
@@ -991,7 +1004,7 @@ export function JellyField({
       // is due.
       if (!landed && (setOff.current === null || t < setOff.current)) {
         last = 0;
-        frame = visible ? requestAnimationFrame(tick) : 0;
+        frame = onScreen() ? requestAnimationFrame(tick) : 0;
         return;
       }
       const dt = last ? Math.min((t - last) / 1000, 1 / 20) : 1 / 60;
@@ -1004,14 +1017,15 @@ export function JellyField({
       stepSlab(dt);
       sendSlab();
       draw(n);
-      frame = visible ? requestAnimationFrame(tick) : 0;
+      frame = onScreen() ? requestAnimationFrame(tick) : 0;
       if (!frame) last = 0;
     };
 
     const wake = () => {
-      if (reduce || frame || !visible || disposed) return;
+      if (reduce || frame || !onScreen() || disposed) return;
       frame = requestAnimationFrame(tick);
     };
+    wakeRef.current = wake;
 
     let queued = 0;
     const refit = () => {
