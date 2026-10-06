@@ -27,7 +27,8 @@ import { useInkAlign } from "./ink-align";
    from the left as it slides, with a stop at each stage that is filled
    in once it has been reached: the order is shown that way, rather than
    by numbers on the headings. Each stage stands in a column ruled off
-   from the next by a hairline, the way the index is ruled.
+   from the next by a hairline, the way the index is ruled, its name in
+   white on the black marker the index's own label wears.
    ================================================================== */
 
 const STAGES = [
@@ -73,6 +74,10 @@ const STAGES = [
   },
 ] as const;
 
+
+/** Scrolled pixels per pixel slid: a little more than one, so the row
+    moves a touch slower than the page would (the user's ask). */
+const SLOW = 1.6;
 
 /* Measured before the first paint in the browser; the server has no
    layout to measure. */
@@ -125,9 +130,11 @@ export function Process({ ready }: { ready: boolean }) {
       id="how-we-work"
       aria-labelledby="process-title"
       className="relative z-10 bg-paper"
-      style={{ height: `calc(100svh + ${travel}px)` }}
+      style={{ height: `calc(100svh + ${Math.round(travel * SLOW)}px)` }}
     >
-      <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden pt-[clamp(6.5rem,15svh,9rem)] pb-[clamp(1.5rem,5svh,3.5rem)]">
+      {/* The heading and the row as one block, held in the middle of the
+          screen under the bar, the row close under the heading. */}
+      <div className="sticky top-0 flex h-[100svh] flex-col justify-center overflow-hidden pt-[clamp(5.5rem,11svh,7rem)] pb-[clamp(1.5rem,4svh,3rem)]">
         <div className="shell">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
             <SlideIn ready={ready}>
@@ -152,7 +159,7 @@ export function Process({ ready }: { ready: boolean }) {
 
         {/* The row, set against the shell's left edge and free to run past
             the right edge of the screen; it is slid, not scrolled. */}
-        <div ref={viewport} className="prc-viewport mt-auto">
+        <div ref={viewport} className="prc-viewport mt-[clamp(2.5rem,7svh,4.5rem)]">
           <motion.ol
             ref={track}
             className="prc-track"
@@ -173,8 +180,8 @@ export function Process({ ready }: { ready: boolean }) {
                   data-on={reduce || i < reached ? "" : undefined}
                   className="abt-stop prc-stop"
                 />
-                <p className="mono-label text-ash-2">
-                  {stage.stage}
+                <p className="mono-label flex">
+                  <span className="idx-title">{stage.stage}</span>
                   <span className="sr-only">
                     , stage {i + 1} of {STAGES.length}
                   </span>
@@ -185,7 +192,7 @@ export function Process({ ready }: { ready: boolean }) {
                 >
                   {stage.principle}
                 </h3>
-                <p className="mt-4 text-[clamp(0.9375rem,1.05vw,1.0625rem)] leading-[1.5] text-pretty text-ash md:mt-5">
+                <p className="mt-4 mb-6 text-[clamp(0.9375rem,1.05vw,1.0625rem)] leading-[1.5] text-pretty text-ash md:mt-5">
                   {stage.text}
                 </p>
                 <dl className="mt-auto grid grid-cols-2 gap-x-4 border-t border-ink/15 pt-3">
