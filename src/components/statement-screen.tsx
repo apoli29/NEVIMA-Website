@@ -298,14 +298,35 @@ function WallRule({
    and over (see .idx-lead).
 
    The last row asks rather than points: "Get your free proposal",
-   inked like Pricing, written out letter by letter with a text cursor
-   blinking after it, as a field waiting to be filled in, with a light
-   passing over it and a slight swell every few seconds (see .idx-ask),
-   and a plus where the others have an arrow. Pressed, the
+   inked like Pricing, with a light passing over it and a slight swell
+   of its black every few seconds (see .idx-ask), and a plus where the
+   others have an arrow. Pressed, the
    index turns into the form itself, made of the same rows (see
    proposal-form.tsx), and Close turns it back. The water is told each
    time, so the drops move clear of the taller form. */
 const ASK = "Get your free proposal";
+
+/** When each part of the index comes in, in seconds after the screen has
+    settled (the rule over the readouts is drawn from 0.2). */
+const ENTRY = {
+  label: 0.3,
+  rows: 0.42,
+  step: 0.09,
+  ease: [0.22, 1, 0.36, 1] as const,
+};
+
+/* A row's black rule, drawn in from the left. */
+function IndexRule({ on, reduce, delay }: { on: boolean; reduce: boolean; delay: number }) {
+  return (
+    <motion.span
+      aria-hidden="true"
+      className="absolute inset-x-0 top-0 z-10 block h-px origin-left bg-ink"
+      initial={false}
+      animate={{ scaleX: on ? 1 : 0 }}
+      transition={{ duration: reduce ? 0 : 0.6, delay: reduce ? 0 : delay, ease: [0.65, 0, 0.35, 1] }}
+    />
+  );
+}
 
 function SectionIndex({ settled }: { settled: boolean }) {
   const reduce = useReducedMotion() ?? false;
@@ -340,117 +361,75 @@ function SectionIndex({ settled }: { settled: boolean }) {
         aria-hidden={asking}
         style={{ pointerEvents: asking ? "none" : undefined }}
       >
+        {/* The entrance, once the screen has settled, top to bottom as
+            one gesture: the label is uncovered from the left, then each
+            row's rule is drawn in from the left with its row coming in
+            just behind it, and the rule under the last row closes the
+            list. Nothing of it shows before its turn: a label over bare
+            rules, the rows still to come, was what the user saw first. */}
         <p className="mono-label mb-2.5 flex items-center text-ash-2">
-          <span className="idx-title">Index</span>
-        </p>
-        <ol className="border-b border-ink">
-          {SECTION_LINKS.map((link, i) => (
-            <motion.li
-              key={link.href}
-              className="border-t border-ink"
-              initial={false}
-              animate={{ opacity: on ? 1 : 0, x: on ? 0 : 16 }}
-              transition={{ duration: reduce ? 0 : 0.7, delay: 0.35 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <a
-                href={link.href}
-                className={`idx-link ${link.lead ? "idx-lead" : ""}`}
-              >
-                <span className="idx-name flex items-center gap-2.5">
-                  {link.lead && <span aria-hidden="true" className="live-dot" />}
-                  {link.label}
-                </span>
-                <span aria-hidden="true" className="idx-arrow">
-                  <Arrow />
-                </span>
-              </a>
-            </motion.li>
-          ))}
-          <motion.li
-            className="border-t border-ink"
+          <motion.span
+            className="idx-title"
             initial={false}
-            animate={{ opacity: on ? 1 : 0, x: on ? 0 : 16 }}
-            transition={{
-              duration: reduce ? 0 : 0.7,
-              delay: 0.35 + SECTION_LINKS.length * 0.08,
-              ease: [0.22, 1, 0.36, 1],
-            }}
+            animate={{ clipPath: on ? "inset(0 0% 0 0)" : "inset(0 100% 0 0)" }}
+            transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : ENTRY.label, ease: ENTRY.ease }}
           >
-            <button
-              ref={askButton}
-              type="button"
-              aria-expanded={asking}
-                aria-controls="proposal-form"
-              onClick={() => setAsking(true)}
-              className="idx-link idx-ask w-full text-left"
-            >
-              <span className="idx-name">
-                <span className="sr-only">{ASK}</span>
-                <Typed text={ASK} active={on && !reduce} />
-              </span>
-              <span aria-hidden="true" className="idx-arrow">
-                <Plus />
-              </span>
-            </button>
-          </motion.li>
+            Index
+          </motion.span>
+        </p>
+        <ol className="relative">
+          {[...SECTION_LINKS.map((link) => ({ key: link.href, link })), { key: "ask", link: null }].map(
+            ({ key, link }, i) => (
+              <li key={key} className="relative">
+                <IndexRule on={on} reduce={reduce} delay={ENTRY.rows + i * ENTRY.step} />
+                <motion.div
+                  initial={false}
+                  animate={{ opacity: on ? 1 : 0, x: on ? 0 : 12 }}
+                  transition={{
+                    duration: reduce ? 0 : 0.6,
+                    delay: reduce ? 0 : ENTRY.rows + i * ENTRY.step + 0.12,
+                    ease: ENTRY.ease,
+                  }}
+                >
+                  {link ? (
+                    <a href={link.href} className={`idx-link ${link.lead ? "idx-lead" : ""}`}>
+                      <span className="idx-name flex items-center gap-2.5">
+                        {link.lead && <span aria-hidden="true" className="live-dot" />}
+                        {link.label}
+                      </span>
+                      <span aria-hidden="true" className="idx-arrow">
+                        <Arrow />
+                      </span>
+                    </a>
+                  ) : (
+                    <button
+                      ref={askButton}
+                      type="button"
+                      aria-expanded={asking}
+                      aria-controls="proposal-form"
+                      onClick={() => setAsking(true)}
+                      className="idx-link idx-ask w-full text-left"
+                    >
+                      <span className="idx-name">{ASK}</span>
+                      <span aria-hidden="true" className="idx-arrow">
+                        <Plus />
+                      </span>
+                    </button>
+                  )}
+                </motion.div>
+              </li>
+            ),
+          )}
+          <li aria-hidden="true" className="relative h-px">
+            <IndexRule
+              on={on}
+              reduce={reduce}
+              delay={ENTRY.rows + (SECTION_LINKS.length + 1) * ENTRY.step}
+            />
+          </li>
         </ol>
       </motion.nav>
     </div>
-  );
-}
-
-/* The ask, written out a letter at a time with a cursor after it, held,
-   taken back quickly and written again, over and over. The cursor blinks
-   whenever the words are still (see .idx-caret). For anyone who has
-   asked for less motion it is simply there, with no cursor. */
-function Typed({ text, active }: { text: string; active: boolean }) {
-  const [n, setN] = useState(active ? 0 : text.length);
-  const [still, setStill] = useState(!active);
-
-  useEffect(() => {
-    if (!active) {
-      setN(text.length);
-      setStill(true);
-      return;
-    }
-    let live = true;
-    let timer = 0;
-    const wait = (ms: number) =>
-      new Promise<void>((done) => {
-        timer = window.setTimeout(done, ms);
-      });
-    const run = async () => {
-      await wait(900);
-      while (live) {
-        setStill(false);
-        for (let i = 1; i <= text.length && live; i++) {
-          setN(i);
-          await wait(i === 1 ? 120 : 55);
-        }
-        setStill(true);
-        await wait(6000);
-        if (!live) return;
-        setStill(false);
-        for (let i = text.length - 1; i >= 0 && live; i--) {
-          setN(i);
-          await wait(18);
-        }
-        setStill(true);
-        await wait(500);
-      }
-    };
-    run();
-    return () => {
-      live = false;
-      window.clearTimeout(timer);
-    };
-  }, [active, text]);
-
-  return (
-    <span aria-hidden="true">
-      {text.slice(0, n)}
-      {active && <span className="idx-caret" data-still={still ? "" : undefined} />}
-    </span>
   );
 }
 

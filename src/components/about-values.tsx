@@ -206,6 +206,9 @@ export function AboutValues() {
 
   const value = VALUES[chosen ?? 0];
   const on = seen || reduce;
+  // Where each callout up on the water was drawn, so a new one can keep
+  // clear of them (see Callout).
+  const placed = useRef(new Map<string, Lead>());
 
   return (
     <section
@@ -334,6 +337,8 @@ export function AboutValues() {
           {aims.map(({ key, aim }) => (
             <Callout
               key={key}
+              id={key}
+              placed={placed.current}
               aim={aim}
               label={aim.kind === "piece" ? `${press} to close` : `${press} here`}
               section={section}
@@ -359,18 +364,57 @@ export function AboutValues() {
     target it starts from, the corner where it turns level, how long the
     level run is and which way it goes. */
 type Lead = { ax: number; ay: number; bx: number; by: number; run: number; dir: 1 | -1 };
+/* A leader runs up from the top of its target, or (to keep clear of a
+   callout beside it) down from the bottom; either way its words sit on
+   its level run. by < ay going up, by > ay going down. */
 
-/** How far up and out the slanted stretch runs, and the level run. */
+/** How far up and out the slanted stretch runs, and the level run. A
+    callout that would run into another rises a step higher, so the two
+    are written at different heights. */
 const RISE = 46;
+const RISE_STEP = 40;
 const RUN = 128;
+/** The least level run the words fit along. */
+const MIN_RUN = 90;
+
+type Box = { l: number; r: number; t: number; b: number };
+
+/** What a callout covers: its slanted stretch, and its level run with
+    the words over it. */
+function boxesOf(lead: Lead): Box[] {
+  const end = lead.bx + lead.dir * lead.run;
+  return [
+    {
+      l: Math.min(lead.ax, lead.bx),
+      r: Math.max(lead.ax, lead.bx),
+      t: Math.min(lead.ay, lead.by),
+      b: Math.max(lead.ay, lead.by),
+    },
+    { l: Math.min(lead.bx, end), r: Math.max(lead.bx, end), t: lead.by - 24, b: lead.by + 2 },
+  ];
+}
+
+function collides(a: Lead, b: Lead) {
+  const pad = 8;
+  return boxesOf(a).some((x) =>
+    boxesOf(b).some(
+      (y) => x.l < y.r + pad && x.r + pad > y.l && x.t < y.b + pad && x.b + pad > y.t,
+    ),
+  );
+}
 
 function Callout({
+  id,
+  placed,
   aim,
   label,
   section,
   slots,
   piece,
 }: {
+  id: string;
+  /** Every callout up, by id: read to keep clear of, written once placed. */
+  placed: Map<string, Lead>;
   aim: NonNullable<Aim>;
   label: string;
   section: React.RefObject<HTMLElement | null>;
@@ -400,15 +444,35 @@ function Callout({
         const b = el.getBoundingClientRect();
         const cx = b.left - box.left + b.width / 2;
         const cy = b.top - box.top + b.height / 2;
-        // Off the right of the drop, unless that would run off the screen.
-        const dir: 1 | -1 = cx + b.width * 0.4 + RISE + RUN > maxX ? -1 : 1;
         // From the drop's edge, up and outwards at forty-five degrees.
         const reach = b.width * 0.3;
-        const ax = cx + dir * reach;
-        const ay = cy - reach;
-        const bx = ax + dir * RISE;
-        const room = dir === 1 ? maxX - bx : bx - minX;
-        setLead({ ax, ay, bx, by: ay - RISE, run: Math.min(RUN, room), dir });
+        const make = (dir: 1 | -1, rise: number, down = false): Lead => {
+          const v = down ? 1 : -1;
+          const ax = cx + dir * reach;
+          const ay = cy + v * reach;
+          const bx = ax + dir * rise;
+          const room = dir === 1 ? maxX - bx : bx - minX;
+          return { ax, ay, bx, by: ay + v * rise, run: Math.min(RUN, room), dir };
+        };
+        // Up and off the right of the drop, unless that would run off the
+        // screen; then up the other way; then down off its foot either
+        // way; then a step higher. Whichever first keeps clear of the
+        // callouts already up wins: two side by side once pointed at each
+        // other and wrote over each other.
+        const first: 1 | -1 = cx + b.width * 0.4 + RISE + RUN > maxX ? -1 : 1;
+        const other = -first as 1 | -1;
+        const others = [...placed].filter(([k]) => k !== id).map(([, l]) => l);
+        const tries = [
+          make(first, RISE),
+          make(other, RISE),
+          make(first, RISE, true),
+          make(other, RISE, true),
+          make(first, RISE + RISE_STEP),
+          make(other, RISE + RISE_STEP),
+        ].filter((l) => l.run >= MIN_RUN);
+        const pick = tries.find((l) => !others.some((o) => collides(l, o))) ?? tries[0] ?? make(first, RISE);
+        placed.set(id, pick);
+        setLead(pick);
       } else {
         const el = piece.current;
         if (!el) return setLead(null);
@@ -443,12 +507,17 @@ function Callout({
         }
         const bx = ax + dir * RISE;
         const room = dir === 1 ? maxX - bx : bx - minX;
-        setLead({ ax, ay, bx, by: ay - RISE, run: Math.min(RUN + 24, room), dir });
+        const lead = { ax, ay, bx, by: ay - RISE, run: Math.min(RUN + 24, room), dir };
+        placed.set(id, lead);
+        setLead(lead);
       }
     };
     measure();
     window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    return () => {
+      window.removeEventListener("resize", measure);
+      placed.delete(id);
+    };
   }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!lead) return null;

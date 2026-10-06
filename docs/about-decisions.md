@@ -54,6 +54,7 @@ The page is `noindex` (`robots: { index: false, follow: true }` in `src/app/abou
 - The value inside the joined piece: **name on the left, sentence on the right, justified, both cap-trimmed so their tops are level** (this, not the section header, was what the user meant by H1/H2). Stacked below 640px. The joined piece's interior is kept free of rim, highlight and water sheen (`u_join`) so nothing glints behind the words.
 - Padding pass (user): values head room 0.85× the section gap; foot room grown until the space under the drops' glass matches the space over the title (md:pb-[8rem]), so heading and drops read as one centred piece. Mission/vision top and bottom room also 0.85×.
 - Inside the joined piece: the name is smaller and on one line (nowrap, up to 1.875rem), the sentence bigger (up to 1.5rem) and wider (piece up to 34em), so the name is always shorter than the text box; the piece leaves more room round the words (`PIECE_PAD` 1.5em × 1.6em, shared with the callout). Callouts stay inside the shell's content edges.
+- Callouts no longer write over each other (user's screenshot: two neighbours pointing at each other). Each callout picks the first placement that keeps clear of those already up (`placed` registry, `collides`): up-right/left, then **down** off the drop's foot either way, then a step higher. Measured 0 overlaps over ~130 two-callout moments each at 1100, 820 and 390 wide.
 - The section is no longer a full screen: its height is the heading plus the drops' row with callout room (~700px at 1440x900).
 
 ## CTAs, site-wide
