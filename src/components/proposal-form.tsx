@@ -25,6 +25,11 @@ import { motion, useReducedMotion } from "motion/react";
    SectionIndex): the box is as tall as the form from the first paint,
    so the water's drops are laid out clear of it once and never have to
    move when it opens. Opening it only shows it.
+
+   A drop is perched in the room above the index, where the form opens,
+   so the form is hung on a pane of frosted glass, like a work behind
+   museum glass: near opaque, the drop behind it only a soft shadow, the
+   words always on a calm ground.
    ================================================================== */
 
 const EMAIL = "ola@nevima.pt";
@@ -33,6 +38,13 @@ const NEEDS = ["Web Design", "Visual Identity", "SEO", "GEO"] as const;
 const ROW = {
   hidden: { opacity: 0, y: 10 },
   shown: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const } },
+};
+
+/** The pane comes up first, as the first of the staggered rows, and
+    quicker than they do, so no row is ever seen on the bare water. */
+const PANE = {
+  hidden: { opacity: 0 },
+  shown: { opacity: 1, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
 export function ProposalForm({
@@ -102,11 +114,12 @@ export function ProposalForm({
       // the box keeps its height.
       inert={!open}
       aria-hidden={!open}
-      className={open ? "" : "pointer-events-none"}
+      className={`relative isolate ${open ? "" : "pointer-events-none"}`}
       onAnimationComplete={(def) => {
         if (def === "shown") first.current?.focus({ preventScroll: true });
       }}
     >
+      <motion.div variants={PANE} aria-hidden="true" className="prop-pane" />
       <motion.p variants={ROW} className="mono-label mb-2.5 flex items-center justify-between text-ash-2">
         <span className="idx-title">Free proposal</span>
         <button type="button" onClick={onClose} className="prop-close">

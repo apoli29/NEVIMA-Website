@@ -10,7 +10,7 @@ import { useReducedMotion } from "motion/react";
    the piece on show: the screen is hung round it like a gallery wall,
    with its label beside it (see home.tsx).
 
-   Under the water the ground is white, and on it lie eleven loose drops of
+   Under the water the ground is white, and on it lie a dozen loose drops of
    black glass, of no set shape, each one lobed and slowly changing its
    outline, that wander very slowly through the room the words leave.
    They are lit as solids, so they read as objects rather than as ink:
@@ -27,6 +27,13 @@ import { useReducedMotion } from "motion/react";
    several, wherever on the screen each one is set ([data-jelly-quiet]),
    and the drops keep clear of each of them; one that wanders up to a block
    slides along its edge, and never out past the edge of the screen.
+
+   One drop more is set down once the rest are, perched over the index
+   ([data-jelly-perch]) in the room its block keeps for the proposal form.
+   It keeps clear of the index itself rather than of the whole block, and
+   stays wholly inside that block, so when the form opens it is wholly
+   behind the form's frosted pane (see proposal-form.tsx), never half in
+   and half out. Being laid last, it moves none of the others.
 
    The water covers the whole screen and never stops moving: a swell of
    eight waves runs across it from every side, just as much in every part
@@ -113,6 +120,14 @@ const NAV_GAP = 20;
 const SMALL = 600;
 const SMALL_GROW = 1.1;
 const SMALL_SPREAD = 1.2;
+/** The drops perched over the index, at most. The user asked for one or
+    two; a second never fits wholly in the form's room beside the first
+    without the two sitting level, side by side, so there is one. */
+const PERCHED = 1;
+/** How far inside its block's top and sides, in CSS pixels, a perched
+    drop's reach is kept. The form's pane stands 24px out round the block,
+    which covers the few pixels more the glass is warped and bent. */
+const PERCH_INSET = 8;
 /** The landing: the drops come down this far apart, in seconds, each
     swelling to its size over this long, and each strikes the water this
     deep, in CSS pixels, over a ring as wide as itself. */
@@ -495,39 +510,57 @@ export function JellyField({
        across the screen. Read again only when the screen changes size or
        the fonts arrive, and only acted on if one moved. */
     let quiet: Box[] = [];
+    // The words as the perched drops see them: the index's own box in place
+    // of the block it stands in, so they may sit in the room above it.
+    let perchQuiet: Box[] = [];
+    // The index, and which of the quiet blocks it stands in (-1: none).
+    let perch: Box | null = null;
+    let perchHost = -1;
     let measured = false;
     const measureQuiet = () => {
       const origin = section.getBoundingClientRect();
-      const next: Box[] = [];
-      for (const el of section.querySelectorAll("[data-jelly-quiet]")) {
+      const boxOf = (el: Element): Box | null => {
         const b = el.getBoundingClientRect();
-        if (!b.width || !b.height) continue;
+        if (!b.width || !b.height) return null;
         // Undo any lift still being animated on the way in.
         let lift = 0;
         for (let a = el.parentElement; a && a !== section; a = a.parentElement) {
           const t = getComputedStyle(a).transform;
           if (t && t !== "none") lift += new DOMMatrixReadOnly(t).m42;
         }
-        next.push({
+        return {
           left: b.left - origin.left,
           top: b.top - origin.top - lift,
           right: b.right - origin.left,
           bottom: b.bottom - origin.top - lift,
           pad: el.hasAttribute("data-jelly-wide") && w < PHONE_W ? WARP_PAD : 0,
-        });
+        };
+      };
+      const next: Box[] = [];
+      let host = -1;
+      const perchEl = section.querySelector("[data-jelly-perch]");
+      for (const el of section.querySelectorAll("[data-jelly-quiet]")) {
+        const b = boxOf(el);
+        if (!b) continue;
+        if (perchEl && el.contains(perchEl)) host = next.length;
+        next.push(b);
       }
+      const nextPerch = perchEl && host >= 0 ? boxOf(perchEl) : null;
+      const near = (a: Box, b: Box) =>
+        Math.abs(a.left - b.left) < 2 &&
+        Math.abs(a.top - b.top) < 2 &&
+        Math.abs(a.right - b.right) < 2 &&
+        Math.abs(a.bottom - b.bottom) < 2;
       const same =
         measured &&
         next.length === quiet.length &&
-        next.every(
-          (b, i) =>
-            Math.abs(b.left - quiet[i].left) < 2 &&
-            Math.abs(b.top - quiet[i].top) < 2 &&
-            Math.abs(b.right - quiet[i].right) < 2 &&
-            Math.abs(b.bottom - quiet[i].bottom) < 2,
-        );
+        next.every((b, i) => near(b, quiet[i])) &&
+        (nextPerch && perch ? near(nextPerch, perch) : nextPerch === perch);
       if (same) return;
       quiet = next;
+      perch = nextPerch;
+      perchHost = nextPerch ? host : -1;
+      perchQuiet = quiet.map((b, i) => (i === perchHost && perch ? perch : b));
       measured = true;
       layoutDrops();
     };
@@ -547,8 +580,12 @@ export function JellyField({
       const e = c + (padded ? b.pad : 0);
       return x > b.left - e && x < b.right + e && y > b.top - e && y < b.bottom + e;
     };
-    const inWords = (x: number, y: number, c: number, padded = true) =>
-      quiet.some((b) => inBox(b, x, y, c, padded));
+    // The drops perched over the index (see PERCHED).
+    let perched = new Set<number>();
+    /** The words drop i keeps clear of. */
+    const wordsFor = (i: number) => (perched.has(i) ? perchQuiet : quiet);
+    const inWords = (i: number, x: number, y: number, c: number, padded = true) =>
+      wordsFor(i).some((b) => inBox(b, x, y, c, padded));
 
     // Where the floating bar sits over the field, in its CSS pixels.
     let bar: { left: number; right: number; bottom: number } | null = null;
@@ -578,7 +615,7 @@ export function JellyField({
         one block into another. */
     const clear = (i: number, x: number, y: number, c: number) => {
       for (let pass = 0; pass < 4; pass++) {
-        const hit = quiet.find((b) => inBox(b, x, y, c));
+        const hit = wordsFor(i).find((b) => inBox(b, x, y, c));
         if (!hit) return { x, y };
         const k = within(i);
         const e = c + hit.pad;
@@ -590,7 +627,7 @@ export function JellyField({
         ]
           .filter((p) => p.x >= k.x0 && p.x <= k.x1 && p.y >= k.y0 && p.y <= k.y1)
           .sort((a, b) => Math.hypot(a.x - x, a.y - y) - Math.hypot(b.x - x, b.y - y));
-        const free = exits.find((p) => !inWords(p.x, p.y, c)) ?? exits[0];
+        const free = exits.find((p) => !inWords(i, p.x, p.y, c)) ?? exits[0];
         if (!free) return { x, y };
         x = free.x;
         y = free.y;
@@ -639,6 +676,7 @@ export function JellyField({
       // Biggest first: the big ones need the open water the small ones can
       // do without.
       const order = Array.from({ length: n }, (_, i) => i).sort((a, b) => body(b) - body(a));
+      perched = new Set();
       const top = bar ? bar.bottom + NAV_GAP : EDGE_MARGIN;
 
       /* How much open water there is round drop i at (x, y), as the
@@ -650,9 +688,9 @@ export function JellyField({
       const openAt = (i: number, x: number, y: number, others: number[], at: { x: number; y: number }[]) => {
         const r = body(i);
         const edge = Math.min(x - r, w - x - r, y - r - top, h - y - r) - EDGE_MARGIN;
-        if (edge < 0 || inWords(x, y, clearance(i), false)) return -Infinity;
+        if (edge < 0 || inWords(i, x, y, clearance(i), false)) return -Infinity;
         let gap = edge * 1.6;
-        for (const b of quiet) gap = Math.min(gap, toBox(b, x, y) - r);
+        for (const b of wordsFor(i)) gap = Math.min(gap, toBox(b, x, y) - r);
         for (const j of others) {
           gap = Math.min(gap, Math.hypot(x - at[j].x, y - at[j].y) - r - body(j));
         }
@@ -711,6 +749,64 @@ export function JellyField({
       // inside it is taken out by the shortest way, and no other moves.
       for (const i of placed) next[i] = clear(i, next[i].x, next[i].y, clearance(i));
 
+      /* Then the drops perched over the index, the next ones along, laid
+         the same way but only in the room above it, inside its block,
+         with every drop already down left where it is. None is set down
+         where there is no clear water for it there. */
+      if (perch && perchHost >= 0) {
+        const host = quiet[perchHost];
+        // Wholly inside the block; the index below it is kept clear of by
+        // openAt.
+        const inRoom = (i: number, x: number, y: number) =>
+          y - body(i) >= host.top + PERCH_INSET &&
+          x - body(i) >= host.left + PERCH_INSET &&
+          x + body(i) <= host.right - PERCH_INSET;
+        for (let k = 0; k < PERCHED && n + k < DROPS.length; k++) {
+          const i = n + k;
+          perched.add(i);
+          const openHere = (x: number, y: number) => (inRoom(i, x, y) ? openAt(i, x, y, placed, next) : -Infinity);
+          let best: { x: number; y: number } | null = null;
+          let bestGap = -Infinity;
+          for (let y = host.top; y <= perch.top; y += step) {
+            for (let x = host.left; x <= host.right; x += step) {
+              const gap = openHere(x, y);
+              if (gap > bestGap) {
+                bestGap = gap;
+                best = { x, y };
+              }
+            }
+          }
+          if (!best || bestGap < 0) {
+            perched.delete(i);
+            break;
+          }
+          next[i] = best;
+          placed.push(i);
+        }
+        // Evened out between themselves, the others held still.
+        const mine = placed.filter((i) => perched.has(i));
+        for (let pass = 0, reach = step * 4; pass < 60 && reach >= 1; pass++) {
+          let moved = false;
+          for (const i of mine) {
+            const others = placed.filter((j) => j !== i);
+            let here = openAt(i, next[i].x, next[i].y, others, next);
+            for (let k = 0; k < 8; k++) {
+              const a = (k / 8) * Math.PI * 2;
+              const x = next[i].x + Math.cos(a) * reach;
+              const y = next[i].y + Math.sin(a) * reach;
+              if (!inRoom(i, x, y)) continue;
+              const gap = openAt(i, x, y, others, next);
+              if (gap > here + 0.25) {
+                here = gap;
+                next[i] = { x, y };
+                moved = true;
+              }
+            }
+          }
+          if (!moved) reach /= 2;
+        }
+      }
+
       active = placed;
 
       // How far each drop may roam from its base: as far as the wander goes,
@@ -733,6 +829,16 @@ export function JellyField({
           if (j === i) continue;
           const gap = Math.hypot(b.x - next[j].x, b.y - next[j].y) - keep - body(j);
           r = Math.min(r, gap / 2 / Math.SQRT2);
+        }
+        // A perched drop roams no further than its block goes.
+        if (perched.has(i) && perchHost >= 0) {
+          const host = quiet[perchHost];
+          r = Math.min(
+            r,
+            b.y - keep - host.top - PERCH_INSET,
+            b.x - keep - host.left - PERCH_INSET,
+            host.right - PERCH_INSET - b.x - keep,
+          );
         }
         if (bar && underBar(b.x, i)) r = Math.min(r, b.y - keep - bar.bottom - NAV_GAP);
         // One beside the bar, level with it, roams no further than the bar.
