@@ -132,9 +132,11 @@ export function Process({ ready }: { ready: boolean }) {
       className="relative z-10 bg-paper"
       style={{ height: `calc(100svh + ${Math.round(travel * SLOW)}px)` }}
     >
-      {/* The heading and the row as one block, held in the middle of the
-          screen under the bar, the row close under the heading. */}
-      <div className="sticky top-0 flex h-[100svh] flex-col justify-center overflow-hidden pt-[clamp(5.5rem,11svh,7rem)] pb-[clamp(1.5rem,4svh,3rem)]">
+      {/* The heading and the row as one block, the row close under the
+          heading, hung from the top clear of the bar. It was centred on the
+          screen, which left twice the room the user wanted between the
+          services and the heading. */}
+      <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden pt-[clamp(5.5rem,12svh,7rem)] pb-[clamp(1.5rem,4svh,3rem)]">
         <div className="shell">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
             <SlideIn ready={ready}>
