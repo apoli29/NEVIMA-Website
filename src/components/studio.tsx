@@ -52,8 +52,11 @@ export function Studio({ ready }: { ready: boolean }) {
       id="studio"
       aria-labelledby="studio-title"
       // No foot padding: the services section below brings its own head
-      // room, and the two together would open a gap twice the rhythm.
-      className="relative z-10 bg-paper pt-(--section-gap)"
+      // room, and the two together would open a gap twice the rhythm. One
+      // layer above the services, though: the "Learn more" drop's glass and
+      // shadow reach past the foot of this section, and the services'
+      // ground, painted after it, was cutting them off.
+      className="relative z-[11] bg-paper pt-(--section-gap)"
     >
       <div className="shell">
         <h2 id="studio-title" className="sr-only">
