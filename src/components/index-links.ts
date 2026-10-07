@@ -1,10 +1,10 @@
 /* The second screen's index (see statement-screen.tsx), kept here
    because the proposal form carries a copy of it off the screen when it
-   opens (see proposal-flow.tsx). Pricing leads, and is the one row kept
-   lit (see .idx-lead). */
-export const SECTION_LINKS = [
-  // A placeholder: there is no pricing section yet.
-  { label: "Pricing", href: "#pricing", lead: true },
+   opens (see proposal-flow.tsx). The index ends on "Get your free
+   proposal", which is not a link and is set apart there; it carries the
+   green light now (the user took Pricing out). A row marked lead would be
+   kept inked (see .idx-lead); none is. */
+export const SECTION_LINKS: { label: string; href: string; lead: boolean }[] = [
   { label: "About us", href: "/about", lead: false },
   { label: "Our services", href: "#services", lead: false },
 ];

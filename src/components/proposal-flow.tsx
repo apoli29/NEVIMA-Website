@@ -648,7 +648,12 @@ function Panel({
                 className="idx-link idx-send min-w-0 flex-1 text-left"
               >
                 <span className="grid min-w-0">
-                  <motion.span aria-hidden="true" className="idx-name [grid-area:1/1] truncate" style={{ opacity: footOut }}>
+                  <motion.span
+                    aria-hidden="true"
+                    className="idx-name flex items-center gap-2.5 whitespace-nowrap [grid-area:1/1]"
+                    style={{ opacity: footOut }}
+                  >
+                    <span className="live-dot" />
                     Get your free proposal
                   </motion.span>
                   <motion.span className="idx-name [grid-area:1/1] truncate" style={{ opacity: footIn }}>
