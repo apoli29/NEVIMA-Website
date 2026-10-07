@@ -108,6 +108,13 @@
   }
   html::-webkit-scrollbar { display: none; }
 
+  /* The page held still with reduced motion, where there is no Lenis to
+     stop (see useSmoothScroll). */
+  html.scroll-held {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
   ::selection {
     background: var(--color-ink);
     color: var(--color-paper);
@@ -462,6 +469,314 @@
     .prop-row::before,
     .prop-chip { transition: none; }
   }
+
+  /* ---- the free proposal, carried out of the index -----------------
+     (proposal-flow.tsx, proposal-steps.tsx.) The same parts as the
+     index: black hairlines, the label marker, rows in the title face,
+     an inked row to press. Its answers are keys in the label type:
+     joined where one is picked, apart, with a tick box, where any
+     number are. */
+
+  /* The page behind, under frosted glass while the form is out. */
+  .pf-glass {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    background: rgb(255 255 255 / 0.5);
+    -webkit-backdrop-filter: blur(14px) saturate(1.05);
+    backdrop-filter: blur(14px) saturate(1.05);
+  }
+
+  .pf-panel {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 81;
+    outline: none;
+    isolation: isolate;
+  }
+  /* Its own ground: the old form's pane, the same frosted glass. */
+  .pf-pane {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: rgb(255 255 255 / 0.88);
+    -webkit-backdrop-filter: blur(28px) saturate(1.05);
+    backdrop-filter: blur(28px) saturate(1.05);
+    border: 1px solid rgb(0 0 0 / 0.07);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.7),
+      0 2rem 4rem -2rem rgb(0 0 0 / 0.3);
+  }
+  @media (max-width: 767px) {
+    .pf-pane { border: 0; box-shadow: none; background: rgb(255 255 255 / 0.94); }
+  }
+
+  /* How far along: a hairline under the label, filled from the left. */
+  .pf-progress {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 1;
+    height: 1px;
+    background: var(--color-hair-strong);
+  }
+  .pf-progress-fill {
+    display: block;
+    height: 100%;
+    background: var(--color-ink);
+    transform-origin: left;
+  }
+
+  .pf-scroll {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1.75rem 0 2rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-hair-strong) transparent;
+    /* Rows scrolled past the label or down to the button go soft at the
+       edge rather than being cut. */
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 1rem, #000 calc(100% - 1.5rem), transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 1rem, #000 calc(100% - 1.5rem), transparent);
+  }
+  @media (min-width: 768px) {
+    .pf-scroll { padding-top: 2.25rem; }
+  }
+
+  .pf-title {
+    font-family: var(--font-title);
+    font-weight: 500;
+    font-size: clamp(1.75rem, 2.9vw, 2.625rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--color-ink);
+    margin-bottom: 1.5rem;
+    outline: none;
+  }
+  @media (min-width: 768px) {
+    .pf-title { margin-bottom: 2rem; }
+  }
+  .pf-lede {
+    font-family: var(--font-title);
+    font-size: clamp(1.0625rem, 1.25vw, 1.25rem);
+    line-height: 1.3;
+    letter-spacing: -0.012em;
+    color: var(--color-ash);
+    max-width: 34em;
+    margin-bottom: 1.5rem;
+  }
+
+  /* A question: the question, its answers beside it (under it on a
+     phone), a black hairline over it. */
+  .pf-rows { border-bottom: 1px solid var(--color-ink); }
+  .pf-row {
+    display: grid;
+    gap: 0.875rem;
+    padding: 1.1rem 0 1.2rem;
+    border-top: 1px solid var(--color-ink);
+  }
+  @media (min-width: 768px) {
+    .pf-row {
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.25fr);
+      column-gap: 2rem;
+      align-items: start;
+      padding-block: 1.25rem;
+    }
+  }
+  .pf-q {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-family: var(--font-title);
+    font-weight: 500;
+    font-size: clamp(1.0625rem, 1.2vw, 1.1875rem);
+    line-height: 1.2;
+    letter-spacing: -0.012em;
+    color: var(--color-ink);
+    text-wrap: pretty;
+  }
+  @media (min-width: 768px) {
+    .pf-q { padding-top: 0.55rem; }
+  }
+  .pf-hint { color: var(--color-ash-2); }
+  .pf-a { display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; }
+
+  /* The keys. */
+  .pf-key {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.85rem 0.45rem;
+    border: 1px solid var(--color-ink);
+    color: var(--color-ink);
+    background: transparent;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+  .pf-key:hover { background: rgb(0 0 0 / 0.06); }
+  .pf-key:has(input:checked) { background: var(--color-ink); color: var(--color-paper); }
+  .pf-key:has(input:focus-visible) { outline: 1px solid var(--color-ink); outline-offset: 3px; z-index: 1; }
+
+  /* One of a few: the keys joined into one strip, sharing their edges. */
+  .pf-seg { display: flex; flex-wrap: wrap; padding: 1px 0 0 1px; }
+  .pf-seg .pf-key { margin: -1px 0 0 -1px; }
+  .pf-key-tall {
+    flex: 1 1 12rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+    padding-block: 0.75rem 0.7rem;
+  }
+  .pf-note {
+    font-size: 0.875rem;
+    line-height: 1.3;
+    color: var(--color-ash);
+    transition: color 0.25s ease;
+  }
+  .pf-key:has(input:checked) .pf-note { color: rgb(255 255 255 / 0.72); }
+  /* Small print under an answer or a priced line. */
+  .pf-footnote {
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--color-ash);
+    max-width: 34em;
+  }
+
+  /* Any number: keys apart, each with a tick box. */
+  .pf-multi { display: flex; flex-wrap: wrap; gap: 0.375rem; }
+  .pf-tick {
+    flex: none;
+    width: 0.625rem;
+    height: 0.625rem;
+    border: 1px solid currentColor;
+    background: transparent;
+    transition: background-color 0.2s ease;
+  }
+  .pf-key:has(input:checked) .pf-tick,
+  .pf-consent:has(input:checked) .pf-tick { background: currentColor; }
+
+  /* A short answer typed in: the title face over a hairline. */
+  .pf-field {
+    width: 100%;
+    max-width: 24rem;
+    padding: 0.5rem 0 0.45rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: inset 0 -1px 0 var(--color-ink);
+    color: var(--color-ink);
+    font-family: var(--font-title);
+    font-size: 1.125rem;
+    line-height: 1.2;
+    letter-spacing: -0.012em;
+    outline: none;
+    transition: box-shadow 0.25s ease;
+  }
+  .pf-field::placeholder { color: rgb(0 0 0 / 0.32); }
+  .pf-field:focus { box-shadow: inset 0 -2px 0 var(--color-ink); }
+
+  /* What is missing, in the label type, marked with a small black square:
+     the identity has no red to spend on it. */
+  .pf-error {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-ink);
+  }
+  .pf-error::before {
+    content: "";
+    flex: none;
+    width: 0.4375rem;
+    height: 0.4375rem;
+    background: var(--color-ink);
+  }
+  .pf-error-row { padding: 0.5rem 0.75rem 0.65rem; }
+  .pf-send-error { margin-top: 1rem; }
+
+  /* The estimate. */
+  .pf-line {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    column-gap: 1.5rem;
+    padding: 1rem 0.75rem;
+    border-top: 1px solid var(--color-ink);
+  }
+  .pf-line-name,
+  .pf-line-value {
+    font-family: var(--font-title);
+    font-size: clamp(1.125rem, 1.35vw, 1.3125rem);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+  }
+  .pf-line-value { font-feature-settings: "lnum" 1, "tnum" 1; text-align: right; white-space: nowrap; }
+  .pf-line-quiet { color: var(--color-ash); }
+  /* The total is inked, as the row the index leads with is. */
+  .pf-total { background: var(--color-ink); color: var(--color-paper); }
+  .pf-total .pf-line-name,
+  .pf-total .pf-line-value { font-weight: 500; }
+  .pf-foot-note { color: var(--color-ash-2); padding-top: 0.85rem; }
+  .pf-loading { position: relative; overflow: hidden; }
+  .pf-loading-bar {
+    position: absolute;
+    inset: -1px auto auto 0;
+    width: 30%;
+    height: 1px;
+    background: var(--color-paper);
+    animation: pf-load 1.1s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+  @keyframes pf-load {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(340%); }
+  }
+
+  /* The request: the old form's rows (.prop-row), then the consent. */
+  .pf-contact { border-bottom: 1px solid var(--color-ink); }
+  .pf-contact .prop-row { grid-template-columns: 4.5rem minmax(0, 1fr); }
+  .pf-consent-row { border-top: 1px solid var(--color-ink); padding: 1rem 0.75rem 1.1rem; }
+  .pf-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    color: var(--color-ash);
+    cursor: pointer;
+  }
+  .pf-consent .pf-tick { width: 0.875rem; height: 0.875rem; margin-top: 0.25rem; color: var(--color-ink); }
+  .pf-consent:has(input:focus-visible) .pf-tick { outline: 1px solid var(--color-ink); outline-offset: 3px; }
+  .pf-consent-row .pf-error { margin-top: 0.6rem; }
+
+  /* The way back, beside the inked row: a plain index row. */
+  .pf-back { gap: 0.6rem; grid-template-columns: auto auto; padding-inline: 0.75rem 1.25rem; }
+  .pf-back:hover .idx-name,
+  .pf-back:focus-visible .idx-name { transform: none; }
+  .pf-back:hover .idx-arrow,
+  .pf-back:focus-visible .idx-arrow { transform: translateX(-0.25rem); }
+  .pf-back:focus-visible { outline: 1px solid var(--color-ink); outline-offset: -1px; }
+
+
+  /* For bots: out of sight and out of reach, but not display:none,
+     which some of them skip. */
+  .pf-trap {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pf-key,
+    .pf-tick,
+    .pf-field { transition: none; }
+    .pf-loading-bar { animation: none; }
+  }
+
 
   .lede {
     font-size: clamp(1.125rem, 1.55vw, 1.375rem);
