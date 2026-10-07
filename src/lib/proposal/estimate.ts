@@ -1,18 +1,24 @@
 import "server-only";
-import { PRICING, type Pricing } from "./pricing";
-import { REGIONS, labelOf, type Answers, type Estimate, type PagesId, type ServiceId } from "./questions";
+import { MARKET, PRICING, type Market, type Pricing } from "./pricing";
+import {
+  REGIONS,
+  TRANSLATION_NOTE,
+  countLanguages,
+  labelOf,
+  type Answers,
+  type Estimate,
+  type PagesId,
+  type ServiceId,
+} from "./questions";
 
 /* ==================================================================
    The estimate
 
    Answers in, lines out. Each chosen service becomes either a priced
    line or an item "on request", with the reason the visitor is shown.
-   A service is put on request whole as soon as any part of its price
-   is missing from the table, so an estimate is never quietly short.
+   SEO and GEO are paid monthly: their line carries the first month up
+   front and the monthly fee after it.
    ================================================================== */
-
-/** Shown when the table has no figure for something yet. */
-const NOT_SET = "Quoted in your proposal";
 
 const LABEL: Record<ServiceId, string> = {
   web: "Web design",
@@ -21,101 +27,106 @@ const LABEL: Record<ServiceId, string> = {
   geo: "GEO",
 };
 
-/** A step's price, or the reason it has none. */
-type Priced = { amount: number } | { reason: string };
+type Line = Estimate["lines"][number];
+type Priced = { line: Omit<Line, "id" | "label"> } | { reason: string };
 
-const sum = (...parts: (number | null)[]) =>
-  parts.some((p) => p === null) ? null : parts.reduce<number>((a, p) => a + (p as number), 0);
+const euros = (n: number) => `€${n}`;
 
-function web(a: NonNullable<Answers["web"]>, p: Pricing["web"]): Priced {
+function web(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"]): Priced {
   if (a.pages === "10+") return { reason: "More than 10 pages" };
-  const base = p.pages[a.pages];
-  // Portuguese and English are priced; languages typed under "Other" are
-  // listed apart, on request (see estimate()).
-  const priced = a.languages.filter((l) => l !== "other").length;
-  const extraLanguages = priced > 1 ? (p.extraLanguage === null ? null : (priced - 1) * p.extraLanguage) : 0;
-  const forms = Number(a.forms);
-  const formsPrice = forms > 0 ? (p.perForm === null ? null : forms * p.perForm) : 0;
-  const amount = sum(
-    base,
-    a.identity === "yes" ? p.identity : 0,
-    extraLanguages,
-    formsPrice,
-    a.domain === "no" ? p.domainSetup : 0,
-  );
-  if (amount === null) return { reason: NOT_SET };
-  if (a.urgent === "yes") {
-    if (p.urgentPercent === null) return { reason: NOT_SET };
-    return { amount: amount * (1 + p.urgentPercent / 100) };
+  const notes = [p.includes];
+
+  // Portuguese is included; English and every other language are paid.
+  const others = a.languages.includes("other") ? countLanguages(a.languagesOther ?? "") : 0;
+  let amount =
+    p.pages[a.pages][market] +
+    (a.identity === "yes" ? p.identity[market] : 0) +
+    (a.languages.includes("en") ? p.english[market] : 0) +
+    others * p.otherLanguage[market] +
+    p.forms[a.forms][market];
+
+  if (a.urgent === "yes") amount *= 1 + p.urgentPercent / 100;
+  if (others > 0) notes.push(`*${TRANSLATION_NOTE}`);
+
+  // What the client paid for their domain, which does not scale with the
+  // country or the deadline: taken off last.
+  if (a.domain === "yes") {
+    const d = p.existingDomain;
+    amount -= d.estimate;
+    notes.push(
+      `Takes off an estimated ${euros(d.estimate)} for your existing domain: we deduct what you paid for it, ${euros(d.min)} to ${euros(d.max)}, with proof.`,
+    );
   }
-  return { amount };
+
+  return { line: { amount: Math.round(amount), notes } };
 }
 
-function photo(a: NonNullable<Answers["photo"]>, country: Answers["country"], p: Pricing["photo"]): Priced {
+function photo(a: NonNullable<Answers["photo"]>, country: Answers["country"], p: Pricing): Priced {
   if (country !== "PT") return { reason: "Shoot outside Portugal" };
   if (a.region && a.region !== "mainland") return { reason: `Shoot in ${labelOf(REGIONS, a.region)}` };
-  const amount = p[a.plan];
-  return amount === null ? { reason: NOT_SET } : { amount };
+  return { line: { amount: p.photo[a.plan], notes: [p.photoTravel] } };
 }
 
 function search(
-  a: NonNullable<Answers["search"]>,
+  reach: NonNullable<Answers["search"]>["reach"],
   pages: PagesId | undefined,
-  p: Pricing["seo"],
+  market: Market,
+  table: Pricing["seo"],
 ): Priced {
   if (pages === "10+") return { reason: "More than 10 pages" };
-  if (a.reach === "international") return { reason: "International reach" };
-  if (!pages) return { reason: NOT_SET };
-  const amount = sum(p.pages[pages], p.reach[a.reach]);
-  return amount === null ? { reason: NOT_SET } : { amount };
+  if (reach === "international") return { reason: "International reach" };
+  if (!pages) return { reason: "Quoted in your proposal" };
+  const { first, monthly } = table[pages][reach][market];
+  return { line: { amount: first, monthly, notes: [] } };
 }
 
 export function estimate(answers: Answers, pricing: Pricing = PRICING): Estimate {
-  const out: Estimate = { currency: "EUR", lines: [], onRequest: [], total: null, timeline: null };
-
-  // Outside the countries priced online, everything is quoted.
-  const factor = answers.country === "other" ? null : pricing.countryFactor[answers.country];
-  // A listed country with no factor yet is simply not priced yet.
-  const countryReason = answers.country === "other" ? "Outside the countries we price online" : NOT_SET;
-
-  const add = (id: ServiceId, priced: Priced) => {
-    if (factor === null) {
-      out.onRequest.push({ id, label: LABEL[id], reason: countryReason });
-    } else if ("amount" in priced) {
-      out.lines.push({ id, label: LABEL[id], amount: Math.round(priced.amount * factor) });
-    } else {
-      out.onRequest.push({ id, label: LABEL[id], reason: priced.reason });
-    }
+  const out: Estimate = {
+    currency: "EUR",
+    lines: [],
+    onRequest: [],
+    total: null,
+    monthly: null,
+    timeline: null,
   };
 
-  for (const id of answers.services) {
-    if (id === "web" && answers.web) {
-      add("web", web(answers.web, pricing.web));
-      // Languages typed under "Other" are their own item, unless the
-      // whole website is already on request.
-      const webPriced = out.lines.some((l) => l.id === "web");
-      if (webPriced && answers.web.languages.includes("other")) {
-        out.onRequest.push({
-          id: "web-languages",
-          label: "Website in other languages",
-          reason: answers.web.languagesOther ?? "Other languages",
-        });
-      }
+  // Outside the countries priced online, everything is quoted.
+  const market = answers.country === "other" ? null : MARKET[answers.country];
+
+  const add = (id: ServiceId, price: (market: Market) => Priced) => {
+    if (!market) {
+      out.onRequest.push({ id, label: LABEL[id], reason: "Outside the countries we price online" });
+      return;
     }
-    if (id === "photo" && answers.photo) add("photo", photo(answers.photo, answers.country, pricing.photo));
-    if ((id === "seo" || id === "geo") && answers.search) {
-      const pages = answers.web?.pages ?? answers.search.pages;
-      add(id, search(answers.search, pages, pricing[id]));
+    const priced = price(market);
+    if ("line" in priced) out.lines.push({ id, label: LABEL[id], ...priced.line });
+    else out.onRequest.push({ id, label: LABEL[id], reason: priced.reason });
+  };
+
+  const { web: webAnswers, photo: photoAnswers, search: searchAnswers } = answers;
+  for (const id of answers.services) {
+    if (id === "web" && webAnswers) add("web", (m) => web(webAnswers, m, pricing.web));
+    if (id === "photo" && photoAnswers) add("photo", () => photo(photoAnswers, answers.country, pricing));
+    if ((id === "seo" || id === "geo") && searchAnswers) {
+      // With web design chosen too, the site's size is the web answer.
+      const pages = webAnswers?.pages ?? searchAnswers.pages;
+      add(id, (m) => search(searchAnswers.reach, pages, m, pricing[id]));
     }
   }
 
-  if (out.lines.length) out.total = out.lines.reduce((a, l) => a + l.amount, 0);
+  if (out.lines.length) {
+    out.total = out.lines.reduce((a, l) => a + l.amount, 0);
+    const monthly = out.lines.reduce((a, l) => a + (l.monthly ?? 0), 0);
+    out.monthly = monthly > 0 ? monthly : null;
+  }
 
   // The website's timeline, whatever the country: it is the work's length.
-  if (answers.web && answers.web.pages !== "10+") {
-    const table = answers.web.urgent === "yes" ? pricing.web.urgentWeeks : pricing.web.weeks;
-    const weeks = table[answers.web.pages];
-    if (weeks) out.timeline = { min: weeks[0], max: weeks[1] };
+  if (webAnswers && webAnswers.pages !== "10+") {
+    if (webAnswers.urgent === "yes") out.timeline = { kind: "agreed" };
+    else {
+      const [min, max] = pricing.web.days[webAnswers.pages];
+      out.timeline = { kind: "days", min, max };
+    }
   }
 
   return out;
