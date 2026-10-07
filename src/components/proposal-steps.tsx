@@ -63,7 +63,9 @@ export type Draft = {
 };
 
 export const EMPTY_DRAFT: Draft = {
-  services: [],
+  // Web design is always part of a project: the other services are only
+  // offered together with a website (the user's rule, 2026-10-07).
+  services: ["web"],
   country: "",
   countryOther: "",
   identity: "",
@@ -349,27 +351,31 @@ function Segmented<T extends string>({
   );
 }
 
-/** Any number from a few: separate keys, each with a tick box. */
+/** Any number from a few: separate keys, each with a tick box. A locked
+    key is always ticked and cannot be unticked. */
 function Multi<T extends string>({
   name,
   options,
   value,
   onChange,
+  locked = [],
 }: {
   name: string;
   options: readonly { id: T; label: string }[];
   value: T[];
   onChange: (v: T[]) => void;
+  locked?: readonly T[];
 }) {
   return (
     <div className="pf-multi">
       {options.map((o) => (
-        <label key={o.id} className="pf-key pf-chip">
+        <label key={o.id} className={`pf-key pf-chip ${locked.includes(o.id) ? "cursor-default hover:bg-ink" : ""}`}>
           <input
             type="checkbox"
             name={name}
             value={o.id}
-            checked={value.includes(o.id)}
+            checked={value.includes(o.id) || locked.includes(o.id)}
+            disabled={locked.includes(o.id)}
             onChange={(e) =>
               onChange(
                 e.target.checked
@@ -484,7 +490,7 @@ export function StepScreen({
           <Question
             id="services"
             label="Which of our services are you interested in?"
-            hint="Choose any"
+            hint="Web design is always included"
             error={errors.services}
             footnote={`*${PHOTO_NOTE}`}
           >
@@ -492,7 +498,10 @@ export function StepScreen({
               name="services"
               options={SERVICES.map((o) => (o.id === "photo" ? { ...o, label: "Photo & video*" } : o))}
               value={draft.services}
-              onChange={(services) => setDraft({ services })}
+              locked={["web"]}
+              onChange={(services) =>
+                setDraft({ services: services.includes("web") ? services : ["web", ...services] })
+              }
             />
           </Question>
           <Question id="country" label="Where is your business based?" error={errors.country}>
@@ -899,6 +908,7 @@ export function OfflineNote() {
         <a href={`mailto:${STUDIO_EMAIL}`} className="underline underline-offset-2">
           {STUDIO_EMAIL}
         </a>
+        .
       </p>
     </div>
   );
