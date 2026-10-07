@@ -141,6 +141,13 @@ function titleFor(step: StepId, draft: Draft) {
 
 export type Errors = Partial<Record<string, string>>;
 
+/* Small print under the questions that change the price (user). */
+const PHOTO_NOTE =
+  "Photo & video is only available in Portugal. Travel expenses are added to the price of the service.";
+const DOMAIN_NOTE =
+  "We include a domain for businesses that don't have one yet. If you already have yours, its cost is taken off the final price.";
+const URGENT_NOTE = "An urgent deadline raises the price by 40%.";
+
 const PICK_ONE = "Choose one to continue.";
 const PICK_ANY = "Choose at least one to continue.";
 
@@ -479,10 +486,11 @@ export function StepScreen({
             label="Which of our services are you interested in?"
             hint="Choose any"
             error={errors.services}
+            footnote={`*${PHOTO_NOTE}`}
           >
             <Multi
               name="services"
-              options={SERVICES}
+              options={SERVICES.map((o) => (o.id === "photo" ? { ...o, label: "Photo & video*" } : o))}
               value={draft.services}
               onChange={(services) => setDraft({ services })}
             />
@@ -565,7 +573,7 @@ export function StepScreen({
               labelledBy="forms-q"
             />
           </Question>
-          <Question id="domain" label="Do you already have a domain?" error={errors.domain}>
+          <Question id="domain" label="Do you already have a domain?*" error={errors.domain} footnote={`*${DOMAIN_NOTE}`}>
             <Segmented
               name="domain"
               options={YES_NO}
@@ -574,7 +582,7 @@ export function StepScreen({
               labelledBy="domain-q"
             />
           </Question>
-          <Question id="urgent" label="Is the deadline urgent?" error={errors.urgent}>
+          <Question id="urgent" label="Is the deadline urgent?*" error={errors.urgent} footnote={`*${URGENT_NOTE}`}>
             <Segmented
               name="urgent"
               options={YES_NO}
