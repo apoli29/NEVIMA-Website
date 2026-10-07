@@ -54,7 +54,15 @@ export function useSmoothScroll(locked: boolean) {
   // that effect just built, including the rebuild on mount.
   useEffect(() => {
     const instance = lenis.current;
-    if (!instance) return;
+    if (!instance) {
+      // No Lenis with reduced motion, so nothing to stop: the page is held
+      // by a class instead (see .scroll-held in globals.css). A class, not
+      // an inline overflow, so it cannot undo the opening's own lock.
+      if (!locked || reduce === null) return;
+      const root = document.documentElement;
+      root.classList.add("scroll-held");
+      return () => root.classList.remove("scroll-held");
+    }
     if (locked) {
       instance.stop();
       return;
