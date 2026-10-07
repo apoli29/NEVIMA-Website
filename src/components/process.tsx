@@ -248,8 +248,9 @@ const PHASES: Phase[] = [
 
 /** Scrolled pixels per pixel slid. It was 1.6 (the user found the row
     too quick at 1); the user then found the whole section too long to
-    scroll through and asked for it 1.5 times faster, so 1.6 / 1.5. */
-const SLOW = 1.6 / 1.5;
+    scroll through and asked for it 1.5 times faster, so 1.6 / 1.5, and
+    then 1.2 times faster again. */
+const SLOW = 1.6 / 1.5 / 1.2;
 
 /* Measured before the first paint in the browser; the server has no
    layout to measure. */
@@ -454,7 +455,7 @@ export function Process({ ready }: { ready: boolean }) {
               <h3 className="display text-[clamp(1.5rem,2.1vw,2.125rem)] leading-[1.02] font-light text-ink">
                 It all starts with your estimate.
               </h3>
-              <p className="mt-4 text-[clamp(0.9375rem,1vw,1rem)] leading-[1.5] text-pretty text-ash">
+              <p className="mt-4 text-[clamp(0.9375rem,1vw,1rem)] leading-[1.5] text-justify hyphens-auto text-ash">
                 Tell us what you need and see a price range straight away. Your
                 proposal is free.
               </p>
@@ -528,7 +529,7 @@ function StepCard({ step, n, count, on }: { step: Step; n: number; count: number
       >
         {step.principle}
       </h4>
-      <p className="mt-3 mb-5 text-[clamp(0.875rem,1vw,1rem)] leading-[1.5] text-pretty text-ash md:mt-4 md:mb-6">
+      <p className="mt-3 mb-5 text-[clamp(0.875rem,1vw,1rem)] leading-[1.5] text-justify hyphens-auto text-ash md:mt-4 md:mb-6">
         {step.text}
       </p>
       {step.cta && (
