@@ -16,6 +16,7 @@ import { FloatingNav } from "./floating-nav";
 import { useGateway } from "./gateway";
 import { JellyField } from "./jelly-field";
 import { Process } from "./process";
+import { ProposalOverlay, ProposalProvider, useProposalController } from "./proposal-flow";
 import { Services } from "./services";
 import { StatementScreen } from "./statement-screen";
 import { useSmoothScroll } from "./smooth-scroll";
@@ -146,10 +147,13 @@ export function Home() {
   const reduce = useReducedMotion() ?? false;
   const progress = useMotionValue(0);
   const [phase, setPhase] = useState<Phase>("waiting");
-  const lenis = useSmoothScroll(phase !== "open");
+  // The free-proposal form, carried out of the index (see proposal-flow.tsx).
+  // While it is out, the page behind is held still and out of reach.
+  const proposal = useProposalController();
+  const lenis = useSmoothScroll(phase !== "open" || proposal.present);
   // The second screen and the studio are not scrolled between: the studio is
   // drawn up over the screen, a share of it per turn of the wheel.
-  useGateway(lenis, phase === "open");
+  useGateway(lenis, phase === "open" && !proposal.present);
   // And what is on the studio waits until most of it is up. A section that
   // began to read itself out while it was still a third of the way onto the
   // screen would be half over before it was properly there.
@@ -321,7 +325,9 @@ export function Home() {
   }, [phase, open]);
 
   return (
-    <>
+    <ProposalProvider value={proposal}>
+      {/* Everything but the form, put out of reach while the form is out. */}
+      <div inert={proposal.present}>
       <FloatingNav
         opacity={barOpacity}
         linksOpacity={linksOpacity}
@@ -410,6 +416,9 @@ export function Home() {
       </main>
 
       <Footer />
+      </div>
+
+      <ProposalOverlay ctl={proposal} />
 
       {/* The travelling mark, above everything until it has landed. Before
           the slots are measured it simply sits in the hero, which is also
@@ -453,7 +462,7 @@ export function Home() {
           <ScrollCue gone={phase !== "waiting"} reduce={reduce} />
         </div>
       )}
-    </>
+    </ProposalProvider>
   );
 }
 

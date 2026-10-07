@@ -1,9 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion, type MotionValue } from "motion/react";
 import { useInkAlign } from "./ink-align";
+import { SECTION_LINKS } from "./index-links";
 import { ProposalForm } from "./proposal-form";
+import { useProposal } from "./proposal-flow";
 
 /* ==================================================================
    Screen two, hung as a gallery wall
@@ -28,13 +30,6 @@ import { ProposalForm } from "./proposal-form";
 // Each one finishes the sentence, so each one ends it.
 const ENDINGS = ["matter.", "create trust.", "bring clients.", "grab attention."];
 
-/* Pricing leads, and is the one row kept lit (see .idx-lead). */
-const SECTION_LINKS = [
-  // A placeholder: there is no pricing section yet.
-  { label: "Pricing", href: "#pricing", lead: true },
-  { label: "About us", href: "/about", lead: false },
-  { label: "Our services", href: "#services", lead: false },
-];
 
 /** Where the studio is, as the readout gives it. */
 const PLACE = "Porto, Portugal";
@@ -300,10 +295,10 @@ function WallRule({
    The last row asks rather than points: "Get your free proposal",
    inked like Pricing, with a light passing over it and a slight swell
    of its black every few seconds (see .idx-ask), and a plus where the
-   others have an arrow. Pressed, the
-   index turns into the form itself, made of the same rows (see
-   proposal-form.tsx), and Close turns it back. The water is told each
-   time, so the drops move clear of the taller form. */
+   others have an arrow. Pressed, the index is lifted out of its corner
+   and carried to the middle of the screen, turning into the free-proposal
+   form on the way (see proposal-flow.tsx); closed, it is carried back.
+   While it is out, its place here is held, unseen. */
 const ASK = "Get your free proposal";
 
 /** When each part of the index comes in, in seconds after the screen has
@@ -331,38 +326,32 @@ function IndexRule({ on, reduce, delay }: { on: boolean; reduce: boolean; delay:
 function SectionIndex({ settled }: { settled: boolean }) {
   const reduce = useReducedMotion() ?? false;
   const on = settled || reduce;
-  const [asking, setAsking] = useState(false);
+  const proposal = useProposal();
+  const out = proposal?.present ?? false;
+  const nav = useRef<HTMLElement>(null);
   const askButton = useRef<HTMLButtonElement>(null);
-  const close = useCallback(() => {
-    setAsking(false);
-    // Back on the row that opened it, once the index is up again.
-    window.setTimeout(() => askButton.current?.focus({ preventScroll: true }), 260);
-  }, []);
 
   return (
-    // The index and the form share one cell, both set at its foot, so the
-    // box is always as tall as the taller of the two: the drops are laid
-    // out clear of the form from the start and nothing on the water moves
-    // when it opens (the user: they must stay as they are).
+    // The box keeps the room the old in-place form took above the index
+    // (that form, never opened now, is what holds it): the drops were laid
+    // out round that room, one is perched in it, and nothing on the water
+    // is to move (the user: they must stay as they are).
     <div
       data-jelly-quiet
       className="pointer-events-auto col-span-12 grid self-end pt-6 pb-6 md:pb-8 lg:col-span-4 lg:col-start-9"
     >
-      <div className="col-start-1 row-start-1 self-end">
-        <ProposalForm open={asking} onClose={close} />
+      <div aria-hidden="true" className="invisible col-start-1 row-start-1 self-end">
+        <ProposalForm open={false} onClose={noop} />
       </div>
-      {/* The drops perch above the index itself, not above the form's
-          room round it (see jelly-field.tsx). */}
-      <motion.nav
+      {/* The drops perch above the index itself (see jelly-field.tsx). While
+          the proposal form is out, the index is hidden here: the form is
+          the index, carried off (see proposal-flow.tsx). */}
+      <nav
+        ref={nav}
         data-jelly-perch
         aria-label="Sections"
         className="col-start-1 row-start-1 self-end"
-        initial={false}
-        animate={asking ? { opacity: 0, y: 8 } : { opacity: 1, y: 0 }}
-        transition={{ duration: asking ? 0.22 : 0.35, delay: asking ? 0 : 0.15 }}
-        inert={asking}
-        aria-hidden={asking}
-        style={{ pointerEvents: asking ? "none" : undefined }}
+        style={{ visibility: out ? "hidden" : undefined }}
       >
         {/* The entrance, once the screen has settled, top to bottom as
             one gesture: the label is uncovered from the left, then each
@@ -408,9 +397,9 @@ function SectionIndex({ settled }: { settled: boolean }) {
                     <button
                       ref={askButton}
                       type="button"
-                      aria-expanded={asking}
-                      aria-controls="proposal-form"
-                      onClick={() => setAsking(true)}
+                      aria-haspopup="dialog"
+                      aria-expanded={out}
+                      onClick={() => nav.current && proposal?.show(nav.current, askButton.current)}
                       className="idx-link idx-ask w-full text-left"
                     >
                       <span className="idx-name">{ASK}</span>
@@ -431,10 +420,12 @@ function SectionIndex({ settled }: { settled: boolean }) {
             />
           </li>
         </ol>
-      </motion.nav>
+      </nav>
     </div>
   );
 }
+
+const noop = () => {};
 
 function Plus() {
   return (
