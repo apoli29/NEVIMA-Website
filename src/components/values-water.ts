@@ -34,6 +34,8 @@ import { useEffect, type RefObject } from "react";
    glass or the water there changes, this should follow.
    ================================================================== */
 
+export type Point = { x: number; y: number };
+
 /** What the page tells the water, and what the water tells it back. */
 export type ValuesControl = {
   /** 1 to pull the drops together, 0 to let them go. */
@@ -62,6 +64,13 @@ export type ValuesControl = {
   onBeckonEnd: (n: number) => void;
   /** The four are back where they rest. */
   onParted: () => void;
+  /** Where the glass's outline is drawn, out along angle a (radians, y
+      down) from the middle of drop i's body, or from a point `from` inside
+      the glass (the joined piece has no one middle to start from), in the
+      section's pixels: the glass as the water bends it, not its button.
+      Set by the water; null until it has drawn, or if the start is not on
+      the glass. */
+  edge: (i: number, a: number, from?: Point) => Point | null;
 };
 
 /* ---- the water, as on the home page ---------------------------------- */
@@ -156,6 +165,13 @@ const DROPS = (() => {
   }));
 })();
 const BLOBS = 4 * 3;
+
+/** The swell's eight waves, as the shader's swell() lays them out. */
+const WAVES = Array.from({ length: 8 }, (_, i) => {
+  const a = i * 0.7854 + 0.31 + 0.2 * Math.sin(i * 2.3);
+  const k = (Math.PI * 2) / (190 + 45 * ((i * 3) % 5));
+  return { dx: Math.cos(a), dy: Math.sin(a), k, pace: Math.sqrt((9.81 * 60) / k) * 0.006, phase: i * 1.9 };
+});
 
 const VERTEX = `#version 300 es
 in vec2 a_pos;
@@ -664,6 +680,83 @@ export function useValuesWater(
       if (merged) merged.style.opacity = String(words);
     };
 
+    /* ---- the outline, for the page's callouts ---- */
+
+    // The shader's own sums, worked here: the slab's height between its
+    // cells, the swell's slope, and the field the drops make where the
+    // two have bent the view. Where that field is at half strength is
+    // where the glass is drawn.
+    const slabAt = (x: number, y: number) => {
+      const fx = Math.min(Math.max((x / w) * cols - 0.5, 0), cols - 1);
+      const fy = Math.min(Math.max((y / h) * rows - 0.5, 0), rows - 1);
+      const q0 = Math.floor(fx);
+      const r0 = Math.floor(fy);
+      const q1 = Math.min(q0 + 1, cols - 1);
+      const r1 = Math.min(r0 + 1, rows - 1);
+      const tx = fx - q0;
+      const top = lerp(height[r0 * cols + q0], height[r0 * cols + q1], tx);
+      const bottom = lerp(height[r1 * cols + q0], height[r1 * cols + q1], tx);
+      return lerp(top, bottom, fy - r0);
+    };
+    const fieldAt = (px: number, py: number) => {
+      let gx = (slabAt(px + CELL, py) - slabAt(px - CELL, py)) / (2 * CELL);
+      let gy = (slabAt(px, py + CELL) - slabAt(px, py - CELL)) / (2 * CELL);
+      for (const v of WAVES) {
+        const s = (px * v.dx + py * v.dy) * v.k - seconds * v.pace * v.k * 60 + v.phase;
+        const slope = v.k * Math.cos(s) * SWELL;
+        gx += v.dx * slope;
+        gy += v.dy * slope;
+      }
+      const qx = px + gx * REFRACT * DROP_BEND;
+      const qy = py + gy * REFRACT * DROP_BEND;
+      const td = seconds * DROP_PACE;
+      const warp = lerp(1, JOINED_WARP, clamp01(k));
+      const wx = qx + (Math.sin(qy * 0.0061 + td * 0.31) * 16 + Math.sin(qy * 0.017 - td * 0.5) * 7) * warp;
+      const wy = qy + (Math.cos(qx * 0.0053 - td * 0.27) * 16 + Math.cos(qx * 0.019 + td * 0.45) * 7) * warp;
+      let f = 0;
+      for (let b = 0; b < BLOBS; b++) {
+        const r = dropData[b * 4 + 2];
+        const aspect = dropData[b * 4 + 3];
+        if (r < 0.5) continue;
+        const dx = wx - dropData[b * 4];
+        const dy = wy - dropData[b * 4 + 1];
+        if (dx * dx + dy * dy > 9 * r * r * aspect * aspect) continue;
+        const c = Math.cos(turnData[b]);
+        const s = Math.sin(turnData[b]);
+        const rx = (c * dx + s * dy) / aspect;
+        const ry = -s * dx + c * dy;
+        f += Math.exp(-(rx * rx + ry * ry) / (r * r));
+      }
+      return f;
+    };
+    // Out from the start in steps of two pixels to the first point off the
+    // glass, then halved down to under a tenth of a pixel.
+    control.current.edge = (i, a, from) => {
+      const b = (i * 3 + 1) * 4;
+      const x0 = from ? from.x : dropData[b];
+      const y0 = from ? from.y : dropData[b + 1];
+      const reach = from ? Math.max(w, h) : dropData[b + 2] * 4;
+      if (!w || !cols || !(reach > 0) || fieldAt(x0, y0) < 0.5) return null;
+      const ux = Math.cos(a);
+      const uy = Math.sin(a);
+      let lo = 0;
+      for (let t = 2; t < reach; t += 2) {
+        if (fieldAt(x0 + ux * t, y0 + uy * t) >= 0.5) {
+          lo = t;
+          continue;
+        }
+        let hi = t;
+        for (let n = 0; n < 5; n++) {
+          const mid = (lo + hi) / 2;
+          if (fieldAt(x0 + ux * mid, y0 + uy * mid) < 0.5) hi = mid;
+          else lo = mid;
+        }
+        const d = (lo + hi) / 2;
+        return { x: x0 + ux * d, y: y0 + uy * d };
+      }
+      return null;
+    };
+
     /** Moves the join on by dt, strikes the water when the four meet and
         tells the page when either end is reached. */
     const advance = (dt: number) => {
@@ -812,6 +905,7 @@ export function useValuesWater(
 
     return () => {
       disposed = true;
+      control.current.edge = () => null;
       cancelAnimationFrame(frame);
       cancelAnimationFrame(queued);
       resize.disconnect();

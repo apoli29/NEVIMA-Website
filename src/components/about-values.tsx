@@ -12,7 +12,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { SlideIn } from "./enter";
 import { useInkAlign } from "./ink-align";
 import { useSeen } from "./use-seen";
-import { PIECE_PAD, useValuesWater, type ValuesControl } from "./values-water";
+import { PIECE_PAD, useValuesWater, type Point, type ValuesControl } from "./values-water";
 
 /* ==================================================================
    Values
@@ -130,7 +130,9 @@ export function AboutValues() {
     onParted: () => {},
     onBeckon: () => {},
     onBeckonEnd: () => {},
+    edge: () => null,
   });
+  const edge = useCallback<ValuesControl["edge"]>((i, a, from) => control.current.edge(i, a, from), []);
 
   const tell = useCallback((name: string, detail?: number) => {
     section.current?.dispatchEvent(new CustomEvent(name, { detail }));
@@ -335,6 +337,7 @@ export function AboutValues() {
               label={aim.kind === "piece" ? `${press} to close` : `${press} here`}
               section={section}
               slots={control.current.slots}
+              edge={edge}
               piece={mergedRef}
             />
           ))}
@@ -354,20 +357,42 @@ export function AboutValues() {
 
 /** Where the callout is drawn, in the section's pixels: the point on the
     target it starts from, the corner where it turns level, how long the
-    level run is and which way it goes. */
-type Lead = { ax: number; ay: number; bx: number; by: number; run: number; dir: 1 | -1 };
+    level run is and which way it goes. A drop's callout also says which
+    drop and which way out from its middle, so its start can stay on the
+    glass as the glass moves. */
+type Lead = {
+  ax: number;
+  ay: number;
+  bx: number;
+  by: number;
+  run: number;
+  dir: 1 | -1;
+  track?: { i: number; a: number; from?: Point };
+};
 /* A leader runs up from the top of its target, or (to keep clear of a
    callout beside it) down from the bottom; either way its words sit on
    its level run. by < ay going up, by > ay going down. */
 
-/** How far up and out the slanted stretch runs, and the level run. A
-    callout that would run into another rises a step higher, so the two
-    are written at different heights. */
+/** How far up and out the piece's slanted stretch runs, and the level
+    run. A drop's callout that would run into another rises a step
+    higher, so the two are written at different heights. */
 const RISE = 46;
 const RISE_STEP = 40;
 const RUN = 128;
 /** The least level run the words fit along. */
 const MIN_RUN = 90;
+/** Where the drops' level runs lie, as a share of a drop's button width
+    from its middle: every label in a row on the one line, clear of the
+    glass however the drops have turned. Under the drops the words sit
+    over the line, so it goes their height further down. */
+const LINE = 0.56;
+const WORDS_H = 22;
+/** The least slanted stretch, should the glass reach near the line. */
+const MIN_RISE = 18;
+
+/** The leader's path: from the mark, out at an angle, then level. */
+const pathOf = (x: number, y: number, l: Lead) =>
+  `M ${x} ${y} L ${l.bx} ${l.by} L ${l.bx + l.dir * l.run} ${l.by}`;
 
 type Box = { l: number; r: number; t: number; b: number };
 
@@ -402,6 +427,7 @@ function Callout({
   label,
   section,
   slots,
+  edge,
   piece,
 }: {
   id: string;
@@ -411,9 +437,13 @@ function Callout({
   label: string;
   section: React.RefObject<HTMLElement | null>;
   slots: (HTMLElement | null)[];
+  /** Where a drop's glass is drawn (see ValuesControl). */
+  edge: ValuesControl["edge"];
   piece: React.RefObject<HTMLButtonElement | null>;
 }) {
   const [lead, setLead] = useState<Lead | null>(null);
+  const mark = useRef<SVGGElement>(null);
+  const leader = useRef<SVGPathElement>(null);
   const key = aim.kind === "drop" ? `drop-${aim.i}` : "piece";
 
   // Measured from the page whenever the target changes, and again if the
@@ -436,33 +466,48 @@ function Callout({
         const b = el.getBoundingClientRect();
         const cx = b.left - box.left + b.width / 2;
         const cy = b.top - box.top + b.height / 2;
-        // From the drop's edge, up and outwards at forty-five degrees.
-        const reach = b.width * 0.3;
-        const make = (dir: 1 | -1, rise: number, down = false): Lead => {
+        const i = aim.i;
+        // From the drop's outline where the glass is drawn (its button is
+        // only roughly where), up and outwards at forty-five degrees to the
+        // row's line, then level along it.
+        const make = (dir: 1 | -1, step: number, down = false): Lead => {
           const v = down ? 1 : -1;
-          const ax = cx + dir * reach;
-          const ay = cy + v * reach;
-          const bx = ax + dir * rise;
+          const a = Math.atan2(v, dir);
+          const at = edge(i, a) ?? {
+            x: cx + dir * b.width * 0.3,
+            y: cy + v * b.width * 0.3,
+          };
+          const line = cy + v * (b.width * LINE + step + (down ? WORDS_H : 0));
+          const rise = Math.max(MIN_RISE, v * (line - at.y));
+          const bx = at.x + dir * rise;
           const room = dir === 1 ? maxX - bx : bx - minX;
-          return { ax, ay, bx, by: ay + v * rise, run: Math.min(RUN, room), dir };
+          return {
+            ax: at.x,
+            ay: at.y,
+            bx,
+            by: at.y + v * rise,
+            run: Math.min(RUN, room),
+            dir,
+            track: { i, a },
+          };
         };
         // Up and off the right of the drop, unless that would run off the
         // screen; then up the other way; then down off its foot either
         // way; then a step higher. Whichever first keeps clear of the
         // callouts already up wins: two side by side once pointed at each
         // other and wrote over each other.
-        const first: 1 | -1 = cx + b.width * 0.4 + RISE + RUN > maxX ? -1 : 1;
+        const first: 1 | -1 = cx + b.width * LINE + RUN > maxX ? -1 : 1;
         const other = -first as 1 | -1;
         const others = [...placed].filter(([k]) => k !== id).map(([, l]) => l);
         const tries = [
-          make(first, RISE),
-          make(other, RISE),
-          make(first, RISE, true),
-          make(other, RISE, true),
-          make(first, RISE + RISE_STEP),
-          make(other, RISE + RISE_STEP),
+          make(first, 0),
+          make(other, 0),
+          make(first, 0, true),
+          make(other, 0, true),
+          make(first, RISE_STEP),
+          make(other, RISE_STEP),
         ].filter((l) => l.run >= MIN_RUN);
-        const pick = tries.find((l) => !others.some((o) => collides(l, o))) ?? tries[0] ?? make(first, RISE);
+        const pick = tries.find((l) => !others.some((o) => collides(l, o))) ?? tries[0] ?? make(first, 0);
         placed.set(id, pick);
         setLead(pick);
       } else {
@@ -472,34 +517,48 @@ function Callout({
         // The piece reaches past the words' box by the margin it is laid
         // out with (see measure() in values-water.ts).
         const fs = parseFloat(getComputedStyle(el).fontSize) || 16;
-        const b = {
-          left: r.left - PIECE_PAD.x * fs,
-          right: r.right + PIECE_PAD.x * fs,
-          top: r.top - PIECE_PAD.y * fs,
-          width: r.width + 2 * PIECE_PAD.x * fs,
-        };
-        const left = b.left - box.left;
-        const right = b.right - box.left;
+        const left = r.left - box.left - PIECE_PAD.x * fs;
+        const right = r.right - box.left + PIECE_PAD.x * fs;
+        const top = r.top - box.top - PIECE_PAD.y * fs;
+        const width = right - left;
+        const half = r.height / 2 + PIECE_PAD.y * fs;
+        const cy = top + half;
         const need = RISE + RUN + 24;
-        // Off whichever end of the piece has room; where neither has (a
-        // phone), up off its top, towards the wider side.
-        let ax: number;
-        let ay = b.top - box.top - 4;
+        // Off whichever end of the piece has room, from its upper shoulder;
+        // where neither has (a phone), up off its top, towards the wider
+        // side. Found on the outline from a point inside the glass, out
+        // the way the leader goes.
+        let from: Point;
+        let a: number;
         let dir: 1 | -1;
         if (maxX - right >= need) {
           dir = 1;
-          ax = right + 4;
+          from = { x: right - half, y: cy };
+          a = -Math.PI / 4;
         } else if (left - minX >= need) {
           dir = -1;
-          ax = left - 4;
+          from = { x: left + half, y: cy };
+          a = (-3 * Math.PI) / 4;
         } else {
           dir = right - minX > maxX - left ? -1 : 1;
-          ax = dir === -1 ? right - b.width * 0.18 : left + b.width * 0.18;
-          ay = b.top - box.top - 2;
+          from = { x: dir === -1 ? right - width * 0.18 : left + width * 0.18, y: cy };
+          a = -Math.PI / 2;
         }
-        const bx = ax + dir * RISE;
+        const at = edge(-1, a, from) ?? {
+          x: from.x + Math.cos(a) * half,
+          y: from.y + Math.sin(a) * half,
+        };
+        const bx = at.x + dir * RISE;
         const room = dir === 1 ? maxX - bx : bx - minX;
-        const lead = { ax, ay, bx, by: ay - RISE, run: Math.min(RUN + 24, room), dir };
+        const lead: Lead = {
+          ax: at.x,
+          ay: at.y,
+          bx,
+          by: at.y - RISE,
+          run: Math.min(RUN + 24, room),
+          dir,
+          track: { i: -1, a, from },
+        };
         placed.set(id, lead);
         setLead(lead);
       }
@@ -512,45 +571,78 @@ function Callout({
     };
   }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // The mark stays on the glass: every frame it is set again where the
+  // outline now is, and the slanted stretch with it, from there to the
+  // corner. The corner and the words hold still.
+  useEffect(() => {
+    const track = lead?.track;
+    if (!lead || !track) return;
+    let frame = 0;
+    const follow = () => {
+      const at = edge(track.i, track.a, track.from);
+      if (at) {
+        mark.current?.setAttribute("transform", `translate(${at.x} ${at.y})`);
+        leader.current?.setAttribute("d", pathOf(at.x, at.y, lead));
+      }
+      frame = requestAnimationFrame(follow);
+    };
+    frame = requestAnimationFrame(follow);
+    return () => cancelAnimationFrame(frame);
+  }, [lead, edge]);
+
   if (!lead) return null;
+  const fade = { opacity: 0, transition: { duration: 0.18 } };
   return (
-    <motion.svg
-      aria-hidden="true"
-      className="abt-callout pointer-events-none absolute inset-0 z-10 size-full overflow-visible"
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.18 } }}
-    >
-      {/* The mark on the target: a dot in a ring. */}
-      <motion.circle
-        cx={lead.ax}
-        cy={lead.ay}
-        r={7}
-        className="abt-callout-ring"
-        initial={{ scale: 2.2, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        style={{ transformOrigin: `${lead.ax}px ${lead.ay}px` }}
-      />
-      <circle cx={lead.ax} cy={lead.ay} r={2.5} className="abt-callout-dot" />
-      {/* The leader: up and out at an angle, then level. */}
-      <motion.path
-        d={`M ${lead.ax} ${lead.ay} L ${lead.bx} ${lead.by} L ${lead.bx + lead.dir * lead.run} ${lead.by}`}
-        className="abt-callout-line"
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 0.45, delay: 0.1, ease: [0.65, 0, 0.35, 1] }}
-      />
+    <>
+      {/* The mark and the leader are drawn in difference: black on the
+          water, white where they cross onto the glass, so the mark can sit
+          right on a drop's outline and still be read whole. */}
+      <motion.svg
+        aria-hidden="true"
+        className="abt-callout abt-callout-mark pointer-events-none absolute inset-0 z-10 size-full overflow-visible"
+        initial={{ opacity: 1 }}
+        exit={fade}
+      >
+        {/* The mark on the target: a dot in a ring. */}
+        <g ref={mark} transform={`translate(${lead.ax} ${lead.ay})`}>
+          <motion.circle
+            r={7}
+            className="abt-callout-ring"
+            initial={{ scale: 2.2, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            style={{ transformOrigin: "0px 0px" }}
+          />
+          <circle r={2.5} className="abt-callout-dot" />
+        </g>
+        {/* The leader: up and out at an angle, then level. */}
+        <motion.path
+          ref={leader}
+          d={pathOf(lead.ax, lead.ay, lead)}
+          className="abt-callout-line"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 0.45, delay: 0.1, ease: [0.65, 0, 0.35, 1] }}
+        />
+      </motion.svg>
       {/* Written along the level run, the line under it as its
           underline, as it is drawn out. */}
-      <text
-        x={lead.dir === 1 ? lead.bx + 2 : lead.bx - 2}
-        y={lead.by - 8}
-        textAnchor={lead.dir === 1 ? "start" : "end"}
-        className="abt-callout-text"
+      <motion.svg
+        aria-hidden="true"
+        className="abt-callout pointer-events-none absolute inset-0 z-10 size-full overflow-visible"
+        initial={{ opacity: 1 }}
+        exit={fade}
       >
-        <Typed text={label} delayMs={400} />
-      </text>
-    </motion.svg>
+        <text
+          x={lead.dir === 1 ? lead.bx + 2 : lead.bx - 2}
+          y={lead.by - 8}
+          textAnchor={lead.dir === 1 ? "start" : "end"}
+          className="abt-callout-text"
+        >
+          <Typed text={label} delayMs={400} />
+        </text>
+      </motion.svg>
+    </>
   );
 }
 
