@@ -198,6 +198,7 @@ export function ProposalOverlay({ ctl }: { ctl: ProposalController }) {
       setErrors={setErrors}
       send={send}
       setSend={setSend}
+      clear={reset}
     />
   );
 }
@@ -221,6 +222,7 @@ function Panel({
   setErrors,
   send,
   setSend,
+  clear,
 }: {
   ctl: ProposalController;
   draft: Draft;
@@ -233,6 +235,8 @@ function Panel({
   setErrors: (fn: Errors | ((e: Errors) => Errors)) => void;
   send: SendState;
   setSend: (s: SendState) => void;
+  /** Every answer and detail wiped, back to the first screen. */
+  clear: () => void;
 }) {
   const reduce = useReducedMotion() ?? false;
   const t = useMotionValue(0);
@@ -454,6 +458,19 @@ function Panel({
     if (prev) goTo(prev);
   };
 
+  /* Clearing everything is asked twice, in place: one stray click must not
+     lose a whole set of answers. */
+  const [confirming, setConfirming] = useState(false);
+  useEffect(() => setConfirming(false), [step, offline]);
+  const clearAll = () => {
+    clear();
+    setConfirming(false);
+    scroller.current?.scrollTo({ top: 0 });
+    // Already on the first screen, nothing else would move focus off the
+    // button that has just gone.
+    requestAnimationFrame(() => title.current?.focus({ preventScroll: true }));
+  };
+
   const action = offline ? "Open in your email app" : send.status === "sending" ? "Sending…" : actionFor(step, nextStep);
   const canGoBack = landed && index > 0 && step !== "sent";
   const progress = steps.length > 1 ? index / (steps.length - 1) : 0;
@@ -492,12 +509,35 @@ function Panel({
                 Free proposal
               </motion.span>
             </span>
-            <motion.button type="button" onClick={hide} className="prop-close" style={{ opacity: form }}>
-              Close
-              <span aria-hidden="true" className="ml-1.5">
-                &times;
-              </span>
-            </motion.button>
+            <motion.span className="flex items-center gap-4 md:gap-6" style={{ opacity: form }}>
+              {step !== "sent" &&
+                (confirming ? (
+                  <span role="group" aria-label="Clear all answers?" className="flex items-center gap-2">
+                    <span className="text-ink">
+                      <span className="max-md:hidden">Clear all answers?</span>
+                      <span className="md:hidden">Clear all?</span>
+                    </span>
+                    <button type="button" onClick={clearAll} className="prop-close pf-clear-yes">
+                      Yes
+                    </button>
+                    <span aria-hidden="true">/</span>
+                    <button type="button" onClick={() => setConfirming(false)} className="prop-close">
+                      No
+                    </button>
+                  </span>
+                ) : (
+                  <button type="button" onClick={() => setConfirming(true)} className="prop-close">
+                    <span className="max-md:hidden">Clear answers</span>
+                    <span className="md:hidden">Clear</span>
+                  </button>
+                ))}
+              <button type="button" onClick={hide} className="prop-close">
+                Close
+                <span aria-hidden="true" className="ml-1.5">
+                  &times;
+                </span>
+              </button>
+            </motion.span>
           </p>
 
           <div className="relative min-h-0 flex-1">

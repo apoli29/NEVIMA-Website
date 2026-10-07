@@ -457,6 +457,8 @@
     transition: color 0.25s ease;
   }
   .prop-close:hover { color: var(--color-ink); }
+  /* The yes of "Clear all answers?", underlined: it is the one that acts. */
+  .pf-clear-yes { color: var(--color-ink); text-decoration: underline; text-underline-offset: 3px; }
   .prop-done {
     font-family: var(--font-title);
     font-size: clamp(1.0625rem, 1.25vw, 1.25rem);
