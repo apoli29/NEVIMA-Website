@@ -364,4 +364,5 @@ rejecting the shatter.
 - How we work: slide 1.2x faster again (`SLOW` = 1.6 / 1.5 / 1.2 ≈ 0.89) and the steps' (and the closing ask's) text justified, with auto hyphens so the narrow columns keep even spacing (user).
 - How we work: slide 1.5x faster again (user): `SLOW` = 1.6 / 1.5 / 1.2 / 1.5 ≈ 0.59 scrolled px per slid px.
 - 2026-10-07 (later): the services' featured block was dropped (user). All five services are rows of the same accordion again, (01)–(05): Web Design first, its row inked black with white words (`.xs-row[data-main]`, padded 1rem/1.5rem, inverted toggle, white drawer copy, white CTA drop) and a "Main service" tag; Visual Identity its own row; then SEO, GEO, Photo Shoot. Every row but Web Design carries an "Additional service" tag (`.idx-title`) on its right, before the toggle; tags are hidden below 640px.
+- How we work: in the optional steps' marker "If you request" is underlined and parted from the step's name by a "|" character (user), replacing the thin drawn rule.
 

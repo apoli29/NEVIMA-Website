@@ -2006,14 +2006,14 @@
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
   }
-  .prc-eyebrow-rule {
-    display: inline-block;
-    width: 1px;
-    height: 0.9em;
-    margin: 0 0.55em;
-    vertical-align: -0.1em;
-    background: rgb(255 255 255 / 0.45);
+  /* "If you request" underlined in the marker's white, then a bar
+     before the step's name (the user's ask). */
+  .prc-eyebrow-ask {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
   }
+  .prc-eyebrow-bar { margin: 0 0.55em; }
   .prc-steps { display: flex; }
   /* A step: a column ruled off on its left, its stop on the rail where
      the rule meets it. A phase's first step is ruled by the phase. */
