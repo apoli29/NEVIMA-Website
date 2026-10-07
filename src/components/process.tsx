@@ -14,8 +14,6 @@ import { SlideIn } from "./enter";
 import { PassLink } from "./floating-nav";
 import { useInkAlign } from "./ink-align";
 import { useProposal } from "./proposal-flow";
-import { useProcessStepper } from "./process-stepper";
-import type Lenis from "lenis";
 
 /* ==================================================================
    How we work
@@ -269,9 +267,10 @@ const PHASES: Phase[] = [
 ];
 
 
-/** Scrolled pixels per pixel slid: a little more than one, so the row
-    moves a touch slower than the page would (the user's ask). */
-const SLOW = 1.6;
+/** Scrolled pixels per pixel slid. It was 1.6 (the user found the row
+    too quick at 1); the user then found the whole section too long to
+    scroll through and asked for it 1.5 times faster, so 1.6 / 1.5. */
+const SLOW = 1.6 / 1.5;
 
 /* Measured before the first paint in the browser; the server has no
    layout to measure. */
@@ -294,35 +293,7 @@ type Layout = {
 
 const NO_LAYOUT: Layout = { travel: 0, railTop: 0, railWidth: 1, stops: [], phases: [] };
 
-/** The stops a gesture moves the row between, in pixels of the row's
-    travel: each a screen of steps on from the last, never past a step that
-    has not been wholly in view, and a stop wherever a phase begins. */
-function pageStops(
-  steps: { left: number; right: number }[],
-  phaseStarts: number[],
-  visible: number,
-  travel: number,
-) {
-  const out = [0];
-  let pos = 0;
-  for (let guard = 0; guard < 200 && pos < travel - 1; guard++) {
-    const over = steps.find((s) => s.right > pos + visible + 1)?.left ?? travel;
-    const phase = phaseStarts.find((p) => p > pos + 1) ?? travel;
-    const nextPos = Math.min(over, phase, travel);
-    pos = nextPos > pos + 1 ? nextPos : travel;
-    out.push(pos);
-  }
-  return out;
-}
-
-export function Process({
-  ready,
-  lenis,
-}: {
-  ready: boolean;
-  /** The page's smooth scroll, which moves the row from stop to stop. */
-  lenis?: React.RefObject<Lenis | null>;
-}) {
+export function Process({ ready }: { ready: boolean }) {
   const reduce = useReducedMotion() ?? false;
   const section = useRef<HTMLElement>(null);
   const viewport = useRef<HTMLDivElement>(null);
@@ -343,10 +314,6 @@ export function Process({
   const stepCount = phases.reduce((n, phase) => n + phase.steps.length, 0);
 
   const [layout, setLayout] = useState<Layout>(NO_LAYOUT);
-  // Where a gesture moves the row to, as shares of the section's scroll
-  // (see process-stepper.ts).
-  const stepStops = useRef<number[]>([0, 1]);
-  useProcessStepper(section, lenis, stepStops, ready);
   useIsomorphicLayout(() => {
     const measure = () => {
       const t = track.current;
@@ -363,19 +330,8 @@ export function Process({
       }));
       const steps = [...t.querySelectorAll<HTMLElement>("[data-step]")];
       const first = t.querySelector<HTMLElement>("[data-steps]");
-      const travel = Math.max(0, Math.ceil(t.scrollWidth - (v.clientWidth - lead)));
-      const rects = steps.map((el) => {
-        const left = ((el.offsetParent as HTMLElement | null)?.offsetLeft ?? 0) + el.offsetLeft;
-        return { left, right: left + el.offsetWidth };
-      });
-      const end = t.querySelector<HTMLElement>(".prc-end");
-      if (end) rects.push({ left: end.offsetLeft, right: end.offsetLeft + end.offsetWidth });
-      const visible = Math.max(200, v.clientWidth - lead - trail);
-      stepStops.current = travel
-        ? pageStops(rects, phases.slice(1).map((p) => p.left), visible, travel).map((px) => px / travel)
-        : [0, 1];
       setLayout({
-        travel,
+        travel: Math.max(0, Math.ceil(t.scrollWidth - (v.clientWidth - lead))),
         railTop: first?.offsetTop ?? 0,
         railWidth: Math.max(1, t.scrollWidth - trail),
         stops: steps.map((el) => (el.offsetParent as HTMLElement | null)?.offsetLeft ?? 0).map(
