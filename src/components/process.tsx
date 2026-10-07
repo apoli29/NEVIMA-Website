@@ -513,8 +513,10 @@ function StepCard({ step, n, count, on }: { step: Step; n: number; count: number
         <span className="idx-title prc-eyebrow">
           {step.extra && (
             <>
-              If you request
-              <span aria-hidden="true" className="prc-eyebrow-rule" />
+              <span className="prc-eyebrow-ask">If you request</span>
+              <span aria-hidden="true" className="prc-eyebrow-bar">
+                |
+              </span>
             </>
           )}
           {step.name}
