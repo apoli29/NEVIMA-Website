@@ -104,6 +104,10 @@ type Origin = {
   box: HTMLElement;
   /** Given focus again once the index is back. */
   focus: HTMLElement | null;
+  /** Opened from the index itself. A call to action elsewhere on the page
+      grows the form out of its own button instead: there is no index to
+      turn into the form, so its label and its other rows never show. */
+  index: boolean;
 };
 
 export function useProposalController() {
@@ -113,8 +117,8 @@ export function useProposalController() {
   const [present, setPresent] = useState(false);
   const origin = useRef<Origin | null>(null);
 
-  const show = useCallback((box: HTMLElement, focus: HTMLElement | null) => {
-    origin.current = { box, focus };
+  const show = useCallback((box: HTMLElement, focus: HTMLElement | null, index = true) => {
+    origin.current = { box, focus, index };
     setPresent(true);
     setOpen(true);
   }, []);
@@ -271,10 +275,14 @@ function Panel({
   const whole = useTransform(t, [0, 1], reduce ? [0, 1] : [1, 1]);
   const glass = useTransform(t, reduce ? [0, 1] : GLASS, [0, 1]);
   const pane = useTransform(t, reduce ? [0, 1] : PANE, [0, 1]);
-  const rows = useTransform(t, ROWS_OUT, reduce ? [0, 0] : [1, 0]);
+  // From a call to action there is no index to turn into the form: its
+  // label reads "Free proposal" from the start and its rows are not there.
+  const fromIndex = ctl.origin.current?.index ?? true;
+  const plain = reduce || !fromIndex;
+  const rows = useTransform(t, ROWS_OUT, plain ? [0, 0] : [1, 0]);
   const rowsX = useTransform(t, ROWS_OUT, [0, -10]);
-  const labelOut = useTransform(t, LABEL_OUT, reduce ? [0, 0] : [1, 0]);
-  const labelIn = useTransform(t, LABEL_IN, reduce ? [1, 1] : [0, 1]);
+  const labelOut = useTransform(t, LABEL_OUT, plain ? [0, 0] : [1, 0]);
+  const labelIn = useTransform(t, LABEL_IN, plain ? [1, 1] : [0, 1]);
   const footOut = useTransform(t, FOOT_OUT, reduce ? [0, 0] : [1, 0]);
   const footIn = useTransform(t, FOOT_IN, reduce ? [1, 1] : [0, 1]);
 
