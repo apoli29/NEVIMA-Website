@@ -55,7 +55,8 @@ export function readAnswers(raw: unknown): Result<Answers> {
   if (!isObject(raw)) return { ok: false, error: "answers" };
 
   const services = many(SERVICES, raw.services);
-  if (!services) return { ok: false, error: "services" };
+  // Every other service is only offered together with web design.
+  if (!services || !services.includes("web")) return { ok: false, error: "services" };
   const country = one(COUNTRIES, raw.country);
   if (!country) return { ok: false, error: "country" };
 
