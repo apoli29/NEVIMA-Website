@@ -39,13 +39,23 @@ import { useProposal } from "./proposal-flow";
 
    Each phase is headed over its own steps, and its heading holds at the
    left edge while its steps slide by under it, until the next phase
-   pushes it off: wherever the row has got to, the phase it is in is in
-   view. Calls to action stand where they are asked for by the step: the
+   pushes it off (its name alone: the user dropped the lines under it): wherever the row has got to, the phase it is in is in
+   view. The services done only on request are left out of the row until
+   the visitor chooses them in the keys over it, and then say so on their
+   marker. Calls to action stand where they are asked for by the step: the
    free proposal at the estimate and at the end, a service's own page
    where that service comes in.
    ================================================================== */
 
 type Who = "You" | "Us" | "You and us";
+
+/** The services only done if the client asks for them. */
+type Extra = "photo" | "identity" | "seo";
+const EXTRAS: { id: Extra; label: string }[] = [
+  { id: "photo", label: "Photo shoot" },
+  { id: "identity", label: "Visual identity" },
+  { id: "seo", label: "SEO & GEO" },
+];
 
 type Cta = { proposal: true } | { href: string; label: string };
 
@@ -55,8 +65,10 @@ type Step = {
   principle: string;
   text: string;
   who: Who;
-  /** Only if the client asks for it (the brief's "só se requisitado"). */
-  optional?: boolean;
+  /** Only if the client asks for it (the brief's "só se requisitado"):
+      the extra service it belongs to. Shown only once that service has
+      been chosen above the row. */
+  extra?: Extra;
   /** Long words: the column is made wider rather than the words cut. */
   wide?: boolean;
   cta?: Cta[];
@@ -65,6 +77,8 @@ type Step = {
 type Phase = {
   id: string;
   name: string;
+  /** Kept for the record; the user had the phases headed by their names
+      alone (2026-10-07), so neither this nor `takes` is shown. */
   intro: string;
   takes?: string;
   steps: Step[];
@@ -134,7 +148,7 @@ const PHASES: Phase[] = [
       {
         id: "photo",
         name: "Photo shoot",
-        optional: true,
+        extra: "photo",
         principle: "Images of your own.",
         text: "We photograph your business so your site has images of its own: photos only, or photos and video. It is a separate service, priced in your estimate.",
         who: "Us",
@@ -142,7 +156,7 @@ const PHASES: Phase[] = [
       {
         id: "identity",
         name: "Visual identity",
-        optional: true,
+        extra: "identity",
         principle: "Identity first.",
         text: "We create your logo, or your logo and symbol, because the rest of the site rests on it. Priced in your estimate.",
         who: "Us",
@@ -203,7 +217,7 @@ const PHASES: Phase[] = [
       {
         id: "seo-choice",
         name: "SEO and GEO: before or after",
-        optional: true,
+        extra: "seo",
         principle: "Now, or found from day one.",
         text: "You decide whether we apply SEO and GEO before or after launch. Before, your site takes a little longer to go live. After, it goes live straight away.",
         who: "You",
@@ -213,7 +227,7 @@ const PHASES: Phase[] = [
       {
         id: "seo-before",
         name: "SEO and GEO before launch",
-        optional: true,
+        extra: "seo",
         principle: "Applied, then published.",
         text: "If you chose before, we apply SEO and GEO, and then we publish your site.",
         who: "Us",
@@ -236,7 +250,7 @@ const PHASES: Phase[] = [
       {
         id: "seo-after",
         name: "SEO and GEO after launch",
-        optional: true,
+        extra: "seo",
         principle: "Growing once you are live.",
         text: "If you chose after, we start once your site is live. Priced in your estimate.",
         who: "Us",
@@ -252,7 +266,6 @@ const PHASES: Phase[] = [
   },
 ];
 
-const STEP_COUNT = PHASES.reduce((n, phase) => n + phase.steps.length, 0);
 
 /** Scrolled pixels per pixel slid: a little more than one, so the row
     moves a touch slower than the page would (the user's ask). */
@@ -287,6 +300,17 @@ export function Process({ ready }: { ready: boolean }) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subRef = useRef<HTMLParagraphElement>(null);
   useInkAlign(titleRef, subRef);
+
+  // The extra services the visitor has chosen to see: their steps join the
+  // row; until then the row is the process every project goes through.
+  const [extras, setExtras] = useState<Extra[]>([]);
+  const toggle = (id: Extra) =>
+    setExtras((was) => (was.includes(id) ? was.filter((e) => e !== id) : [...was, id]));
+  const phases = PHASES.map((phase) => ({
+    ...phase,
+    steps: phase.steps.filter((step) => !step.extra || extras.includes(step.extra)),
+  }));
+  const stepCount = phases.reduce((n, phase) => n + phase.steps.length, 0);
 
   const [layout, setLayout] = useState<Layout>(NO_LAYOUT);
   useIsomorphicLayout(() => {
@@ -371,12 +395,37 @@ export function Process({ ready }: { ready: boolean }) {
           </div>
         </div>
 
+        {/* The extra services, to be chosen into the row. */}
+        <div className="shell mt-[clamp(1rem,3svh,1.75rem)]">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5">
+            <p id="prc-extras" className="mono-label text-ink">
+              Choose the services you want to see how we handle each one
+            </p>
+            <div role="group" aria-labelledby="prc-extras" className="flex flex-wrap gap-1.5">
+              {EXTRAS.map((extra) => (
+                <button
+                  key={extra.id}
+                  type="button"
+                  aria-pressed={extras.includes(extra.id)}
+                  onClick={() => toggle(extra.id)}
+                  className="prop-chip prc-chip mono-label"
+                >
+                  <span aria-hidden="true" className="prc-chip-mark">
+                    {extras.includes(extra.id) ? "\u2212" : "+"}
+                  </span>
+                  {extra.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* The row, set against the shell's left edge and free to run past
             the right edge of the screen; it is slid, not scrolled. With
             reduced motion it is simply scrolled sideways. */}
         <div
           ref={viewport}
-          className={`prc-viewport mt-[clamp(1.25rem,5svh,3.5rem)] ${reduce ? "overflow-x-auto" : ""}`}
+          className={`prc-viewport mt-[clamp(1rem,3.5svh,2.5rem)] ${reduce ? "overflow-x-auto" : ""}`}
         >
           <motion.ol
             ref={track}
@@ -391,7 +440,7 @@ export function Process({ ready }: { ready: boolean }) {
               className="prc-rail prc-rail-fill"
               style={{ scaleX: reduce ? 1 : scrollYProgress }}
             />
-            {PHASES.map((phase, p) => (
+            {phases.map((phase, p) => (
               <li key={phase.id} data-phase aria-labelledby={`phase-${phase.id}`} className="prc-phase">
                 <PhaseHead
                   phase={phase}
@@ -407,6 +456,7 @@ export function Process({ ready }: { ready: boolean }) {
                         key={step.id}
                         step={step}
                         n={i}
+                        count={stepCount}
                         on={reduce || i < reached}
                       />
                     );
@@ -459,18 +509,11 @@ function PhaseHead({
       >
         {phase.name}
       </h3>
-      <p className="mt-2 text-[0.8125rem] leading-[1.45] text-pretty text-ash md:text-[0.875rem]">{phase.intro}</p>
-      {phase.takes && (
-        <p className="mt-2 text-[0.8125rem] leading-[1.45] text-pretty text-ink md:mt-2.5 md:text-[0.875rem]">
-          <span className="mono-label mr-2 text-ash-2">Takes</span>
-          {phase.takes}
-        </p>
-      )}
     </motion.div>
   );
 }
 
-function StepCard({ step, n, on }: { step: Step; n: number; on: boolean }) {
+function StepCard({ step, n, count, on }: { step: Step; n: number; count: number; on: boolean }) {
   return (
     <li
       data-step
@@ -478,10 +521,19 @@ function StepCard({ step, n, on }: { step: Step; n: number; on: boolean }) {
       className={`prc-stage ${step.wide ? "prc-wide" : ""}`}
     >
       <span aria-hidden="true" data-on={on ? "" : undefined} className="abt-stop prc-stop" />
-      <p className="mono-label flex">
-        <span className="idx-title">{step.name}</span>
+      {/* An extra service says so first, on the same marker. */}
+      <p className="mono-label leading-[1.75]">
+        <span className="idx-title prc-eyebrow">
+          {step.extra && (
+            <>
+              If you request
+              <span aria-hidden="true" className="prc-eyebrow-rule" />
+            </>
+          )}
+          {step.name}
+        </span>
         <span className="sr-only">
-          , step {n + 1} of {STEP_COUNT}
+          , step {n + 1} of {count}
         </span>
       </p>
       <h4
@@ -514,12 +566,6 @@ function StepCard({ step, n, on }: { step: Step; n: number; on: boolean }) {
           <dt className="mono-label text-ash-2">Who</dt>
           <dd className="mono-label mt-1 text-ink">{step.who}</dd>
         </div>
-        {step.optional && (
-          <div>
-            <dt className="mono-label text-ash-2">When</dt>
-            <dd className="mono-label mt-1 text-ink">If you ask for it</dd>
-          </div>
-        )}
       </dl>
     </li>
   );

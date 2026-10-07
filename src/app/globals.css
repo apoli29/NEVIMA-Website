@@ -1966,7 +1966,25 @@
   }
   .prc-head {
     width: min(26rem, 78vw);
-    padding: 0 1.5rem 1.5rem;
+    padding: 0 1.5rem 1.1rem;
+  }
+  /* The keys that choose the extra services into the row. */
+  .prc-chip { display: inline-flex; align-items: center; gap: 0.5em; padding: 0.55em 0.75em 0.5em; }
+  .prc-chip-mark { display: inline-block; width: 0.7em; text-align: center; }
+  /* A step's name on its marker. Long ones (an extra service says "If you
+     request" first) wrap as running text, the marker carried onto each
+     line. */
+  .prc-eyebrow {
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  .prc-eyebrow-rule {
+    display: inline-block;
+    width: 1px;
+    height: 0.9em;
+    margin: 0 0.55em;
+    vertical-align: -0.1em;
+    background: rgb(255 255 255 / 0.45);
   }
   .prc-steps { display: flex; }
   /* A step: a column ruled off on its left, its stop on the rail where
@@ -1995,7 +2013,7 @@
      has to sit in one screen under the heading, so everything is set a
      little closer and the long columns a little wider. */
   @media (max-width: 767px) {
-    .prc-head { width: calc(100vw - 2 * var(--gutter) - 0.5rem); padding: 0 1.25rem 1.1rem; }
+    .prc-head { width: calc(100vw - 2 * var(--gutter) - 0.5rem); padding: 0 1.25rem 0.85rem; }
     .prc-stage { min-height: 0; padding: 1.25rem 1.25rem 0; }
     .prc-stage.prc-wide { --prc-w: min(84vw, 21rem); }
   }
