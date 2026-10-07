@@ -22,14 +22,11 @@ import { RewriteTitle } from "./rewrite-title";
    An index with a showcase, as a gallery hangs a room: on the left a
    single framed picture with its caption, on the right the services.
 
-   Web Design leads, as the studio's main service (the user's ask,
-   2026-10-07): a block of its own under a "Main service" marker, its
-   name set larger and its description open from the start, and inside
-   it, ruled off but within the same block, Visual Identity, which is
-   only sold with a website. Under it, headed "Additional services", the
-   rest as a list between hairlines, every name starting on the same
-   line, each with its number before it and a line about it under it:
-   SEO, GEO and, last, the photo shoot.
+   Web Design leads, as the studio's main service: its row is inked
+   black, in the same shape as the rest (the user's ask, 2026-10-07).
+   Every other row (Visual Identity, sold only with a website, then SEO,
+   GEO and the photo shoot) carries an "Additional service" tag on its
+   right.
 
    The showcase answers the list. Pointing at a service puts its
    picture in the frame; opening one keeps it there and runs through its
@@ -62,10 +59,7 @@ const LINE: Record<string, string> = {
   "photo-shoot": "Photos, or photos and video",
 };
 
-const MAIN = SERVICES.find((s) => s.tier === "main")!;
-const WITHIN = SERVICES.filter((s) => s.tier === "within");
-const ADDITIONAL = SERVICES.filter((s) => s.tier === "additional");
-const indexOf = (slug: string) => SERVICES.findIndex((s) => s.slug === slug);
+
 
 /** The same Unsplash photo, cut to another size. */
 function sized(src: string, w: number, h: number) {
@@ -102,11 +96,7 @@ export function Services({ ready }: { ready: boolean }) {
   );
 
   const openIndex = SERVICES.findIndex((s) => s.slug === open);
-  const mainIndex = indexOf(MAIN.slug);
-  const shown = pointed ?? (openIndex >= 0 ? openIndex : mainIndex);
-  // The main service's description is always open, so its pictures run
-  // whenever it is the one shown.
-  const running = pointed === null && (openIndex >= 0 || shown === mainIndex);
+  const shown = pointed ?? (openIndex >= 0 ? openIndex : 0);
 
   return (
     <section
@@ -147,59 +137,27 @@ export function Services({ ready }: { ready: boolean }) {
         <div ref={listRef} className="relative mt-12 grid grid-cols-12 gap-x-4 md:mt-16">
           <Rule shown={seen} className="absolute inset-x-0 top-0 bg-ink" />
 
-          <Showcase index={shown} open={running} seen={seen} reduce={reduce} />
+          <Showcase index={shown} open={openIndex >= 0 && pointed === null} seen={seen} reduce={reduce} />
 
-          <div
+          <ol
+            data-open={open ? "" : undefined}
             onPointerLeave={() => setPointed(null)}
-            className="col-span-12 lg:col-span-7 lg:col-start-6"
+            className="xs-list col-span-12 lg:col-span-7 lg:col-start-6"
           >
-            <Featured
-              service={MAIN}
-              seen={seen}
-              reduce={reduce}
-              onPoint={(on) => setPointed(on ? mainIndex : null)}
-            >
-              <ol data-open={open ? "" : undefined} className="xs-list">
-                {WITHIN.map((service) => (
-                  <Row
-                    key={service.slug}
-                    service={service}
-                    index={1}
-                    mark="+"
-                    open={open === service.slug}
-                    seen={seen}
-                    reduce={reduce}
-                    onToggle={toggle}
-                    onPoint={(on) => setPointed(on && open !== service.slug ? indexOf(service.slug) : null)}
-                  />
-                ))}
-              </ol>
-            </Featured>
-
-            <motion.p
-              className="mono-label mt-14 mb-1 flex md:mt-20"
-              initial={false}
-              animate={{ opacity: seen || reduce ? 1 : 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-            >
-              <span className="idx-title">Additional services</span>
-            </motion.p>
-            <ol data-open={open ? "" : undefined} className="xs-list">
-              {ADDITIONAL.map((service, i) => (
-                <Row
-                  key={service.slug}
-                  service={service}
-                  index={i + 2}
-                  mark={`(0${i + 1})`}
-                  open={open === service.slug}
-                  seen={seen}
-                  reduce={reduce}
-                  onToggle={toggle}
-                  onPoint={(on) => setPointed(on && open !== service.slug ? indexOf(service.slug) : null)}
-                />
-              ))}
-            </ol>
-          </div>
+            {SERVICES.map((service, i) => (
+              <Row
+                key={service.slug}
+                service={service}
+                index={i}
+                mark={`(0${i + 1})`}
+                open={open === service.slug}
+                seen={seen}
+                reduce={reduce}
+                onToggle={toggle}
+                onPoint={(on) => setPointed(on && open !== service.slug ? i : null)}
+              />
+            ))}
+          </ol>
         </div>
       </div>
     </section>
@@ -294,101 +252,6 @@ function Showcase({
 }
 
 /* ================================================================== */
-/* Featured: the main service                                           */
-/* ================================================================== */
-
-/* Web Design, set apart as the main service: its marker, its name set
-   larger, its description open and lit once seen, the way to its page,
-   and, ruled off inside the same block, the service sold with it. */
-function Featured({
-  service,
-  seen,
-  reduce,
-  onPoint,
-  children,
-}: {
-  service: Service;
-  seen: boolean;
-  reduce: boolean;
-  onPoint: (on: boolean) => void;
-  children: React.ReactNode;
-}) {
-  const line = service.full ?? LINE[service.slug];
-  const lit = seen && !reduce;
-  const copy = "svc-copy std-ink svc-main-copy";
-  return (
-    <section
-      aria-labelledby={`service-${service.slug}-name`}
-      className="svc-main pt-8 md:pt-10"
-      onPointerEnter={(event) => {
-        if (event.pointerType === "mouse") onPoint(true);
-      }}
-    >
-      <motion.p
-        className="mono-label flex"
-        initial={false}
-        animate={{ opacity: seen || reduce ? 1 : 0 }}
-        transition={{ duration: 0.6, delay: 0.15 }}
-      >
-        <span className="idx-title">Main service</span>
-      </motion.p>
-      <Rise shown={seen} delay={0.2} className="mt-5 text-[clamp(2.75rem,5.4vw,5.25rem)] md:mt-6">
-        <h3
-          id={`service-${service.slug}-name`}
-          className="display block leading-[0.96] font-light tracking-[-0.035em] text-ink"
-        >
-          {service.title}
-        </h3>
-      </Rise>
-      {line && (
-        <motion.p
-          className="mono-label mt-3 text-ash"
-          initial={false}
-          animate={{ opacity: seen || reduce ? 1 : 0 }}
-          transition={{ duration: 0.6, delay: 0.45 }}
-        >
-          {line}
-        </motion.p>
-      )}
-      <div className="mt-6 md:mt-8">
-        {lit ? (
-          <Illuminated text={service.body} delayMs={LIGHT_DELAY_MS} reduce={reduce} className={copy} />
-        ) : (
-          <p data-lit={reduce ? "true" : undefined} className={copy}>
-            {service.body}
-          </p>
-        )}
-      </div>
-      {/* Where there is no showcase, the block carries the pictures. */}
-      <div className="mt-6 grid grid-cols-3 gap-2 lg:hidden">
-        {service.photos.map((photo, i) => (
-          <Uncover key={photo} shown={seen} delay={0.3 + i * 0.1} className="aspect-[4/5] bg-ink/5">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={sized(photo, 360, 450)}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              draggable={false}
-              className="block size-full object-cover select-none"
-            />
-          </Uncover>
-        ))}
-      </div>
-      <div className="mt-7 md:mt-8">
-        <PassLink
-          href={servicePath(service.slug)}
-          label={`Explore ${service.title}`}
-          className="cta-drop inline-flex text-[1rem] leading-none"
-        />
-      </div>
-      {/* The service sold with it, inside the same block. */}
-      <div className="svc-main-within mt-9 md:mt-11">{children}</div>
-    </section>
-  );
-}
-
-/* ================================================================== */
 /* Row                                                                 */
 /* ================================================================== */
 
@@ -423,9 +286,14 @@ function Row({
   // The light runs again every time the drawer is opened.
   const [opened, setOpened] = useState(0);
   const line = service.full ?? LINE[service.slug];
+  const main = service.tier === "main";
 
   return (
-    <li data-open={open ? "" : undefined} className="xs-row relative">
+    <li
+      data-open={open ? "" : undefined}
+      data-main={main ? "" : undefined}
+      className="xs-row relative"
+    >
       <h3>
         <button
           type="button"
@@ -460,13 +328,15 @@ function Row({
               delay={delay}
               className="text-[clamp(2rem,3.5vw,3.375rem)]"
             >
-              <span className="xs-name display block leading-[0.98] font-light tracking-[-0.03em] text-ink">
+              <span
+                className={`xs-name display block leading-[0.98] font-light tracking-[-0.03em] ${main ? "text-paper" : "text-ink"}`}
+              >
                 {service.title}
               </span>
             </Rise>
             {line && (
               <motion.span
-                className="mono-label mt-2 block text-ash md:mt-2.5"
+                className={`mono-label mt-2 block md:mt-2.5 ${main ? "text-paper/70" : "text-ash"}`}
                 initial={false}
                 animate={{ opacity: seen || reduce ? 1 : 0 }}
                 transition={{ duration: 0.6, delay: delay + 0.3 }}
@@ -477,11 +347,15 @@ function Row({
           </span>
 
           <motion.span
-            className="shrink-0 self-center"
+            className="flex shrink-0 items-center gap-4 self-center md:gap-5"
             initial={false}
             animate={{ opacity: seen || reduce ? 1 : 0, scale: seen || reduce ? 1 : 0.6 }}
             transition={{ duration: 0.6, delay: delay + 0.35, ease: [0.22, 1, 0.36, 1] }}
           >
+            {/* What kind of service it is, on the right. */}
+            <span className={`mono-label max-sm:hidden ${main ? "xs-tag-main" : "idx-title"}`}>
+              {main ? "Main service" : "Additional service"}
+            </span>
             <Chevron open={open} turns={turns} reduce={reduce} />
           </motion.span>
         </button>
@@ -506,13 +380,13 @@ function Row({
                 text={service.body}
                 delayMs={LIGHT_DELAY_MS}
                 reduce={reduce}
-                className="xs-copy svc-copy std-ink text-[clamp(1.0625rem,1.25vw,1.25rem)] leading-[1.3] tracking-[-0.014em]"
+                className={`xs-copy svc-copy ${main ? "" : "std-ink"} text-[clamp(1.0625rem,1.25vw,1.25rem)] leading-[1.3] tracking-[-0.014em]`}
               />
             ) : (
               // Closing, the words stay lit while the drawer shuts on them.
               <p
                 data-lit="true"
-                className="xs-copy svc-copy std-ink text-[clamp(1.0625rem,1.25vw,1.25rem)] leading-[1.3] tracking-[-0.014em]"
+                className={`xs-copy svc-copy ${main ? "" : "std-ink"} text-[clamp(1.0625rem,1.25vw,1.25rem)] leading-[1.3] tracking-[-0.014em]`}
               >
                 {service.body}
               </p>
@@ -545,7 +419,7 @@ function Row({
               <PassLink
                 href={servicePath(service.slug)}
                 label={`Explore ${service.title}`}
-                className="cta-drop inline-flex text-[1rem] leading-none"
+                className={`cta-drop inline-flex text-[1rem] leading-none ${main ? "cta-drop-light" : ""}`}
               />
             </div>
           </div>

@@ -1484,18 +1484,29 @@
     color: var(--color-ash);
   }
 
-  /* The main service's block (services.tsx, Featured): its description
-     at a reading size between the drawers' and the statement's, and the
-     service sold with it ruled off inside it by a dashed line. */
-  .svc-main-copy {
-    font-size: clamp(1.125rem, 1.45vw, 1.4375rem);
-    line-height: 1.32;
-    letter-spacing: -0.016em;
+  /* The main service's row (services.tsx): the same row as the rest,
+     inked black as the index's lead row is, its words in white. Padded in
+     from the black's edges, the rest of the list keeps its own edge. */
+  .xs-row[data-main] {
+    padding-inline: 1rem;
+    background: var(--color-ink);
+    color: var(--color-paper);
   }
-  .svc-main-within { border-top: 1px dashed rgb(0 0 0 / 0.35); }
-  @media (max-width: 1023.98px) {
-    .svc-main-copy.svc-copy { text-align: left; }
-    .svc-main-copy .svc-line { text-align-last: auto; }
+  @media (min-width: 768px) {
+    .xs-row[data-main] { padding-inline: 1.5rem; }
+  }
+  .xs-row[data-main] .xs-toggle { color: var(--color-paper); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.35); }
+  .xs-row[data-main] .xs-head:hover .xs-toggle { box-shadow: inset 0 0 0 1px var(--color-paper); }
+  .xs-row[data-main] .xs-toggle[data-open="true"] {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    box-shadow: inset 0 0 0 1px var(--color-paper);
+  }
+  /* Its tag: the label marker turned over, black on white. */
+  .xs-tag-main {
+    padding: 0.2em 0.5em 0.15em;
+    background: var(--color-paper);
+    color: var(--color-ink);
   }
 
   .xs-name {
