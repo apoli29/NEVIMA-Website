@@ -12,6 +12,7 @@ import {
   REACH,
   REGIONS,
   SERVICES,
+  TRANSLATION_NOTE,
   YES_NO,
   groupsFor,
   labelOf,
@@ -246,9 +247,12 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
   }
   if (estimate) {
     lines.push("", "Estimate shown:");
-    for (const l of estimate.lines) lines.push(`${l.label}: ${money(l.amount)}`);
+    for (const l of estimate.lines) {
+      lines.push(`${l.label}: ${money(l.amount)}${l.monthly !== undefined ? `, then ${money(l.monthly)}/month` : ""}`);
+    }
     for (const r of estimate.onRequest) lines.push(`${r.label}: on request (${r.reason})`);
     if (estimate.total !== null) lines.push(`Total: ${money(estimate.total)}`);
+    if (estimate.monthly !== null) lines.push(`Then monthly: ${money(estimate.monthly)}`);
   }
   if (contact.message.trim()) lines.push("", contact.message.trim());
   return lines.join("\n");
@@ -267,6 +271,7 @@ function Question({
   hint,
   error,
   children,
+  footnote,
   group = true,
 }: {
   id: string;
@@ -274,6 +279,8 @@ function Question({
   hint?: string;
   error?: string;
   children: ReactNode;
+  /** A sentence of small print under the answers. */
+  footnote?: string;
   /** A set of keys, read as one control; false for a single text field. */
   group?: boolean;
 }) {
@@ -290,6 +297,7 @@ function Question({
         aria-describedby={error ? `${id}-error` : undefined}
       >
         {children}
+        {footnote && <p className="pf-footnote">{footnote}</p>}
         {error && (
           <p id={`${id}-error`} className="mono-label pf-error" role="alert">
             {error}
@@ -525,10 +533,16 @@ export function StepScreen({
               labelledBy="pages-q"
             />
           </Question>
-          <Question id="languages" label="In which languages?" hint="Choose any" error={errors.languages}>
+          <Question
+            id="languages"
+            label="In which languages?"
+            hint="Choose any"
+            error={errors.languages}
+            footnote={`*${TRANSLATION_NOTE}`}
+          >
             <Multi
               name="languages"
-              options={LANGUAGES}
+              options={LANGUAGES.map((l) => (l.id === "other" ? { ...l, label: "Other*" } : l))}
               value={draft.languages}
               onChange={(languages) => setDraft({ languages })}
             />
@@ -536,7 +550,7 @@ export function StepScreen({
               <Field
                 id={`${uid}-languages`}
                 label="Which languages?"
-                placeholder="Which languages?"
+                placeholder="Which? e.g. French, German"
                 value={draft.languagesOther}
                 onChange={(languagesOther) => setDraft({ languagesOther })}
               />
@@ -587,6 +601,11 @@ export function StepScreen({
             id="town"
             label="Where is your business located?"
             hint={draft.country === "PT" ? undefined : "Outside Portugal, the shoot is quoted on request"}
+            footnote={
+              draft.country === "PT"
+                ? "In some parts of the Porto area and in the rest of the country, travel costs are covered by your business."
+                : undefined
+            }
             error={errors.town}
           >
             {draft.country === "PT" && (
@@ -696,8 +715,24 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
     <div className="pf-rows">
       {estimate.lines.map((line) => (
         <motion.div key={line.id} variants={ROW} className="pf-line">
-          <span className="pf-line-name">{line.label}</span>
-          <span className="pf-line-value">{money(line.amount)}</span>
+          <span>
+            <span className="pf-line-name block">{line.label}</span>
+            {line.notes.map((note) => (
+              <span key={note} className="pf-footnote mt-1.5 block max-w-[38em]">
+                {note}
+              </span>
+            ))}
+          </span>
+          <span className="text-right">
+            <span className="pf-line-value block">
+              {money(line.amount)}
+            </span>
+            {line.monthly !== undefined && (
+              <span className="mono-label mt-1 block text-ash-2">
+                First month, then {money(line.monthly)}/mo
+              </span>
+            )}
+          </span>
         </motion.div>
       ))}
       {estimate.onRequest.map((item) => (
@@ -716,17 +751,22 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
             <span className="mono-label mt-1 block text-white/70">Plus the items on request</span>
           )}
         </span>
-        <span className="pf-line-value">{estimate.total === null ? "On request" : money(estimate.total)}</span>
+        <span className="text-right">
+          <span className="pf-line-value block">{estimate.total === null ? "On request" : money(estimate.total)}</span>
+          {estimate.monthly !== null && (
+            <span className="mono-label mt-1 block text-white/70">Then {money(estimate.monthly)}/mo</span>
+          )}
+        </span>
       </motion.div>
       {web && (
         <motion.div variants={ROW} className="pf-line">
           <span className="pf-line-name">Website ready in</span>
-          <span className={`pf-line-value ${estimate.timeline ? "" : "pf-line-quiet"}`}>
-            {estimate.timeline
-              ? estimate.timeline.min === estimate.timeline.max
-                ? `${estimate.timeline.min} weeks`
-                : `${estimate.timeline.min}–${estimate.timeline.max} weeks`
-              : "Set in your proposal"}
+          <span className={`pf-line-value ${estimate.timeline?.kind === "days" ? "" : "pf-line-quiet"}`}>
+            {estimate.timeline?.kind === "days"
+              ? `${estimate.timeline.min}–${estimate.timeline.max} working days`
+              : estimate.timeline?.kind === "agreed"
+                ? "Agreed between us"
+                : "Set in your proposal"}
           </span>
         </motion.div>
       )}

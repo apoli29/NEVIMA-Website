@@ -638,6 +638,13 @@
     transition: color 0.25s ease;
   }
   .pf-key:has(input:checked) .pf-note { color: rgb(255 255 255 / 0.72); }
+  /* Small print under an answer or a priced line. */
+  .pf-footnote {
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--color-ash);
+    max-width: 34em;
+  }
 
   /* Any number: keys apart, each with a tick box. */
   .pf-multi { display: flex; flex-wrap: wrap; gap: 0.375rem; }

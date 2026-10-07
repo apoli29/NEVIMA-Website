@@ -56,8 +56,8 @@ export const YES_NO = [
 export type YesNo = (typeof YES_NO)[number]["id"];
 
 export const PHOTO_PLANS = [
-  { id: "photos", label: "Photos only", note: "2.5-hour shoot" },
-  { id: "photos-video", label: "Photos & video", note: "4-hour shoot, video up to 1 min" },
+  { id: "photos", label: "Photos only", note: "2.5-hour shoot, 20–25 edited photos" },
+  { id: "photos-video", label: "Photos & video", note: "4-hour shoot, 30–40 edited photos, video up to 1 min" },
 ] as const;
 export type PhotoPlanId = (typeof PHOTO_PLANS)[number]["id"];
 
@@ -110,14 +110,40 @@ export type Answers = {
     euros. An item the table cannot price is listed under onRequest. */
 export type Estimate = {
   currency: "EUR";
-  lines: { id: ServiceId; label: string; amount: number }[];
+  lines: {
+    id: ServiceId;
+    label: string;
+    /** Paid up front (for SEO and GEO, the first month). */
+    amount: number;
+    /** Paid each month after the first (SEO and GEO). */
+    monthly?: number;
+    /** Shown under the line: what it includes, what it assumes. */
+    notes: string[];
+  }[];
   onRequest: { id: string; label: string; reason: string }[];
-  /** The sum of the priced lines, or null when nothing could be priced. */
+  /** The sum paid up front, or null when nothing could be priced. */
   total: number | null;
-  /** How long the website takes, in weeks, when web design was chosen
-      and the table has it. */
-  timeline: { min: number; max: number } | null;
+  /** The sum paid each month after the first, when there is any. */
+  monthly: number | null;
+  /** How long the website takes, when web design was chosen: working
+      days, or agreed between both sides on an urgent deadline. */
+  timeline: { kind: "days"; min: number; max: number } | { kind: "agreed" } | null;
 };
+
+/** Said wherever languages other than Portuguese and English are asked
+    for or priced (user). */
+export const TRANSLATION_NOTE =
+  "Languages other than Portuguese and English are translated by an AI specialised in translation, with over 95% accuracy. We always send you a final document, so you can point out any sentence you'd like written differently.";
+
+/** How many languages were typed under "Other": "French, German and
+    Dutch" is three. At least one, since "Other" was ticked. */
+export function countLanguages(text: string) {
+  const parts = text
+    .split(/,|;|\/|&|\+|\band\b|\be\b|\by\b/i)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  return Math.max(1, parts.length);
+}
 
 export type Contact = {
   name: string;
