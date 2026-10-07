@@ -837,22 +837,15 @@ function ContactScreen({
 }
 
 /** Shown in place of the request when the site has nowhere to send it:
-    the visitor's own email app, with everything already written in. */
-export function OfflineNote({ href }: { href: string }) {
+    the visitor's own email app, with everything already written in (the
+    button at the foot opens it). */
+export function OfflineNote() {
   return (
     <div role="status">
       <p className="pf-lede">
         Requests can&rsquo;t be sent from the site yet. Send yours by email instead: it opens with your answers
         and details already written in.
       </p>
-      <a href={href} className="idx-link idx-send pf-mail">
-        <span className="idx-name">Open in your email app</span>
-        <span aria-hidden="true" className="idx-arrow">
-          <svg viewBox="0 0 16 16" width="16" height="16" fill="none" className="block">
-            <path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.25" />
-          </svg>
-        </span>
-      </a>
       <p className="mono-label pf-foot-note">
         Or write to us at{" "}
         <a href={`mailto:${STUDIO_EMAIL}`} className="underline underline-offset-2">

@@ -752,7 +752,6 @@
   .pf-back:focus-visible .idx-arrow { transform: translateX(-0.25rem); }
   .pf-back:focus-visible { outline: 1px solid var(--color-ink); outline-offset: -1px; }
 
-  .pf-mail { margin-top: 0.5rem; }
 
   /* For bots: out of sight and out of reach, but not display:none,
      which some of them skip. */

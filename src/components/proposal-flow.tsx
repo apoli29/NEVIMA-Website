@@ -404,11 +404,19 @@ function Panel({
     }
   };
 
+  const mailto = `mailto:${STUDIO_EMAIL}?subject=${encodeURIComponent(
+    `Final proposal request from ${contact.name.trim() || "the website"}`,
+  )}&body=${encodeURIComponent(summary(draft, contact, estimate.state.status === "ready" ? estimate.state.estimate : null))}`;
+
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!landed) return;
-    if (step === "sent" || offline) {
+    if (step === "sent") {
       hide();
+      return;
+    }
+    if (offline) {
+      window.location.href = mailto;
       return;
     }
     const found = checkStep(step, draft, contact);
@@ -446,12 +454,9 @@ function Panel({
     if (prev) goTo(prev);
   };
 
-  const action = offline ? "Close" : send.status === "sending" ? "Sending…" : actionFor(step, nextStep);
+  const action = offline ? "Open in your email app" : send.status === "sending" ? "Sending…" : actionFor(step, nextStep);
   const canGoBack = landed && index > 0 && step !== "sent";
   const progress = steps.length > 1 ? index / (steps.length - 1) : 0;
-  const mailto = `mailto:${STUDIO_EMAIL}?subject=${encodeURIComponent(
-    `Final proposal request from ${contact.name.trim() || "the website"}`,
-  )}&body=${encodeURIComponent(summary(draft, contact, estimate.state.status === "ready" ? estimate.state.estimate : null))}`;
 
   return (
     <>
@@ -541,7 +546,7 @@ function Panel({
                         <h2 ref={title} tabIndex={-1} className="pf-title">
                           Send it by email
                         </h2>
-                        <OfflineNote href={mailto} />
+                        <OfflineNote />
                       </>
                     ) : (
                       <StepScreen
