@@ -362,4 +362,5 @@ rejecting the shatter.
 - 2026-10-07: the user tried How we work moving a screen per gesture (a stepper) and did not like it; it was reverted to the continuous scroll-driven slide, made 1.5x faster (`SLOW` 1.6 → 1.6 / 1.5 ≈ 1.07 scrolled px per slid px), so the section is a third shorter to scroll through either way.
 - 2026-10-07: How we work merged three pairs of steps into one each (user), every piece of their copy kept: "First version and free call" (strategy + free call, You and us, Explore Web Design), "Finishing and basic SEO", and "Your changes and launch" (You and us). The last now stands after the optional SEO & GEO steps so the launch stays last; "SEO and GEO before launch" reads "…before your site goes live." Base row 13 → 10 steps.
 - How we work: slide 1.2x faster again (`SLOW` = 1.6 / 1.5 / 1.2 ≈ 0.89) and the steps' (and the closing ask's) text justified, with auto hyphens so the narrow columns keep even spacing (user).
+- How we work: slide 1.5x faster again (user): `SLOW` = 1.6 / 1.5 / 1.2 / 1.5 ≈ 0.59 scrolled px per slid px.
 

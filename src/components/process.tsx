@@ -249,8 +249,8 @@ const PHASES: Phase[] = [
 /** Scrolled pixels per pixel slid. It was 1.6 (the user found the row
     too quick at 1); the user then found the whole section too long to
     scroll through and asked for it 1.5 times faster, so 1.6 / 1.5, and
-    then 1.2 times faster again. */
-const SLOW = 1.6 / 1.5 / 1.2;
+    then 1.2 times faster again, and 1.5 times faster after that. */
+const SLOW = 1.6 / 1.5 / 1.2 / 1.5;
 
 /* Measured before the first paint in the browser; the server has no
    layout to measure. */
