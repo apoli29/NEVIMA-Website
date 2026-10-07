@@ -430,7 +430,13 @@ export function Process({ ready }: { ready: boolean }) {
           <motion.ol
             ref={track}
             className="prc-track"
-            style={{ x: reduce ? 0 : x, "--prc-rail-top": `${layout.railTop}px` } as never}
+            style={
+              {
+                x: reduce ? 0 : x,
+                "--prc-rail-top": `${layout.railTop}px`,
+                "--prc-rail-width": `${layout.railWidth}px`,
+              } as never
+            }
           >
             {/* The rail over the steps: grey for the way still to go, black
                 for the way come. */}

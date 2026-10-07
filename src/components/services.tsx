@@ -20,9 +20,16 @@ import { RewriteTitle } from "./rewrite-title";
    Services
 
    An index with a showcase, as a gallery hangs a room: on the left a
-   single framed picture with its caption, on the right the four
-   services as a list between hairlines, every name starting on the same
-   line, each with its number before it and a line about it under it.
+   single framed picture with its caption, on the right the services.
+
+   Web Design leads, as the studio's main service (the user's ask,
+   2026-10-07): a block of its own under a "Main service" marker, its
+   name set larger and its description open from the start, and inside
+   it, ruled off but within the same block, Visual Identity, which is
+   only sold with a website. Under it, headed "Additional services", the
+   rest as a list between hairlines, every name starting on the same
+   line, each with its number before it and a line about it under it:
+   SEO, GEO and, last, the photo shoot.
 
    The showcase answers the list. Pointing at a service puts its
    picture in the frame; opening one keeps it there and runs through its
@@ -51,8 +58,14 @@ const SLIDE_MS = 3200;
    in the words of its own description. */
 const LINE: Record<string, string> = {
   "web-design": "Websites that make a business stand out",
-  "visual-identity": "Only as a bundle with Web Design",
+  "visual-identity": "Only together with a website",
+  "photo-shoot": "Photos, or photos and video",
 };
+
+const MAIN = SERVICES.find((s) => s.tier === "main")!;
+const WITHIN = SERVICES.filter((s) => s.tier === "within");
+const ADDITIONAL = SERVICES.filter((s) => s.tier === "additional");
+const indexOf = (slug: string) => SERVICES.findIndex((s) => s.slug === slug);
 
 /** The same Unsplash photo, cut to another size. */
 function sized(src: string, w: number, h: number) {
@@ -89,7 +102,11 @@ export function Services({ ready }: { ready: boolean }) {
   );
 
   const openIndex = SERVICES.findIndex((s) => s.slug === open);
-  const shown = pointed ?? (openIndex >= 0 ? openIndex : 0);
+  const mainIndex = indexOf(MAIN.slug);
+  const shown = pointed ?? (openIndex >= 0 ? openIndex : mainIndex);
+  // The main service's description is always open, so its pictures run
+  // whenever it is the one shown.
+  const running = pointed === null && (openIndex >= 0 || shown === mainIndex);
 
   return (
     <section
@@ -121,8 +138,8 @@ export function Services({ ready }: { ready: boolean }) {
             className="max-w-[17rem] shrink-0 lg:text-right"
           >
             <p ref={subRef} className="text-[0.9375rem] leading-[1.45] text-balance text-ash">
-              Four services, one studio. Visual identity is only offered
-              together with a website.
+              Websites first, and the services that make them work harder.
+              Visual identity is only offered together with a website.
             </p>
           </SlideIn>
         </div>
@@ -130,26 +147,59 @@ export function Services({ ready }: { ready: boolean }) {
         <div ref={listRef} className="relative mt-12 grid grid-cols-12 gap-x-4 md:mt-16">
           <Rule shown={seen} className="absolute inset-x-0 top-0 bg-ink" />
 
-          <Showcase index={shown} open={openIndex >= 0 && pointed === null} seen={seen} reduce={reduce} />
+          <Showcase index={shown} open={running} seen={seen} reduce={reduce} />
 
-          <ol
-            data-open={open ? "" : undefined}
+          <div
             onPointerLeave={() => setPointed(null)}
-            className="xs-list col-span-12 lg:col-span-7 lg:col-start-6"
+            className="col-span-12 lg:col-span-7 lg:col-start-6"
           >
-            {SERVICES.map((service, i) => (
-              <Row
-                key={service.slug}
-                service={service}
-                index={i}
-                open={open === service.slug}
-                seen={seen}
-                reduce={reduce}
-                onToggle={toggle}
-                onPoint={(on) => setPointed(on && open !== service.slug ? i : null)}
-              />
-            ))}
-          </ol>
+            <Featured
+              service={MAIN}
+              seen={seen}
+              reduce={reduce}
+              onPoint={(on) => setPointed(on ? mainIndex : null)}
+            >
+              <ol data-open={open ? "" : undefined} className="xs-list">
+                {WITHIN.map((service) => (
+                  <Row
+                    key={service.slug}
+                    service={service}
+                    index={1}
+                    mark="+"
+                    open={open === service.slug}
+                    seen={seen}
+                    reduce={reduce}
+                    onToggle={toggle}
+                    onPoint={(on) => setPointed(on && open !== service.slug ? indexOf(service.slug) : null)}
+                  />
+                ))}
+              </ol>
+            </Featured>
+
+            <motion.p
+              className="mono-label mt-14 mb-1 flex md:mt-20"
+              initial={false}
+              animate={{ opacity: seen || reduce ? 1 : 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+            >
+              <span className="idx-title">Additional services</span>
+            </motion.p>
+            <ol data-open={open ? "" : undefined} className="xs-list">
+              {ADDITIONAL.map((service, i) => (
+                <Row
+                  key={service.slug}
+                  service={service}
+                  index={i + 2}
+                  mark={`(0${i + 1})`}
+                  open={open === service.slug}
+                  seen={seen}
+                  reduce={reduce}
+                  onToggle={toggle}
+                  onPoint={(on) => setPointed(on && open !== service.slug ? indexOf(service.slug) : null)}
+                />
+              ))}
+            </ol>
+          </div>
         </div>
       </div>
     </section>
@@ -181,13 +231,15 @@ function Showcase({
   // Back to the first picture whenever the service changes; through the
   // three for as long as an open one is shown.
   useEffect(() => setSlide(0), [index]);
+  const count = service.photos.length;
   useEffect(() => {
-    if (!open || reduce) return;
-    const id = window.setInterval(() => setSlide((n) => (n + 1) % 3), SLIDE_MS);
+    if (!open || reduce || count < 2) return;
+    const id = window.setInterval(() => setSlide((n) => (n + 1) % count), SLIDE_MS);
     return () => window.clearInterval(id);
-  }, [open, reduce, index]);
+  }, [open, reduce, index, count]);
 
-  const src = service.photos[slide];
+  // A service with no pictures yet leaves the frame empty.
+  const src = service.photos[slide] ?? "";
   const [layers, setLayers] = useState([{ src, key: 0 }]);
   useEffect(() => {
     setLayers((now) =>
@@ -201,7 +253,7 @@ function Showcase({
     <figure className="hidden lg:col-span-4 lg:block">
       <div className="sticky top-28 pt-10">
         <Uncover shown={seen} className="relative aspect-[4/5] bg-ink/5">
-          {layers.map((layer, i) => (
+          {layers.filter((layer) => layer.src).map((layer, i, shownLayers) => (
             <motion.div
               key={layer.key}
               className="absolute inset-0"
@@ -212,7 +264,7 @@ function Showcase({
                 scale: { duration: 1.3, ease: [0.22, 1, 0.36, 1] },
               }}
               onAnimationComplete={() => {
-                if (i === layers.length - 1 && i > 0) setLayers((now) => now.slice(-1));
+                if (i === shownLayers.length - 1 && i > 0) setLayers((now) => now.slice(-1));
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -233,11 +285,106 @@ function Showcase({
             <span>— {service.title}</span>
           </span>
           <span className="tabular-nums">
-            {slide + 1} / {service.photos.length}
+            {count ? `${slide + 1} / ${count}` : "Photos to come"}
           </span>
         </figcaption>
       </div>
     </figure>
+  );
+}
+
+/* ================================================================== */
+/* Featured: the main service                                           */
+/* ================================================================== */
+
+/* Web Design, set apart as the main service: its marker, its name set
+   larger, its description open and lit once seen, the way to its page,
+   and, ruled off inside the same block, the service sold with it. */
+function Featured({
+  service,
+  seen,
+  reduce,
+  onPoint,
+  children,
+}: {
+  service: Service;
+  seen: boolean;
+  reduce: boolean;
+  onPoint: (on: boolean) => void;
+  children: React.ReactNode;
+}) {
+  const line = service.full ?? LINE[service.slug];
+  const lit = seen && !reduce;
+  const copy = "svc-copy std-ink svc-main-copy";
+  return (
+    <section
+      aria-labelledby={`service-${service.slug}-name`}
+      className="svc-main pt-8 md:pt-10"
+      onPointerEnter={(event) => {
+        if (event.pointerType === "mouse") onPoint(true);
+      }}
+    >
+      <motion.p
+        className="mono-label flex"
+        initial={false}
+        animate={{ opacity: seen || reduce ? 1 : 0 }}
+        transition={{ duration: 0.6, delay: 0.15 }}
+      >
+        <span className="idx-title">Main service</span>
+      </motion.p>
+      <Rise shown={seen} delay={0.2} className="mt-5 text-[clamp(2.75rem,5.4vw,5.25rem)] md:mt-6">
+        <h3
+          id={`service-${service.slug}-name`}
+          className="display block leading-[0.96] font-light tracking-[-0.035em] text-ink"
+        >
+          {service.title}
+        </h3>
+      </Rise>
+      {line && (
+        <motion.p
+          className="mono-label mt-3 text-ash"
+          initial={false}
+          animate={{ opacity: seen || reduce ? 1 : 0 }}
+          transition={{ duration: 0.6, delay: 0.45 }}
+        >
+          {line}
+        </motion.p>
+      )}
+      <div className="mt-6 md:mt-8">
+        {lit ? (
+          <Illuminated text={service.body} delayMs={LIGHT_DELAY_MS} reduce={reduce} className={copy} />
+        ) : (
+          <p data-lit={reduce ? "true" : undefined} className={copy}>
+            {service.body}
+          </p>
+        )}
+      </div>
+      {/* Where there is no showcase, the block carries the pictures. */}
+      <div className="mt-6 grid grid-cols-3 gap-2 lg:hidden">
+        {service.photos.map((photo, i) => (
+          <Uncover key={photo} shown={seen} delay={0.3 + i * 0.1} className="aspect-[4/5] bg-ink/5">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={sized(photo, 360, 450)}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              draggable={false}
+              className="block size-full object-cover select-none"
+            />
+          </Uncover>
+        ))}
+      </div>
+      <div className="mt-7 md:mt-8">
+        <PassLink
+          href={servicePath(service.slug)}
+          label={`Explore ${service.title}`}
+          className="cta-drop inline-flex text-[1rem] leading-none"
+        />
+      </div>
+      {/* The service sold with it, inside the same block. */}
+      <div className="svc-main-within mt-9 md:mt-11">{children}</div>
+    </section>
   );
 }
 
@@ -248,6 +395,7 @@ function Showcase({
 function Row({
   service,
   index,
+  mark,
   open,
   seen,
   reduce,
@@ -255,7 +403,11 @@ function Row({
   onPoint,
 }: {
   service: Service;
+  /** its place in the section's entrance */
   index: number;
+  /** what stands before the name: its number, or a plus for a service
+      sold inside another */
+  mark: string;
   open: boolean;
   seen: boolean;
   reduce: boolean;
@@ -297,7 +449,7 @@ function Row({
             animate={{ opacity: seen || reduce ? 1 : 0 }}
             transition={{ duration: 0.6, delay: delay + 0.2 }}
           >
-            (0{index + 1})
+            {mark}
           </motion.span>
 
           <span className="min-w-0">
