@@ -288,13 +288,14 @@ function WallRule({
 /* The rest of the page as an index: a name and an arrow to a row,
    between black hairlines, under a title set white on a black marker.
    Pointed at, a row is inked over from the left and its words come out
-   of it in white (see .idx-link). Pricing leads and stays inked, with a
+   of it in white (see .idx-link). A lead row would stay inked, with a
    live light before its name and its arrow running on ahead of it, over
    and over (see .idx-lead).
 
    The last row asks rather than points: "Get your free proposal",
-   inked like Pricing, with a light passing over it and a slight swell
-   of its black every few seconds (see .idx-ask), and a plus where the
+   inked, led by the green light, with a light passing over it and a
+   slight swell of its black every few seconds (see .idx-ask), and a plus
+   where the
    others have an arrow. Pressed, the index is lifted out of its corner
    and carried to the middle of the screen, turning into the free-proposal
    form on the way (see proposal-flow.tsx); closed, it is carried back.
@@ -402,7 +403,10 @@ function SectionIndex({ settled }: { settled: boolean }) {
                       onClick={() => nav.current && proposal?.show(nav.current, askButton.current)}
                       className="idx-link idx-ask w-full text-left"
                     >
-                      <span className="idx-name">{ASK}</span>
+                      <span className="idx-name flex items-center gap-2.5">
+                        <span aria-hidden="true" className="live-dot" />
+                        {ASK}
+                      </span>
                       <span aria-hidden="true" className="idx-arrow">
                         <Plus />
                       </span>
