@@ -1552,6 +1552,12 @@
   }
   .abt-callout-ring { fill: none; stroke: var(--color-ink); stroke-width: 1.25; }
   .abt-callout-dot { fill: var(--color-ink); }
+  /* The mark and the leader in white, in difference: black over the
+     water, white where they cross onto the black glass. */
+  .abt-callout-mark { mix-blend-mode: difference; }
+  .abt-callout-mark .abt-callout-line,
+  .abt-callout-mark .abt-callout-ring { stroke: var(--color-paper); }
+  .abt-callout-mark .abt-callout-dot { fill: var(--color-paper); }
   .abt-callout-text {
     fill: var(--color-ink);
     font-family: var(--font-mono);
