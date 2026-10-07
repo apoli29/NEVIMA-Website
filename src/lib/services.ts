@@ -1,5 +1,7 @@
 /* ==================================================================
-   The four services, in one place.
+   The services, in one place. Web Design is the studio's main service;
+   Visual Identity is sold only with it, so it is shown inside it; SEO,
+   GEO and the photo shoot are additional services.
 
    The section on the home page and each service's own page are set
    from the same record, so a description is written once and the card
@@ -14,8 +16,11 @@ export type Service = {
   body: string;
   /** space-separated RGB, taken from the photos, for the glow the card warms with */
   aura: string;
-  /** back to front */
-  photos: readonly [string, string, string];
+  /** back to front; empty until the studio has chosen them */
+  photos: readonly string[];
+  /** how the section groups it: the main service, the one sold inside it,
+      or one of the additional services */
+  tier: "main" | "within" | "additional";
 };
 
 const photo = (id: string) =>
@@ -25,6 +30,7 @@ export const SERVICES: Service[] = [
   {
     slug: "web-design",
     title: "Web Design",
+    tier: "main",
     body: "Nevima designs websites focused on making businesses stand out. That is because attention-grabbing websites are opportunities for businesses since they make clients (and other potentially valuable stakeholders) notice them and reach them.",
     aura: "64 190 214",
     photos: [
@@ -36,6 +42,7 @@ export const SERVICES: Service[] = [
   {
     slug: "visual-identity",
     title: "Visual Identity",
+    tier: "within",
     body: "We provide this service exclusively as a bundle with our web design service. This service is essentially targeted to businesses with major flaws in their visual identity (logo, symbols, etc.). An excellent website paired with a poor identity loses part of its value, so we make sure you won’t face this issue.",
     aura: "226 86 70",
     photos: [
@@ -47,6 +54,7 @@ export const SERVICES: Service[] = [
   {
     slug: "seo",
     title: "SEO",
+    tier: "additional",
     full: "Search Engine Optimization",
     body: "Regardless of the web design quality behind a website, websites will only reach the right audience with a premium and personalized Search Engine Optimization. Nevima delivers this service both for websites designed by us and for external websites.",
     aura: "218 158 86",
@@ -59,6 +67,7 @@ export const SERVICES: Service[] = [
   {
     slug: "geo",
     title: "GEO",
+    tier: "additional",
     full: "Generative Engine Optimization",
     body: "SEO practices are no longer the only relevant way to reach an audience, as AI is increasingly used to find companies. GEO focuses on getting your business’s name mentioned as a direct source by AI tools, which presents an opportunity to reach an even wider audience.",
     aura: "84 132 255",
@@ -67,6 +76,15 @@ export const SERVICES: Service[] = [
       photo("1699500518986-f43f798cde1b"),
       photo("1706257038615-2d80b92587b7"),
     ],
+  },
+  {
+    slug: "photo-shoot",
+    title: "Photo Shoot",
+    tier: "additional",
+    body: "A website shows its best side with images that are truly yours. Nevima photographs your business, so the people who find you see who you really are instead of a stock photo. Photos only, or photos and video: you choose, and it is priced in your estimate.",
+    aura: "120 120 120",
+    // Waiting for the studio's three Unsplash links.
+    photos: [],
   },
 ];
 

@@ -1484,6 +1484,20 @@
     color: var(--color-ash);
   }
 
+  /* The main service's block (services.tsx, Featured): its description
+     at a reading size between the drawers' and the statement's, and the
+     service sold with it ruled off inside it by a dashed line. */
+  .svc-main-copy {
+    font-size: clamp(1.125rem, 1.45vw, 1.4375rem);
+    line-height: 1.32;
+    letter-spacing: -0.016em;
+  }
+  .svc-main-within { border-top: 1px dashed rgb(0 0 0 / 0.35); }
+  @media (max-width: 1023.98px) {
+    .svc-main-copy.svc-copy { text-align: left; }
+    .svc-main-copy .svc-line { text-align-last: auto; }
+  }
+
   .xs-name {
     transition:
       opacity 0.45s ease,
@@ -1945,11 +1959,14 @@
     will-change: transform;
   }
   /* The rail, along the top of the steps; the fill grows over it. */
+  /* Its length is measured (--prc-rail-width, see process.tsx): set from
+     --prc-edge it was resolved against the whole row, not the screen, and
+     stopped some 2000px short of the last step. */
   .prc-rail {
     position: absolute;
     top: var(--prc-rail-top, 0);
     left: 0;
-    right: var(--prc-edge);
+    width: var(--prc-rail-width, 100%);
     height: 1px;
     background: rgb(0 0 0 / 0.15);
     transform-origin: left;
