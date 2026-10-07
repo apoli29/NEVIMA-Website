@@ -908,7 +908,6 @@ export function OfflineNote() {
         <a href={`mailto:${STUDIO_EMAIL}`} className="underline underline-offset-2">
           {STUDIO_EMAIL}
         </a>
-        .
       </p>
     </div>
   );
