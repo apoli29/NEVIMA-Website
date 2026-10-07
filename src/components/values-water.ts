@@ -60,6 +60,11 @@ export type ValuesControl = {
   /** Call n is over: its callout goes. Timed on the water's own clock,
       so a slow frame cannot leave two calls' callouts out of step. */
   onBeckonEnd: (n: number) => void;
+  /** Where drop i is now: its middle, and where its outline is met by a
+      line drawn from the middle up and out at forty-five degrees, to the
+      right (1) or the left (-1). Set by the water once it is drawing; the
+      page's callouts are pinned to the drops with it. */
+  probe: ((i: number, dir: 1 | -1) => { cx: number; cy: number; ex: number; ey: number } | null) | null;
   /** The four are back where they rest. */
   onParted: () => void;
 };
@@ -555,6 +560,37 @@ export function useValuesWater(
 
     const dropData = new Float32Array(BLOBS * 4);
     const turnData = new Float32Array(BLOBS);
+
+    /** One drop's own field at a point: its body and its two lobes, as the
+        shader sums them (without the slow warp of the outline, which only
+        ever moves it a few pixels). */
+    const fieldOf = (i: number, x: number, y: number) => {
+      let f = 0;
+      for (let b = i * 3; b < i * 3 + 3; b++) {
+        const o = b * 4;
+        const r = dropData[o + 2];
+        if (r < 0.5) continue;
+        const c = Math.cos(turnData[b]);
+        const s = Math.sin(turnData[b]);
+        const qx = x - dropData[o];
+        const qy = y - dropData[o + 1];
+        const rx = (c * qx + s * qy) / dropData[o + 3];
+        const ry = -s * qx + c * qy;
+        f += Math.exp(-(rx * rx + ry * ry) / (r * r));
+      }
+      return f;
+    };
+    control.current.probe = (i, dir) => {
+      const o = i * 3 * 4;
+      if (dropData[o + 2] < 0.5) return null;
+      const cx = dropData[o];
+      const cy = dropData[o + 1];
+      const dx = dir * Math.SQRT1_2;
+      const dy = -Math.SQRT1_2;
+      let t = 0;
+      while (t < 600 && fieldOf(i, cx + dx * t, cy + dy * t) >= 0.5) t += 1.5;
+      return { cx, cy, ex: cx + dx * t, ey: cy + dy * t };
+    };
 
     const placeDrops = () => {
       const slow = seconds * DROP_PACE;
