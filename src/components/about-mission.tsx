@@ -44,8 +44,10 @@ export function AboutMission() {
       aria-labelledby="mission-title"
       // Its own foot room too: the values below are water from their very
       // top edge, and with no room here the vision ran straight into it.
-      // Both a shade under a section's usual room (the user's ask).
-      className="relative bg-paper py-[calc(var(--section-gap)*0.85)]"
+      // A shade under a section's usual room (the user's ask), and half
+      // that above: the way in from the co-founders was halved, their
+      // last row's foot with it (2026-10-07, see cofounders.tsx).
+      className="relative bg-paper pt-[calc(var(--section-gap)*0.425)] pb-[calc(var(--section-gap)*0.85)]"
     >
       <div className="shell">
         <h2 id="mission-title" className="sr-only">

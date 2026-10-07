@@ -344,3 +344,5 @@ rejecting the shatter.
 - The studio section is one layer above the services (`z-[11]`): with no foot padding, the "Learn more about us" drop's glass and shadow reach past its foot, and the services' ground was painting over them (user saw the drop cut off).
 - How we work: the room between the services and its heading halved (user): the pinned block is hung from the top (pt clamp(5.5rem, 12svh, 7rem)) instead of centred; 298px → 148px at 1440x900. While pinned it now sits under the bar with free room below.
 
+- 2026-10-07, about page: the room between the co-founders and the mission halved (user): the last founder row keeps half its foot (`last:pb-*`) and the mission's head room is `--section-gap × 0.425` (its foot stays at 0.85); 227px → 113px at 1280 wide.
+- Values: the drop under the pointer no longer gets a "Click here" callout of its own (user: the moving callouts are cue enough). It still swells.

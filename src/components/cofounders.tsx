@@ -163,7 +163,9 @@ function Plate({
     <article
       ref={ref}
       aria-labelledby={`founder-${founder.id}`}
-      className="relative grid grid-cols-12 gap-x-4 gap-y-8 pt-8 pb-14 md:pt-10 md:pb-20 lg:pb-24"
+      // The last row keeps half its foot: with the mission's head room
+      // halved too, the way into the mission is half what it was.
+      className="relative grid grid-cols-12 gap-x-4 gap-y-8 pt-8 pb-14 last:pb-7 md:pt-10 md:pb-20 md:last:pb-10 lg:pb-24 lg:last:pb-12"
     >
       <Rule
         shown={seen}

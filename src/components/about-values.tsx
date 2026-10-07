@@ -29,8 +29,8 @@ import { PIECE_PAD, useValuesWater, type ValuesControl } from "./values-water";
    and "Click here" is written along the level stretch, the line under it
    as its underline. It never stops while the four are apart: it moves
    from drop to drop, a ring striking the water where it lands, two up
-   at once; the drop under the pointer gets one of its own and swells a
-   little; once the four are together it points at the piece they made
+   at once; the drop under the pointer only swells a little (no callout
+   of its own: the moving one is cue enough, the user's ask); once the four are together it points at the piece they made
    and says how to let them go.
 
    Choosing one pulls all four together into a single uneven piece of
@@ -107,9 +107,8 @@ export function AboutValues() {
   // The callouts. While the four are apart they never stop: each drop
   // that calls keeps its callout through the next call, so two are up at
   // once, the older one going a moment before a third comes (timed by the
-  // water, see values-water.ts). The drop under the pointer has one too.
-  // Once joined, a single one points at the piece.
-  const [hovered, setHovered] = useState<number | null>(null);
+  // water, see values-water.ts). Once joined, a single one points at the
+  // piece.
   const [calls, setCalls] = useState<{ i: number; id: number }[]>([]);
 
   const aims: { key: string; aim: NonNullable<Aim> }[] = joined
@@ -117,11 +116,7 @@ export function AboutValues() {
     : chosen !== null
       ? []
       : [
-          ...calls.map((c) => ({ key: `call-${c.id}`, aim: { kind: "drop" as const, i: c.i } })),
-          ...(hovered !== null && !calls.some((c) => c.i === hovered)
-            ? [{ key: `hover-${hovered}`, aim: { kind: "drop" as const, i: hovered } }]
-            : []),
-        ];
+          ...calls.map((c) => ({ key: `call-${c.id}`, aim: { kind: "drop" as const, i: c.i } })),        ];
 
   const control = useRef<ValuesControl>({
     target: 0,
@@ -177,7 +172,6 @@ export function AboutValues() {
     if (chosen !== null) return;
     setChosen(i);
     setCalls([]);
-    setHovered(null);
     control.current.lead = i;
     control.current.target = 1;
     control.current.hover = -1;
@@ -289,12 +283,10 @@ export function AboutValues() {
                   onPointerEnter={(event) => {
                     if (event.pointerType !== "mouse" || chosen !== null) return;
                     control.current.hover = i;
-                    setHovered(i);
                     tell("values:change");
                   }}
                   onPointerLeave={() => {
                     if (control.current.hover === i) control.current.hover = -1;
-                    setHovered((h) => (h === i ? null : h));
                   }}
                   className="abt-val-slot"
                 >
