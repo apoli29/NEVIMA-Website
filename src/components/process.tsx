@@ -14,6 +14,8 @@ import { SlideIn } from "./enter";
 import { PassLink } from "./floating-nav";
 import { useInkAlign } from "./ink-align";
 import { useProposal } from "./proposal-flow";
+import { useProcessStepper } from "./process-stepper";
+import type Lenis from "lenis";
 
 /* ==================================================================
    How we work
@@ -292,7 +294,35 @@ type Layout = {
 
 const NO_LAYOUT: Layout = { travel: 0, railTop: 0, railWidth: 1, stops: [], phases: [] };
 
-export function Process({ ready }: { ready: boolean }) {
+/** The stops a gesture moves the row between, in pixels of the row's
+    travel: each a screen of steps on from the last, never past a step that
+    has not been wholly in view, and a stop wherever a phase begins. */
+function pageStops(
+  steps: { left: number; right: number }[],
+  phaseStarts: number[],
+  visible: number,
+  travel: number,
+) {
+  const out = [0];
+  let pos = 0;
+  for (let guard = 0; guard < 200 && pos < travel - 1; guard++) {
+    const over = steps.find((s) => s.right > pos + visible + 1)?.left ?? travel;
+    const phase = phaseStarts.find((p) => p > pos + 1) ?? travel;
+    const nextPos = Math.min(over, phase, travel);
+    pos = nextPos > pos + 1 ? nextPos : travel;
+    out.push(pos);
+  }
+  return out;
+}
+
+export function Process({
+  ready,
+  lenis,
+}: {
+  ready: boolean;
+  /** The page's smooth scroll, which moves the row from stop to stop. */
+  lenis?: React.RefObject<Lenis | null>;
+}) {
   const reduce = useReducedMotion() ?? false;
   const section = useRef<HTMLElement>(null);
   const viewport = useRef<HTMLDivElement>(null);
@@ -313,6 +343,10 @@ export function Process({ ready }: { ready: boolean }) {
   const stepCount = phases.reduce((n, phase) => n + phase.steps.length, 0);
 
   const [layout, setLayout] = useState<Layout>(NO_LAYOUT);
+  // Where a gesture moves the row to, as shares of the section's scroll
+  // (see process-stepper.ts).
+  const stepStops = useRef<number[]>([0, 1]);
+  useProcessStepper(section, lenis, stepStops, ready);
   useIsomorphicLayout(() => {
     const measure = () => {
       const t = track.current;
@@ -329,8 +363,19 @@ export function Process({ ready }: { ready: boolean }) {
       }));
       const steps = [...t.querySelectorAll<HTMLElement>("[data-step]")];
       const first = t.querySelector<HTMLElement>("[data-steps]");
+      const travel = Math.max(0, Math.ceil(t.scrollWidth - (v.clientWidth - lead)));
+      const rects = steps.map((el) => {
+        const left = ((el.offsetParent as HTMLElement | null)?.offsetLeft ?? 0) + el.offsetLeft;
+        return { left, right: left + el.offsetWidth };
+      });
+      const end = t.querySelector<HTMLElement>(".prc-end");
+      if (end) rects.push({ left: end.offsetLeft, right: end.offsetLeft + end.offsetWidth });
+      const visible = Math.max(200, v.clientWidth - lead - trail);
+      stepStops.current = travel
+        ? pageStops(rects, phases.slice(1).map((p) => p.left), visible, travel).map((px) => px / travel)
+        : [0, 1];
       setLayout({
-        travel: Math.max(0, Math.ceil(t.scrollWidth - (v.clientWidth - lead))),
+        travel,
         railTop: first?.offsetTop ?? 0,
         railWidth: Math.max(1, t.scrollWidth - trail),
         stops: steps.map((el) => (el.offsetParent as HTMLElement | null)?.offsetLeft ?? 0).map(

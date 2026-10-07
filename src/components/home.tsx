@@ -411,7 +411,7 @@ export function Home() {
           <Services ready={phase === "open"} />
         </div>
 
-        <Process ready={phase === "open"} />
+        <Process ready={phase === "open"} lenis={lenis} />
         <Comparison ready={phase === "open"} />
       </main>
 
