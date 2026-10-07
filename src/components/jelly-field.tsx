@@ -663,6 +663,8 @@ export function JellyField({
     let shown: { x: number; y: number }[] = [];
     // The drops on screen, in drawing order.
     let active: number[] = [];
+    // Each drop's turn to land, by its index (see layoutDrops).
+    let landSlot = new Map<number, number>();
     // How far each drop roams round its base: the full wander where it has
     // open water round it, less where an edge or a neighbour is near.
     let roam: number[] = [];
@@ -814,6 +816,18 @@ export function JellyField({
 
       active = placed;
 
+      /* The order they land in: the order they were laid, biggest first,
+         with the perched drops set in among the rest at even intervals
+         rather than coming down last, on their own, after the others had
+         all landed (the user: it looked unnatural). */
+      const main = placed.filter((i) => !perched.has(i));
+      const extra = placed.filter((i) => perched.has(i));
+      const sequence = [...main];
+      extra.forEach((i, k) => {
+        sequence.splice(Math.round(((k + 1) * main.length) / (extra.length + 1)) + k, 0, i);
+      });
+      landSlot = new Map(sequence.map((i, slot) => [i, slot]));
+
       // How far each drop may roam from its base: as far as the wander goes,
       // but never so far that its body would reach an edge or the bar, nor
       // past its half of the water between it and its nearest neighbour,
@@ -880,7 +894,7 @@ export function JellyField({
     let landed = !entrance || reduce;
     const struck = new Set<number>();
     /** How far into its landing drop i is, 0 to 1, by its place in the
-        drawing order. */
+        landing order (see landSlot). */
     const grown = (slot: number, now: number) => {
       if (landed) return 1;
       const start = setOff.current;
@@ -911,7 +925,7 @@ export function JellyField({
 
         // Coming down: it swells out of nothing where it lands, and the
         // moment it touches it strikes the water.
-        const g = grown(slot, now);
+        const g = grown(landSlot.get(i) ?? slot, now);
         if (g >= 1) down++;
         if (g > 0 && !struck.has(i)) {
           struck.add(i);

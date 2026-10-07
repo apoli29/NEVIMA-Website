@@ -51,9 +51,10 @@ import {
 
    Read as one object the whole way. The index's label stays at its
    head and turns from "Index" into "Free proposal"; the inked row it
-   was pressed on stays at its foot and becomes the button that moves
-   the form on; the rows between, the ways elsewhere, are let go first,
-   since the form has no use for them. Once it has landed, the first
+   was pressed on, the index's first, slides down to the form's foot as
+   the form grows and becomes the button that moves the form on; the
+   rows under it, the ways elsewhere, are let go first, since the form
+   has no use for them. Once it has landed, the first
    questions come in, row by row, as the index's own rows do.
 
    Like the opening, it runs on one clock (`t`, 0 to 1) that animate()
@@ -67,6 +68,7 @@ import {
    glass    |--------- in -------|
    rows     |-- out --|
    label         |-- Index → Free proposal --|
+   ask        |------- slides down to the foot -----|
    foot                       |--- ask → Continue ---|
    form                                          |--- in ---|
    ================================================================== */
@@ -84,6 +86,9 @@ const PANE: [number, number] = [0, 0.18];
 const ROWS_OUT: [number, number] = [0, 0.16];
 const LABEL_OUT: [number, number] = [0.18, 0.3];
 const LABEL_IN: [number, number] = [0.26, 0.4];
+/** The ask row's slide from under the label to the foot. */
+const FOOT_DROP: [number, number] = [0.1, 0.62];
+const FOOT_DROP_EASE = cubicBezier(0.65, 0, 0.35, 1);
 const FOOT_OUT: [number, number] = [0.4, 0.52];
 const FOOT_IN: [number, number] = [0.5, 0.66];
 /** The form is laid out from here, unseen until it fades in. */
@@ -272,6 +277,29 @@ function Panel({
   const labelIn = useTransform(t, LABEL_IN, reduce ? [1, 1] : [0, 1]);
   const footOut = useTransform(t, FOOT_OUT, reduce ? [0, 0] : [1, 0]);
   const footIn = useTransform(t, FOOT_IN, reduce ? [1, 1] : [0, 1]);
+
+  /* The ask row is the index's first row, but the form's last: it sets
+     off from right under the label and slides down to the foot. Its
+     place is the foot throughout; it is held up by however much room
+     the form's body has at that moment, less and less of it. */
+  const formEl = useRef<HTMLFormElement>(null);
+  const bodyEl = useRef<HTMLDivElement>(null);
+  const footEl = useRef<HTMLDivElement>(null);
+  const [chrome, setChrome] = useState({ around: 0, foot: 0 });
+  useMeasureEffect(() => {
+    if (!formEl.current || !bodyEl.current || !footEl.current) return;
+    setChrome({
+      around: formEl.current.offsetHeight - bodyEl.current.offsetHeight,
+      foot: footEl.current.offsetHeight,
+    });
+  }, []);
+  const footY = useTransform([t, height], ([tv, hv]: number[]) => {
+    if (reduce) return 0;
+    const span = (tv - FOOT_DROP[0]) / (FOOT_DROP[1] - FOOT_DROP[0]);
+    const down = FOOT_DROP_EASE(Math.min(Math.max(span, 0), 1));
+    const room = Math.max(hv - 2 * pad - chrome.around, 0);
+    return -room * (1 - down);
+  });
   const form = useTransform(t, reduce ? [0, 1] : FORM_IN, [0, 1]);
 
   /* --- the run -------------------------------------------------------- */
@@ -498,7 +526,7 @@ function Panel({
       >
         <motion.div aria-hidden="true" className="pf-pane" style={{ opacity: pane }} />
 
-        <form noValidate onSubmit={onSubmit} aria-label="Get your free proposal" className="flex h-full min-h-0 flex-col">
+        <form ref={formEl} noValidate onSubmit={onSubmit} aria-label="Get your free proposal" className="flex h-full min-h-0 flex-col">
           {/* The index's label, which becomes the form's. */}
           <p className="mono-label mb-2.5 flex items-center justify-between text-ash-2">
             <span className="grid">
@@ -540,9 +568,14 @@ function Panel({
             </motion.span>
           </p>
 
-          <div className="relative min-h-0 flex-1">
-            {/* The index's rows, let go as it sets off. */}
-            <motion.div aria-hidden="true" className="absolute inset-x-0 top-0" style={{ opacity: rows, x: rowsX }}>
+          <div ref={bodyEl} className="relative min-h-0 flex-1">
+            {/* The index's other rows, under the ask row, let go as it sets
+                off. */}
+            <motion.div
+              aria-hidden="true"
+              className="absolute inset-x-0"
+              style={{ top: Math.max(chrome.foot - 1, 0), opacity: rows, x: rowsX }}
+            >
               {SECTION_LINKS.map((row) => (
                 <div key={row.label} className="relative">
                   <span className="absolute inset-x-0 top-0 z-10 block h-px bg-ink" />
@@ -557,6 +590,7 @@ function Panel({
                   </div>
                 </div>
               ))}
+              <span className="block h-px bg-ink" />
             </motion.div>
 
             {/* How far along: a hairline filled in from the left. */}
@@ -620,7 +654,7 @@ function Panel({
           </div>
 
           {/* The row the index was opened from, which moves the form on. */}
-          <div className="relative">
+          <motion.div ref={footEl} className="relative z-10" style={{ y: footY }}>
             <span aria-hidden="true" className="absolute inset-x-0 top-0 z-10 block h-px bg-ink" />
             <div className="flex">
               <AnimatePresence initial={false}>
@@ -671,7 +705,7 @@ function Panel({
               </button>
             </div>
             <span aria-hidden="true" className="block h-px bg-ink" />
-          </div>
+          </motion.div>
         </form>
       </motion.div>
     </>

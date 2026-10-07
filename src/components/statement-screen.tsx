@@ -292,7 +292,8 @@ function WallRule({
    live light before its name and its arrow running on ahead of it, over
    and over (see .idx-lead).
 
-   The last row asks rather than points: "Get your free proposal",
+   The first row asks rather than points (the user put it first): "Get
+   your free proposal",
    inked, led by the green light, with a light passing over it and a
    slight swell of its black every few seconds (see .idx-ask), and a plus
    where the
@@ -371,7 +372,7 @@ function SectionIndex({ settled }: { settled: boolean }) {
           </motion.span>
         </p>
         <ol className="relative">
-          {[...SECTION_LINKS.map((link) => ({ key: link.href, link })), { key: "ask", link: null }].map(
+          {[{ key: "ask", link: null }, ...SECTION_LINKS.map((link) => ({ key: link.href, link }))].map(
             ({ key, link }, i) => (
               <li key={key} className="relative">
                 <IndexRule on={on} reduce={reduce} delay={ENTRY.rows + i * ENTRY.step} />
