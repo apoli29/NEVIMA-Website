@@ -56,7 +56,7 @@ export const SERVICES: Service[] = [
     title: "SEO",
     tier: "additional",
     full: "Search Engine Optimization",
-    body: "Regardless of the web design quality behind a website, websites will only reach the right audience with a premium and personalized Search Engine Optimization. Nevima delivers this service both for websites designed by us and for external websites.",
+    body: "Regardless of the web design quality behind a website, websites will only reach the right audience with a premium and personalized Search Engine Optimization. Like all our additional services, Nevima offers it only together with a website we design.",
     aura: "218 158 86",
     photos: [
       photo("1614849963640-9cc74b2a826f"),
@@ -69,7 +69,7 @@ export const SERVICES: Service[] = [
     title: "GEO",
     tier: "additional",
     full: "Generative Engine Optimization",
-    body: "SEO practices are no longer the only relevant way to reach an audience, as AI is increasingly used to find companies. GEO focuses on getting your business’s name mentioned as a direct source by AI tools, which presents an opportunity to reach an even wider audience.",
+    body: "SEO practices are no longer the only relevant way to reach an audience, as AI is increasingly used to find companies. GEO focuses on getting your business’s name mentioned as a direct source by AI tools, which presents an opportunity to reach an even wider audience. Like all our additional services, it is offered only together with a website we design.",
     aura: "84 132 255",
     photos: [
       photo("1708311000280-861d2c89305a"),
@@ -81,7 +81,7 @@ export const SERVICES: Service[] = [
     slug: "photo-shoot",
     title: "Photo Shoot",
     tier: "additional",
-    body: "A website shows its best side with images that are truly yours. Nevima photographs your business, so the people who find you see who you really are instead of a stock photo. Photos only, or photos and video: you choose, and it is priced in your estimate.",
+    body: "A website shows its best side with images that are truly yours. Nevima photographs your business, so the people who find you see who you really are instead of a stock photo. Photos only, or photos and video: you choose. Like all our additional services, it is offered only together with a website we design, and it is priced in your estimate.",
     aura: "120 120 120",
     // Waiting for the studio's three Unsplash links.
     photos: [],

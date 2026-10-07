@@ -128,8 +128,8 @@ export function Services({ ready }: { ready: boolean }) {
             className="max-w-[17rem] shrink-0 lg:text-right"
           >
             <p ref={subRef} className="text-[0.9375rem] leading-[1.45] text-balance text-ash">
-              Websites first, and the services that make them work harder.
-              Visual identity is only offered together with a website.
+              Websites first. Every additional service is offered only
+              together with a website we design.
             </p>
           </SlideIn>
         </div>

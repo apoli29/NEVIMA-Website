@@ -150,7 +150,7 @@ const PHASES: Phase[] = [
         name: "Photo shoot",
         extra: "photo",
         principle: "Images of your own.",
-        text: "We photograph your business so your site has images of its own: photos only, or photos and video. It is a separate service, priced in your estimate.",
+        text: "We photograph your business so your site has images of its own: photos only, or photos and video. It is an additional service, added to your website and priced in your estimate.",
         who: "Us",
       },
       {

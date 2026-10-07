@@ -55,7 +55,7 @@ const QUESTIONS = [
   {
     id: "seo",
     q: "I already have a website. Can you only do its SEO or GEO?",
-    a: "Yes. SEO and GEO are the two services we also take on for websites we didn’t build. We start with an audit and tell you honestly whether the website itself is what holds you back.",
+    a: "No. SEO, GEO and our other additional services are only offered together with a website we design: they work best on a site built for them from the start. If your current website is what holds you back, a new one is where we start.",
   },
   {
     id: "identity",
