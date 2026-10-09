@@ -67,6 +67,10 @@ const FOLLOW = 0.14;
 /** How far in from an edge the drop is at full size, as a share of its radius. */
 const EDGE = 1.25;
 const MAX_DPR = 2;
+/** A touch device never gets the hand-led part of this (see below), so
+    the wordmark is only ever the still backdrop there: it is drawn at
+    one pixel per CSS pixel and let up to the screen. */
+const COARSE_DPR = 1;
 /** The backdrop's resolution, in canvas pixels per CSS pixel. */
 const BACKDROP_SCALE = 0.5;
 /** Where the still backdrop is frozen, in seconds of its loop. */
@@ -643,7 +647,7 @@ export function LiquidLens({
       const w = surface.offsetWidth;
       const h = surface.offsetHeight;
       if (!w || !h) return;
-      dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+      dpr = Math.min(window.devicePixelRatio || 1, pointer ? MAX_DPR : COARSE_DPR);
       fit(frontView, Math.round(w * dpr), Math.round(h * dpr));
       fit(words, frontView.width, frontView.height);
       wordsPen.setTransform(dpr, 0, 0, dpr, 0, 0);

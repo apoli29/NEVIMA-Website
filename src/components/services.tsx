@@ -134,7 +134,7 @@ export function Services({ ready }: { ready: boolean }) {
           </SlideIn>
         </div>
 
-        <div ref={listRef} className="relative mt-12 grid grid-cols-12 gap-x-4 md:mt-16">
+        <div ref={listRef} className="relative mt-14 grid grid-cols-12 gap-x-4 md:mt-20">
           <Rule shown={seen} className="absolute inset-x-0 top-0 bg-ink" />
 
           <Showcase index={shown} open={openIndex >= 0 && pointed === null} seen={seen} reduce={reduce} />
@@ -309,7 +309,7 @@ function Row({
           onPointerEnter={(event) => {
             if (event.pointerType === "mouse") onPoint(true);
           }}
-          className="xs-head grid w-full grid-cols-[2.75rem_1fr_auto] items-center gap-x-3 py-5 text-left md:grid-cols-[3.5rem_1fr_auto] md:gap-x-4 md:py-7"
+          className="xs-head grid w-full grid-cols-[2.75rem_1fr_auto] items-center gap-x-3 py-7 text-left md:grid-cols-[3.5rem_1fr_auto] md:gap-x-4 md:py-10"
         >
           <motion.span
             className="mono-label self-start pt-[0.55em] text-ash-2 tabular-nums md:pt-[0.9em]"
@@ -326,7 +326,7 @@ function Row({
             <Rise
               shown={seen}
               delay={delay}
-              className="text-[clamp(2rem,3.5vw,3.375rem)]"
+              className="text-[clamp(1.75rem,2.8vw,2.625rem)]"
             >
               <span
                 className={`xs-name display block leading-[0.98] font-light tracking-[-0.03em] ${main ? "text-paper" : "text-ink"}`}
@@ -336,7 +336,7 @@ function Row({
             </Rise>
             {line && (
               <motion.span
-                className={`mono-label mt-2 block md:mt-2.5 ${main ? "text-paper/70" : "text-ash"}`}
+                className={`mono-label mt-3 block md:mt-4 ${main ? "text-paper/70" : "text-ash"}`}
                 initial={false}
                 animate={{ opacity: seen || reduce ? 1 : 0 }}
                 transition={{ duration: 0.6, delay: delay + 0.3 }}
@@ -353,7 +353,7 @@ function Row({
             transition={{ duration: 0.6, delay: delay + 0.35, ease: [0.22, 1, 0.36, 1] }}
           >
             {/* What kind of service it is, on the right. */}
-            <span className={`mono-label max-sm:hidden ${main ? "xs-tag-main" : "idx-title"}`}>
+            <span className={`mono-label xs-tag max-sm:hidden ${main ? "xs-tag-main" : "idx-title"}`}>
               {main ? "Main service" : "Additional service"}
             </span>
             <Chevron open={open} turns={turns} reduce={reduce} />

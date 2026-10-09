@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useReducedMotion } from "motion/react";
+import { isCoarse } from "./quality";
 
 /* ==================================================================
    Jelly field
@@ -51,8 +52,13 @@ import { useReducedMotion } from "motion/react";
    clicks do nothing to it.
    ================================================================== */
 
-/** The slab's springs, one per this many CSS pixels. */
+/** The slab's springs, one per this many CSS pixels. On a touch device
+    they are set further apart, which costs the water a little of its
+    fineness and saves the phone the greater part of the stepping (see
+    quality.ts). COUPLE is scaled to match, so the ripples still run
+    across the screen at the same speed. */
 const CELL = 8;
+const COARSE_CELL = 12;
 /** The water's springs, per second: a faint pull back to rest, a strong
     pull towards the neighbours (which is what carries a ripple outwards,
     at about 260px a second) and a little loss, so rings run a good way
@@ -65,6 +71,7 @@ const DAMP = 0.9;
     screen go black. At most this many steps are caught up per frame. */
 const STEP_S = 1 / 120;
 const MAX_STEPS = 8;
+const COARSE_MAX_STEPS = 4;
 /** What the hand does to the water is cut to this share of what it once
     was (the user asked for 60% less, then for 80% of that), the click
     and the wake alike. */
@@ -131,6 +138,10 @@ const LAND_S = 0.9;
 const LAND_DEPTH = 7;
 
 const MAX_DPR = 1.5;
+/** A phone draws the same screen over four times as many pixels as it
+    has sense to pay for here, so the water is drawn at one pixel per
+    CSS pixel there and let up to the screen. */
+const COARSE_DPR = 1;
 /** Where the still screen is frozen, in seconds. */
 const STILL_T = 24;
 
@@ -200,6 +211,7 @@ uniform float u_td;        // the drops' own, slower clock
 uniform vec4 u_drop[${MAX_BLOBS}];   // x, y, radius, aspect (CSS pixels)
 uniform float u_turn[${MAX_BLOBS}];
 uniform int u_drops;
+uniform float u_cell;      // CSS pixels between springs
 uniform sampler2D u_slab;  // the slab's height, one texel per spring
 
 // The loose drops as one field: above 0.5 is inside one. Drops that come
@@ -284,7 +296,7 @@ void main() {
   // Read a whole spring either side: the springs are filtered linearly, and
   // a slope read across one spring is continuous where a finer one would
   // step at every spring and show the grid.
-  float e = ${CELL.toFixed(1)};
+  float e = u_cell;
   float h0 = slab(p);
   float hx0 = slab(p - vec2(e, 0.0));
   float hx1 = slab(p + vec2(e, 0.0));
@@ -424,6 +436,16 @@ export function JellyField({
 
     const section = view.closest("section") ?? view.parentElement ?? view;
 
+    // What this device is asked to draw (see quality.ts).
+    const coarse = isCoarse();
+    const cell = coarse ? COARSE_CELL : CELL;
+    const maxDpr = coarse ? COARSE_DPR : MAX_DPR;
+    const maxSteps = coarse ? COARSE_MAX_STEPS : MAX_STEPS;
+    // A ripple's speed across the screen is cell * sqrt(COUPLE): springs
+    // set further apart must pull on each other more gently to carry it
+    // at the same pace.
+    const couple = COUPLE * (CELL / cell) ** 2;
+
     let disposed = false;
     let w = 0;
     let h = 0;
@@ -448,9 +470,9 @@ export function JellyField({
       // Each touch strikes the surface once: a small, sharp dip, which the
       // springs then carry outwards as rings.
       for (const f of falls.splice(0)) {
-        const px = f.x / CELL;
-        const py = f.y / CELL;
-        const pr = f.radius / CELL;
+        const px = f.x / cell;
+        const py = f.y / cell;
+        const pr = f.radius / cell;
         const q0 = Math.max(0, Math.floor(px - pr * 3));
         const q1 = Math.min(cols - 1, Math.ceil(px + pr * 3));
         const r0 = Math.max(0, Math.floor(py - pr * 3));
@@ -466,7 +488,7 @@ export function JellyField({
 
       // Always the same small step, however long the frame took, and never
       // more than a few of them to catch up.
-      owed = Math.min(owed + dt, STEP_S * MAX_STEPS);
+      owed = Math.min(owed + dt, STEP_S * maxSteps);
       const sub = STEP_S;
       for (; owed >= sub; owed -= sub) {
         for (let r = 0; r < rows; r++) {
@@ -478,7 +500,7 @@ export function JellyField({
             const right = q < cols - 1 ? 1 : 0;
             const hi = height[i];
             const lap = height[i + left] + height[i + right] + height[i + up] + height[i + down] - 4 * hi;
-            speed[i] += (-REST * hi + COUPLE * lap - DAMP * speed[i]) * sub;
+            speed[i] += (-REST * hi + couple * lap - DAMP * speed[i]) * sub;
           }
         }
         for (let i = 0; i < height.length; i++) height[i] += speed[i] * sub;
@@ -956,7 +978,7 @@ export function JellyField({
       const rect = view.getBoundingClientRect();
       w = Math.max(1, Math.round(rect.width));
       h = Math.max(1, Math.round(rect.height));
-      dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+      dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
       view.width = Math.round(w * dpr);
       view.height = Math.round(h * dpr);
 
@@ -968,8 +990,8 @@ export function JellyField({
         bar = { left: b.left - o.left, right: b.right - o.left, bottom: b.bottom - o.top };
       }
 
-      cols = Math.max(2, Math.ceil(w / CELL));
-      rows = Math.max(2, Math.ceil(h / CELL));
+      cols = Math.max(2, Math.ceil(w / cell));
+      rows = Math.max(2, Math.ceil(h / cell));
       height = new Float32Array(cols * rows);
       speed = new Float32Array(cols * rows);
       sendSlab();
@@ -983,6 +1005,7 @@ export function JellyField({
       gl.viewport(0, 0, view.width, view.height);
       gl.uniform2f(u("u_size"), w, h);
       gl.uniform1f(u("u_dpr"), dpr);
+      gl.uniform1f(u("u_cell"), cell);
       gl.uniform1f(u("u_t"), seconds);
       gl.uniform1f(u("u_td"), seconds * DROP_PACE);
       gl.uniform4fv(u("u_drop"), dropData);
