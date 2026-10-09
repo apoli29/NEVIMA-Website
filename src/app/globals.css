@@ -1509,6 +1509,17 @@
     color: var(--color-ink);
   }
 
+  /* The tag sits beside a name it must not compete with, so in this list
+     the marker is set smaller and tighter than elsewhere. */
+  .xs-tag {
+    font-size: 0.625rem;
+    letter-spacing: 0.07em;
+    padding: 0.25em 0.45em 0.2em;
+  }
+  @media (min-width: 1280px) {
+    .xs-tag { font-size: 0.65625rem; }
+  }
+
   .xs-name {
     transition:
       opacity 0.45s ease,
