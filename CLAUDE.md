@@ -10,7 +10,7 @@ The original brief is imported below. Parts of it were written before the build 
 - Titles are set in Satoshi (self-hosted in `fonts/Satoshi/`, via `--f-title`); mono labels in Geist Mono (`--font-mono`, `.mono-label`).
 - The default branch is `main`. Work on a branch and merge back through a pull request.
 - Always finish a round of changes by opening that pull request and merging it into `main` yourself, so Vercel deploys it: the user reviews the work on the deployed site, not on branch previews.
-- The full history of homepage decisions, section by section, is in `docs/homepage-decisions.md`; the about page's is in `docs/about-decisions.md`. Read the part about a section before changing it.
+- The full history of homepage decisions, section by section, is in `docs/homepage-decisions.md`; the about page's is in `docs/about-decisions.md`; the web design page's and the work pages' in `docs/web-design-decisions.md`. Read the part about a section before changing it.
 
 ## Working with the user
 
