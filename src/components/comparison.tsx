@@ -224,7 +224,9 @@ export function Comparison({ ready }: { ready: boolean }) {
     <section
       id="comparison"
       aria-labelledby="comparison-title"
-      className="relative z-10 bg-paper pt-(--section-gap) pb-28 md:pb-40"
+      // Under How we work, whose screen's empty foot it covers: its head
+      // room is what is left between the two, 40% of what it was (user).
+      className="relative z-10 bg-paper pt-[calc(var(--section-gap)*0.6)] pb-28 md:pt-[calc(var(--section-gap)*0.8)] md:pb-40"
     >
       <div className="shell">
         <SlideIn ready={ready}>

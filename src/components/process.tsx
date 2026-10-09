@@ -262,6 +262,9 @@ type PhaseBox = { left: number; width: number; head: number };
 type Layout = {
   /** How far the row has to travel to bring its last step in. */
   travel: number;
+  /** The pinned screen's empty room under the row, taken back from the
+      page so the next section follows the row, not the screen's foot. */
+  tail: number;
   /** The rail's height in the row: the top of the steps. */
   railTop: number;
   /** The rail's length: the row, less its padding on the right. */
@@ -271,12 +274,13 @@ type Layout = {
   phases: PhaseBox[];
 };
 
-const NO_LAYOUT: Layout = { travel: 0, railTop: 0, railWidth: 1, stops: [], phases: [] };
+const NO_LAYOUT: Layout = { travel: 0, tail: 0, railTop: 0, railWidth: 1, stops: [], phases: [] };
 
 export function Process({ ready }: { ready: boolean }) {
   const reduce = useReducedMotion() ?? false;
   const section = useRef<HTMLElement>(null);
   const viewport = useRef<HTMLDivElement>(null);
+  const screen = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLOListElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subRef = useRef<HTMLParagraphElement>(null);
@@ -298,7 +302,8 @@ export function Process({ ready }: { ready: boolean }) {
     const measure = () => {
       const t = track.current;
       const v = viewport.current;
-      if (!t || !v) return;
+      const sc = screen.current;
+      if (!t || !v || !sc) return;
       // The row starts after the viewport's left padding (the shell's
       // edge), so that much less of the viewport is there to show it.
       const lead = parseFloat(getComputedStyle(v).paddingLeft) || 0;
@@ -312,6 +317,7 @@ export function Process({ ready }: { ready: boolean }) {
       const first = t.querySelector<HTMLElement>("[data-steps]");
       setLayout({
         travel: Math.max(0, Math.ceil(t.scrollWidth - (v.clientWidth - lead))),
+        tail: Math.max(0, Math.floor(sc.clientHeight - (v.offsetTop + v.offsetHeight))),
         railTop: first?.offsetTop ?? 0,
         railWidth: Math.max(1, t.scrollWidth - trail),
         stops: steps.map((el) => (el.offsetParent as HTMLElement | null)?.offsetLeft ?? 0).map(
@@ -324,6 +330,7 @@ export function Process({ ready }: { ready: boolean }) {
     const watch = new ResizeObserver(measure);
     if (track.current) watch.observe(track.current);
     if (viewport.current) watch.observe(viewport.current);
+    if (screen.current) watch.observe(screen.current);
     document.fonts?.ready.then(measure);
     return () => watch.disconnect();
   }, []);
@@ -347,13 +354,19 @@ export function Process({ ready }: { ready: boolean }) {
       id="how-we-work"
       aria-labelledby="process-title"
       className="relative z-10 bg-paper"
-      style={reduce ? undefined : { height: `calc(100svh + ${Math.round(layout.travel * SLOW)}px)` }}
+      // The next section is drawn up over the pinned screen's empty foot
+      // (user: too much room before it), so it comes to rest right under
+      // the row as the pin lets go; it only ever covers blank paper.
+      style={{
+        marginBottom: -layout.tail,
+        ...(reduce ? {} : { height: `calc(100svh + ${Math.round(layout.travel * SLOW)}px)` }),
+      }}
     >
       {/* The heading and the row as one block, the row close under the
           heading, hung from the top clear of the bar. It was centred on the
           screen, which left twice the room the user wanted between the
           services and the heading. */}
-      <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden pt-[clamp(5.5rem,12svh,7rem)] pb-[clamp(1.5rem,4svh,3rem)]">
+      <div ref={screen} className="sticky top-0 flex h-[100svh] flex-col overflow-hidden pt-[clamp(5.5rem,12svh,7rem)] pb-[clamp(1.5rem,4svh,3rem)]">
         <div className="shell">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
             <SlideIn ready={ready}>
