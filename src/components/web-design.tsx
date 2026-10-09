@@ -239,7 +239,7 @@ function Changes() {
           id="changes-title"
           light="Still want changes?"
           medium="Don’t worry, we handle everything."
-          sub="We never charge for changes that take us next to no time. Anything bigger is paid, and the price is always agreed with you before we start."
+          sub="We never charge for changes that take us only a few minutes. Anything bigger is paid, and the price is always agreed with you before we start."
         />
         <div className="wk-frame mt-12 md:mt-16">
           <ul className="wk-plates">
