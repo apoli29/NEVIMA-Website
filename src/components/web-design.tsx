@@ -87,7 +87,6 @@ function Work() {
           id="web-design-title"
           as="h1"
           light="Web Design."
-          medium="Websites that make a business stand out."
           sub="Our work so far, what every website includes, and how changes work once yours is live."
         />
 
