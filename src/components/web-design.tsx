@@ -215,14 +215,16 @@ const CHANGES = [
     id: "content",
     label: "Content",
     what: "Text, photos or videos.",
-    price: "Fixed.",
+    price: "Quoted and agreed with you.",
+    cap: "10% of your website’s price.",
     how: "We book a call to note what you want to change.",
   },
   {
     id: "style",
     label: "Style",
     what: "Animations, sections, colors or typography.",
-    price: "Quoted for your changes.",
+    price: "Quoted and agreed with you.",
+    cap: "25% of your website’s price.",
     how: "We send you a quote and only go ahead once you approve it.",
   },
 ] as const;
@@ -239,7 +241,7 @@ function Changes() {
           id="changes-title"
           light="Still want changes?"
           medium="Don’t worry, we handle everything."
-          sub="These changes are paid, and the price is always agreed with you before we start."
+          sub="Small changes are never charged. Bigger ones are paid, and the price is always agreed with you before we start."
         />
         <div className="wk-frame mt-12 md:mt-16">
           <ul className="wk-plates">
@@ -253,6 +255,7 @@ function Changes() {
                 </h3>
                 <dl className="wk-fields mt-6 md:mt-8">
                   <Field name="Price" value={change.price} />
+                  <Field name="At most" value={change.cap} />
                   <Field name="How" value={change.how} />
                 </dl>
               </li>
