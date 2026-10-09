@@ -40,7 +40,7 @@ export const PROJECTS: Project[] = [
     scope: null,
     year: null,
     status: "live",
-    url: null,
+    url: "https://bsmartish.pt",
     about: null,
     report: null,
   },

@@ -221,9 +221,9 @@ const CHANGES = [
   {
     id: "style",
     label: "Style",
-    what: "Animations, sections, colors or typography.",
+    what: "3D, animations, effects, sections, colors or typography.",
     price: "Quoted, and agreed with you.",
-    how: "We send you a quote and only go ahead once you approve it.",
+    how: "We book a call to note what you want to change.",
   },
 ] as const;
 
