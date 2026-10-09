@@ -149,7 +149,7 @@ export function Services({ ready }: { ready: boolean }) {
                 key={service.slug}
                 service={service}
                 index={i}
-                mark={`(0${i + 1})`}
+                mark={`0${i + 1}`}
                 open={open === service.slug}
                 seen={seen}
                 reduce={reduce}
@@ -268,8 +268,7 @@ function Row({
   service: Service;
   /** its place in the section's entrance */
   index: number;
-  /** what stands before the name: its number, or a plus for a service
-      sold inside another */
+  /** its number, set after the name like an exponent */
   mark: string;
   open: boolean;
   seen: boolean;
@@ -309,17 +308,8 @@ function Row({
           onPointerEnter={(event) => {
             if (event.pointerType === "mouse") onPoint(true);
           }}
-          className="xs-head grid w-full grid-cols-[2.75rem_1fr_auto] items-center gap-x-3 py-5 text-left md:grid-cols-[3.5rem_1fr_auto] md:gap-x-4 md:py-7"
+          className="xs-head grid w-full grid-cols-[1fr_auto] items-center gap-x-3 py-5 text-left md:gap-x-4 md:py-7"
         >
-          <motion.span
-            className="mono-label self-start pt-[0.55em] text-ash-2 tabular-nums md:pt-[0.9em]"
-            initial={false}
-            animate={{ opacity: seen || reduce ? 1 : 0 }}
-            transition={{ duration: 0.6, delay: delay + 0.2 }}
-          >
-            {mark}
-          </motion.span>
-
           <span className="min-w-0">
             {/* Sized on the slot, not the name, so the room the slot leaves
                 for the tails under the line is measured in the name's ems. */}
@@ -332,6 +322,14 @@ function Row({
                 className={`xs-name display block leading-[0.98] font-light tracking-[-0.03em] ${main ? "text-paper" : "text-ink"}`}
               >
                 {service.title}
+                {/* Its number, hung off the name's top right like an
+                    exponent (user), so it rises, dims and moves with it. */}
+                <sup
+                  aria-hidden="true"
+                  className={`xs-exp ${main ? "text-paper/60" : "text-ash-2"}`}
+                >
+                  {mark}
+                </sup>
               </span>
             </Rise>
             {line && (
@@ -373,7 +371,7 @@ function Row({
       >
         <div>
           {/* Hung from the line the name starts on. */}
-          <div className="pr-0 pb-9 pl-[calc(2.75rem+0.75rem)] md:pr-[4.5rem] md:pb-11 md:pl-[calc(3.5rem+1rem)]">
+          <div className="pr-0 pb-9 md:pr-[4.5rem] md:pb-11">
             {open && !reduce ? (
               <Illuminated
                 key={opened}
