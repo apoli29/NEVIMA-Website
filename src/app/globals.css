@@ -2092,3 +2092,142 @@
   }
   .abt-stop[data-on] { background: var(--color-ink); }
 }
+
+/* ==================================================================
+   The web design page and the work (web-design.tsx, project-page.tsx)
+
+   The work is hung in one closed frame made of the index's parts: a
+   black hairline all round, the black label in its top bar, black rules
+   between its plates, and fields set as the index's rows, a mono name
+   and its value.
+   ================================================================== */
+@layer components {
+  .wk-frame {
+    border: 1px solid var(--color-ink);
+    background: var(--color-paper);
+  }
+  .wk-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-ink);
+  }
+  .wk-plates {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .wk-cell + .wk-cell { border-top: 1px solid var(--color-ink); }
+  @media (min-width: 768px) {
+    .wk-bar { padding: 0.875rem 1.25rem; }
+    .wk-plates { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .wk-cell + .wk-cell {
+      border-top: 0;
+      border-left: 1px solid var(--color-ink);
+    }
+  }
+
+  /* A plate: the project's image, its name and its fields, all one link. */
+  .wk-plate {
+    display: block;
+    padding: 1rem 1rem 1.25rem;
+    outline-offset: -6px;
+  }
+  @media (min-width: 768px) {
+    .wk-plate { padding: 1.25rem 1.25rem 1.5rem; }
+  }
+  .wk-image {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    background: rgb(0 0 0 / 0.04);
+    transition: background-color 0.5s ease;
+  }
+  .wk-plate:hover .wk-image { background: rgb(0 0 0 / 0.08); }
+  .wk-fig {
+    position: absolute;
+    left: 0.75rem;
+    bottom: 0.625rem;
+    color: var(--color-ash-2);
+  }
+  .wk-arrow {
+    flex-shrink: 0;
+    transition: transform 0.5s var(--ease-out-quint);
+  }
+  .wk-plate:hover .wk-arrow,
+  .wk-plate:focus-visible .wk-arrow { transform: translateX(5px); }
+
+  /* Fields, as the index's rows: a mono name, then its value. */
+  .wk-fields { border-top: 1px solid var(--color-ink); }
+  .wk-field {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    gap: 1rem;
+    align-items: baseline;
+    padding: 0.625rem 0;
+    border-bottom: 1px solid rgb(0 0 0 / 0.15);
+    font-size: 0.9375rem;
+    line-height: 1.4;
+  }
+  .wk-field:last-child { border-bottom: 0; }
+
+  /* What every website includes: three statements on one black rule. */
+  .wk-perk { padding-top: 2rem; }
+  .wk-perk + .wk-perk { margin-top: 1.5rem; }
+  @media (min-width: 1024px) {
+    .wk-perk { padding: 2.5rem 2rem 0; }
+    .wk-perk:first-child { padding-left: 0; }
+    .wk-perk + .wk-perk {
+      margin-top: 0;
+      border-left: 1px solid rgb(0 0 0 / 0.15);
+    }
+  }
+
+  /* A project's page: its index beside its image, then a few words
+     about the website and the way to see it. */
+  @media (min-width: 1024px) {
+    .wk-project { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+  }
+  .wk-about {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    padding: 1.25rem 1rem 1.5rem;
+    border-top: 1px solid var(--color-ink);
+  }
+  @media (min-width: 768px) {
+    .wk-about {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 3rem;
+      padding: 1.5rem 1.5rem 1.75rem;
+    }
+  }
+  .wk-back {
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.3em;
+    transition: color 0.3s ease, text-decoration-color 0.3s ease;
+  }
+  .wk-back:hover { color: var(--color-ink); text-decoration-color: currentColor; }
+
+  /* The preview's size keys, on the black bar. */
+  .pv-key {
+    padding: 0.45em 0.8em 0.4em;
+    color: rgb(255 255 255 / 0.7);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3);
+    transition: color 0.3s ease, background-color 0.3s ease;
+  }
+  .pv-key:hover { color: var(--color-paper); }
+  .pv-key[aria-pressed="true"] {
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  /* Changes after launch: the two kinds, side by side in a frame. */
+  .wk-change { padding: 1.25rem 1rem 1.5rem; }
+  @media (min-width: 768px) {
+    .wk-change { padding: 1.5rem 1.5rem 1.75rem; }
+  }
+}

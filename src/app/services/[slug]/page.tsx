@@ -14,8 +14,13 @@ import { SERVICES, findService, servicePath } from "@/lib/services";
    rather than keeping two copies of the same sentence in step.
    ================================================================== */
 
+/** Web design has a page of its own (services/web-design). */
+const OWN_PAGE = new Set(["web-design"]);
+
 export function generateStaticParams() {
-  return SERVICES.map((service) => ({ slug: service.slug }));
+  return SERVICES.filter((service) => !OWN_PAGE.has(service.slug)).map((service) => ({
+    slug: service.slug,
+  }));
 }
 
 export async function generateMetadata({
@@ -43,7 +48,7 @@ export default async function ServicePage({
   params: Promise<{ slug: string }>;
 }) {
   const service = findService((await params).slug);
-  if (!service) notFound();
+  if (!service || OWN_PAGE.has(service.slug)) notFound();
 
   const others = SERVICES.filter((other) => other.slug !== service.slug);
 
