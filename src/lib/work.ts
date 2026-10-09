@@ -3,7 +3,7 @@
    project's own page and its preview are all set from these records.
 
    The two projects so far are the studio's only web design and visual
-   identity work; Estacionamento de Gerona is still being made. Every
+   identity work; Estamento de Gerona is still being made. Every
    field the studio has not given yet is null, and the pages show it as
    TO_FILL, so nothing about a client is made up in the meantime.
    ================================================================== */
@@ -45,8 +45,8 @@ export const PROJECTS: Project[] = [
     report: null,
   },
   {
-    slug: "estacionamento-de-gerona",
-    name: "Estacionamento de Gerona",
+    slug: "estamento-de-gerona",
+    name: "Estamento de Gerona",
     sector: null,
     identity: null,
     scope: null,
