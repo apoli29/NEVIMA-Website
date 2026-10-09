@@ -27,7 +27,7 @@ export type Project = {
   url: string | null;
   /** a few sentences about the website itself */
   about: string | null;
-  /** the project's full report, once there is one */
+  /** the project's full report: a page on this site, once it is built */
   report: string | null;
 };
 

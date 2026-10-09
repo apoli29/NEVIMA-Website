@@ -40,7 +40,8 @@ export function ProjectPage({ project, framable }: { project: Project; framable:
 
   const notes = [
     !live ? "Website in production" : !project.url ? `Website address ${TO_FILL}` : null,
-    !project.report ? `Report ${TO_FILL}` : null,
+    // The report will be a page of its own on this site, not built yet.
+    !project.report ? "Full report coming soon" : null,
   ].filter(Boolean);
 
   return (
