@@ -1487,13 +1487,18 @@
   /* The main service's row (services.tsx): the same row as the rest,
      inked black as the index's lead row is, its words in white. Padded in
      from the black's edges, the rest of the list keeps its own edge. */
+  /* The black reaches past the list instead of padding the row in, so
+     the name, its number, the tag and the toggle stand exactly where the
+     other rows' do (user). Phones take it to the screen's edges. */
   .xs-row[data-main] {
-    padding-inline: 1rem;
+    --xs-bleed: var(--gutter);
+    margin-inline: calc(-1 * var(--xs-bleed));
+    padding-inline: var(--xs-bleed);
     background: var(--color-ink);
     color: var(--color-paper);
   }
   @media (min-width: 768px) {
-    .xs-row[data-main] { padding-inline: 1.5rem; }
+    .xs-row[data-main] { --xs-bleed: 1.5rem; }
   }
   .xs-row[data-main] .xs-toggle { color: var(--color-paper); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.35); }
   .xs-row[data-main] .xs-head:hover .xs-toggle { box-shadow: inset 0 0 0 1px var(--color-paper); }
