@@ -316,7 +316,7 @@ function Row({
             <Rise
               shown={seen}
               delay={delay}
-              className="text-[clamp(1.6rem,2.8vw,2.7rem)]"
+              className="text-[clamp(1.44rem,2.52vw,2.43rem)]"
             >
               <span
                 className={`xs-name display block leading-[0.98] font-light tracking-[-0.03em] ${main ? "text-paper" : "text-ink"}`}
