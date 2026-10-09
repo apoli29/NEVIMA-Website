@@ -2,6 +2,8 @@
 
 import { useEffect, type RefObject } from "react";
 
+import { isCoarse } from "./quality";
+
 /* ==================================================================
    Values water
 
@@ -72,11 +74,13 @@ export type ValuesControl = {
 /* ---- the water, as on the home page ---------------------------------- */
 
 const CELL = 8;
+const COARSE_CELL = 12;
 const REST = 6;
 const COUPLE = 1100;
 const DAMP = 0.9;
 const STEP_S = 1 / 120;
 const MAX_STEPS = 8;
+const COARSE_MAX_STEPS = 4;
 const HAND = 0.32;
 const DROP_DEPTH = 9 * HAND;
 const DROP_RADIUS = 18;
@@ -90,6 +94,7 @@ const DROP_BEND = 0.45;
 const CAUSTIC = 9;
 const DROP_PACE = 0.18;
 const MAX_DPR = 1.5;
+const COARSE_DPR = 1;
 const STILL_T = 24;
 
 /* ---- the four ---------------------------------------------------------- */
@@ -179,6 +184,7 @@ uniform float u_turn[${BLOBS}];
 uniform float u_warp;   // how far the outline wanders: less as they join
 uniform float u_spec;   // the highlight: down to a glint once joined
 uniform float u_join;   // 0 apart, 1 joined
+uniform float u_cell;   // CSS pixels between springs
 uniform sampler2D u_slab;
 
 float drops(vec2 p) {
@@ -240,7 +246,7 @@ vec3 swell(vec2 p) {
 void main() {
   vec2 p = vec2(gl_FragCoord.x, u_size.y * u_dpr - gl_FragCoord.y) / u_dpr;
 
-  float e = ${CELL.toFixed(1)};
+  float e = u_cell;
   float h0 = slab(p);
   float hx0 = slab(p - vec2(e, 0.0));
   float hx1 = slab(p + vec2(e, 0.0));
@@ -395,6 +401,13 @@ export function useValuesWater(
 
     const section = view.closest("section") ?? view.parentElement ?? view;
 
+    // What this device is asked to draw, as on the home page.
+    const coarse = isCoarse();
+    const cell = coarse ? COARSE_CELL : CELL;
+    const maxDpr = coarse ? COARSE_DPR : MAX_DPR;
+    const maxSteps = coarse ? COARSE_MAX_STEPS : MAX_STEPS;
+    const couple = COUPLE * (CELL / cell) ** 2;
+
     let disposed = false;
     let w = 0;
     let h = 0;
@@ -413,9 +426,9 @@ export function useValuesWater(
 
     const stepSlab = (dt: number) => {
       for (const f of falls.splice(0)) {
-        const px = f.x / CELL;
-        const py = f.y / CELL;
-        const pr = f.radius / CELL;
+        const px = f.x / cell;
+        const py = f.y / cell;
+        const pr = f.radius / cell;
         const q0 = Math.max(0, Math.floor(px - pr * 3));
         const q1 = Math.min(cols - 1, Math.ceil(px + pr * 3));
         const r0 = Math.max(0, Math.floor(py - pr * 3));
@@ -428,7 +441,7 @@ export function useValuesWater(
           }
         }
       }
-      owed = Math.min(owed + dt, STEP_S * MAX_STEPS);
+      owed = Math.min(owed + dt, STEP_S * maxSteps);
       const sub = STEP_S;
       for (; owed >= sub; owed -= sub) {
         for (let r = 0; r < rows; r++) {
@@ -440,7 +453,7 @@ export function useValuesWater(
             const right = q < cols - 1 ? 1 : 0;
             const hi = height[i];
             const lap = height[i + left] + height[i + right] + height[i + up] + height[i + down] - 4 * hi;
-            speed[i] += (-REST * hi + COUPLE * lap - DAMP * speed[i]) * sub;
+            speed[i] += (-REST * hi + couple * lap - DAMP * speed[i]) * sub;
           }
         }
         for (let i = 0; i < height.length; i++) height[i] += speed[i] * sub;
@@ -668,11 +681,11 @@ export function useValuesWater(
       const rect = view.getBoundingClientRect();
       w = Math.max(1, Math.round(rect.width));
       h = Math.max(1, Math.round(rect.height));
-      dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+      dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
       view.width = Math.round(w * dpr);
       view.height = Math.round(h * dpr);
-      cols = Math.max(2, Math.ceil(w / CELL));
-      rows = Math.max(2, Math.ceil(h / CELL));
+      cols = Math.max(2, Math.ceil(w / cell));
+      rows = Math.max(2, Math.ceil(h / cell));
       height = new Float32Array(cols * rows);
       speed = new Float32Array(cols * rows);
       sendSlab();
@@ -686,6 +699,7 @@ export function useValuesWater(
       gl.viewport(0, 0, view.width, view.height);
       gl.uniform2f(u("u_size"), w, h);
       gl.uniform1f(u("u_dpr"), dpr);
+      gl.uniform1f(u("u_cell"), cell);
       gl.uniform1f(u("u_t"), seconds);
       gl.uniform1f(u("u_td"), seconds * DROP_PACE);
       gl.uniform4fv(u("u_drop"), dropData);
