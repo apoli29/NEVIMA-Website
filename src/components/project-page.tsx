@@ -57,7 +57,7 @@ export function ProjectPage({ project, framable }: { project: Project; framable:
           <SlideIn ready>
             <h1
               id="project-title"
-              className="display mt-5 text-[clamp(2.75rem,6.5vw,6rem)] font-light text-ink md:mt-6"
+              className="display mt-5 text-[clamp(2.75rem,6.5vw,6rem)] font-medium text-ink md:mt-6"
             >
               {project.name}
             </h1>

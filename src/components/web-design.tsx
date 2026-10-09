@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { motion, useMotionValueEvent, useReducedMotion, useScroll } from "motion/react";
 import { SlideIn } from "./enter";
-import { Rule, useSeen } from "./exhibit";
 import { FloatingNav } from "./floating-nav";
 import { Footer } from "./footer";
 import { useInkAlign } from "./ink-align";
@@ -122,7 +122,7 @@ function Plate({ project, figure }: { project: Project; figure: number }) {
         <span className="mono-label wk-fig">Fig. 0{figure}</span>
       </div>
       <div className="mt-5 flex items-baseline justify-between gap-4 md:mt-6">
-        <h3 className="display text-[clamp(1.5rem,2.2vw,2.125rem)] leading-[1.02] font-light tracking-[-0.025em] text-ink">
+        <h3 className="display text-[clamp(1.5rem,2.2vw,2.125rem)] leading-[1.02] font-medium tracking-[-0.025em] text-ink">
           {project.name}
         </h3>
         <span aria-hidden="true" className="wk-arrow">
@@ -179,7 +179,41 @@ const PERKS = [
 ] as const;
 
 function Perks() {
-  const [ref, seen] = useSeen<HTMLDivElement>(true);
+  const reduce = useReducedMotion() ?? false;
+  const list = useRef<HTMLOListElement>(null);
+  // The fill's tip is the line a little under the middle of the screen:
+  // it starts down the rail as the list's top crosses it, and is at the
+  // foot as the list's foot does.
+  const { scrollYProgress } = useScroll({ target: list, offset: ["start 65%", "end 65%"] });
+
+  // Where each stop sits down the rail, as a share of its length, so a stop
+  // fills once the tip has reached it.
+  const [stops, setStops] = useState<number[]>([]);
+  useEffect(() => {
+    const ol = list.current;
+    if (!ol) return;
+    const measure = () => {
+      const box = ol.getBoundingClientRect();
+      if (!box.height) return;
+      setStops(
+        [...ol.querySelectorAll<HTMLElement>("[data-stop]")].map((stop) => {
+          const b = stop.getBoundingClientRect();
+          return (b.top + b.height / 2 - box.top) / box.height;
+        }),
+      );
+    };
+    measure();
+    const watch = new ResizeObserver(measure);
+    watch.observe(ol);
+    return () => watch.disconnect();
+  }, []);
+
+  const [reached, setReached] = useState(0);
+  useMotionValueEvent(scrollYProgress, "change", (p) => {
+    const n = stops.filter((at) => at <= p + 0.001).length;
+    setReached((was) => (was === n ? was : n));
+  });
+
   return (
     <section id="included" aria-labelledby="included-title" className="relative pt-(--section-gap)">
       <div className="shell">
@@ -189,20 +223,32 @@ function Perks() {
           medium="web design service?"
           sub="All of this comes with every website we design, at no extra cost."
         />
-        <div ref={ref} className="relative mt-12 md:mt-16">
-          <Rule shown={seen} className="absolute inset-x-0 top-0 bg-ink" />
-          <ul className="grid grid-cols-1 lg:grid-cols-3">
-            {PERKS.map((perk) => (
-              <li key={perk.medium} className="wk-perk">
-                <h3 className="display text-[clamp(2rem,3.1vw,3.125rem)] leading-[1] text-ink">
-                  <span className="block font-light">{perk.light}</span>
-                  <span className="block font-medium">{perk.medium}</span>
-                </h3>
-                <p className="mt-6 max-w-[34ch] text-[1rem] leading-[1.5] text-ash md:mt-8">{perk.text}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {/* How we work's rail, stood upright (user): the rail down the left,
+            grey for the way still to go and black for the way come, a stop
+            at each statement that fills as the black reaches it. */}
+        <ol ref={list} className="wk-steps mt-12 md:mt-16">
+          <span aria-hidden="true" className="wk-rail" />
+          <motion.span
+            aria-hidden="true"
+            className="wk-rail wk-rail-fill"
+            style={{ scaleY: reduce ? 1 : scrollYProgress }}
+          />
+          {PERKS.map((perk, i) => (
+            <li key={perk.medium} className="wk-step">
+              <h3 className="wk-step-title display text-[clamp(2rem,3.1vw,3.125rem)] leading-[1] text-ink">
+                <span
+                  aria-hidden="true"
+                  data-stop
+                  data-on={reduce || i < reached ? "" : undefined}
+                  className="abt-stop wk-stop"
+                />
+                <span className="block font-light">{perk.light}</span>
+                <span className="block font-medium">{perk.medium}</span>
+              </h3>
+              <p className="max-w-[40ch] text-[1rem] leading-[1.5] text-ash">{perk.text}</p>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );

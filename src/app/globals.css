@@ -2171,16 +2171,47 @@
   }
   .wk-field:last-child { border-bottom: 0; }
 
-  /* What every website includes: three statements on one black rule. */
-  .wk-perk { padding-top: 2rem; }
-  .wk-perk + .wk-perk { margin-top: 1.5rem; }
+  /* What every website includes: How we work's rail stood upright, down
+     the left of the statements, a stop at each one's first line. */
+  .wk-steps {
+    --wk-gap: 2rem;
+    position: relative;
+  }
+  .wk-rail {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 1px;
+    background: rgb(0 0 0 / 0.15);
+    transform-origin: top;
+  }
+  .wk-rail-fill { background: var(--color-ink); }
+  .wk-step {
+    display: grid;
+    gap: 1.5rem;
+    padding: 0 0 3.5rem var(--wk-gap);
+  }
+  .wk-step:last-child { padding-bottom: 0; }
+  .wk-step-title { position: relative; }
+  .wk-stop {
+    position: absolute;
+    top: 0.52em;
+    left: calc(-1 * var(--wk-gap));
+    transform: translate(-50%, -50%);
+  }
+  @media (min-width: 768px) {
+    .wk-steps { --wk-gap: 3.5rem; }
+    .wk-step { padding-bottom: 5rem; }
+  }
+  /* From lg, each statement and its explanation side by side. */
   @media (min-width: 1024px) {
-    .wk-perk { padding: 2.5rem 2rem 0; }
-    .wk-perk:first-child { padding-left: 0; }
-    .wk-perk + .wk-perk {
-      margin-top: 0;
-      border-left: 1px solid rgb(0 0 0 / 0.15);
+    .wk-step {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: 3rem;
+      align-items: start;
     }
+    .wk-step > p { padding-top: 0.35rem; }
   }
 
   /* A project's page: its image on the left; on the right its fields
