@@ -2183,27 +2183,41 @@
     }
   }
 
-  /* A project's page: its index beside its image, then a few words
-     about the website and the way to see it. */
+  /* A project's page: its image on the left; on the right its fields
+     laid out across, two or three to a row, then its words and buttons. */
   @media (min-width: 1024px) {
-    .wk-project { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+    .wk-project { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   }
-  .wk-about {
-    display: flex;
-    flex-direction: column;
-    gap: 1.75rem;
-    padding: 1.25rem 1rem 1.5rem;
+  .wk-specs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     border-top: 1px solid var(--color-ink);
   }
-  @media (min-width: 768px) {
-    .wk-about {
-      flex-direction: row;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 3rem;
-      padding: 1.5rem 1.5rem 1.75rem;
+  .wk-spec {
+    padding: 0.75rem 0.75rem 0.875rem 0;
+    border-bottom: 1px solid rgb(0 0 0 / 0.15);
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+  .wk-spec:nth-child(even) {
+    padding-left: 0.875rem;
+    border-left: 1px solid rgb(0 0 0 / 0.15);
+  }
+  @media (min-width: 1280px) {
+    .wk-specs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .wk-spec:nth-child(even) { padding-left: 0; border-left: 0; }
+    .wk-spec:not(:nth-child(3n + 1)) {
+      padding-left: 0.875rem;
+      border-left: 1px solid rgb(0 0 0 / 0.15);
     }
   }
+  /* A button with nowhere to go yet: there, but at rest. */
+  .wk-rest {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+  .wk-rest::before { animation-play-state: paused; }
   .wk-back {
     text-decoration: underline;
     text-decoration-color: transparent;
