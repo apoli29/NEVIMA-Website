@@ -27,6 +27,8 @@ export type Project = {
   url: string | null;
   /** a few sentences about the website itself */
   about: string | null;
+  /** the project's full report, once there is one */
+  report: string | null;
 };
 
 export const PROJECTS: Project[] = [
@@ -40,6 +42,7 @@ export const PROJECTS: Project[] = [
     status: "live",
     url: null,
     about: null,
+    report: null,
   },
   {
     slug: "estacionamento-de-gerona",
@@ -51,6 +54,7 @@ export const PROJECTS: Project[] = [
     status: "in-production",
     url: null,
     about: null,
+    report: null,
   },
 ];
 
