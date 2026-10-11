@@ -250,6 +250,28 @@ export function Home() {
     });
   }, [progress, reduce]);
 
+  /* Sent here for the free-proposal form (the bar's "Get your free
+     proposal" on another page links to /#proposal): the opening runs on
+     its own, as one gesture would have fired it, and the form opens out
+     of the bar's button once the page is handed back. */
+  const asked = useRef(false);
+  useEffect(() => {
+    if (window.location.hash !== "#proposal") return;
+    asked.current = true;
+    history.replaceState(null, "", window.location.pathname + window.location.search);
+    const t = window.setTimeout(open, 350);
+    return () => window.clearTimeout(t);
+  }, [open]);
+  useEffect(() => {
+    if (phase !== "open" || !asked.current) return;
+    asked.current = false;
+    const t = window.setTimeout(() => {
+      const ask = document.querySelector<HTMLElement>("[data-nav-proposal]");
+      if (ask) ask.click();
+    }, 250);
+    return () => window.clearTimeout(t);
+  }, [phase]);
+
   useEffect(() => {
     // Lenis is held and released by useSmoothScroll from the same phase.
     if (phase === "open") return;

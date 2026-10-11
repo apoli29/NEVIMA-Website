@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type ReactNode, type RefObject } from "react";
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { usePathname } from "next/navigation";
 import {
   motion,
@@ -9,6 +9,7 @@ import {
   useScroll,
   type MotionValue,
 } from "motion/react";
+import { useProposal } from "./proposal-flow";
 
 /* ==================================================================
    The bar is a black, square-cornered strip floating clear of the page
@@ -21,9 +22,9 @@ import {
    ================================================================== */
 
 const NAV = [
-  { label: "Work", href: "#work" },
-  { label: "Services", href: "#services" },
-  { label: "Studio", href: "/about" },
+  { label: "Home", href: "#top" },
+  { label: "Portfolio", href: "/portfolio" },
+  { label: "About nevima", href: "/about" },
 ];
 
 /** A link to a section of the home page, from wherever the bar is: off the
@@ -64,6 +65,67 @@ function Pass({
   );
 }
 
+
+/* ==================================================================
+   "Get your free proposal", the bar's one thing to press (user,
+   2026-10-11; it was "Get in touch"). On the home page it opens the
+   free-proposal form, grown out of this button as the How we work
+   buttons grow it, and the button keeps its place unseen while the form
+   is out. Anywhere else it goes to the home page asking for the form
+   (#proposal), and the home page opens it as soon as it can.
+   ================================================================== */
+
+const ASK_CLASS = "cta-drop cta-drop-light inline-flex items-center justify-center whitespace-nowrap text-[0.9375rem] leading-none";
+
+function AskLabel() {
+  return (
+    <span className="btn-neu-face">
+      {/* In full from lg; below it the bar has no room for it beside
+          the links, so it says the short of it. */}
+      <span className="max-lg:hidden">Get your free proposal</span>
+      <span className="lg:hidden">Free proposal</span>
+      <span aria-hidden="true" className="ml-2.5 inline-block">
+        &rarr;
+      </span>
+    </span>
+  );
+}
+
+function ProposalAsk() {
+  const proposal = useProposal();
+  const button = useRef<HTMLButtonElement>(null);
+  const [launched, setLaunched] = useState(false);
+  const present = proposal?.present ?? false;
+  useEffect(() => {
+    if (!present) setLaunched(false);
+  }, [present]);
+
+  if (!proposal) {
+    return (
+      <a href="/#proposal" className={`relative isolate ${ASK_CLASS}`}>
+        <AskLabel />
+      </a>
+    );
+  }
+  return (
+    <button
+      ref={button}
+      type="button"
+      data-nav-proposal
+      aria-haspopup="dialog"
+      aria-expanded={launched && proposal.open}
+      onClick={() => {
+        if (!button.current) return;
+        setLaunched(true);
+        proposal.show(button.current, button.current, false);
+      }}
+      className={`relative isolate ${ASK_CLASS}`}
+      style={{ visibility: launched && present ? "hidden" : undefined }}
+    >
+      <AskLabel />
+    </button>
+  );
+}
 
 /* ================================================================== */
 
@@ -160,7 +222,7 @@ export function FloatingNav({
                     <span className="nav-link-label">{item.label}</span>
                   </>
                 }
-                className="nav-link hidden border-l border-paper/15 px-5 text-[0.9375rem] text-paper sm:inline-flex lg:px-6"
+                className="nav-link hidden border-l border-paper/15 px-4 text-[0.9375rem] text-paper sm:inline-flex lg:px-6"
               />
             ))}
             {/* The one thing to press: a white drop (see .cta-drop), in a cell
@@ -168,18 +230,7 @@ export function FloatingNav({
                 bar, so the drop, taller than the words beside it, sets the
                 bar's height. */}
             <span className="flex items-center border-paper/15 py-2.5 sm:border-l sm:pl-4 md:py-[0.8125rem] md:pl-5">
-              <Pass
-                href="#contact"
-                label={
-                  <>
-                    Get in touch
-                    <span aria-hidden="true" className="ml-2.5 inline-block">
-                      &rarr;
-                    </span>
-                  </>
-                }
-                className="cta-drop cta-drop-light inline-flex text-[0.9375rem] leading-none"
-              />
+              <ProposalAsk />
             </span>
           </motion.nav>
         </div>

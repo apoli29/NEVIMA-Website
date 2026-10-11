@@ -50,8 +50,8 @@ export function ProjectPage({ project, framable }: { project: Project; framable:
       <main id="top" className="relative bg-paper pt-[calc(var(--section-gap)+2.5rem)] pb-28 md:pb-40">
         <article aria-labelledby="project-title" className="shell">
           <SlideIn ready distance={0}>
-            <Link href="/services/web-design#work" className="mono-label wk-back text-ash-2">
-              Back to web design
+            <Link href="/" className="mono-label wk-back text-ash-2">
+              Back to home
             </Link>
           </SlideIn>
           <SlideIn ready>
