@@ -353,13 +353,23 @@ export function JellyField({
   arriveDelay = 0,
   covered = false,
   flood = 1,
+  split = false,
 }: {
   /** How many times their usual size the drops are drawn. Above 1 the
       water is flooded (the portfolio, user 2026-10-11: the drops so big
       that the white between them becomes the shapes): they are spread
       over the whole screen, overlapping and running off its edges, and
-      keep clear of nothing. Read once, when the field is first laid. */
+      keep clear of nothing. Below 1 they are simply drawn smaller and
+      laid out as usual, their light, gloss and shadow scaled with them
+      (the portfolio, where they share the screen with the black strip).
+      Read once, when the field is first laid. */
   flood?: number;
+  /** The drops shared out in turn between the water above the first
+      [data-jelly-quiet] block and the water below it, rather than each
+      simply going where it finds the most room, which with two even
+      bands of water put every drop in one of them (the portfolio, user:
+      drops both above and below the strip). Read once, as `flood`. */
+  split?: boolean;
   className?: string;
   /** Something opaque has been drawn over the whole field (the sections
       that close over the second screen): it is on the screen but cannot
@@ -374,6 +384,7 @@ export function JellyField({
   const reduce = useReducedMotion() ?? false;
   const canvas = useRef<HTMLCanvasElement>(null);
   const floodAt = useRef(flood);
+  const splitAt = useRef(split);
   const coveredRef = useRef(covered);
   const wakeRef = useRef<() => void>(() => {});
   useEffect(() => {
@@ -729,12 +740,27 @@ export function JellyField({
       const next: { x: number; y: number }[] = [];
       const placed: number[] = [];
       const step = Math.max(8, Math.round(side / 70));
+      // Shared out, the biggest drop goes below the block, the next above,
+      // and so on in turn.
+      const band = splitAt.current ? quiet[0] : undefined;
+      let turn = 0;
       for (const i of order) {
         let best: { x: number; y: number } | null = null;
         let bestGap = -Infinity;
+        const above = band ? turn++ % 2 === 1 : null;
         for (let y = top; y <= h; y += step) {
+          if (band && (above ? y >= band.top : y <= band.bottom)) continue;
           for (let x = 0; x <= w; x += step) {
-            const gap = openAt(i, x, y, placed, next);
+            let gap = openAt(i, x, y, placed, next);
+            // In a narrow band most spots are as open as each other (the
+            // band, not the other drops, sets the gap), and the first of
+            // them would win, packing the drops in from the left: shared
+            // out, a tie goes to the spot furthest from the drops down.
+            if (band && gap > -Infinity) {
+              let far = Infinity;
+              for (const j of placed) far = Math.min(far, Math.hypot(x - next[j].x, y - next[j].y));
+              if (far < Infinity) gap += far * 0.01;
+            }
             if (gap > bestGap) {
               bestGap = gap;
               best = { x, y };

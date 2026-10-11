@@ -33,6 +33,10 @@ import { PROJECTS, STATUS_LABEL, shown, type Project } from "@/lib/work";
    ================================================================== */
 
 
+/** The drops' size here, against the home page's: smaller, so there is
+    room for them both over and under the strip (user). */
+const DROP_SCALE = 0.48;
+
 export function Portfolio() {
   const [open, setOpen] = useState<{ project: Project; from: HTMLElement } | null>(null);
   useSmoothScroll(open !== null);
@@ -48,10 +52,11 @@ export function Portfolio() {
             className="relative h-[100svh] min-h-[40rem] overflow-hidden bg-paper"
           >
             <div className="absolute inset-0 z-0" aria-hidden="true">
-              {/* The home page's water as it is there (user): the same
-                  drops, the same size, landing one by one as the page
-                  opens. Held still while the large card covers it. */}
-              <JellyField arrive arriveDelay={0.15} covered={open !== null} />
+              {/* The home page's water (user): the same drops, landing one
+                  by one as the page opens, drawn smaller and shared out
+                  between the water above the strip and below it. Held still while the large card
+                  covers it. */}
+              <JellyField arrive arriveDelay={0.15} covered={open !== null} flood={DROP_SCALE} split />
             </div>
             <div className="pointer-events-none absolute inset-0 z-10">
               <div className="shell flex h-full flex-col">
@@ -61,7 +66,7 @@ export function Portfolio() {
                   Portfolio
                 </h1>
 
-                <div className="flex min-h-0 flex-1 items-start justify-center pt-[5.75rem] md:items-end md:pt-0 md:pb-[5svh]">
+                <div className="flex min-h-0 flex-1 items-center justify-center pt-[5rem] md:pt-[5.5rem]">
                   <Fan
                     hidden={open?.project.slug ?? null}
                     onOpen={(project, from) => setOpen({ project, from })}
