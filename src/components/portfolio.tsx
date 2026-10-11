@@ -14,15 +14,13 @@ import { PROJECTS, STATUS_LABEL, shown, type Project } from "@/lib/work";
 
    A gallery wall, not a dashboard (user, 2026-10-11: less tech, more the
    curation of a creative agency and a gallery). Of the home page's
-   second screen only its water is kept, and flooded: the drops so large
-   they meet and run off the edges, so the white left between them reads
-   as the shapes afloat. Nothing else of that screen comes with it.
+   second screen only its water is kept, as it is there: the same drops,
+   landing as the page opens. Nothing else of that screen comes with it.
 
-   On the water, a wall label (what the room is) and the work hung as
-   prints: each photo behind a white mat, its name and state set on the
-   mat below it, the two crossed as a hand of cards (the user's
-   reference). Pointed at, a print straightens, rises and comes forward
-   while the other leans away and darkens.
+   Across the water runs a black strip, the room the carousel moves
+   through, and on it the work hangs as prints: each photo on a white
+   mat, the website's name and state set on the mat under it. Pointed
+   at, a print rises a little while the others step back.
 
    Pressed, the print's photo is carried to the left of a large card in
    the middle of the screen, the page under frosted glass, and the card
@@ -34,8 +32,6 @@ import { PROJECTS, STATUS_LABEL, shown, type Project } from "@/lib/work";
    every field the studio has not given reads as TO_FILL.
    ================================================================== */
 
-/** How much bigger than on the home page the drops are drawn here. */
-const FLOOD = 3.6;
 
 export function Portfolio() {
   const [open, setOpen] = useState<{ project: Project; from: HTMLElement } | null>(null);
@@ -52,23 +48,20 @@ export function Portfolio() {
             className="relative h-[100svh] min-h-[40rem] overflow-hidden bg-paper"
           >
             <div className="absolute inset-0 z-0" aria-hidden="true">
-              {/* Held still while the large card covers it. */}
-              <JellyField flood={FLOOD} covered={open !== null} />
+              {/* The home page's water as it is there (user): the same
+                  drops, the same size, landing one by one as the page
+                  opens. Held still while the large card covers it. */}
+              <JellyField arrive arriveDelay={0.15} covered={open !== null} />
             </div>
-            <div className="pointer-events-none absolute inset-0 z-10 pt-[6.5rem] pb-8 md:pt-[8rem] md:pb-12">
+            <div className="pointer-events-none absolute inset-0 z-10">
               <div className="shell flex h-full flex-col">
-                {/* The wall label: what this room is. */}
-                <div className="fo-label pointer-events-auto">
-                  <h1 id="portfolio-title" className="fo-label-title">
-                    Portfolio
-                  </h1>
-                  <p className="fo-label-line">Selected work</p>
-                  <p className="fo-label-note">
-                    Two projects so far, one live and one in production. Choose one to see it up close.
-                  </p>
-                </div>
+                {/* The page's name, for those who hear it; on screen the
+                    work speaks for itself (user: no label box). */}
+                <h1 id="portfolio-title" className="sr-only">
+                  Portfolio
+                </h1>
 
-                <div className="flex min-h-0 flex-1 items-center justify-center py-6">
+                <div className="flex min-h-0 flex-1 items-start justify-center pt-[5.75rem] md:items-end md:pt-0 md:pb-[5svh]">
                   <Fan
                     hidden={open?.project.slug ?? null}
                     onOpen={(project, from) => setOpen({ project, from })}
@@ -142,6 +135,9 @@ function Fan({
       <div
         ref={track}
         data-lenis-prevent
+        // The drops keep clear of the strip, as they do of the home
+        // page's words, and live in the water above and below it.
+        data-jelly-quiet
         className="fo-row"
         data-active={active ?? undefined}
         data-scrolls={overflow.left || overflow.right ? "" : undefined}
@@ -166,15 +162,17 @@ function Fan({
             <span className="fo-window">
               <Photo project={project} />
             </span>
-            {/* Its name and state, over the foot of the photo. */}
+            {/* Its name and state on the mat, under the photo. */}
             <span className="fo-cap">
-              <span className="fo-cap-name">{project.name}</span>
-              <span className="fo-cap-meta">{STATUS_LABEL[project.status]}</span>
-            </span>
-            <span aria-hidden="true" className="fo-cap-arrow">
-              <svg viewBox="0 0 16 16" width="16" height="16" fill="none" className="block">
-                <path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.25" />
-              </svg>
+              <span className="fo-cap-text">
+                <span className="fo-cap-name">{project.name}</span>
+                <span className="fo-cap-meta">{STATUS_LABEL[project.status]}</span>
+              </span>
+              <span aria-hidden="true" className="fo-cap-arrow">
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="none" className="block">
+                  <path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.25" />
+                </svg>
+              </span>
             </span>
           </button>
         ))}
