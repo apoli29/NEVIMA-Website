@@ -10,7 +10,7 @@ The original brief is imported below. Parts of it were written before the build 
 - Titles are set in Satoshi (self-hosted in `fonts/Satoshi/`, via `--f-title`); mono labels in Geist Mono (`--font-mono`, `.mono-label`).
 - The default branch is `main`. Work on a branch and merge back through a pull request.
 - Always finish a round of changes by opening that pull request and merging it into `main` yourself, so Vercel deploys it: the user reviews the work on the deployed site, not on branch previews.
-- The full history of homepage decisions, section by section, is in `docs/homepage-decisions.md`; the about page's is in `docs/about-decisions.md`; the web design page's and the work pages' in `docs/web-design-decisions.md`. Read the part about a section before changing it.
+- The full history of homepage decisions, section by section, is in `docs/homepage-decisions.md`; the about page's is in `docs/about-decisions.md`; the web design page's, the work pages' and the portfolio's in `docs/web-design-decisions.md`. Read the part about a section before changing it.
 
 ## Working with the user
 
@@ -35,7 +35,7 @@ The original brief is imported below. Parts of it were written before the build 
 
 - `AeroShards.jsx` is vendored third-party code with props the user supplied verbatim. Do not edit it or its prop values.
 - Old, unused section components stay in `src/components/`. Ask before removing any of them.
-- The bar's links are Home / Portfolio / About nevima, and its one button is "Get your free proposal", which opens the free-proposal form (user, 2026-10-11). `/portfolio` redirects to the first case study (`next.config.ts`) until the portfolio page is built.
+- The bar's links are Home / Portfolio / About nevima, and its one button is "Get your free proposal", which opens the free-proposal form (user, 2026-10-11). Portfolio is its own page (`/portfolio`, `portfolio.tsx`).
 - Lenis owns the scroll lock through `useSmoothScroll(locked)` in `src/components/smooth-scroll.ts`. Do not move `stop()`/`start()` back into callers.
 - Any Motion `layout` element below the opening must carry `layoutDependency`, or the jump when the opening releases the page gets animated.
 - No numbers on titles. No boomerang pass on CTAs. No inner highlight inside the drop-shaped CTAs. Pixel looks are modern, never retro/CRT.

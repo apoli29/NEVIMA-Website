@@ -158,9 +158,14 @@ export function Services({ ready }: { ready: boolean }) {
               />
             ))}
           </ol>
-        </div>
 
-        <PortfolioCall />
+          {/* Hung straight from the list's last row, in its column, so the
+              two read as one: the list opens on the inked Web Design row
+              and closes on this (user: tie it to the services). */}
+          <div className="col-span-12 lg:col-span-7 lg:col-start-6">
+            <PortfolioCall />
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -169,17 +174,18 @@ export function Services({ ready }: { ready: boolean }) {
 /* ==================================================================
    The way to the portfolio: the section's one call to see the work
    (user, 2026-10-11: one call, hard to miss, in place of the web
-   design page's own). The index's inked ask grown to the shell's
-   width: a black band with the light passing over it on its slow
-   clock, the words large, an arrow in a ring that fills on pointing.
+   design page's own), closing the list as the inked Web Design row
+   opens it: a black band reaching past the list as that row does, the
+   light passing over it on its slow clock, the words large, an arrow in
+   a ring standing where the rows' toggles stand.
    ================================================================== */
 
 function PortfolioCall() {
   return (
-    <a href="/portfolio" className="svc-folio group mt-14 md:mt-20">
+    <a href="/portfolio" className="svc-folio group">
       <span className="min-w-0">
         <span className="mono-label block text-paper/60">Portfolio</span>
-        <span className="svc-folio-name display mt-3 block text-[clamp(2.25rem,5vw,4.5rem)] leading-[0.95] font-medium tracking-[-0.035em] md:mt-4">
+        <span className="svc-folio-name display mt-3 block text-[clamp(2rem,3.6vw,3.5rem)] leading-[0.95] font-medium tracking-[-0.035em] md:mt-4">
           See our work.
         </span>
       </span>
