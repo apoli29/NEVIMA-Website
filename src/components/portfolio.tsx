@@ -478,20 +478,34 @@ function Detail({
           {/* A few lines, never long ones (user: no more than five or six). */}
           <p className="fo-about mt-7 md:mt-8">{shown(project.about)}</p>
 
-          <div className="mt-auto flex flex-wrap items-center gap-x-6 gap-y-3 pt-8">
+          <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-3 pt-8">
+            {/* The live site, in a new tab; a site still being made has none. */}
+            {project.status === "live" && project.url && (
+              <a
+                href={project.url}
+                target="_blank"
+                rel="noopener"
+                className="cta-drop ml-[0.85em] inline-flex text-[1rem] leading-none"
+              >
+                <span className="btn-neu-face">
+                  Go to the website
+                  <span aria-hidden="true" className="ml-2.5 inline-block">
+                    ↗
+                  </span>
+                </span>
+              </a>
+            )}
             {project.report ? (
-              <a href={project.report} className="cta-drop ml-[0.85em] inline-flex text-[1rem] leading-none">
+              <a href={project.report} className="cta-drop cta-drop-light ml-[0.85em] inline-flex text-[1rem] leading-none">
                 <span className="btn-neu-face">View the full project report</span>
               </a>
             ) : (
-              <>
-                <span aria-disabled="true" className="cta-drop wk-rest ml-[0.85em] inline-flex text-[1rem] leading-none">
-                  <span className="btn-neu-face">View the full project report</span>
-                </span>
-                <span className="fo-kicker">Full report coming soon</span>
-              </>
+              <span aria-disabled="true" className="cta-drop cta-drop-light wk-rest ml-[0.85em] inline-flex text-[1rem] leading-none">
+                <span className="btn-neu-face">View the full project report</span>
+              </span>
             )}
           </div>
+          {!project.report && <p className="fo-kicker mt-3">Full report coming soon</p>}
           <p className="fo-credit mt-6">Photo: {project.photo.credit}, a stand-in</p>
         </div>
       </div>

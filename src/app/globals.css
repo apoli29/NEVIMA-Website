@@ -2409,23 +2409,31 @@
     align-items: center;
     width: 100%;
   }
+  /* The carousel's room (user): a black strip from one side of the
+     screen to the other, standing taller than the cards, so the space
+     the work moves through is drawn even while there are only two.
+     The strip is the scroller itself. */
   .fo-row {
-    --pf-w: clamp(15rem, 22vw, 21rem);
+    --pf-w: clamp(15rem, 21vw, 20rem);
+    --fo-strip: clamp(1.75rem, 3.2vw, 3rem);
     display: flex;
     gap: clamp(1rem, 2vw, 1.75rem);
-    max-width: 100%;
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
     overflow-x: auto;
     scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
     scrollbar-width: none;
-    /* Room for the lift and the whole shadow inside the scroller, which
-       would otherwise cut the shadow off in a hard-edged box; the margin
-       gives the extra foot back to the layout. */
-    padding: 1.5rem 3rem 5rem;
-    margin-bottom: -3rem;
+    background: var(--color-ink);
+    padding: var(--fo-strip) var(--gutter);
   }
+  /* Centred while they fit, scrollable from the first card once they
+     do not (auto margins, unlike centring, never cut the first off). */
+  .fo-row > .fo-card:first-child { margin-left: auto; }
+  .fo-row > .fo-card:last-child { margin-right: auto; }
   .fo-row::-webkit-scrollbar { display: none; }
   @media (max-height: 820px) {
-    .fo-row { --pf-w: clamp(13rem, 33svh, 19rem); }
+    .fo-row { --pf-w: clamp(12rem, 30svh, 18rem); --fo-strip: clamp(1.25rem, 3svh, 2rem); }
   }
   .fo-card {
     position: relative;
@@ -2438,7 +2446,8 @@
     text-align: left;
     cursor: pointer;
     background: #1c1c1c;
-    box-shadow: 0 2rem 3.5rem -1.75rem rgb(0 0 0 / 0.6);
+    /* A hairline, so a dark photo still parts from the strip. */
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1);
     transition:
       transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
       box-shadow 0.6s cubic-bezier(0.22, 1, 0.36, 1),
@@ -2492,7 +2501,7 @@
   .fo-row[data-active="5"] .fo-card[data-i="5"] {
     opacity: 1;
     transform: translateY(-0.5rem);
-    box-shadow: 0 2.75rem 4rem -1.75rem rgb(0 0 0 / 0.7);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.22);
   }
   .fo-card:hover .fo-img[data-loaded],
   .fo-card:focus-visible .fo-img[data-loaded] { transform: scale(1.04); }
@@ -2500,7 +2509,7 @@
   .fo-card:focus-visible .fo-cap-arrow { transform: translateX(4px); }
   .fo-card:focus-visible { outline: 1px solid var(--color-paper); outline-offset: 5px; }
   /* The carousel's arrows, under the row, only when it scrolls. */
-  .fo-row-nav { display: flex; gap: 0.5rem; margin-top: 0.25rem; }
+  .fo-row-nav { display: flex; gap: 0.5rem; margin-top: 1rem; }
   .fo-row-nav button {
     display: grid;
     place-items: center;
@@ -2513,7 +2522,7 @@
   }
   .fo-row-nav button:disabled { opacity: 0.4; cursor: default; }
   @media (max-width: 639px) {
-    .fo-row { --pf-w: min(72vw, 17rem); padding-inline: calc((100% - var(--pf-w)) / 2); }
+    .fo-row { --pf-w: min(72vw, 17rem); padding-inline: calc((100vw - var(--pf-w)) / 2); scroll-padding-inline: 0; }
   }
   @media (prefers-reduced-motion: reduce) {
     .fo-card, .fo-window .fo-img, .fo-cap-arrow { transition: none; }
