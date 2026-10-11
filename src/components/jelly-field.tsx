@@ -197,6 +197,7 @@ uniform vec2 u_size;      // CSS pixels
 uniform float u_dpr;
 uniform float u_t;
 uniform float u_td;        // the drops' own, slower clock
+uniform float u_soft;      // how soft a drop's edge is (1 at the usual size)
 uniform vec4 u_drop[${MAX_BLOBS}];   // x, y, radius, aspect (CSS pixels)
 uniform float u_turn[${MAX_BLOBS}];
 uniform int u_drops;
@@ -303,7 +304,9 @@ void main() {
   float fd = drops(q);
   float hd = dome(fd);
   vec2 gd = vec2(dome(drops(q + vec2(d, 0.0))) - hd, dome(drops(q + vec2(0.0, d))) - hd) / d;
-  float bodyD = smoothstep(0.44, 0.56, fd);
+  // The edge's softness is a share of the drop's own size, so drops
+  // flooded far larger are given a correspondingly tighter edge.
+  float bodyD = smoothstep(0.5 - 0.06 * u_soft, 0.5 + 0.06 * u_soft, fd);
 
   // A soft shadow, thrown down and to the right.
   float shade = smoothstep(0.15, 0.9, drops(q - vec2(14.0, 20.0))) * 0.1;
@@ -345,7 +348,14 @@ export function JellyField({
   arrive,
   arriveDelay = 0,
   covered = false,
+  flood = 1,
 }: {
+  /** How many times their usual size the drops are drawn. Above 1 the
+      water is flooded (the portfolio, user 2026-10-11: the drops so big
+      that the white between them becomes the shapes): they are spread
+      over the whole screen, overlapping and running off its edges, and
+      keep clear of nothing. Read once, when the field is first laid. */
+  flood?: number;
   className?: string;
   /** Something opaque has been drawn over the whole field (the sections
       that close over the second screen): it is on the screen but cannot
@@ -359,6 +369,7 @@ export function JellyField({
 }) {
   const reduce = useReducedMotion() ?? false;
   const canvas = useRef<HTMLCanvasElement>(null);
+  const floodAt = useRef(flood);
   const coveredRef = useRef(covered);
   const wakeRef = useRef<() => void>(() => {});
   useEffect(() => {
@@ -573,10 +584,13 @@ export function JellyField({
 
     /** What the drops' sizes are shares of: the screen's shorter side,
         a tenth more on a phone. */
+    const flooded = floodAt.current > 1;
     const dropSide = () => {
       const s = Math.min(w, h);
-      return s < SMALL ? s * SMALL_GROW : s;
+      return (s < SMALL ? s * SMALL_GROW : s) * floodAt.current;
     };
+    /** Flooded, how far a drop may hang off the screen, as a share of its body. */
+    const OVERHANG = 0.4;
     /** How far drop i keeps from the words. */
     const clearance = (i: number) => DROPS[i].r * dropSide() * CLEAR_REACH + CLEAR_MARGIN;
     /** Whether a drop centred here, keeping clearance c, is too near a
@@ -600,11 +614,11 @@ export function JellyField({
     const body = (i: number) => DROPS[i].r * dropSide() * EXTENT[i];
     /** The box a drop's centre must stay in to be whole on the screen. */
     const within = (i: number, extra = 0) => {
-      const e = body(i) + EDGE_MARGIN + extra;
+      const e = flooded ? -body(i) * OVERHANG : body(i) + EDGE_MARGIN + extra;
       return { x0: e, x1: w - e, y0: e, y1: h - e };
     };
     const underBar = (x: number, i: number) =>
-      !!bar && x + body(i) > bar.left - NAV_GAP && x - body(i) < bar.right + NAV_GAP;
+      !flooded && !!bar && x + body(i) > bar.left - NAV_GAP && x - body(i) < bar.right + NAV_GAP;
 
     /** Held on the screen and clear of the floating bar. */
     const pin = (i: number, x: number, y: number, extra = 0) => {
@@ -685,7 +699,7 @@ export function JellyField({
       // do without.
       const order = Array.from({ length: n }, (_, i) => i).sort((a, b) => body(b) - body(a));
       perched = new Set();
-      const top = bar ? bar.bottom + NAV_GAP : EDGE_MARGIN;
+      const top = flooded ? 0 : bar ? bar.bottom + NAV_GAP : EDGE_MARGIN;
 
       /* How much open water there is round drop i at (x, y), as the
          narrowest of its gaps: to the edges of the screen, to the words
@@ -695,7 +709,10 @@ export function JellyField({
          the spot is not allowed at all. */
       const openAt = (i: number, x: number, y: number, others: number[], at: { x: number; y: number }[]) => {
         const r = body(i);
-        const edge = Math.min(x - r, w - x - r, y - r - top, h - y - r) - EDGE_MARGIN;
+        // Flooded, a drop may hang off the screen by a share of itself.
+        const edge = flooded
+          ? Math.min(x, w - x, y, h - y) + r * OVERHANG
+          : Math.min(x - r, w - x - r, y - r - top, h - y - r) - EDGE_MARGIN;
         if (edge < 0 || inWords(i, x, y, clearance(i), false)) return -Infinity;
         let gap = edge * 1.6;
         for (const b of wordsFor(i)) gap = Math.min(gap, toBox(b, x, y) - r);
@@ -904,7 +921,8 @@ export function JellyField({
 
     const dropData = new Float32Array(MAX_BLOBS * 4);
     const turnData = new Float32Array(MAX_BLOBS);
-    const count = () => (Math.min(w, h) < SMALL ? 6 : 11);
+    // Flooded, a phone gets as many drops as any screen, or the white wins.
+    const count = () => (Math.min(w, h) < SMALL && floodAt.current <= 1 ? 6 : 11);
     const placeDrops = (now: number) => {
       const side = dropSide();
       let blobs = 0;
@@ -985,6 +1003,7 @@ export function JellyField({
       gl.uniform1f(u("u_dpr"), dpr);
       gl.uniform1f(u("u_t"), seconds);
       gl.uniform1f(u("u_td"), seconds * DROP_PACE);
+      gl.uniform1f(u("u_soft"), 1 / floodAt.current);
       gl.uniform4fv(u("u_drop"), dropData);
       gl.uniform1fv(u("u_turn"), turnData);
       gl.uniform1i(u("u_drops"), n);

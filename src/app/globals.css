@@ -2360,34 +2360,96 @@
 /* ==================================================================
    The portfolio (portfolio.tsx)
 
-   The work as a hand of cards, fanned out in the middle of the water;
-   pointed at, a card straightens, rises and comes forward while the
-   other leans away and darkens. Opened, a card grows into a large card
-   over frosted glass, its photo drawing back to the left.
+   A gallery wall on flooded water: a white wall label, and the work hung
+   as prints, each photo behind a white mat with its name set on the mat
+   below, the two crossed. Pointed at, a print straightens, rises and
+   comes forward while the other leans away and darkens. Opened, the
+   photo is carried to the left of a large white card, which opens out
+   from behind it. Set in the titles' face throughout: no mono labels
+   here (user: less tech, more gallery).
    ================================================================== */
 @layer components {
+  /* The wall label: white, small, close to the top left, as a gallery
+     hangs one by the door. */
+  .fo-label {
+    width: fit-content;
+    max-width: min(20rem, 100%);
+    padding: 1rem 1.15rem 1.05rem;
+    background: var(--color-paper);
+    box-shadow: 0 1rem 2.5rem -1.5rem rgb(0 0 0 / 0.45);
+  }
+  .fo-label-title {
+    font-family: var(--font-title);
+    font-size: 1.375rem;
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
+  }
+  .fo-label-line {
+    margin-top: 0.2rem;
+    font-size: 0.9375rem;
+    color: var(--color-ash);
+  }
+  .fo-label-note {
+    margin-top: 0.85rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgb(0 0 0 / 0.12);
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: var(--color-ash);
+  }
+
+  /* The prints, both in one place, crossed. */
   .fo-fan {
-    --pf-w: clamp(10.5rem, 17vw, 16.5rem);
-    position: relative;
-    width: calc(var(--pf-w) * 2.05);
-    height: calc(var(--pf-w) * 1.45);
+    --pf-w: clamp(11rem, 17vw, 16.5rem);
+    display: grid;
+    place-items: center;
   }
   @media (max-height: 760px) {
-    .fo-fan { --pf-w: clamp(9.5rem, 26svh, 15rem); }
+    .fo-fan { --pf-w: clamp(9.5rem, 24svh, 15rem); }
   }
   .fo-card {
-    position: absolute;
-    left: 50%;
-    top: 50%;
+    grid-area: 1 / 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
     width: var(--pf-w);
-    aspect-ratio: 3 / 4;
-    margin: calc(var(--pf-w) * -0.6667) 0 0 calc(var(--pf-w) * -0.5);
-    padding: 0;
+    padding: calc(var(--pf-w) * 0.07) calc(var(--pf-w) * 0.07) 0;
+    background: var(--color-paper);
+    text-align: left;
     cursor: pointer;
-    box-shadow: 0 1.75rem 3rem -1.5rem rgb(0 0 0 / 0.45);
+    box-shadow:
+      0 0 0 1px rgb(0 0 0 / 0.06),
+      0 1.75rem 3.25rem -1.5rem rgb(0 0 0 / 0.55);
     transition:
       transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 0.65s ease;
+      box-shadow 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* The photo's window in the mat, at a card's 3:4. */
+  .fo-window {
+    position: relative;
+    display: block;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+  }
+  /* The mat below it carries the name and the state. */
+  .fo-cap {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: calc(var(--pf-w) * 0.055) 0 calc(var(--pf-w) * 0.07);
+  }
+  .fo-cap-name {
+    font-family: var(--font-title);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--color-ink);
+  }
+  .fo-cap-meta {
+    font-size: 0.75rem;
+    color: var(--color-ash);
   }
   /* At rest: crossed, the right one over the left. */
   .fo-card[data-i="0"] { z-index: 1; transform: translate(-34%, 2%) rotate(-7deg); }
@@ -2397,13 +2459,17 @@
   .fo-fan[data-active="0"] .fo-card[data-i="0"] {
     z-index: 3;
     transform: translate(-38%, -6%) rotate(-1.5deg) scale(1.05);
-    box-shadow: 0 2.5rem 4rem -1.75rem rgb(0 0 0 / 0.55);
+    box-shadow:
+      0 0 0 1px rgb(0 0 0 / 0.06),
+      0 2.5rem 4rem -1.75rem rgb(0 0 0 / 0.6);
   }
   .fo-fan[data-active="0"] .fo-card[data-i="1"] { transform: translate(44%, 3%) rotate(10deg) scale(0.95); }
   .fo-fan[data-active="1"] .fo-card[data-i="1"] {
     z-index: 3;
     transform: translate(38%, -6%) rotate(1.5deg) scale(1.05);
-    box-shadow: 0 2.5rem 4rem -1.75rem rgb(0 0 0 / 0.55);
+    box-shadow:
+      0 0 0 1px rgb(0 0 0 / 0.06),
+      0 2.5rem 4rem -1.75rem rgb(0 0 0 / 0.6);
   }
   .fo-fan[data-active="1"] .fo-card[data-i="0"] { transform: translate(-44%, 3%) rotate(-10deg) scale(0.95); }
   /* The one left behind darkens. */
@@ -2411,42 +2477,17 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: rgb(0 0 0 / 0.42);
+    background: rgb(0 0 0 / 0.4);
     opacity: 0;
     transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
     pointer-events: none;
   }
-  /* Each card's name, shown only where nothing can point at it. */
-  .fo-card-tag {
-    position: absolute;
-    left: 0.6rem;
-    bottom: 0.6rem;
-    z-index: 1;
-    display: none;
-  }
-  @media (hover: none) {
-    .fo-card-tag { display: block; }
-    /* The tag names it; the name under the photo would say it twice. */
-    .fo-card .fo-photo-name { display: none; }
-  }
-  /* A photo fades in once it has come. */
-  .fo-img { opacity: 0; transition: opacity 0.4s ease-out; }
-  .fo-img[data-loaded] { opacity: 1; }
-  /* Close: a comfortable target, the words where they were. */
-  .fo-close {
-    display: inline-flex;
-    align-items: center;
-    min-height: 2.75rem;
-    margin: -0.75rem -0.5rem -0.75rem 0;
-    padding: 0 0.5rem;
-  }
-  .fo-fan[data-active] .fo-card:not(:hover):not(:focus-visible)::after { opacity: 1; }
-  .fo-fan[data-active="0"] .fo-card[data-i="0"]::after,
-  .fo-fan[data-active="1"] .fo-card[data-i="1"]::after { opacity: 0; }
-  .fo-card:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 6px; }
+  .fo-fan[data-active="0"] .fo-card[data-i="1"]::after,
+  .fo-fan[data-active="1"] .fo-card[data-i="0"]::after { opacity: 1; }
+  .fo-card:focus-visible { outline: 1px solid var(--color-paper); outline-offset: 6px; }
   /* Phones: no pointer to point with, so side by side, barely turned. */
   @media (max-width: 639px) {
-    .fo-fan { --pf-w: min(42vw, 11rem); width: calc(var(--pf-w) * 2.15); }
+    .fo-fan { --pf-w: min(41vw, 11rem); }
     .fo-card[data-i="0"] { transform: translate(-53%, 2%) rotate(-4deg); }
     .fo-card[data-i="1"] { transform: translate(53%, -2%) rotate(4deg); }
   }
@@ -2461,43 +2502,30 @@
     display: flex;
     align-items: flex-end;
     overflow: hidden;
-    background: var(--color-ink);
+    background: #1c1c1c;
   }
-  .fo-photo-name {
-    padding: 1rem;
-    color: var(--color-paper);
-    font-size: 1.5rem;
-    line-height: 1;
-    text-align: left;
-  }
-
-  .fo-caption {
-    display: flex;
-    gap: 0.9rem;
-    margin-top: 1.75rem;
-    min-height: 1.45em;
-  }
+  .fo-img { opacity: 0; transition: opacity 0.4s ease-out; }
+  .fo-img[data-loaded] { opacity: 1; }
 
   /* The large card. */
   .fo-glass {
     position: absolute;
     inset: 0;
-    background: rgb(255 255 255 / 0.7);
+    background: rgb(255 255 255 / 0.62);
     -webkit-backdrop-filter: blur(22px) saturate(1.05);
     backdrop-filter: blur(22px) saturate(1.05);
   }
-  /* The large card's place: nothing of its own is drawn here; its paper
-     and edge are the frame, opened out once the photo has landed. */
   .fo-shell { position: absolute; }
   .fo-frame {
     position: absolute;
     inset: 0;
     background: var(--color-paper);
-    border: 1px solid var(--color-ink);
-    box-shadow: 0 2.5rem 5rem -2.5rem rgb(0 0 0 / 0.4);
+    box-shadow:
+      0 0 0 1px rgb(0 0 0 / 0.08),
+      0 2.5rem 5rem -2.5rem rgb(0 0 0 / 0.45);
   }
   /* The photo column, a card of the large card's height (3:4), so the
-     card flown into it only has to scale evenly. */
+     photo carried into it only has to scale evenly. */
   .fo-shell-photo {
     position: absolute;
     left: 0;
@@ -2517,27 +2545,48 @@
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    padding: 1.75rem 2rem 1.5rem;
+    padding: 1.75rem 2.25rem 1.5rem;
   }
-  /* Its parts keep their size; the body scrolls instead (the clamped
-     text collapsed to nothing when the card was short). */
   .fo-shell-body > * { flex-shrink: 0; }
-  .fo-shell[data-phone] .fo-frame { border: 0; box-shadow: none; }
+  .fo-shell[data-phone] .fo-frame { box-shadow: none; }
   .fo-shell[data-phone] .fo-shell-photo { width: 100%; height: 38%; }
   .fo-shell[data-phone] .fo-shell-body { top: 38%; left: 0; padding: 1.25rem var(--gutter) 1.5rem; }
-  /* The grid three to a row where the card is wide enough. */
-  .fo-specs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .fo-specs .wk-spec:nth-child(even) { padding-left: 0; border-left: 0; }
-  .fo-specs .wk-spec:not(:nth-child(3n + 1)) {
-    padding-left: 0.875rem;
-    border-left: 1px solid rgb(0 0 0 / 0.15);
+  .fo-kicker {
+    font-size: 0.875rem;
+    color: var(--color-ash);
+  }
+  /* Close: a comfortable target, the words where they were. */
+  .fo-close {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    margin: -0.75rem -0.5rem -0.75rem 0;
+    padding: 0 0.5rem;
+    font-size: 0.875rem;
+    color: var(--color-ash);
+    transition: color 0.25s ease;
+  }
+  .fo-close:hover { color: var(--color-ink); }
+  /* What the project is: a catalogue entry's particulars, three to a row. */
+  .fo-specs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 1.25rem;
+    row-gap: 1.1rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid rgb(0 0 0 / 0.14);
+  }
+  .fo-spec dt {
+    font-size: 0.8125rem;
+    color: var(--color-ash);
+  }
+  .fo-spec dd {
+    margin-top: 0.2rem;
+    font-size: 0.9375rem;
+    color: var(--color-ink);
+    overflow-wrap: anywhere;
   }
   .fo-shell[data-phone] .fo-specs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .fo-shell[data-phone] .fo-specs .wk-spec { padding-left: 0; border-left: 0; }
-  .fo-shell[data-phone] .fo-specs .wk-spec:nth-child(even) {
-    padding-left: 0.875rem;
-    border-left: 1px solid rgb(0 0 0 / 0.15);
-  }
   /* Five or six lines at most, never long ones. */
   .fo-about {
     max-width: 46ch;
@@ -2548,5 +2597,9 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 6;
     overflow: hidden;
+  }
+  .fo-credit {
+    font-size: 0.75rem;
+    color: var(--color-ash);
   }
 }
