@@ -1,43 +1,44 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { motion, useAnimate, useReducedMotion } from "motion/react";
+import { useAnimate, useReducedMotion } from "motion/react";
 import { FloatingNav } from "./floating-nav";
 import { Footer } from "./footer";
-import { useInkAlign } from "./ink-align";
 import { JellyField } from "./jelly-field";
 import { useSmoothScroll } from "./smooth-scroll";
-import { Readouts, WallRule } from "./statement-screen";
 import { PROJECTS, STATUS_LABEL, shown, type Project } from "@/lib/work";
 
 /* ==================================================================
    The portfolio
 
-   One screen, set as the home page's second screen is (user: its ground
-   replicated precisely): the water with its drops, the title top left,
-   a line top right, the readouts along the foot under a black rule. In
-   the middle, the work as a hand of cards fanned out (after the user's
-   reference): two for now, crossed. Pointed at, a card straightens,
-   rises and comes to the front while the other leans away and darkens.
+   A gallery wall, not a dashboard (user, 2026-10-11: less tech, more the
+   curation of a creative agency and a gallery). Of the home page's
+   second screen only its water is kept, and flooded: the drops so large
+   they meet and run off the edges, so the white left between them reads
+   as the shapes afloat. Nothing else of that screen comes with it.
 
-   Pressed, the card grows out of its place into a large card in the
-   middle of the screen, the page under frosted glass, the same way the
-   free-proposal form opens: its photo first, filling it, then drawing
-   back to the left to make room for what the project is (a grid of
-   fields), a few lines about the website and the way to its full
-   report. Close, Esc or a click on the glass sends it back.
+   On the water, a wall label (what the room is) and the work hung as
+   prints: each photo behind a white mat, its name and state set on the
+   mat below it, the two crossed as a hand of cards (the user's
+   reference). Pointed at, a print straightens, rises and comes forward
+   while the other leans away and darkens.
+
+   Pressed, the print's photo is carried to the left of a large card in
+   the middle of the screen, the page under frosted glass, and the card
+   opens out from behind it: what the project is, a few lines about the
+   website and the way to its full report. Close, Esc or a click on the
+   glass sends it back.
 
    The photos are stand-ins (user: "fotos imaginárias", to be changed);
    every field the studio has not given reads as TO_FILL.
    ================================================================== */
 
+/** How much bigger than on the home page the drops are drawn here. */
+const FLOOD = 4.4;
 
 export function Portfolio() {
   const [open, setOpen] = useState<{ project: Project; from: HTMLElement } | null>(null);
   useSmoothScroll(open !== null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const subRef = useRef<HTMLParagraphElement>(null);
-  useInkAlign(titleRef, subRef);
 
   return (
     <>
@@ -51,28 +52,18 @@ export function Portfolio() {
           >
             <div className="absolute inset-0 z-0" aria-hidden="true">
               {/* Held still while the large card covers it. */}
-              <JellyField covered={open !== null} />
+              <JellyField flood={FLOOD} covered={open !== null} />
             </div>
-            <div className="pointer-events-none absolute inset-0 z-10 pt-[7.25rem] pb-[clamp(1.25rem,3.5svh,2.75rem)] md:pt-[clamp(8.5rem,17svh,10rem)]">
+            <div className="pointer-events-none absolute inset-0 z-10 pt-[6.5rem] pb-8 md:pt-[8rem] md:pb-12">
               <div className="shell flex h-full flex-col">
-                <div className="flex flex-wrap items-start justify-between gap-x-16 gap-y-4">
-                  <h1
-                    ref={titleRef}
-                    id="portfolio-title"
-                    data-jelly-quiet
-                    className="display h1 trim-cap pointer-events-auto w-fit max-w-full shrink-0 text-ink"
-                  >
-                    <span className="block font-light">Portfolio.</span>
-                    <span className="block font-medium">Our work, case by case.</span>
+                {/* The wall label: what this room is. */}
+                <div className="fo-label pointer-events-auto">
+                  <h1 id="portfolio-title" className="fo-label-title">
+                    Portfolio
                   </h1>
-                  <p
-                    ref={subRef}
-                    data-jelly-quiet
-                    data-jelly-wide
-                    className="lede trim-cap pointer-events-auto ml-auto max-w-[24rem] text-right text-[1.0625rem] leading-[1.3] text-ash md:text-[clamp(1.125rem,min(1.45vw,2.4svh),1.375rem)]"
-                  >
-                    <span className="block">Two projects so far, one live and one in production.</span>
-                    <span className="block font-medium">Pick one to see what we made.</span>
+                  <p className="fo-label-line">Selected work</p>
+                  <p className="fo-label-note">
+                    Two projects so far, one live and one in production. Choose one to see it up close.
                   </p>
                 </div>
 
@@ -82,9 +73,6 @@ export function Portfolio() {
                     onOpen={(project, from) => setOpen({ project, from })}
                   />
                 </div>
-
-                <WallRule settled delay={0.2} className="mb-3 md:mb-4" />
-                <Readouts settled />
               </div>
             </div>
           </section>
@@ -108,82 +96,62 @@ export function Portfolio() {
   );
 }
 
-/* --- the hand of cards -------------------------------------------------- */
+/* --- the prints ------------------------------------------------------------ */
 
 function Fan({
   hidden,
   onOpen,
 }: {
-  /** the card that is out, kept in its place but unseen */
+  /** the print that is out, kept in its place but unseen */
   hidden: string | null;
   onOpen: (project: Project, from: HTMLElement) => void;
 }) {
   const [active, setActive] = useState<number | null>(null);
-  const shownProject = active === null ? null : PROJECTS[active];
 
   return (
-    <div data-jelly-quiet className="pointer-events-auto flex flex-col items-center">
-      <div
-        className="fo-fan"
-        data-active={active ?? undefined}
-        onPointerLeave={() => setActive(null)}
-      >
-        {PROJECTS.map((project, i) => (
-          <button
-            key={project.slug}
-            type="button"
-            data-i={i}
-            aria-haspopup="dialog"
-            aria-label={`Open ${project.name}`}
-            className="fo-card"
-            style={{ visibility: hidden === project.slug ? "hidden" : undefined }}
-            onPointerEnter={(e) => {
-              if (e.pointerType === "mouse") setActive(i);
-            }}
-            onFocus={() => setActive(i)}
-            onBlur={() => setActive(null)}
-            onClick={(e) => onOpen(project, e.currentTarget)}
-          >
-            <Photo project={project} />
-            {/* With no pointer to point with, each card names itself. */}
-            <span aria-hidden="true" className="fo-card-tag mono-label">
-              <span className="idx-title">{project.name}</span>
-            </span>
-          </button>
-        ))}
-      </div>
-      {/* The name of the card pointed at, under the hand. */}
-      <p className="fo-caption mono-label" aria-hidden="true">
-        {/* Each change of name comes in quietly rather than snapping. */}
-        <motion.span
-          key={shownProject?.slug ?? "none"}
-          className="flex gap-[0.9rem]"
-          initial={{ opacity: 0, y: 3 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+    <div
+      className="fo-fan pointer-events-auto"
+      data-active={active ?? undefined}
+      onPointerLeave={() => setActive(null)}
+    >
+      {PROJECTS.map((project, i) => (
+        <button
+          key={project.slug}
+          type="button"
+          data-i={i}
+          aria-haspopup="dialog"
+          aria-label={`Open ${project.name}`}
+          className="fo-card"
+          style={{ visibility: hidden === project.slug ? "hidden" : undefined }}
+          onPointerEnter={(e) => {
+            if (e.pointerType === "mouse") setActive(i);
+          }}
+          onFocus={() => setActive(i)}
+          onBlur={() => setActive(null)}
+          onClick={(e) => onOpen(project, e.currentTarget)}
         >
-          {shownProject ? (
-            <>
-              <span className="text-ink">{shownProject.name}</span>
-              <span className="text-ash">{STATUS_LABEL[shownProject.status]}</span>
-            </>
-          ) : (
-            <span className="text-ash">Choose a project</span>
-          )}
-        </motion.span>
-      </p>
+          {/* The photo, behind its mat. */}
+          <span className="fo-window">
+            <Photo project={project} />
+          </span>
+          {/* Its name and state, set on the mat below it. */}
+          <span className="fo-cap">
+            <span className="fo-cap-name">{project.name}</span>
+            <span className="fo-cap-meta">{STATUS_LABEL[project.status]}</span>
+          </span>
+        </button>
+      ))}
     </div>
   );
 }
 
-/** The project's photo, over its name: if the photo cannot be had, the
-    card still says whose it is. */
+/** The project's photo, on a dark ground for while it comes (the print's
+    mat already says whose it is). */
 function Photo({ project }: { project: Project }) {
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
   return (
     <span className="fo-photo">
-      <span className="fo-photo-name display">{project.name}</span>
       {!failed && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -214,11 +182,11 @@ function Photo({ project }: { project: Project }) {
 
 type Box = { x: number; y: number; w: number; h: number; rotate: number };
 
-/** The card as it stands in the hand: its own size, centred where it is
-    drawn, turned as it is turned (and scaled, while pointed at). */
-function boxOf(el: HTMLElement): Box {
+/** A part of a print as it stands in the hand: its own size, centred
+    where it is drawn, turned and scaled as the print is. */
+function boxOf(turned: HTMLElement, el: HTMLElement): Box {
   const r = el.getBoundingClientRect();
-  const t = getComputedStyle(el).transform;
+  const t = getComputedStyle(turned).transform;
   const m = new DOMMatrixReadOnly(t === "none" ? undefined : t);
   const scale = Math.hypot(m.a, m.b) || 1;
   const w = el.offsetWidth * scale;
@@ -272,7 +240,9 @@ function Detail({
   // the wrong place.
   useLayoutEffect(() => {
     const b = landing();
-    const a = boxOf(from);
+    // The photo behind the print's mat is what is carried, turned and
+    // scaled as the print is.
+    const a = boxOf(from, from.querySelector<HTMLElement>(".fo-window") ?? from);
     const ph = b.phone ? null : { cx: b.x + b.photo / 2, cy: b.y + b.h / 2 };
     flight.current = ph && {
       x: a.x + a.w / 2 - ph.cx,
@@ -422,11 +392,9 @@ function Detail({
         {/* On a computer the words wait for the large card to open out;
             on a phone they come in with the sheet. */}
         <div ref={body} className="fo-shell-body" style={desk && !reduce ? { opacity: 0 } : undefined}>
-          <div className="flex items-center justify-between gap-4">
-            <p className="mono-label">
-              <span className="idx-title">Project</span>
-            </p>
-            <button ref={close} type="button" onClick={shut} className="fo-close prop-close mono-label">
+          <div className="flex items-start justify-between gap-4">
+            <p className="fo-kicker">Selected work</p>
+            <button ref={close} type="button" onClick={shut} className="fo-close">
               Close
               <span aria-hidden="true" className="ml-1.5">
                 &times;
@@ -436,23 +404,23 @@ function Detail({
 
           <h2
             id="fo-detail-title"
-            className="display mt-5 text-[clamp(2rem,3.4vw,3.25rem)] leading-[0.98] font-medium text-ink md:mt-7"
+            className="display mt-3 text-[clamp(2rem,3.4vw,3.25rem)] leading-[0.98] font-medium text-ink md:mt-4"
           >
             {project.name}
           </h2>
-          <p className="mono-label mt-3 text-ash">{STATUS_LABEL[project.status]}</p>
+          <p className="fo-kicker mt-2">{STATUS_LABEL[project.status]}</p>
 
-          <dl className="wk-specs fo-specs mt-6 md:mt-8">
+          <dl className="fo-specs mt-7 md:mt-9">
             {fields.map((field) => (
-              <div key={field.name} className="wk-spec">
-                <dt className="mono-label text-ash-2">{field.name}</dt>
-                <dd className="mt-2 text-ink">{field.value}</dd>
+              <div key={field.name} className="fo-spec">
+                <dt>{field.name}</dt>
+                <dd>{field.value}</dd>
               </div>
             ))}
           </dl>
 
           {/* A few lines, never long ones (user: no more than five or six). */}
-          <p className="fo-about mt-6 md:mt-7">{shown(project.about)}</p>
+          <p className="fo-about mt-7 md:mt-8">{shown(project.about)}</p>
 
           <div className="mt-auto flex flex-wrap items-center gap-x-6 gap-y-3 pt-8">
             {project.report ? (
@@ -464,11 +432,11 @@ function Detail({
                 <span aria-disabled="true" className="cta-drop wk-rest ml-[0.85em] inline-flex text-[1rem] leading-none">
                   <span className="btn-neu-face">View the full project report</span>
                 </span>
-                <span className="mono-label text-ash">Full report coming soon</span>
+                <span className="fo-kicker">Full report coming soon</span>
               </>
             )}
           </div>
-          <p className="mono-label mt-6 text-ash">Photo: {project.photo.credit}, a stand-in</p>
+          <p className="fo-credit mt-6">Photo: {project.photo.credit}, a stand-in</p>
         </div>
       </div>
     </div>
