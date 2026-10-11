@@ -2369,39 +2369,8 @@
    here (user: less tech, more gallery).
    ================================================================== */
 @layer components {
-  /* The wall label: white, small, close to the top left, as a gallery
-     hangs one by the door. */
-  .fo-label {
-    width: fit-content;
-    max-width: min(20rem, 100%);
-    padding: 1rem 1.15rem 1.05rem;
-    background: var(--color-paper);
-    box-shadow: 0 1rem 2.5rem -1.5rem rgb(0 0 0 / 0.45);
-  }
-  .fo-label-title {
-    font-family: var(--font-title);
-    font-size: 1.375rem;
-    font-weight: 500;
-    line-height: 1.05;
-    letter-spacing: -0.02em;
-    color: var(--color-ink);
-  }
-  .fo-label-line {
-    margin-top: 0.2rem;
-    font-size: 0.9375rem;
-    color: var(--color-ash);
-  }
-  .fo-label-note {
-    margin-top: 0.85rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid rgb(0 0 0 / 0.12);
-    font-size: 0.875rem;
-    line-height: 1.45;
-    color: var(--color-ash);
-  }
-
   /* The work, side by side in the middle: large, straight, each one a
-     photo with its name over its foot. More than fit, and the row scrolls
+     print with its name on the mat under the photo. More than fit, and the row scrolls
      sideways as a carousel, snapping card to card, with arrows under it. */
   .fo-row-wrap {
     display: flex;
@@ -2414,8 +2383,8 @@
      the work moves through is drawn even while there are only two.
      The strip is the scroller itself. */
   .fo-row {
-    --pf-w: clamp(15rem, 21vw, 20rem);
-    --fo-strip: clamp(1.75rem, 3.2vw, 3rem);
+    --pf-w: clamp(14rem, 19vw, 17.5rem);
+    --fo-strip: clamp(1.25rem, 2.4vw, 2.25rem);
     display: flex;
     gap: clamp(1rem, 2vw, 1.75rem);
     width: 100vw;
@@ -2424,7 +2393,11 @@
     scroll-snap-type: x mandatory;
     scroll-padding-inline: var(--gutter);
     scrollbar-width: none;
-    background: var(--color-ink);
+    /* A hair short of opaque on purpose: an opaque scroller lets Chrome
+       take the water's canvas as hidden well past the strip's foot and
+       skip drawing it there, which left a flat white band cutting the
+       drops on phones. */
+    background: rgb(0 0 0 / 0.995);
     padding: var(--fo-strip) var(--gutter);
   }
   /* Centred while they fit, scrollable from the first card once they
@@ -2433,75 +2406,68 @@
   .fo-row > .fo-card:last-child { margin-right: auto; }
   .fo-row::-webkit-scrollbar { display: none; }
   @media (max-height: 820px) {
-    .fo-row { --pf-w: clamp(12rem, 30svh, 18rem); --fo-strip: clamp(1.25rem, 3svh, 2rem); }
+    .fo-row { --pf-w: clamp(11rem, 27svh, 16rem); --fo-strip: clamp(1rem, 2.5svh, 1.5rem); }
   }
+  /* Each card a print (user): the photo on a white mat, the website's
+     name set on the mat under it, never over the photo. */
   .fo-card {
+    --fo-mat: clamp(0.6rem, 0.85vw, 0.85rem);
     position: relative;
+    display: flex;
     flex: 0 0 var(--pf-w);
+    flex-direction: column;
     width: var(--pf-w);
-    aspect-ratio: 3 / 4;
-    padding: 0;
-    overflow: hidden;
+    padding: var(--fo-mat);
     scroll-snap-align: center;
     text-align: left;
     cursor: pointer;
-    background: #1c1c1c;
-    /* A hairline, so a dark photo still parts from the strip. */
-    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.1);
+    background: var(--color-paper);
+    color: var(--color-ink);
     transition:
       transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 0.6s cubic-bezier(0.22, 1, 0.36, 1),
       opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .fo-window {
-    position: absolute;
-    inset: 0;
+    position: relative;
     display: block;
+    width: 100%;
+    aspect-ratio: 3 / 4;
     overflow: hidden;
   }
   .fo-window .fo-img { transition: opacity 0.4s ease-out, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
-  /* Its name over the photo's foot, on a soft shade. */
+  /* Its name and state on the mat, the arrow level with the name. */
   .fo-cap {
-    position: absolute;
-    inset: auto 0 0;
     display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-    padding: 3.5rem 1.15rem 1.1rem;
-    background: linear-gradient(to top, rgb(0 0 0 / 0.62), rgb(0 0 0 / 0));
-    pointer-events: none;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: calc(var(--fo-mat) * 1.15) 0.15rem 0.2rem;
   }
+  .fo-cap-text { display: flex; min-width: 0; flex-direction: column; gap: 0.2rem; }
   .fo-cap-name {
     font-family: var(--font-title);
-    font-size: clamp(1.25rem, 1.6vw, 1.5rem);
+    font-size: clamp(1.125rem, 1.4vw, 1.375rem);
     font-weight: 500;
-    line-height: 1.05;
+    line-height: 1.1;
     letter-spacing: -0.02em;
-    color: var(--color-paper);
   }
   .fo-cap-meta {
     font-size: 0.8125rem;
-    color: rgb(255 255 255 / 0.75);
+    color: var(--color-ash);
   }
   .fo-cap-arrow {
-    position: absolute;
-    right: 1.1rem;
-    bottom: 1.25rem;
-    color: var(--color-paper);
+    flex: none;
+    margin-top: 0.3rem;
     transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  /* Pointed at: it rises a little and its photo leans in; the others
-     step back. */
-  .fo-row[data-active] .fo-card { opacity: 0.6; }
+  /* Pointed at: it rises a little and its photo leans in. */
   .fo-row[data-active="0"] .fo-card[data-i="0"],
   .fo-row[data-active="1"] .fo-card[data-i="1"],
   .fo-row[data-active="2"] .fo-card[data-i="2"],
   .fo-row[data-active="3"] .fo-card[data-i="3"],
   .fo-row[data-active="4"] .fo-card[data-i="4"],
   .fo-row[data-active="5"] .fo-card[data-i="5"] {
-    opacity: 1;
     transform: translateY(-0.5rem);
-    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.22);
   }
   .fo-card:hover .fo-img[data-loaded],
   .fo-card:focus-visible .fo-img[data-loaded] { transform: scale(1.04); }
@@ -2522,7 +2488,10 @@
   }
   .fo-row-nav button:disabled { opacity: 0.4; cursor: default; }
   @media (max-width: 639px) {
-    .fo-row { --pf-w: min(72vw, 17rem); padding-inline: calc((100vw - var(--pf-w)) / 2); scroll-padding-inline: 0; }
+    .fo-row { --pf-w: min(58vw, 14.5rem); padding-inline: calc((100vw - var(--pf-w)) / 2); scroll-padding-inline: 0; }
+    /* A phone swipes, and the next card showing at the edge says so; the
+       arrows' room goes to the water. */
+    .fo-row-nav { display: none; }
   }
   @media (prefers-reduced-motion: reduce) {
     .fo-card, .fo-window .fo-img, .fo-cap-arrow { transition: none; }
