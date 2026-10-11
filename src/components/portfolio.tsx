@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useAnimate, useReducedMotion } from "motion/react";
+import { motion, useAnimate, useReducedMotion } from "motion/react";
 import { FloatingNav } from "./floating-nav";
 import { Footer } from "./footer";
 import { useInkAlign } from "./ink-align";
@@ -31,7 +31,6 @@ import { PROJECTS, STATUS_LABEL, shown, type Project } from "@/lib/work";
    every field the studio has not given reads as TO_FILL.
    ================================================================== */
 
-const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function Portfolio() {
   const [open, setOpen] = useState<{ project: Project; from: HTMLElement } | null>(null);
@@ -146,19 +145,32 @@ function Fan({
             onClick={(e) => onOpen(project, e.currentTarget)}
           >
             <Photo project={project} />
+            {/* With no pointer to point with, each card names itself. */}
+            <span aria-hidden="true" className="fo-card-tag mono-label">
+              <span className="idx-title">{project.name}</span>
+            </span>
           </button>
         ))}
       </div>
       {/* The name of the card pointed at, under the hand. */}
       <p className="fo-caption mono-label" aria-hidden="true">
-        {shownProject ? (
-          <>
-            <span className="text-ink">{shownProject.name}</span>
-            <span className="text-ash-2">{STATUS_LABEL[shownProject.status]}</span>
-          </>
-        ) : (
-          <span className="text-ash-2">Choose a project</span>
-        )}
+        {/* Each change of name comes in quietly rather than snapping. */}
+        <motion.span
+          key={shownProject?.slug ?? "none"}
+          className="flex gap-[0.9rem]"
+          initial={{ opacity: 0, y: 3 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {shownProject ? (
+            <>
+              <span className="text-ink">{shownProject.name}</span>
+              <span className="text-ash">{STATUS_LABEL[shownProject.status]}</span>
+            </>
+          ) : (
+            <span className="text-ash">Choose a project</span>
+          )}
+        </motion.span>
       </p>
     </div>
   );
@@ -168,6 +180,7 @@ function Fan({
     card still says whose it is. */
 function Photo({ project }: { project: Project }) {
   const [failed, setFailed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   return (
     <span className="fo-photo">
       <span className="fo-photo-name display">{project.name}</span>
@@ -178,15 +191,26 @@ function Photo({ project }: { project: Project }) {
           alt={project.photo.alt}
           draggable={false}
           decoding="async"
+          onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}
-          className="absolute inset-0 size-full object-cover select-none"
+          // Faded in once it has come, not popped over the name.
+          data-loaded={loaded ? "" : undefined}
+          className="fo-img absolute inset-0 size-full object-cover select-none"
         />
       )}
     </span>
   );
 }
 
-/* --- the large card ------------------------------------------------------- */
+/* --- the large card -------------------------------------------------------
+   Moved by transform and clip-path only, never by width or height, so no
+   frame of it asks the page to lay itself out again. On a computer the
+   photo is the card itself, flown from the hand to the large card's left
+   column (cut to the card's own 3:4, so it only has to scale evenly);
+   once it has landed, the large card opens out from behind it to the
+   right and the words come in. On a phone the large card is the whole
+   screen and simply rises into place. Leaving is quicker and quieter
+   than arriving. */
 
 type Box = { x: number; y: number; w: number; h: number; rotate: number };
 
@@ -194,7 +218,8 @@ type Box = { x: number; y: number; w: number; h: number; rotate: number };
     drawn, turned as it is turned (and scaled, while pointed at). */
 function boxOf(el: HTMLElement): Box {
   const r = el.getBoundingClientRect();
-  const m = new DOMMatrixReadOnly(getComputedStyle(el).transform === "none" ? undefined : getComputedStyle(el).transform);
+  const t = getComputedStyle(el).transform;
+  const m = new DOMMatrixReadOnly(t === "none" ? undefined : t);
   const scale = Math.hypot(m.a, m.b) || 1;
   const w = el.offsetWidth * scale;
   const h = el.offsetHeight * scale;
@@ -207,15 +232,21 @@ function boxOf(el: HTMLElement): Box {
   };
 }
 
-/** Large in the middle of the screen; on a phone, the whole screen. */
-function landing(): Box & { phone: boolean } {
+type Landing = { x: number; y: number; w: number; h: number; photo: number; phone: boolean };
+
+/** Large in the middle of the screen, its photo column as wide as a card
+    of its height; on a phone, the whole screen. */
+function landing(): Landing {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
-  if (vw < 768) return { x: 0, y: 0, w: vw, h: vh, rotate: 0, phone: true };
+  if (vw < 768) return { x: 0, y: 0, w: vw, h: vh, photo: vw, phone: true };
   const w = Math.min(1040, vw - 96);
   const h = Math.min(640, vh - 96);
-  return { x: (vw - w) / 2, y: (vh - h) / 2, w, h, rotate: 0, phone: false };
+  return { x: (vw - w) / 2, y: (vh - h) / 2, w, h, photo: Math.round(h * 0.75), phone: false };
 }
+
+const IN = [0.22, 1, 0.36, 1] as const;
+const OUT = [0.4, 0, 0.2, 1] as const;
 
 function Detail({
   project,
@@ -229,79 +260,100 @@ function Detail({
   const reduce = useReducedMotion() ?? false;
   const [scope, animate] = useAnimate<HTMLDivElement>();
   const glass = useRef<HTMLDivElement>(null);
+  const frame = useRef<HTMLDivElement>(null);
   const photo = useRef<HTMLDivElement>(null);
   const body = useRef<HTMLDivElement>(null);
   const close = useRef<HTMLButtonElement>(null);
-  const start = useRef<Box | null>(null);
-  const [phone, setPhone] = useState(false);
+  const [place, setPlace] = useState<Landing | null>(null);
+  const flight = useRef<{ x: number; y: number; scale: number; rotate: number } | null>(null);
   const leaving = useRef(false);
 
-  // In: the card grows to the middle, then its photo draws back to make
-  // room for the words. Set on the card's own pixels before the first
-  // paint, so it is never seen anywhere else.
+  // Measured once, before the first paint, so nothing is ever drawn in
+  // the wrong place.
   useLayoutEffect(() => {
-    const shell = scope.current;
-    if (!shell || !glass.current || !photo.current || !body.current) return;
-    const a = boxOf(from);
     const b = landing();
-    start.current = a;
-    setPhone(b.phone);
-    Object.assign(shell.style, {
-      width: `${a.w}px`,
-      height: `${a.h}px`,
-      transform: `translateX(${a.x}px) translateY(${a.y}px) rotate(${a.rotate}deg)`,
-    });
+    const a = boxOf(from);
+    const ph = b.phone ? null : { cx: b.x + b.photo / 2, cy: b.y + b.h / 2 };
+    flight.current = ph && {
+      x: a.x + a.w / 2 - ph.cx,
+      y: a.y + a.h / 2 - ph.cy,
+      scale: a.w / b.photo,
+      rotate: a.rotate,
+    };
+    setPlace(b);
+  }, [from]);
+
+  // In.
+  useEffect(() => {
+    if (!place || !glass.current || !frame.current || !photo.current || !body.current) return;
+    const f = flight.current;
+    const rest = `inset(0 ${place.w - place.photo}px 0 0)`;
     const run = async () => {
       if (reduce) {
-        Object.assign(shell.style, { width: `${b.w}px`, height: `${b.h}px` });
-        animate(shell, { x: b.x, y: b.y, rotate: 0 }, { duration: 0 });
-        animate(photo.current!, b.phone ? { height: "38%" } : { width: "44%" }, { duration: 0 });
         await Promise.all([
           animate(glass.current!, { opacity: 1 }, { duration: 0.2 }),
-          animate(shell, { opacity: [0, 1] }, { duration: 0.2 }),
-          animate(body.current!, { opacity: 1 }, { duration: 0.2 }),
+          animate(scope.current, { opacity: [0, 1] }, { duration: 0.2 }),
         ]);
+      } else if (place.phone || !f) {
+        // A phone: the sheet rises a little into place as it appears.
+        animate(glass.current!, { opacity: 1 }, { duration: 0.3 });
+        await animate(scope.current, { opacity: [0, 1], y: [16, 0] }, { duration: 0.4, ease: IN });
       } else {
-        animate(glass.current!, { opacity: 1 }, { duration: 0.45 });
+        animate(glass.current!, { opacity: 1 }, { duration: 0.4 });
+        // The card flies to the left column, straightening as it goes.
         await animate(
-          shell,
-          { x: [a.x, b.x], y: [a.y, b.y], width: [a.w, b.w], height: [a.h, b.h], rotate: [a.rotate, 0] },
-          { duration: 0.75, ease: EASE },
+          photo.current!,
+          { x: [f.x, 0], y: [f.y, 0], scale: [f.scale, 1], rotate: [f.rotate, 0] },
+          { duration: 0.6, ease: IN },
         );
-        // The photo makes room first; the words only come in once it has.
-        await animate(photo.current!, b.phone ? { height: "38%" } : { width: "44%" }, { duration: 0.55, ease: EASE });
-        await animate(body.current!, { opacity: [0, 1], y: [12, 0] }, { duration: 0.45, ease: EASE });
+        // The large card opens out from behind it...
+        await animate(
+          frame.current!,
+          { clipPath: [rest, "inset(0 0px 0 0)"], opacity: [1, 1] },
+          { duration: 0.45, ease: IN },
+        );
+        // ...and the words come in.
+        await animate(body.current!, { opacity: [0, 1], y: [8, 0] }, { duration: 0.3, ease: IN });
       }
       close.current?.focus({ preventScroll: true });
     };
     run();
     // Once, as it comes in; leaving is shut() below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [place]);
 
   const shut = useCallback(async () => {
-    if (leaving.current) return;
+    if (leaving.current || !place) return;
     leaving.current = true;
-    const shell = scope.current;
-    const a = start.current;
-    if (!shell || !a || !glass.current || !photo.current || !body.current) return onGone();
+    const f = flight.current;
+    if (!glass.current || !frame.current || !photo.current || !body.current) return onGone();
     if (reduce) {
       await Promise.all([
-        animate(shell, { opacity: 0 }, { duration: 0.15 }),
+        animate(scope.current, { opacity: 0 }, { duration: 0.15 }),
         animate(glass.current, { opacity: 0 }, { duration: 0.15 }),
       ]);
       return onGone();
     }
-    await animate(body.current, { opacity: 0 }, { duration: 0.18 });
-    await animate(photo.current, phone ? { height: "100%" } : { width: "100%" }, { duration: 0.35, ease: EASE });
-    animate(glass.current, { opacity: 0 }, { duration: 0.5 });
+    if (place.phone || !f) {
+      animate(glass.current, { opacity: 0 }, { duration: 0.25 });
+      await animate(scope.current, { opacity: 0, y: 8 }, { duration: 0.25, ease: OUT });
+      return onGone();
+    }
+    await animate(body.current, { opacity: 0 }, { duration: 0.12 });
     await animate(
-      shell,
-      { x: a.x, y: a.y, width: a.w, height: a.h, rotate: a.rotate },
-      { duration: 0.6, ease: [0.65, 0, 0.35, 1] },
+      frame.current,
+      { clipPath: `inset(0 ${place.w - place.photo}px 0 0)` },
+      { duration: 0.3, ease: OUT },
+    );
+    frame.current.style.opacity = "0";
+    animate(glass.current, { opacity: 0 }, { duration: 0.4 });
+    await animate(
+      photo.current,
+      { x: f.x, y: f.y, scale: f.scale, rotate: f.rotate },
+      { duration: 0.45, ease: OUT },
     );
     onGone();
-  }, [animate, onGone, phone, reduce, scope]);
+  }, [animate, onGone, place, reduce, scope]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -320,19 +372,61 @@ function Detail({
     { name: "Year", value: shown(project.year) },
   ];
 
+  const phone = place?.phone ?? false;
+  const desk = place && !phone;
+
   return (
-    <div className="fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-labelledby="pf-detail-title">
+    <div className="fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-labelledby="fo-detail-title">
       <div ref={glass} className="fo-glass" style={{ opacity: 0 }} onClick={shut} />
-      <div ref={scope} className="fo-shell" data-phone={phone ? "" : undefined}>
-        <div ref={photo} className="fo-shell-photo">
+      <div
+        ref={scope}
+        className="fo-shell"
+        data-phone={phone ? "" : undefined}
+        style={
+          place
+            ? {
+                left: place.x,
+                top: place.y,
+                width: place.w,
+                height: place.h,
+                ["--fo-photo" as string]: `${place.photo}px`,
+                // A phone's sheet, and every card under reduced motion,
+                // fades in from nothing.
+                ...(phone || reduce ? { opacity: 0 } : {}),
+              }
+            : { visibility: "hidden" }
+        }
+      >
+        {/* The large card's paper and edge, opened out from behind the
+            photo once it has landed (hidden until then). */}
+        <div
+          ref={frame}
+          className="fo-frame"
+          style={desk && !reduce ? { opacity: 0 } : undefined}
+        />
+        <div
+          ref={photo}
+          className="fo-shell-photo"
+          // Drawn first where the card is, so the frame before the flight
+          // starts never shows it anywhere else.
+          style={
+            desk && !reduce && flight.current
+              ? {
+                  transform: `translateX(${flight.current.x}px) translateY(${flight.current.y}px) scale(${flight.current.scale}) rotate(${flight.current.rotate}deg)`,
+                }
+              : undefined
+          }
+        >
           <Photo project={project} />
         </div>
-        <div ref={body} className="fo-shell-body" style={{ opacity: 0 }}>
+        {/* On a computer the words wait for the large card to open out;
+            on a phone they come in with the sheet. */}
+        <div ref={body} className="fo-shell-body" style={desk && !reduce ? { opacity: 0 } : undefined}>
           <div className="flex items-center justify-between gap-4">
             <p className="mono-label">
               <span className="idx-title">Project</span>
             </p>
-            <button ref={close} type="button" onClick={shut} className="prop-close mono-label">
+            <button ref={close} type="button" onClick={shut} className="fo-close prop-close mono-label">
               Close
               <span aria-hidden="true" className="ml-1.5">
                 &times;
@@ -341,12 +435,12 @@ function Detail({
           </div>
 
           <h2
-            id="pf-detail-title"
-            className="display mt-6 text-[clamp(2rem,3.4vw,3.25rem)] leading-[0.98] font-medium text-ink md:mt-8"
+            id="fo-detail-title"
+            className="display mt-5 text-[clamp(2rem,3.4vw,3.25rem)] leading-[0.98] font-medium text-ink md:mt-7"
           >
             {project.name}
           </h2>
-          <p className="mono-label mt-3 text-ash-2">{STATUS_LABEL[project.status]}</p>
+          <p className="mono-label mt-3 text-ash">{STATUS_LABEL[project.status]}</p>
 
           <dl className="wk-specs fo-specs mt-6 md:mt-8">
             {fields.map((field) => (
@@ -370,11 +464,11 @@ function Detail({
                 <span aria-disabled="true" className="cta-drop wk-rest ml-[0.85em] inline-flex text-[1rem] leading-none">
                   <span className="btn-neu-face">View the full project report</span>
                 </span>
-                <span className="mono-label text-ash-2">Full report coming soon</span>
+                <span className="mono-label text-ash">Full report coming soon</span>
               </>
             )}
           </div>
-          <p className="mono-label mt-6 text-ash-2">Photo: {project.photo.credit}, a stand-in</p>
+          <p className="mono-label mt-6 text-ash">Photo: {project.photo.credit}, a stand-in</p>
         </div>
       </div>
     </div>
