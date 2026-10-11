@@ -350,6 +350,58 @@
     .idx-ask::after { animation: none; }
   }
 
+  /* ---- the way to the portfolio (services.tsx) -------------------
+     The index's inked ask, grown to the shell's width: black, the light
+     passing over it on the ask's clock, an arrow in a ring that fills
+     white on pointing. */
+  .svc-folio {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1.25rem, 3vw, 2.5rem);
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+  .svc-folio::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.14) 50%, transparent 70%) no-repeat;
+    background-size: 45% 100%;
+    background-position: -120% 0;
+    animation: idx-ask-gleam 4.4s cubic-bezier(0.65, 0, 0.35, 1) 1.2s infinite;
+  }
+  .svc-folio:hover::after,
+  .svc-folio:focus-visible::after { animation-play-state: paused; }
+  .svc-folio-name { transition: transform 0.7s var(--ease-out-quint); }
+  .svc-folio-ring {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: clamp(3.25rem, 5vw, 4.5rem);
+    aspect-ratio: 1;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.45);
+    transition: background-color 0.4s ease, color 0.4s ease, transform 0.6s var(--ease-out-quint);
+  }
+  @media (hover: hover) {
+    .svc-folio:hover .svc-folio-name { transform: translateX(0.12em); }
+    .svc-folio:hover .svc-folio-ring {
+      background: var(--color-paper);
+      color: var(--color-ink);
+      transform: translateX(4px);
+    }
+  }
+  .svc-folio:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 4px; }
+  @media (prefers-reduced-motion: reduce) {
+    .svc-folio::after { animation: none; }
+  }
+
   /* ---- the free-proposal form (proposal-form.tsx) ----------------
      The index's rows turned to another use: the same height, padding,
      hairlines and type. A row being written in is inked over as an index

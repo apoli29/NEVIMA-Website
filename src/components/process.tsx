@@ -169,7 +169,6 @@ const PHASES: Phase[] = [
         text: "We define the sections of each page and their components, then design and build the base of your site, up to about 25 to 30% of the project. At that point we have a free call: you already see the strategy and the essence of your site, and you tell us what you like and what you don’t. We align ideas now, so nothing has to change once the site is closed.",
         who: "You and us",
         wide: true,
-        cta: [explore("web-design", "Web Design")],
       },
       {
         id: "finish",
@@ -214,8 +213,10 @@ const PHASES: Phase[] = [
       {
         id: "launch-step",
         name: "Your changes and launch",
+        // Its rules for changes spelled out (user, 2026-10-11), so it needs the room.
+        wide: true,
         principle: "Your say, then it goes live.",
-        text: "You can ask for changes to the content (text, photos, videos) or to the style; each kind has its own rule and its own price. Then we put your website online.",
+        text: "You can ask for changes to the content (text, photos, videos) or to the style (3D, animations, effects, sections, colors, typography). Changes that take us only a few minutes are never charged. For anything bigger, we book a call to note what you want to change, and the price is quoted and agreed with you before we start. Then we put your website online.",
         who: "You and us",
       },
     ],

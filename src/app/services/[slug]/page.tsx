@@ -14,7 +14,8 @@ import { SERVICES, findService, servicePath } from "@/lib/services";
    rather than keeping two copies of the same sentence in step.
    ================================================================== */
 
-/** Web design has a page of its own (services/web-design). */
+/** Web design has no page (the user had its own page taken down,
+    2026-10-11); its work moves to the portfolio. */
 const OWN_PAGE = new Set(["web-design"]);
 
 export function generateStaticParams() {

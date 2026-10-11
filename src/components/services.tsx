@@ -159,8 +159,36 @@ export function Services({ ready }: { ready: boolean }) {
             ))}
           </ol>
         </div>
+
+        <PortfolioCall />
       </div>
     </section>
+  );
+}
+
+/* ==================================================================
+   The way to the portfolio: the section's one call to see the work
+   (user, 2026-10-11: one call, hard to miss, in place of the web
+   design page's own). The index's inked ask grown to the shell's
+   width: a black band with the light passing over it on its slow
+   clock, the words large, an arrow in a ring that fills on pointing.
+   ================================================================== */
+
+function PortfolioCall() {
+  return (
+    <a href="/portfolio" className="svc-folio group mt-14 md:mt-20">
+      <span className="min-w-0">
+        <span className="mono-label block text-paper/60">Portfolio</span>
+        <span className="svc-folio-name display mt-3 block text-[clamp(2.25rem,5vw,4.5rem)] leading-[0.95] font-medium tracking-[-0.035em] md:mt-4">
+          See our work.
+        </span>
+      </span>
+      <span aria-hidden="true" className="svc-folio-ring">
+        <svg viewBox="0 0 16 16" width="22" height="22" fill="none" className="block">
+          <path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.25" />
+        </svg>
+      </span>
+    </a>
   );
 }
 
@@ -412,14 +440,18 @@ function Row({
               ))}
             </div>
 
-            {/* The way out of the index and into the service's own page. */}
-            <div className="mt-7 md:mt-8">
-              <PassLink
-                href={servicePath(service.slug)}
-                label={`Explore ${service.title}`}
-                className={`cta-drop inline-flex text-[1rem] leading-none ${main ? "cta-drop-light" : ""}`}
-              />
-            </div>
+            {/* The way out of the index and into the service's own page.
+                Web design has none any more: its work is in the portfolio,
+                reached by the call under the list. */}
+            {service.slug !== "web-design" && (
+              <div className="mt-7 md:mt-8">
+                <PassLink
+                  href={servicePath(service.slug)}
+                  label={`Explore ${service.title}`}
+                  className={`cta-drop inline-flex text-[1rem] leading-none ${main ? "cta-drop-light" : ""}`}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

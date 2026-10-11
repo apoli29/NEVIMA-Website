@@ -142,7 +142,12 @@ export function Footer() {
             <ul className="mt-5 space-y-3">
               {SERVICES.map((service) => (
                 <li key={service.slug}>
-                  <Link href={servicePath(service.slug)} className="ftr-link ftr-item">
+                  {/* Web design has no page of its own any more: it goes to
+                      the services on the home page. */}
+                  <Link
+                    href={service.slug === "web-design" ? section("#services") : servicePath(service.slug)}
+                    className="ftr-link ftr-item"
+                  >
                     {service.title}
                   </Link>
                 </li>
