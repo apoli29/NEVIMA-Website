@@ -695,7 +695,7 @@ function Panel({
                     className="idx-name flex items-center gap-2.5 whitespace-nowrap [grid-area:1/1]"
                     style={{ opacity: footOut }}
                   >
-                    <span className="live-dot" />
+                    <span className="live-dot live-dot-loud" />
                     Get your free proposal
                   </motion.span>
                   <motion.span className="idx-name [grid-area:1/1] truncate" style={{ opacity: footIn }}>

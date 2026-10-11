@@ -108,7 +108,7 @@ export function StatementScreen({
 /* The readouts along the foot                                          */
 /* ================================================================== */
 
-function Readouts({ settled }: { settled: boolean }) {
+export function Readouts({ settled }: { settled: boolean }) {
   return (
     <dl
       data-jelly-quiet
@@ -259,7 +259,7 @@ function Scramble({
 
 /* A black hairline, drawn in from the left as the screen settles, in the
    same ink as the index's rules above it. */
-function WallRule({
+export function WallRule({
   settled,
   delay,
   className,
@@ -405,7 +405,7 @@ function SectionIndex({ settled }: { settled: boolean }) {
                       className="idx-link idx-ask w-full text-left"
                     >
                       <span className="idx-name flex items-center gap-2.5">
-                        <span aria-hidden="true" className="live-dot" />
+                        <span aria-hidden="true" className="live-dot live-dot-loud" />
                         {ASK}
                       </span>
                       <span aria-hidden="true" className="idx-arrow">

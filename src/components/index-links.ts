@@ -5,6 +5,8 @@
    green light now (the user took Pricing out and put it first). A row marked lead would be
    kept inked (see .idx-lead); none is. */
 export const SECTION_LINKS: { label: string; href: string; lead: boolean }[] = [
+  // Right under the ask (user, 2026-10-11).
+  { label: "Our projects", href: "/portfolio", lead: false },
   { label: "About us", href: "/about", lead: false },
   { label: "Our services", href: "#services", lead: false },
 ];

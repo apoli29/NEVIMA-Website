@@ -1,6 +1,6 @@
 /* ==================================================================
-   The studio's work, in one place: the web design page's plates, each
-   project's own page and its preview are all set from these records.
+   The studio's work, in one place: the portfolio's cards and the large
+   card each one opens are set from these records.
 
    The two projects so far are the studio's only web design and visual
    identity work; Estamento de Gerona is still being made. Every
@@ -18,6 +18,12 @@ export type Project = {
   sector: string | null;
   /** the visual identity's style, in a few words */
   identity: string | null;
+  /** what kind of website it is (institutional, landing page, shop...) */
+  websiteType: string | null;
+  /** how far the design was taken (the studio's own scale) */
+  designLevel: string | null;
+  /** how many pages the website has */
+  pages: string | null;
   /** what the studio made for it */
   scope: string | null;
   year: string | null;
@@ -29,7 +35,13 @@ export type Project = {
   about: string | null;
   /** the project's full report: a page on this site, once it is built */
   report: string | null;
+  /** A stand-in photo until the studio has the project's own images
+      (user, 2026-10-11: "fotos imaginárias", to be changed). */
+  photo: { src: string; credit: string; alt: string };
 };
+
+/** A free Unsplash photo, at a width the cards can use. */
+const unsplash = (id: string) => `https://unsplash.com/photos/${id}/download?w=1400`;
 
 export const PROJECTS: Project[] = [
   {
@@ -37,24 +49,40 @@ export const PROJECTS: Project[] = [
     name: "Bsmartish",
     sector: null,
     identity: null,
+    websiteType: null,
+    designLevel: null,
+    pages: null,
     scope: null,
     year: null,
     status: "live",
     url: "https://bsmartish.pt",
     about: null,
     report: null,
+    photo: {
+      src: unsplash("gEN5Btvf2Eg"),
+      credit: "Michael Dziedzic, Unsplash",
+      alt: "A glass sphere and a prism lit red on a dark surface",
+    },
   },
   {
     slug: "estamento-de-gerona",
     name: "Estamento de Gerona",
     sector: null,
     identity: null,
+    websiteType: null,
+    designLevel: null,
+    pages: null,
     scope: null,
     year: null,
     status: "in-production",
     url: null,
     about: null,
     report: null,
+    photo: {
+      src: unsplash("_vLUCVQrLYg"),
+      credit: "Maria Lupan, Unsplash",
+      alt: "Coloured houses along a river in Girona",
+    },
   },
 ];
 
