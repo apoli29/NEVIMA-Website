@@ -7,6 +7,7 @@ import { AboutValues } from "./about-values";
 import { CoFounders } from "./cofounders";
 import { FloatingNav } from "./floating-nav";
 import { Footer } from "./footer";
+import { WorkTogether } from "./work-together";
 import { useSmoothScroll } from "./smooth-scroll";
 
 /* ==================================================================
@@ -41,6 +42,7 @@ export function About() {
         <AboutValues />
         <AboutFaq />
       </main>
+      <WorkTogether />
       <Footer />
     </>
   );

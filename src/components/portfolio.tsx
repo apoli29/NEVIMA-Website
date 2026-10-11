@@ -4,6 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { useAnimate, useReducedMotion } from "motion/react";
 import { FloatingNav } from "./floating-nav";
 import { Footer } from "./footer";
+import { WorkTogether } from "./work-together";
 import { JellyField } from "./jelly-field";
 import { useSmoothScroll } from "./smooth-scroll";
 import { PROJECTS, STATUS_LABEL, shown, type Project } from "@/lib/work";
@@ -34,7 +35,7 @@ import { PROJECTS, STATUS_LABEL, shown, type Project } from "@/lib/work";
    ================================================================== */
 
 /** How much bigger than on the home page the drops are drawn here. */
-const FLOOD = 4.4;
+const FLOOD = 3.6;
 
 export function Portfolio() {
   const [open, setOpen] = useState<{ project: Project; from: HTMLElement } | null>(null);
@@ -77,6 +78,7 @@ export function Portfolio() {
             </div>
           </section>
         </main>
+        <WorkTogether />
         <Footer />
       </div>
 
@@ -102,51 +104,101 @@ function Fan({
   hidden,
   onOpen,
 }: {
-  /** the print that is out, kept in its place but unseen */
+  /** the work that is out, kept in its place but unseen */
   hidden: string | null;
   onOpen: (project: Project, from: HTMLElement) => void;
 }) {
   const [active, setActive] = useState<number | null>(null);
+  const track = useRef<HTMLDivElement>(null);
+  // A carousel only once the work outgrows the row (user: centred and
+  // large for now; a carousel as more projects come).
+  const [overflow, setOverflow] = useState({ left: false, right: false });
+  useEffect(() => {
+    const el = track.current;
+    if (!el) return;
+    const read = () =>
+      setOverflow({
+        left: el.scrollLeft > 4,
+        right: el.scrollLeft + el.clientWidth < el.scrollWidth - 4,
+      });
+    read();
+    el.addEventListener("scroll", read, { passive: true });
+    const watch = new ResizeObserver(read);
+    watch.observe(el);
+    return () => {
+      el.removeEventListener("scroll", read);
+      watch.disconnect();
+    };
+  }, []);
+  const nudge = (dir: 1 | -1) => {
+    const el = track.current;
+    const card = el?.querySelector<HTMLElement>(".fo-card");
+    if (!el || !card) return;
+    el.scrollBy({ left: dir * (card.offsetWidth + 24), behavior: "smooth" });
+  };
 
   return (
-    <div
-      className="fo-fan pointer-events-auto"
-      data-active={active ?? undefined}
-      onPointerLeave={() => setActive(null)}
-    >
-      {PROJECTS.map((project, i) => (
-        <button
-          key={project.slug}
-          type="button"
-          data-i={i}
-          aria-haspopup="dialog"
-          aria-label={`Open ${project.name}`}
-          className="fo-card"
-          style={{ visibility: hidden === project.slug ? "hidden" : undefined }}
-          onPointerEnter={(e) => {
-            if (e.pointerType === "mouse") setActive(i);
-          }}
-          onFocus={() => setActive(i)}
-          onBlur={() => setActive(null)}
-          onClick={(e) => onOpen(project, e.currentTarget)}
-        >
-          {/* The photo, behind its mat. */}
-          <span className="fo-window">
-            <Photo project={project} />
-          </span>
-          {/* Its name and state, set on the mat below it. */}
-          <span className="fo-cap">
-            <span className="fo-cap-name">{project.name}</span>
-            <span className="fo-cap-meta">{STATUS_LABEL[project.status]}</span>
-          </span>
-        </button>
-      ))}
+    <div className="fo-row-wrap pointer-events-auto">
+      <div
+        ref={track}
+        data-lenis-prevent
+        className="fo-row"
+        data-active={active ?? undefined}
+        data-scrolls={overflow.left || overflow.right ? "" : undefined}
+        onPointerLeave={() => setActive(null)}
+      >
+        {PROJECTS.map((project, i) => (
+          <button
+            key={project.slug}
+            type="button"
+            data-i={i}
+            aria-haspopup="dialog"
+            aria-label={`Open ${project.name}`}
+            className="fo-card"
+            style={{ visibility: hidden === project.slug ? "hidden" : undefined }}
+            onPointerEnter={(e) => {
+              if (e.pointerType === "mouse") setActive(i);
+            }}
+            onFocus={() => setActive(i)}
+            onBlur={() => setActive(null)}
+            onClick={(e) => onOpen(project, e.currentTarget)}
+          >
+            <span className="fo-window">
+              <Photo project={project} />
+            </span>
+            {/* Its name and state, over the foot of the photo. */}
+            <span className="fo-cap">
+              <span className="fo-cap-name">{project.name}</span>
+              <span className="fo-cap-meta">{STATUS_LABEL[project.status]}</span>
+            </span>
+            <span aria-hidden="true" className="fo-cap-arrow">
+              <svg viewBox="0 0 16 16" width="16" height="16" fill="none" className="block">
+                <path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.25" />
+              </svg>
+            </span>
+          </button>
+        ))}
+      </div>
+      {(overflow.left || overflow.right) && (
+        <div className="fo-row-nav">
+          <button type="button" aria-label="Previous projects" disabled={!overflow.left} onClick={() => nudge(-1)}>
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="none" style={{ transform: "scaleX(-1)" }}>
+              <path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.25" />
+            </svg>
+          </button>
+          <button type="button" aria-label="Next projects" disabled={!overflow.right} onClick={() => nudge(1)}>
+            <svg viewBox="0 0 16 16" width="16" height="16" fill="none">
+              <path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.25" />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
-/** The project's photo, on a dark ground for while it comes (the print's
-    mat already says whose it is). */
+/** The project's photo, on a dark ground for while it comes (the card's
+    caption already says whose it is). */
 function Photo({ project }: { project: Project }) {
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -155,6 +207,11 @@ function Photo({ project }: { project: Project }) {
       {!failed && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
+          // An image that came before the page woke up has no load event
+          // left to fire, so it is checked for once it is in place.
+          ref={(img) => {
+            if (img?.complete && img.naturalWidth > 0) setLoaded(true);
+          }}
           src={project.photo.src}
           alt={project.photo.alt}
           draggable={false}
@@ -240,8 +297,7 @@ function Detail({
   // the wrong place.
   useLayoutEffect(() => {
     const b = landing();
-    // The photo behind the print's mat is what is carried, turned and
-    // scaled as the print is.
+    // The photo is what is carried, turned and scaled as its card is.
     const a = boxOf(from, from.querySelector<HTMLElement>(".fo-window") ?? from);
     const ph = b.phone ? null : { cx: b.x + b.photo / 2, cy: b.y + b.h / 2 };
     flight.current = ph && {

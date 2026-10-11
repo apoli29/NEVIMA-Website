@@ -60,6 +60,10 @@ The page is `noindex` (`robots: { index: false, follow: true }` in `src/app/abou
 - 2026-10-07, callouts recomposed as one system (user found the 2nd and 4th ugly: rings floating off the drops, lines at random heights). The ring (now white-filled) sits on the drop itself, `INSET` 0.8 of the way from the drop's centre to its real outline along the 45° line, read from the water every frame (`control.probe` in values-water.ts sums the drop's body and lobes); it follows the drop as it drifts. Every label turns level on one shared line `LIFT` 26px over the row's drop buttons; a callout that would clash takes the next line up (`LEVEL_STEP` 40px). No more callouts going down. If no placement is clear (neighbours on a phone), that call shows no callout rather than clash, so phones show one at a time. Measured: 0 labels within 12px of each other at 1440/1100/390.
 - The section is no longer a full screen: its height is the heading plus the drops' row with callout room (~700px at 1440x900).
 
+## Let's work together
+
+- 2026-10-11: the page ends, like every page, with the "Let’s work together." screen and the proposal form, its two photos alternating on this page's statement crossfade. See homepage-decisions.md.
+
 ## CTAs, site-wide
 
 - 2026-10-05: the user asked for the joined-drops shape on **every** CTA (`.cta-drop`, incl. the white nav one). Built as metaballs in CSS: the glass layer is three soft radial spots in a row; the SVG filter `#cta-glass` / `#cta-glass-light` (`src/components/cta-glass.tsx`, rendered once in `layout.tsx`) blurs, thresholds, and lights them (body, inner rim, shadow on black). The spots drift (`cta-melt`), plus the old tilt and breathing. Replaced the em border-radius morph (`drop-shape`), which is gone. Still no inner highlight.

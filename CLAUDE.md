@@ -36,6 +36,7 @@ The original brief is imported below. Parts of it were written before the build 
 - `AeroShards.jsx` is vendored third-party code with props the user supplied verbatim. Do not edit it or its prop values.
 - Old, unused section components stay in `src/components/`. Ask before removing any of them.
 - The bar's links are Home / Portfolio / About nevima, and its one button is "Get your free proposal", which opens the free-proposal form (user, 2026-10-11). Portfolio is its own page (`/portfolio`, `portfolio.tsx`).
+- Every page ends with `WorkTogether` ("Let’s work together." and the proposal form) right before `<Footer />`. A new page gets it too.
 - Lenis owns the scroll lock through `useSmoothScroll(locked)` in `src/components/smooth-scroll.ts`. Do not move `stop()`/`start()` back into callers.
 - Any Motion `layout` element below the opening must carry `layoutDependency`, or the jump when the opening releases the page gets animated.
 - No numbers on titles. No boomerang pass on CTAs. No inner highlight inside the drop-shaped CTAs. Pixel looks are modern, never retro/CRT.
