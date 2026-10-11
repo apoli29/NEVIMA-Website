@@ -2412,7 +2412,6 @@
      name set on the mat under it, never over the photo. */
   .fo-card {
     --fo-mat: clamp(0.6rem, 0.85vw, 0.85rem);
-    --fo-arrow: clamp(2.5rem, 3vw, 3rem);
     position: relative;
     display: flex;
     flex: 0 0 var(--pf-w);
@@ -2442,7 +2441,7 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
-    padding: calc(var(--fo-mat) * 1.15) calc(var(--fo-arrow) - var(--fo-mat) + 0.75rem) 0.2rem 0.15rem;
+    padding: calc(var(--fo-mat) * 1.15) 0.15rem 0.2rem;
   }
   .fo-cap-text { display: flex; min-width: 0; flex-direction: column; gap: 0.2rem; }
   .fo-cap-name {
@@ -2456,20 +2455,19 @@
     font-size: 0.8125rem;
     color: var(--color-ash);
   }
-  /* The arrow on a black square cut into the print's corner, flush with
-     its edges, so the strip's black runs into the card (user). */
+  /* The arrow white on a small black square, level with the name (user:
+     the square, close round the arrow). */
   .fo-cap-arrow {
-    position: absolute;
-    right: 0;
-    bottom: 0;
     display: grid;
+    flex: none;
     place-items: center;
-    width: var(--fo-arrow);
-    height: var(--fo-arrow);
-    background: rgb(0 0 0 / 0.995);
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-top: 0.05rem;
+    background: var(--color-ink);
     color: var(--color-paper);
   }
-  .fo-cap-arrow svg { transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+  .fo-cap-arrow svg { width: 0.875rem; height: 0.875rem; transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
   /* Pointed at: it rises a little and its photo leans in. */
   .fo-row[data-active="0"] .fo-card[data-i="0"],
   .fo-row[data-active="1"] .fo-card[data-i="1"],
@@ -2482,7 +2480,7 @@
   .fo-card:hover .fo-img[data-loaded],
   .fo-card:focus-visible .fo-img[data-loaded] { transform: scale(1.04); }
   .fo-card:hover .fo-cap-arrow svg,
-  .fo-card:focus-visible .fo-cap-arrow svg { transform: translateX(4px); }
+  .fo-card:focus-visible .fo-cap-arrow svg { transform: translateX(2px); }
   .fo-card:focus-visible { outline: 1px solid var(--color-paper); outline-offset: 5px; }
   /* The carousel's arrows, under the row, only when it scrolls. */
   .fo-row-nav { display: flex; gap: 0.5rem; margin-top: 1rem; }

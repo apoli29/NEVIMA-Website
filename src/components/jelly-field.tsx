@@ -156,7 +156,9 @@ function seeded(seed: number) {
 const DROPS = (() => {
   const r = seeded(7);
   const range = (lo: number, hi: number) => lo + r() * (hi - lo);
-  return Array.from({ length: 13 }, () => ({
+  // Drawn in order from one seed, so the first thirteen (all the home
+  // page uses) are the same however many more there are.
+  return Array.from({ length: 24 }, () => ({
     px: range(55, 125),
     py: range(55, 125),
     r: range(0.035, 0.085) * DROP_SIZE,
@@ -183,7 +185,7 @@ const EXTENT = DROPS.map((d) =>
   ),
 );
 /** Three shapes to a drop. */
-const MAX_BLOBS = 13 * 3;
+const MAX_BLOBS = 24 * 3;
 
 const VERTEX = `#version 300 es
 in vec2 a_pos;
@@ -354,6 +356,7 @@ export function JellyField({
   covered = false,
   flood = 1,
   split = false,
+  many,
 }: {
   /** How many times their usual size the drops are drawn. Above 1 the
       water is flooded (the portfolio, user 2026-10-11: the drops so big
@@ -370,6 +373,10 @@ export function JellyField({
       bands of water put every drop in one of them (the portfolio, user:
       drops both above and below the strip). Read once, as `flood`. */
   split?: boolean;
+  /** How many drops, on a small screen and on any other, in place of the
+      usual 6 and 11 (the portfolio, user: more drops round the strip).
+      At most 22. Read once, as `flood`. */
+  many?: { small: number; large: number };
   className?: string;
   /** Something opaque has been drawn over the whole field (the sections
       that close over the second screen): it is on the screen but cannot
@@ -385,6 +392,7 @@ export function JellyField({
   const canvas = useRef<HTMLCanvasElement>(null);
   const floodAt = useRef(flood);
   const splitAt = useRef(split);
+  const manyAt = useRef(many);
   const coveredRef = useRef(covered);
   const wakeRef = useRef<() => void>(() => {});
   useEffect(() => {
@@ -952,7 +960,12 @@ export function JellyField({
     const dropData = new Float32Array(MAX_BLOBS * 4);
     const turnData = new Float32Array(MAX_BLOBS);
     // Flooded, a phone gets as many drops as any screen, or the white wins.
-    const count = () => (Math.min(w, h) < SMALL && floodAt.current <= 1 ? 6 : 11);
+    const count = () => {
+      const small = Math.min(w, h) < SMALL;
+      const asked = manyAt.current;
+      if (asked) return Math.min(small ? asked.small : asked.large, DROPS.length - PERCHED);
+      return small && floodAt.current <= 1 ? 6 : 11;
+    };
     const placeDrops = (now: number) => {
       const side = dropSide();
       let blobs = 0;
