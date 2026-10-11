@@ -36,6 +36,8 @@ import { PROJECTS, STATUS_LABEL, shown, type Project } from "@/lib/work";
 /** The drops' size here, against the home page's: smaller, so there is
     room for them both over and under the strip (user). */
 const DROP_SCALE = 0.48;
+/** More of them than at home (user: more drops round the strip). */
+const DROP_COUNT = { small: 10, large: 20 };
 
 export function Portfolio() {
   const [open, setOpen] = useState<{ project: Project; from: HTMLElement } | null>(null);
@@ -56,7 +58,7 @@ export function Portfolio() {
                   by one as the page opens, drawn smaller and shared out
                   between the water above the strip and below it. Held still while the large card
                   covers it. */}
-              <JellyField arrive arriveDelay={0.15} covered={open !== null} flood={DROP_SCALE} split />
+              <JellyField arrive arriveDelay={0.15} covered={open !== null} flood={DROP_SCALE} split many={DROP_COUNT} />
             </div>
             <div className="pointer-events-none absolute inset-0 z-10">
               <div className="shell flex h-full flex-col">
