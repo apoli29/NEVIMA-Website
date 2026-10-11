@@ -213,21 +213,16 @@
       0 0 0 2px rgb(34 211 127 / 0.28),
       0 0 12px 2px rgb(34 211 127 / 0.75);
   }
-  .live-dot-loud::after { animation: live-ping-loud 1.8s cubic-bezier(0, 0, 0.2, 1) infinite; }
-  .live-dot-loud::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: inherit;
-    animation: live-ping-loud 1.8s cubic-bezier(0, 0, 0.2, 1) 0.9s infinite;
-  }
+  /* One ring, calm and slow (a motion audit found the two alternating
+     rings busy): the halo makes it stand out at rest, the ring only
+     says it is live. */
+  .live-dot-loud::after { animation: live-ping-loud 2.6s cubic-bezier(0, 0, 0.2, 1) infinite; }
   @keyframes live-ping-loud {
-    0% { transform: scale(1); opacity: 0.8; }
-    80%, 100% { transform: scale(3.4); opacity: 0; }
+    0% { transform: scale(1); opacity: 0.7; }
+    70%, 100% { transform: scale(3); opacity: 0; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .live-dot-loud::before, .live-dot-loud::after { animation: none; }
+    .live-dot-loud::after { animation: none; }
   }
 
   /* The index's title: the readouts' type, set white on a black marker,
@@ -2418,8 +2413,32 @@
     inset: 0;
     background: rgb(0 0 0 / 0.42);
     opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
     pointer-events: none;
+  }
+  /* Each card's name, shown only where nothing can point at it. */
+  .fo-card-tag {
+    position: absolute;
+    left: 0.6rem;
+    bottom: 0.6rem;
+    z-index: 1;
+    display: none;
+  }
+  @media (hover: none) {
+    .fo-card-tag { display: block; }
+    /* The tag names it; the name under the photo would say it twice. */
+    .fo-card .fo-photo-name { display: none; }
+  }
+  /* A photo fades in once it has come. */
+  .fo-img { opacity: 0; transition: opacity 0.4s ease-out; }
+  .fo-img[data-loaded] { opacity: 1; }
+  /* Close: a comfortable target, the words where they were. */
+  .fo-close {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    margin: -0.75rem -0.5rem -0.75rem 0;
+    padding: 0 0.5rem;
   }
   .fo-fan[data-active] .fo-card:not(:hover):not(:focus-visible)::after { opacity: 1; }
   .fo-fan[data-active="0"] .fo-card[data-i="0"]::after,
@@ -2432,7 +2451,7 @@
     .fo-card[data-i="1"] { transform: translate(53%, -2%) rotate(4deg); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .fo-card, .fo-card::after { transition: none; }
+    .fo-card, .fo-card::after, .fo-img { transition: none; }
   }
 
   /* The photo, over the project's name for when it cannot be had. */
@@ -2467,28 +2486,34 @@
     -webkit-backdrop-filter: blur(22px) saturate(1.05);
     backdrop-filter: blur(22px) saturate(1.05);
   }
-  .fo-shell {
+  /* The large card's place: nothing of its own is drawn here; its paper
+     and edge are the frame, opened out once the photo has landed. */
+  .fo-shell { position: absolute; }
+  .fo-frame {
     position: absolute;
-    left: 0;
-    top: 0;
-    overflow: hidden;
+    inset: 0;
     background: var(--color-paper);
     border: 1px solid var(--color-ink);
     box-shadow: 0 2.5rem 5rem -2.5rem rgb(0 0 0 / 0.4);
   }
+  /* The photo column, a card of the large card's height (3:4), so the
+     card flown into it only has to scale evenly. */
   .fo-shell-photo {
     position: absolute;
     left: 0;
     top: 0;
-    width: 100%;
+    width: var(--fo-photo, 44%);
     height: 100%;
+    overflow: hidden;
+    transform-origin: center;
+    will-change: transform;
   }
   .fo-shell-body {
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
-    left: 44%;
+    left: var(--fo-photo, 44%);
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -2497,7 +2522,8 @@
   /* Its parts keep their size; the body scrolls instead (the clamped
      text collapsed to nothing when the card was short). */
   .fo-shell-body > * { flex-shrink: 0; }
-  .fo-shell[data-phone] { border: 0; }
+  .fo-shell[data-phone] .fo-frame { border: 0; box-shadow: none; }
+  .fo-shell[data-phone] .fo-shell-photo { width: 100%; height: 38%; }
   .fo-shell[data-phone] .fo-shell-body { top: 38%; left: 0; padding: 1.25rem var(--gutter) 1.5rem; }
   /* The grid three to a row where the card is wide enough. */
   .fo-specs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
