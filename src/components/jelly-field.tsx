@@ -309,9 +309,13 @@ void main() {
   float bodyD = smoothstep(0.5 - 0.06 * u_soft, 0.5 + 0.06 * u_soft, fd);
 
   // A soft shadow, thrown down and to the right.
-  float shade = smoothstep(0.15, 0.9, drops(q - vec2(14.0, 20.0))) * 0.1;
+  // Both scaled with the drops' size (u_soft is 1 / flood): the shadow
+  // thrown as far, and the surface read as steep, as on a drop of the
+  // usual size, so a flooded drop stays a bead of glass and not a flat
+  // black shape.
+  float shade = smoothstep(0.15, 0.9, drops(q - vec2(14.0, 20.0) / u_soft)) * 0.1;
   float col = 1.0 - shade;
-  col = mix(col, glass(gd, 70.0), bodyD);
+  col = mix(col, glass(gd, 70.0 / u_soft), bodyD);
 
   vec3 l = normalize(LIGHT);
   vec3 h = normalize(l + vec3(0.0, 0.0, 1.0));

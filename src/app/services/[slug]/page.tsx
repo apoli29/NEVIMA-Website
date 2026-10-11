@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Footer } from "@/components/footer";
+import { WorkTogether } from "@/components/work-together";
 import { SERVICES, findService, servicePath } from "@/lib/services";
 
 /* ==================================================================
@@ -123,6 +124,7 @@ export default async function ServicePage({
           </nav>
         </div>
       </main>
+      <WorkTogether />
       <Footer />
     </>
   );

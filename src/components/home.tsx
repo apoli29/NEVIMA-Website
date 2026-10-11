@@ -12,6 +12,7 @@ import {
 } from "motion/react";
 import { Comparison } from "./comparison";
 import { Footer } from "./footer";
+import { WorkTogether } from "./work-together";
 import { FloatingNav } from "./floating-nav";
 import { useGateway } from "./gateway";
 import { JellyField } from "./jelly-field";
@@ -437,6 +438,7 @@ export function Home() {
         <Comparison ready={phase === "open"} />
       </main>
 
+      <WorkTogether />
       <Footer />
       </div>
 

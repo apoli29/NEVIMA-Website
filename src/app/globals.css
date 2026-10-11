@@ -2400,99 +2400,123 @@
     color: var(--color-ash);
   }
 
-  /* The prints, both in one place, crossed. */
-  .fo-fan {
-    --pf-w: clamp(11rem, 17vw, 16.5rem);
-    display: grid;
-    place-items: center;
+  /* The work, side by side in the middle: large, straight, each one a
+     photo with its name over its foot. More than fit, and the row scrolls
+     sideways as a carousel, snapping card to card, with arrows under it. */
+  .fo-row-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
   }
-  @media (max-height: 760px) {
-    .fo-fan { --pf-w: clamp(9.5rem, 24svh, 15rem); }
+  .fo-row {
+    --pf-w: clamp(15rem, 22vw, 21rem);
+    display: flex;
+    gap: clamp(1rem, 2vw, 1.75rem);
+    max-width: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    /* Room for the lift and the whole shadow inside the scroller, which
+       would otherwise cut the shadow off in a hard-edged box; the margin
+       gives the extra foot back to the layout. */
+    padding: 1.5rem 3rem 5rem;
+    margin-bottom: -3rem;
+  }
+  .fo-row::-webkit-scrollbar { display: none; }
+  @media (max-height: 820px) {
+    .fo-row { --pf-w: clamp(13rem, 33svh, 19rem); }
   }
   .fo-card {
-    grid-area: 1 / 1;
     position: relative;
-    display: flex;
-    flex-direction: column;
+    flex: 0 0 var(--pf-w);
     width: var(--pf-w);
-    padding: calc(var(--pf-w) * 0.07) calc(var(--pf-w) * 0.07) 0;
-    background: var(--color-paper);
+    aspect-ratio: 3 / 4;
+    padding: 0;
+    overflow: hidden;
+    scroll-snap-align: center;
     text-align: left;
     cursor: pointer;
-    box-shadow:
-      0 0 0 1px rgb(0 0 0 / 0.06),
-      0 1.75rem 3.25rem -1.5rem rgb(0 0 0 / 0.55);
+    background: #1c1c1c;
+    box-shadow: 0 2rem 3.5rem -1.75rem rgb(0 0 0 / 0.6);
     transition:
-      transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  /* The photo's window in the mat, at a card's 3:4. */
   .fo-window {
-    position: relative;
+    position: absolute;
+    inset: 0;
     display: block;
-    aspect-ratio: 3 / 4;
     overflow: hidden;
   }
-  /* The mat below it carries the name and the state. */
+  .fo-window .fo-img { transition: opacity 0.4s ease-out, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+  /* Its name over the photo's foot, on a soft shade. */
   .fo-cap {
+    position: absolute;
+    inset: auto 0 0;
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
-    padding: calc(var(--pf-w) * 0.055) 0 calc(var(--pf-w) * 0.07);
+    gap: 0.2rem;
+    padding: 3.5rem 1.15rem 1.1rem;
+    background: linear-gradient(to top, rgb(0 0 0 / 0.62), rgb(0 0 0 / 0));
+    pointer-events: none;
   }
   .fo-cap-name {
     font-family: var(--font-title);
-    font-size: 0.9375rem;
+    font-size: clamp(1.25rem, 1.6vw, 1.5rem);
     font-weight: 500;
-    letter-spacing: -0.01em;
-    color: var(--color-ink);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--color-paper);
   }
   .fo-cap-meta {
-    font-size: 0.75rem;
-    color: var(--color-ash);
+    font-size: 0.8125rem;
+    color: rgb(255 255 255 / 0.75);
   }
-  /* At rest: crossed, the right one over the left. */
-  .fo-card[data-i="0"] { z-index: 1; transform: translate(-34%, 2%) rotate(-7deg); }
-  .fo-card[data-i="1"] { z-index: 2; transform: translate(34%, -2%) rotate(6deg); }
-  /* Pointed at: it straightens, rises and comes forward; the other one
-     leans away. */
-  .fo-fan[data-active="0"] .fo-card[data-i="0"] {
-    z-index: 3;
-    transform: translate(-38%, -6%) rotate(-1.5deg) scale(1.05);
-    box-shadow:
-      0 0 0 1px rgb(0 0 0 / 0.06),
-      0 2.5rem 4rem -1.75rem rgb(0 0 0 / 0.6);
-  }
-  .fo-fan[data-active="0"] .fo-card[data-i="1"] { transform: translate(44%, 3%) rotate(10deg) scale(0.95); }
-  .fo-fan[data-active="1"] .fo-card[data-i="1"] {
-    z-index: 3;
-    transform: translate(38%, -6%) rotate(1.5deg) scale(1.05);
-    box-shadow:
-      0 0 0 1px rgb(0 0 0 / 0.06),
-      0 2.5rem 4rem -1.75rem rgb(0 0 0 / 0.6);
-  }
-  .fo-fan[data-active="1"] .fo-card[data-i="0"] { transform: translate(-44%, 3%) rotate(-10deg) scale(0.95); }
-  /* The one left behind darkens. */
-  .fo-card::after {
-    content: "";
+  .fo-cap-arrow {
     position: absolute;
-    inset: 0;
-    background: rgb(0 0 0 / 0.4);
-    opacity: 0;
-    transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-    pointer-events: none;
+    right: 1.1rem;
+    bottom: 1.25rem;
+    color: var(--color-paper);
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .fo-fan[data-active="0"] .fo-card[data-i="1"]::after,
-  .fo-fan[data-active="1"] .fo-card[data-i="0"]::after { opacity: 1; }
-  .fo-card:focus-visible { outline: 1px solid var(--color-paper); outline-offset: 6px; }
-  /* Phones: no pointer to point with, so side by side, barely turned. */
+  /* Pointed at: it rises a little and its photo leans in; the others
+     step back. */
+  .fo-row[data-active] .fo-card { opacity: 0.6; }
+  .fo-row[data-active="0"] .fo-card[data-i="0"],
+  .fo-row[data-active="1"] .fo-card[data-i="1"],
+  .fo-row[data-active="2"] .fo-card[data-i="2"],
+  .fo-row[data-active="3"] .fo-card[data-i="3"],
+  .fo-row[data-active="4"] .fo-card[data-i="4"],
+  .fo-row[data-active="5"] .fo-card[data-i="5"] {
+    opacity: 1;
+    transform: translateY(-0.5rem);
+    box-shadow: 0 2.75rem 4rem -1.75rem rgb(0 0 0 / 0.7);
+  }
+  .fo-card:hover .fo-img[data-loaded],
+  .fo-card:focus-visible .fo-img[data-loaded] { transform: scale(1.04); }
+  .fo-card:hover .fo-cap-arrow,
+  .fo-card:focus-visible .fo-cap-arrow { transform: translateX(4px); }
+  .fo-card:focus-visible { outline: 1px solid var(--color-paper); outline-offset: 5px; }
+  /* The carousel's arrows, under the row, only when it scrolls. */
+  .fo-row-nav { display: flex; gap: 0.5rem; margin-top: 0.25rem; }
+  .fo-row-nav button {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    box-shadow: 0 0.75rem 1.5rem -1rem rgb(0 0 0 / 0.5);
+    transition: opacity 0.3s ease;
+  }
+  .fo-row-nav button:disabled { opacity: 0.4; cursor: default; }
   @media (max-width: 639px) {
-    .fo-fan { --pf-w: min(41vw, 11rem); }
-    .fo-card[data-i="0"] { transform: translate(-53%, 2%) rotate(-4deg); }
-    .fo-card[data-i="1"] { transform: translate(53%, -2%) rotate(4deg); }
+    .fo-row { --pf-w: min(72vw, 17rem); padding-inline: calc((100% - var(--pf-w)) / 2); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .fo-card, .fo-card::after, .fo-img { transition: none; }
+    .fo-card, .fo-window .fo-img, .fo-cap-arrow { transition: none; }
   }
 
   /* The photo, over the project's name for when it cannot be had. */
@@ -2601,5 +2625,28 @@
   .fo-credit {
     font-size: 0.75rem;
     color: var(--color-ash);
+  }
+}
+
+/* ==================================================================
+   Let's work together (work-together.tsx): the last section of every
+   page, the free-proposal form set in place on its frosted pane over
+   two black-and-white photographs taking turns.
+   ================================================================== */
+@layer components {
+  .wt { min-height: 100svh; display: flex; align-items: center; }
+  .wt > .shell { width: 100%; }
+  .wt-photo { opacity: 0.55; }
+  /* The form stands still: a fixed height, its body scrolling inside. */
+  .wt-form {
+    height: min(46rem, calc(100svh - 7rem));
+    min-height: 34rem;
+    padding: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .wt-form { padding: 2rem; }
+  }
+  @media (min-width: 1280px) {
+    .wt-form { padding: 2.5rem; }
   }
 }
