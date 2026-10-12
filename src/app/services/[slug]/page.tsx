@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Footer } from "@/components/footer";
+import { Included } from "@/components/services";
 import { WorkTogether } from "@/components/work-together";
 import { SERVICES, findService, servicePath } from "@/lib/services";
 
@@ -52,7 +53,9 @@ export default async function ServicePage({
   const service = findService((await params).slug);
   if (!service || OWN_PAGE.has(service.slug)) notFound();
 
-  const others = SERVICES.filter((other) => other.slug !== service.slug);
+  const others = SERVICES.filter(
+    (other) => other.slug !== service.slug && !OWN_PAGE.has(other.slug),
+  );
 
   return (
     <>
@@ -91,6 +94,10 @@ export default async function ServicePage({
           <p className="mt-9 max-w-[54ch] text-[clamp(1.125rem,1.5vw,1.375rem)] leading-[1.45] tracking-[-0.012em] text-ink md:mt-12">
             {service.body}
           </p>
+
+          {service.included && (
+            <Included included={service.included} play={false} className="mt-10 max-w-[54ch] md:mt-12" />
+          )}
 
           <div className="mt-11 flex flex-wrap items-center gap-3 md:mt-14">
             <a

@@ -54,12 +54,15 @@ const SLIDE_MS = 3200;
    service is sold, or, for the one that needs neither, what it is for,
    in the words of its own description. */
 const LINE: Record<string, string> = {
-  "web-design": "Websites that make a business stand out",
+  "web-design": "Our main area of work",
   "visual-identity": "Only together with a website",
   "photo-shoot": "Photos, or photos and video",
 };
 
-
+/** The ticks start once the light is most of the way through the
+    description, in s, and follow one another at this pace. */
+const TICK_DELAY_S = (LIGHT_DELAY_MS + LIGHT_MS * 0.8) / 1000;
+const TICK_STAGGER_S = 0.16;
 
 /** The same Unsplash photo, cut to another size. */
 function sized(src: string, w: number, h: number) {
@@ -424,6 +427,17 @@ function Row({
               </p>
             )}
 
+            {service.included && (
+              <Included
+                // Apart from the description's key, beside which it stands.
+                key={`included-${opened}`}
+                included={service.included}
+                play={open && !reduce}
+                onInk={main}
+                className="mt-7 md:mt-9"
+              />
+            )}
+
             {/* Where there is no showcase, the drawer carries the pictures. */}
             <div className="mt-6 grid grid-cols-3 gap-2 lg:hidden">
               {service.photos.map((photo, i) => (
@@ -468,6 +482,68 @@ function Row({
         className="absolute inset-x-0 bottom-0 bg-ink/25"
       />
     </li>
+  );
+}
+
+/* What comes with a service, ticked off under its description. Opening a
+   drawer, the ticks are drawn in one after another as the light finishes
+   the words above them, each line coming up with its own; closing, they
+   stay drawn while the drawer shuts. The tick is a single pen stroke: a
+   short down-stroke, then a long arm that eases as it rises. */
+export function Included({
+  included,
+  play,
+  onInk = false,
+  className,
+}: {
+  included: NonNullable<Service["included"]>;
+  /** Draw the ticks in, rather than show them drawn. */
+  play: boolean;
+  /** Set on the inked Web Design row. */
+  onInk?: boolean;
+  className?: string;
+}) {
+  return (
+    <div className={className}>
+      <p className={`mono-label ${onInk ? "text-paper/55" : "text-ash-2"}`}>
+        {included.title}
+      </p>
+      <ul className="mt-3.5 grid gap-2.5 md:mt-4 md:gap-3">
+        {included.items.map((item, i) => {
+          const delay = TICK_DELAY_S + i * TICK_STAGGER_S;
+          return (
+            <motion.li
+              key={item}
+              className={`grid grid-cols-[1.125rem_1fr] gap-x-3 text-[0.9375rem] leading-[1.45] tracking-[-0.006em] md:text-[1rem] ${onInk ? "text-paper/85" : "text-ink/80"}`}
+              initial={play ? { opacity: 0, y: 6 } : false}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {/* A box a line high, so the tick sits on the first line. */}
+              <span aria-hidden="true" className="flex h-[1.45em] items-center">
+                <svg
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  className={`block size-[1.0625rem] ${onInk ? "text-paper" : "text-ink"}`}
+                >
+                  <motion.path
+                    d="M3.4 9.7 7.1 13.3C9.4 9.5 11.8 6.7 15 4.3"
+                    stroke="currentColor"
+                    strokeWidth={1.35}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    initial={play ? { pathLength: 0 } : false}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.5, delay: delay + 0.08, ease: [0.65, 0, 0.35, 1] }}
+                  />
+                </svg>
+              </span>
+              <span>{item}</span>
+            </motion.li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
 
