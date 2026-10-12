@@ -1022,11 +1022,17 @@ export function JellyField({
       view.height = Math.round(h * dpr);
 
       // The floating bar, read from the page, where it rests at the top.
+      // The field is a screen that stands at the top of the window when it
+      // is seen, so the bar is read against it standing there: read while
+      // the page is scrolled past it (a page put back further down, see
+      // return-keeper.tsx), its own top is far above the window, and the
+      // bar would have seemed to cover nearly all of it, sending every
+      // drop to the foot of the screen.
       const barEl = document.querySelector("header .shell > div");
       if (barEl) {
         const b = barEl.getBoundingClientRect();
         const o = view.getBoundingClientRect();
-        bar = { left: b.left - o.left, right: b.right - o.left, bottom: b.bottom - o.top };
+        bar = { left: b.left - o.left, right: b.right - o.left, bottom: b.bottom - Math.max(o.top, 0) };
       }
 
       cols = Math.max(2, Math.ceil(w / CELL));

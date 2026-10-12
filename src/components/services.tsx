@@ -98,6 +98,33 @@ export function Services({ ready }: { ready: boolean }) {
     [],
   );
 
+  /* Sent here for one service (the foot's service links point at
+     /#service-<slug>, user 2026-10-12): that row opens, and once the page
+     is handed back the list is brought up with the row a third of the
+     way down the screen. */
+  const [asked, setAsked] = useState<string | null>(null);
+  useEffect(() => {
+    const read = () => {
+      const slug = /^#service-([a-z-]+)$/.exec(window.location.hash)?.[1];
+      if (!slug || !SERVICES.some((s) => s.slug === slug)) return;
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+      setOpen(slug);
+      setAsked(slug);
+    };
+    read();
+    window.addEventListener("hashchange", read);
+    return () => window.removeEventListener("hashchange", read);
+  }, []);
+  useEffect(() => {
+    if (!ready || !asked) return;
+    const t = window.setTimeout(() => {
+      const head = document.getElementById(`service-${asked}-name`);
+      if (head) window.scrollTo(0, head.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.3);
+      setAsked(null);
+    }, 120);
+    return () => window.clearTimeout(t);
+  }, [ready, asked]);
+
   const openIndex = SERVICES.findIndex((s) => s.slug === open);
   const shown = pointed ?? (openIndex >= 0 ? openIndex : 0);
 

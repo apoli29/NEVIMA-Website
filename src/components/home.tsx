@@ -22,7 +22,7 @@ import { Services } from "./services";
 import { StatementScreen } from "./statement-screen";
 import { useSmoothScroll } from "./smooth-scroll";
 import { Studio } from "./studio";
-import { isReturning } from "@/lib/return-spot";
+import { hasOpened, isReturning, markOpened } from "@/lib/return-spot";
 
 /* ==================================================================
    One gesture, one take.
@@ -248,16 +248,18 @@ export function Home() {
       onComplete: () => {
         phaseRef.current = "open";
         setPhase("open");
+        markOpened();
       },
     });
   }, [progress, reduce]);
 
-  /* Come back to from the portfolio's "Exit portfolio": the page is put
-     back where the visitor left it (see return-keeper.tsx), so the
-     opening is not played again. Before the first paint, so the curtain
-     is never seen. */
+  /* The opening is played once, as the visit begins. Come back to later
+     (the bar's or the foot's Home, the browser's back button, or the
+     portfolio's "Exit portfolio", which also puts the page back where the
+     visitor left it, see return-keeper.tsx), the page is simply there.
+     Before the first paint, so the curtain is never seen. */
   useMeasureEffect(() => {
-    if (!isReturning("/")) return;
+    if (!isReturning("/") && !hasOpened()) return;
     progress.set(1);
     phaseRef.current = "open";
     setPhase("open");
@@ -272,8 +274,15 @@ export function Home() {
   const asked = useRef(false);
   useEffect(() => {
     if (window.location.hash !== "#proposal") return;
-    asked.current = true;
     history.replaceState(null, "", window.location.pathname + window.location.search);
+    // Already opened earlier in the visit: the form opens straight away.
+    if (phaseRef.current === "open") {
+      const t = window.setTimeout(() => {
+        document.querySelector<HTMLElement>("[data-nav-proposal]")?.click();
+      }, 250);
+      return () => window.clearTimeout(t);
+    }
+    asked.current = true;
     const t = window.setTimeout(open, 350);
     return () => window.clearTimeout(t);
   }, [open]);
@@ -289,7 +298,10 @@ export function Home() {
 
   useEffect(() => {
     // Lenis is held and released by useSmoothScroll from the same phase.
-    if (phase === "open") return;
+    // The ref as well: skipped before the first paint, the page is already
+    // open by the time this first runs, and must not be held or sent to
+    // the top (the browser, or the keeper, is putting it back).
+    if (phase === "open" || phaseRef.current === "open") return;
 
     const root = document.documentElement;
     const previousOverflow = root.style.overflow;
