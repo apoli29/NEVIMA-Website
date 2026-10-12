@@ -19,7 +19,7 @@ import { useProposal } from "./proposal-flow";
    How we work
 
    The studio's whole process, step by step (the user's brief,
-   2026-10-07): eighteen steps in four phases, told to the visitor as
+   2026-10-07, rewritten 2026-10-12): steps in four phases, told as
    "you" and "we". Each step keeps the shape the stages had: its name
    on the black marker, a principle in the title face, what happens,
    and who does it in the mono small print. Prices are not here: they
@@ -50,11 +50,12 @@ import { useProposal } from "./proposal-flow";
 type Who = "You" | "Us" | "You and us";
 
 /** The services only done if the client asks for them. */
-type Extra = "photo" | "identity" | "seo";
+type Extra = "photo" | "identity" | "seo" | "geo";
 const EXTRAS: { id: Extra; label: string }[] = [
   { id: "photo", label: "Photo shoot" },
   { id: "identity", label: "Visual identity" },
-  { id: "seo", label: "SEO & GEO" },
+  { id: "seo", label: "SEO" },
+  { id: "geo", label: "GEO" },
 ];
 
 type Cta = { proposal: true } | { href: string; label: string };
@@ -94,45 +95,35 @@ const PHASES: Phase[] = [
     id: "proposal",
     name: "Proposal and contract",
     intro:
-      "You see what it could cost, we study your request and make a proposal, and we only start once the contract is signed and your materials are in.",
+      "You get an estimate, we reply with the exact price, and we only start once the contract is signed and your materials are in.",
     steps: [
       {
         id: "estimate",
-        name: "Estimate",
+        name: "Get a price estimate",
         principle: "See the price first.",
-        text: "You fill in our estimator and get a price range straight away. We confirm the final price once we have talked.",
+        text: "We provide a short form that works out an estimate for your project, based on your answers.",
         who: "You",
         cta: [{ proposal: true }],
       },
       {
         id: "analysis",
-        name: "Analysis and a second option",
+        name: "We set the exact price",
         principle: "We look before we propose.",
-        text: "We study your market (the sector, your competitors, your clients and what they need, the tone to speak in) and your business itself (how it works, its essence, your current visual identity and what could improve) to see whether your plan should change. Then we always bring you a second option, cheaper or dearer, depending on what your website needs.",
+        text: "Once you send the form, we go through your answers. Within a few hours, we reply with the exact price for your project and spell out what justifies it.",
         who: "Us",
-        wide: true,
-      },
-      {
-        id: "choice",
-        name: "Your choice",
-        principle: "Both prices, side by side.",
-        text: "You choose between the plan you asked for and our second option. If ours adds something you did not ask for, like a blog, you see both prices side by side and why it suits your business. We only suggest what you can keep up.",
-        who: "You",
-        wide: true,
       },
       {
         id: "contract",
-        name: "Contract",
+        name: "Sending the contract",
         principle: "Everything agreed in writing.",
-        text: "Once the plan is set, we send you the contract. It fixes the approved plan, the price, the list of materials and the rules for changes: the price closes with the plan, and pages added later are charged per page.",
+        text: "As soon as you reply to the quote, we send you the contract, which sets out every condition of the service.",
         who: "You and us",
-        wide: true,
       },
       {
         id: "materials",
-        name: "Your materials",
+        name: "Requesting the materials",
         principle: "The clock starts with you.",
-        text: "You send us what the site needs: logo, photos, videos, information about your business and access. We start once everything is in, and the timeline only counts from that day.",
+        text: "Along with the contract, we ask you right away for everything the project needs from your side: existing photos of your business, your logo, your symbol and anything else. We start the project as soon as all of it is in.",
         who: "You",
       },
     ],
@@ -141,47 +132,50 @@ const PHASES: Phase[] = [
     id: "production",
     name: "Production",
     intro:
-      "We start with all your materials in hand, and halfway through we have a free call, to correct course early rather than at the end.",
+      "We start with all your materials in hand, and once part of the site is built we have a call, to correct course early rather than at the end.",
     takes:
       "Varies by project, from 4 working days for a one-page site, counted from the day all your materials are in.",
     steps: [
       {
         id: "photo",
-        name: "Photo shoot",
+        name: "We schedule and organise the photo shoot",
         extra: "photo",
         principle: "Images of your own.",
-        text: "We photograph your business so your site has images of its own: photos only, or photos and video. It is an additional service, added to your website and priced in your estimate.",
+        text: "We agree the date with you, and an extra fee for travelling to your business, if it applies. Depending on how the shoot goes, we set a number of days to deliver the final photos and videos, and we only move on to building your website once they are ready. You can use them for more than your website, too.",
         who: "Us",
+        wide: true,
       },
       {
         id: "identity",
-        name: "Visual identity",
+        name: "We start with the identity",
         extra: "identity",
         principle: "Identity first.",
-        text: "We create your logo, or your logo and symbol, because the rest of the site rests on it. Priced in your estimate.",
+        text: "We believe a website only makes sense to start once we have every material it needs. So we create your logo and symbol first, to make sure we have everything in hand.",
         who: "Us",
         cta: [explore("visual-identity", "Visual Identity")],
       },
       {
         id: "strategy",
-        name: "First version and free call",
+        name: "A meeting for your feedback",
         principle: "Structure first, then we talk.",
-        text: "We define the sections of each page and their components, then design and build the base of your site, up to about 25 to 30% of the project. At that point we have a free call: you already see the strategy and the essence of your site, and you tell us what you like and what you don’t. We align ideas now, so nothing has to change once the site is closed.",
+        text: "Once part of your website is built, we book a call to show you the direction it is taking. That way your feedback comes early, the result is tailored to your taste, and changes at the end are kept to a minimum.",
         who: "You and us",
         wide: true,
       },
       {
         id: "finish",
-        name: "Finishing and basic SEO",
+        name: "Finishing the website and basic SEO",
         principle: "Finished, and ready to be found.",
-        text: "With everything aligned, we complete the design and the build, which closes the web design process. Before launch, we apply the essential SEO practices to your site.",
-        who: "Us",
+        text: "With your feedback in, we make any adjustments it calls for. We finish the website and apply the basic SEO practices included in our web design service, then show you the final result on a video call, where you may still want a few changes. Changes that take us only a few minutes are never charged; for anything bigger, we set a price by how hard it is and present it to you first.",
+        // The client now sees the result and asks for changes here.
+        who: "You and us",
+        wide: true,
       },
       {
         id: "hosting",
-        name: "Hosting and domain",
+        name: "Logistics",
         principle: "We handle the logistics.",
-        text: "Your domain is included for 2 years, and hosting for as long as your site is live, within reasonable use. If you already have a domain, its cost comes off your price, with proof.",
+        text: "We take care of the logistics, from the legal documents (privacy policy, cookie policy and others) to hosting your website and connecting your domain.",
         who: "Us",
       },
     ],
@@ -189,57 +183,46 @@ const PHASES: Phase[] = [
   {
     id: "launch",
     name: "Review and launch",
-    intro:
-      "Before your site goes live, you can ask for changes (paid), and you decide when SEO and GEO are applied.",
+    intro: "SEO and GEO, if you asked for them, are applied before your site goes live.",
     steps: [
       {
-        id: "seo-choice",
-        name: "SEO and GEO: before or after",
-        extra: "seo",
-        principle: "Now, or found from day one.",
-        text: "You decide whether we apply SEO and GEO before or after launch. Before, your site takes a little longer to go live. After, it goes live straight away.",
-        who: "You",
-        wide: true,
-        cta: [explore("seo", "SEO"), explore("geo", "GEO")],
-      },
-      {
-        id: "seo-before",
-        name: "SEO and GEO before launch",
+        id: "seo",
+        name: "We apply SEO practices",
         extra: "seo",
         principle: "Applied, then published.",
-        text: "If you chose before, we apply SEO and GEO before your site goes live.",
+        text: "So that your website brings in traffic from the very beginning, we apply our one-off SEO practices before it goes live. They are enough for the short term, but we suggest our monthly service to keep your traffic from dropping in the medium and long term.",
         who: "Us",
+        wide: true,
+        cta: [explore("seo", "SEO")],
+      },
+      {
+        id: "geo",
+        name: "We apply GEO practices",
+        extra: "geo",
+        principle: "Recommended from day one.",
+        text: "We also apply these practices before your website goes live, to raise the chances of AI recommending your business as soon as it is online.",
+        who: "Us",
+        cta: [explore("geo", "GEO")],
       },
       {
         id: "launch-step",
-        name: "Your changes and launch",
-        // Its rules for changes spelled out (user, 2026-10-11), so it needs the room.
-        wide: true,
+        name: "Website launch",
         principle: "Your say, then it goes live.",
-        text: "You can ask for changes to the content (text, photos, videos) or to the style (3D, animations, effects, sections, colors, typography). Changes that take us only a few minutes are never charged. For anything bigger, we book a call to note what you want to change, and the price is quoted and agreed with you before we start. Then we put your website online.",
-        who: "You and us",
+        text: "We put your website online, ready to be explored by your clients and other stakeholders.",
+        who: "Us",
       },
     ],
   },
   {
     id: "after",
     name: "After launch",
-    intro:
-      "With your site live, our work turns to SEO, GEO (if not applied yet) and changes whenever you need them.",
+    intro: "With your site live, we stay on hand for whatever you need.",
     steps: [
       {
-        id: "seo-after",
-        name: "SEO and GEO after launch",
-        extra: "seo",
-        principle: "Growing once you are live.",
-        text: "If you chose after, we start once your site is live. Priced in your estimate.",
-        who: "Us",
-      },
-      {
         id: "later-changes",
-        name: "Changes along the way",
+        name: "We’re here to help, even after launch",
         principle: "Here when you need us.",
-        text: "Once your site is live, you can ask us for occasional changes.",
+        text: "We stay fully available for whatever you need.",
         who: "You",
       },
     ],
