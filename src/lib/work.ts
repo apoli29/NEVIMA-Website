@@ -26,6 +26,9 @@ export type Project = {
   pages: string | null;
   /** what the studio made for it */
   scope: string | null;
+  /** the studio's services it took, as the services list names them
+      (user, 2026-10-12) */
+  services: string[];
   year: string | null;
   /** live, or still being made: a project in production has no site to show */
   status: "live" | "in-production";
@@ -53,6 +56,7 @@ export const PROJECTS: Project[] = [
     designLevel: null,
     pages: null,
     scope: null,
+    services: ["Web design", "Visual identity", "SEO", "GEO"],
     year: null,
     status: "live",
     url: "https://www.bsmartish.pt",
@@ -73,6 +77,7 @@ export const PROJECTS: Project[] = [
     designLevel: null,
     pages: null,
     scope: null,
+    services: ["Web design", "Visual identity"],
     year: null,
     status: "in-production",
     url: null,
