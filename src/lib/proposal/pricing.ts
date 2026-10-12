@@ -39,7 +39,7 @@ export const PRICING = {
     } as Record<"landing" | "4-6" | "7-10", [number, number]>,
     /** What every website comes with, shown under its line. */
     includes:
-      "Includes copy and optimised images, your domain for 2 years, hosting for as long as the site is live, and a free call at 25% of the project.",
+      "Includes copy and optimised images, hosting for as long as the site is live, and a free call once part of the website is built.",
 
     /** The visual identity redesign (logo and symbol). */
     identity: { pt: 180, "es-it": 205, us: 315 } satisfies ByMarket,
