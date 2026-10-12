@@ -2,9 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SERVICES, servicePath } from "@/lib/services";
+import { SERVICES } from "@/lib/services";
 import { NAV, homeSection } from "./floating-nav";
 import { LiquidLens } from "./liquid-lens";
 
@@ -142,14 +141,12 @@ export function Footer() {
             <ul className="mt-5 space-y-3">
               {SERVICES.map((service) => (
                 <li key={service.slug}>
-                  {/* Web design has no page of its own any more: it goes to
-                      the services on the home page. */}
-                  <Link
-                    href={service.slug === "web-design" ? section("#services") : servicePath(service.slug)}
-                    className="ftr-link ftr-item"
-                  >
+                  {/* Each to its row in the services on the home page, opened
+                      (user, 2026-10-12): the list there is the services'
+                      one home. */}
+                  <a href={`/#service-${service.slug}`} className="ftr-link ftr-item">
                     {service.title}
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>

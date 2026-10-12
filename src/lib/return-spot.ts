@@ -94,3 +94,23 @@ export function takeReturn(path: string): number | null {
   } catch {}
   return note.y;
 }
+
+/* The home page's opening is played once, as the visit begins (user,
+   2026-10-12): coming back to the home page later, from the bar, the foot
+   or the browser's back button, goes straight to the page. Kept for the
+   tab, like the spot. */
+const OPENED_KEY = "nevima:opened";
+
+export function markOpened() {
+  try {
+    sessionStorage.setItem(OPENED_KEY, "1");
+  } catch {}
+}
+
+export function hasOpened() {
+  try {
+    return sessionStorage.getItem(OPENED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}

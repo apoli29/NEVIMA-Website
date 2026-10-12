@@ -11,6 +11,7 @@ The original brief is imported below. Parts of it were written before the build 
 - The default branch is `main`. Work on a branch and merge back through a pull request.
 - Always finish a round of changes by opening that pull request and merging it into `main` yourself, so Vercel deploys it: the user reviews the work on the deployed site, not on branch previews.
 - The full history of homepage decisions, section by section, is in `docs/homepage-decisions.md`; the about page's is in `docs/about-decisions.md`; the web design page's, the work pages' and the portfolio's in `docs/web-design-decisions.md`. Read the part about a section before changing it.
+- Every project report follows `docs/report-template.md` (structure, per-service pages, privacy rules). Change the template there and in `project-report.tsx` together.
 
 ## Working with the user
 
@@ -37,6 +38,7 @@ The original brief is imported below. Parts of it were written before the build 
 - Old, unused section components stay in `src/components/`. Ask before removing any of them.
 - The bar's links are Home / Portfolio / About nevima, and its one button is "Get your free proposal", which opens the free-proposal form (user, 2026-10-11). Portfolio is its own page (`/portfolio`, `portfolio.tsx`).
 - Every page ends with `WorkTogether` ("Let’s work together." and the proposal form) right before `<Footer />`. A new page gets it too. The one exception is the portfolio (user, 2026-10-12): a single screen with no bar, no `WorkTogether` and no footer, only "Exit portfolio" and "Let's work together" (which opens the proposal form).
+- The home page's opening plays once per visit; any later return to the home page skips it.
 - "Exit portfolio" goes back exactly where the visitor was (`src/lib/return-spot.ts`, `ReturnKeeper` in the layout; the home page skips its opening when it is returned to). Links into the portfolio must stay plain links to `/portfolio` so the spot is noted.
 - Lenis owns the scroll lock through `useSmoothScroll(locked)` in `src/components/smooth-scroll.ts`. Do not move `stop()`/`start()` back into callers.
 - Any Motion `layout` element below the opening must carry `layoutDependency`, or the jump when the opening releases the page gets animated.
