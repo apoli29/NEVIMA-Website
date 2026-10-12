@@ -87,7 +87,7 @@ const FIRST_LIGHT_MS = 180;
 /** The least time between two rows starting, in milliseconds. */
 const STAGGER_MS = 420;
 
-const THEM = "Traditional big agency";
+const THEM = "Traditional agencies";
 
 type Row = {
   id: string;
@@ -100,39 +100,46 @@ type Row = {
 
 const ROWS: Row[] = [
   {
-    id: "contact",
-    criterion: "Contact and decision-making",
-    them: "Feedback is filtered through multiple intermediaries (account managers and traffic managers). Every change goes through long internal approval chains before it reaches the person who writes the code.",
-    lead: "Direct line and immediate decisions:",
-    us: "feedback is discussed and applied directly by the people who build, eliminating noise, back-and-forth phone calls and dead time.",
+    id: "hosting",
+    criterion: "Website hosting",
+    them: "Excessively expensive, with prices that can reach hundreds of euros a year.",
+    lead: "Completely free,",
+    us: "for as long as your website is live with us.",
+  },
+  {
+    id: "seo",
+    criterion: "SEO practices",
+    them: "Many agencies charge for even the most basic SEO practices.",
+    lead: "Included:",
+    us: "our web design service includes basic SEO practices, so your website doesn’t disappear from search engine results.",
+  },
+  {
+    id: "relationship",
+    criterion: "Client service and relationship",
+    them: "Distant. Sometimes the client never gets in direct contact with the people mainly responsible for the project. As a result, the client doesn’t feel heard and the service becomes impersonal.",
+    lead: "Close and personalized:",
+    us: "you are always in direct contact with us. Our process keeps you up to date as the project develops, and we adjust it down to the detail based on your feedback.",
   },
   {
     id: "knowledge",
     criterion: "Knowledge and tools",
-    them: "Outdated methods: they keep relying on obsolete tools and aging processes.",
+    them: "Outdated methods: they keep relying on expensive but obsolete tools and aging processes.",
     lead: "Cutting-edge:",
     us: "state-of-the-art tools, constant tracking of how the market evolves and technical expertise that is always up to date.",
   },
   {
     id: "costs",
     criterion: "Costs and budget",
-    them: "Disproportionately high for the quality of the final result. Too many people involved drive up the cost of the process, and expensive tools are used inefficiently.",
+    them: "Disproportionately high for the quality of the final result. The two main reasons: too many people involved without need, and tools that are too expensive and obsolete.",
     lead: "Highly efficient:",
-    us: "a rigorous focus on cost-benefit and final quality, eliminating overhead and waste.",
+    us: "we work with the most modern, efficient tools, which deliver better results at lower prices.",
   },
   {
     id: "timelines",
     criterion: "Timelines and development",
     them: "Slow processes, dragged out by approvals and excessive internal bureaucracy.",
-    lead: "Significantly faster development:",
+    lead: "Faster development:",
     us: "agile execution combined with the smart, efficient use of the best tools.",
-  },
-  {
-    id: "service",
-    criterion: "Overall service",
-    them: "Formal, slow, corporate, impersonal and distant.",
-    lead: "Agile, close, efficient and personalized:",
-    us: "a dedicated service, tailored to each client.",
   },
 ];
 
