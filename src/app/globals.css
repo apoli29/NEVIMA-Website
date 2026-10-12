@@ -2379,31 +2379,26 @@
   /* The site's black ring vanishes on this black. */
   .fo-room :focus-visible { outline-color: rgb(255 255 255 / 0.9); }
 
-  /* The two buttons, at the top, over everything in the room. */
+  /* The two buttons, side by side in the middle at the top, over
+     everything in the room. */
   .fo-top {
     position: absolute;
     inset: 0 0 auto;
     z-index: 30;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: clamp(1rem, 2.4vw, 1.75rem) var(--gutter);
+    justify-content: center;
+    gap: 0.75rem 1.25rem;
+    padding: clamp(1.25rem, 2.6vw, 2rem) var(--gutter);
   }
-  .fo-exit {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    min-height: 2.75rem;
-    padding-inline: 0.25rem;
-    font-size: 0.9375rem;
-    color: rgb(255 255 255 / 0.78);
-    cursor: pointer;
-    transition: color 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .fo-exit svg { transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
-  .fo-exit:hover { color: var(--color-paper); }
-  .fo-exit:hover svg { transform: translateX(-3px); }
+  /* The black drop at the white one's size, so the two stand level. */
+  .fo-exit.cta-drop { padding: 0.72em 1.45em; }
+  .fo-exit.cta-drop::before { inset: -0.54em -0.85em -0.63em -0.8em; }
+  .fo-exit .btn-neu-face { display: inline-flex; align-items: center; gap: 0.55em; }
+  /* Its arrow points back, so it moves back. */
+  .fo-exit:hover .btn-neu-face > .fo-exit-arrow,
+  .fo-exit:focus-visible .btn-neu-face > .fo-exit-arrow { transform: translateX(-3px); }
 
   /* The cloud. The stage lets the hand through to the lens under it;
      only the photos take it. */
@@ -2467,61 +2462,49 @@
     background: #1c1c1c;
     box-shadow: 0 1.75rem 3.5rem -1.5rem rgb(0 0 0 / 0.8);
   }
+  /* Pointed at, the photo turns to frosted glass (blurred, scaled a
+     little past the tile so its soft edge never shows, and paled under a
+     white veil) and the other steps back. */
   .fo-tile .fo-window {
     position: absolute;
     inset: 0;
     display: block;
     transition:
       transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.45s cubic-bezier(0.22, 1, 0.36, 1),
       opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  /* Pointed at: it comes forward a little; the other steps back. */
-  .fo-piece[data-on] .fo-window { transform: scale(1.035); }
+  .fo-piece[data-on] .fo-window { transform: scale(1.12); filter: blur(14px) saturate(1.1); }
   .fo-stage[data-active] .fo-piece:not([data-on]) .fo-window { opacity: 0.42; }
 
-  /* The label: frosted glass over the photo's lower outer corner,
-     hanging off it, black on white. Leaving is quicker and quieter than
-     arriving. */
-  .fo-note {
+  /* The glass: a white veil with a bright edge, and on it the name,
+     underlined, black on white, the sector and the services. Leaving is
+     quicker and quieter than arriving. */
+  .fo-frost {
     position: absolute;
-    top: calc(100% - 4.5rem);
-    width: min(16.5rem, 80vw);
-    padding: 1rem 1.1rem 1.1rem;
-    border-radius: 6px;
-    border: 1px solid rgb(255 255 255 / 0.6);
-    background: rgb(255 255 255 / 0.8);
-    -webkit-backdrop-filter: blur(18px) saturate(1.15);
-    backdrop-filter: blur(18px) saturate(1.15);
-    box-shadow: 0 1.25rem 2.5rem -1.25rem rgb(0 0 0 / 0.55);
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    padding: clamp(0.9rem, 1.4vw, 1.25rem);
+    border-radius: inherit;
+    background: rgb(255 255 255 / 0.5);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.55);
     color: var(--color-ink);
-    pointer-events: none;
+    text-align: left;
     opacity: 0;
+    transition: opacity 0.18s ease-out;
+  }
+  .fo-frost-body {
+    display: flex;
+    flex-direction: column;
     transform: translateY(6px);
-    filter: blur(4px);
-    transition:
-      opacity 0.16s ease-out,
-      transform 0.16s ease-out,
-      filter 0.16s ease-out;
+    transition: transform 0.18s ease-out;
   }
-  .fo-piece[data-i="0"] .fo-note { left: 34%; }
-  .fo-piece[data-i="1"] .fo-note { right: 34%; }
-  .fo-piece[data-on] .fo-note {
-    opacity: 1;
-    transform: none;
-    filter: none;
-    transition:
-      opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-      filter 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  /* No hand on a phone: the label only comes with the keyboard, inside
-     the photo, where there is room for it. */
-  @media (max-width: 767px) {
-    .fo-piece[data-i] .fo-note { top: auto; bottom: 0.5rem; left: 0.5rem; right: 0.5rem; width: auto; }
-  }
-  .fo-note-name {
+  .fo-piece[data-on] .fo-frost { opacity: 1; transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+  .fo-piece[data-on] .fo-frost-body { transform: none; transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+  .fo-frost-name {
     font-family: var(--font-title);
-    font-size: 1.25rem;
+    font-size: clamp(1.125rem, 1.5vw, 1.375rem);
     font-weight: 500;
     line-height: 1.15;
     letter-spacing: -0.02em;
@@ -2529,14 +2512,16 @@
     text-decoration-thickness: 1px;
     text-underline-offset: 0.22em;
   }
-  .fo-note-sector { margin-top: 0.45rem; font-size: 0.875rem; line-height: 1.4; }
-  .fo-note-key { color: rgb(0 0 0 / 0.62); margin-right: 0.25rem; }
+  .fo-frost-sector { margin-top: 0.45rem; font-size: 0.875rem; line-height: 1.4; }
+  .fo-frost-key { color: rgb(0 0 0 / 0.65); margin-right: 0.25rem; }
+  .fo-frost-tags { margin-top: 0.75rem; }
+  .fo-frost-tags > span { border-color: rgb(0 0 0 / 0.35); }
 
   /* The services the studio took, as small outlined tags: on the label
      and on the large card. */
   .fo-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
-  .fo-note .fo-tags { margin-top: 0.75rem; }
-  .fo-tags li {
+  .fo-tags li,
+  .fo-tags > span {
     padding: 0.28rem 0.55rem 0.3rem;
     border: 1px solid rgb(0 0 0 / 0.28);
     border-radius: 3px;
@@ -2547,7 +2532,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .fo-drift { animation: none; }
-    .fo-tile .fo-window, .fo-note, .fo-exit, .fo-exit svg { transition: none; }
+    .fo-tile .fo-window, .fo-frost, .fo-frost-body { transition: none; }
   }
 
   /* The photo, over the project's name for when it cannot be had. */

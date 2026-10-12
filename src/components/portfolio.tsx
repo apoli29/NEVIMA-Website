@@ -29,13 +29,15 @@ import { PROJECTS, STATUS_LABEL, shown, type Project } from "@/lib/work";
    on a slow loop of its own, and the whole cloud leaning a little after
    the hand, the near photo more than the far one, so the room has depth.
 
-   Two buttons and nothing else: "Exit portfolio", which goes back exactly
-   where the visitor was (see return-spot.ts), and "Let's work together",
-   which opens the free-proposal form out of itself.
+   Two buttons and nothing else, side by side in the middle at the top,
+   the same drop in black glass and in white: "Exit portfolio", which
+   goes back exactly where the visitor was (see return-spot.ts), and
+   "Let's work together", which opens the free-proposal form out of
+   itself.
 
-   Pointed at, a photo comes forward, the other steps back, and a label of
-   frosted glass rises over its corner: the name, underlined, the sector
-   and the services the studio took. Pressed, the photo is carried into a
+   Pointed at, the photo itself turns to frosted glass, the other steps
+   back, and what it is comes up on the glass: the name, underlined, the
+   sector and the services the studio took. Pressed, the photo is carried into a
    large card in the middle of the screen, the page under frosted glass:
    what the project is, a few lines about the website and the way to its
    full report. Close, Esc or a click on the glass sends it back.
@@ -97,11 +99,21 @@ export function Portfolio() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1, ease: IN }}
         >
-          <button type="button" onClick={leavePortfolio} className="fo-exit">
-            <svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16" fill="none">
-              <path d="M14 8H3M7 4 3 8l4 4" stroke="currentColor" strokeWidth="1.25" />
-            </svg>
-            Exit portfolio
+          {/* The same drop as its neighbour, in black glass (user: the two
+              alike, each its own look). */}
+          <button
+            type="button"
+            onClick={leavePortfolio}
+            className="fo-exit cta-drop inline-flex text-[0.9375rem] leading-none"
+          >
+            <span className="btn-neu-face">
+              <span aria-hidden="true" className="fo-exit-arrow">
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" className="block">
+                  <path d="M14 8H3M7 4 3 8l4 4" stroke="currentColor" strokeWidth="1.25" />
+                </svg>
+              </span>
+              Exit portfolio
+            </span>
           </button>
           <button
             ref={ask}
@@ -244,7 +256,7 @@ function Piece({
   const depth = DEPTH[i % DEPTH.length];
   const x = useTransform(sx, (v) => v * REACH.x * depth);
   const y = useTransform(sy, (v) => v * REACH.y * depth);
-  const note = `fo-note-${project.slug}`;
+  const note = `fo-about-${project.slug}`;
 
   return (
     <div className="fo-piece" data-i={i} data-on={on ? "" : undefined}>
@@ -277,21 +289,24 @@ function Piece({
             <span className="fo-window">
               <Photo project={project} />
             </span>
+            {/* Pointed at, the photo itself turns to frosted glass: it
+                blurs and pales under a veil, and what it is comes up
+                on it (user). Inside a button, so spans throughout; read
+                with the photo by a screen reader at any time. */}
+            <span id={note} className="fo-frost">
+              <span className="fo-frost-body">
+                <span className="fo-frost-name">{project.name}</span>
+                <span className="fo-frost-sector">
+                  <span className="fo-frost-key">Sector</span> {shown(project.sector)}
+                </span>
+                <span className="fo-tags fo-frost-tags">
+                  {project.services.map((service) => (
+                    <span key={service}>{service}</span>
+                  ))}
+                </span>
+              </span>
+            </span>
           </motion.button>
-
-          {/* The label, frosted glass over the photo's corner. Read out
-              with the photo by a screen reader at any time. */}
-          <div id={note} className="fo-note">
-            <p className="fo-note-name">{project.name}</p>
-            <p className="fo-note-sector">
-              <span className="fo-note-key">Sector</span> {shown(project.sector)}
-            </p>
-            <ul className="fo-tags" aria-label="Services">
-              {project.services.map((service) => (
-                <li key={service}>{service}</li>
-              ))}
-            </ul>
-          </div>
         </div>
       </motion.div>
     </div>
@@ -395,7 +410,8 @@ function Detail({
   useLayoutEffect(() => {
     const b = landing();
     // The photo is what is carried, turned and scaled as its card is.
-    const a = boxOf(from, from.querySelector<HTMLElement>(".fo-window") ?? from);
+    // The whole tile, not its photo, which is scaled up while it is frosted.
+    const a = boxOf(from, from);
     const ph = b.phone ? null : { cx: b.x + b.photo / 2, cy: b.y + b.h / 2 };
     flight.current = ph && {
       x: a.x + a.w / 2 - ph.cx,
