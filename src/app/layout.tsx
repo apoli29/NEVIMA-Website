@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Instrument_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import { CtaGlassFilters } from "@/components/cta-glass";
+import { ReturnKeeper } from "@/components/return-keeper";
 import "./globals.css";
 
 /* Titles: Satoshi (manual v2), self-hosted from /fonts. The variable file is
@@ -61,6 +62,7 @@ export default function RootLayout({
     <html lang="en" className={`${title.variable} ${read.variable} ${mono.variable}`}>
       <body className="antialiased">
         <CtaGlassFilters />
+        <ReturnKeeper />
         {children}
       </body>
     </html>

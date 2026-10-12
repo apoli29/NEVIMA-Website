@@ -22,6 +22,7 @@ import { Services } from "./services";
 import { StatementScreen } from "./statement-screen";
 import { useSmoothScroll } from "./smooth-scroll";
 import { Studio } from "./studio";
+import { isReturning } from "@/lib/return-spot";
 
 /* ==================================================================
    One gesture, one take.
@@ -250,6 +251,19 @@ export function Home() {
       },
     });
   }, [progress, reduce]);
+
+  /* Come back to from the portfolio's "Exit portfolio": the page is put
+     back where the visitor left it (see return-keeper.tsx), so the
+     opening is not played again. Before the first paint, so the curtain
+     is never seen. */
+  useMeasureEffect(() => {
+    if (!isReturning("/")) return;
+    progress.set(1);
+    phaseRef.current = "open";
+    setPhase("open");
+    // Once, as the page is drawn.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /* Sent here for the free-proposal form (the bar's "Get your free
      proposal" on another page links to /#proposal): the opening runs on

@@ -2360,149 +2360,194 @@
 /* ==================================================================
    The portfolio (portfolio.tsx)
 
-   A gallery wall on flooded water: a white wall label, and the work hung
-   as prints, each photo behind a white mat with its name set on the mat
-   below, the two crossed. Pointed at, a print straightens, rises and
-   comes forward while the other leans away and darkens. Opened, the
-   photo is carried to the left of a large white card, which opens out
-   from behind it. Set in the titles' face throughout: no mono labels
-   here (user: less tech, more gallery).
+   A room of its own: the foot's black and light, the work floating on
+   it as a loose cloud of photos, two buttons at the top and nothing
+   else. Pointed at, a photo comes forward and a frosted label rises over
+   its corner. Opened, the photo is carried to the left of a large white
+   card, which opens out from behind it. Set in the titles' face
+   throughout: no mono labels here (user: less tech, more gallery).
    ================================================================== */
 @layer components {
-  /* The work, side by side in the middle: large, straight, each one a
-     print with its name on the mat under the photo. More than fit, and the row scrolls
-     sideways as a carousel, snapping card to card, with arrows under it. */
-  .fo-row-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-  }
-  /* The carousel's room (user): a black strip from one side of the
-     screen to the other, standing taller than the cards, so the space
-     the work moves through is drawn even while there are only two.
-     The strip is the scroller itself. */
-  .fo-row {
-    --pf-w: clamp(14rem, 19vw, 17.5rem);
-    --fo-strip: clamp(1.25rem, 2.4vw, 2.25rem);
-    display: flex;
-    gap: clamp(1rem, 2vw, 1.75rem);
-    width: 100vw;
-    margin-inline: calc(50% - 50vw);
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-padding-inline: var(--gutter);
-    scrollbar-width: none;
-    /* A hair short of opaque on purpose: an opaque scroller lets Chrome
-       take the water's canvas as hidden well past the strip's foot and
-       skip drawing it there, which left a flat white band cutting the
-       drops on phones. */
-    background: rgb(0 0 0 / 0.995);
-    padding: var(--fo-strip) var(--gutter);
-  }
-  /* Centred while they fit, scrollable from the first card once they
-     do not (auto margins, unlike centring, never cut the first off). */
-  .fo-row > .fo-card:first-child { margin-left: auto; }
-  .fo-row > .fo-card:last-child { margin-right: auto; }
-  .fo-row::-webkit-scrollbar { display: none; }
-  @media (max-height: 820px) {
-    .fo-row { --pf-w: clamp(11rem, 27svh, 16rem); --fo-strip: clamp(1rem, 2.5svh, 1.5rem); }
-  }
-  /* Each card a print (user): the photo on a white mat, the website's
-     name set on the mat under it, never over the photo. */
-  .fo-card {
-    --fo-mat: clamp(0.6rem, 0.85vw, 0.85rem);
+  .fo-room {
     position: relative;
-    display: flex;
-    flex: 0 0 var(--pf-w);
-    flex-direction: column;
-    width: var(--pf-w);
-    padding: var(--fo-mat);
-    scroll-snap-align: center;
-    text-align: left;
-    cursor: pointer;
-    background: var(--color-paper);
-    color: var(--color-ink);
-    transition:
-      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    height: 100svh;
+    min-height: 34rem;
+    overflow: hidden;
+    background: #000;
+    color: var(--color-paper);
   }
-  .fo-window {
+  /* The site's black ring vanishes on this black. */
+  .fo-room :focus-visible { outline-color: rgb(255 255 255 / 0.9); }
+
+  /* The two buttons, at the top, over everything in the room. */
+  .fo-top {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: clamp(1rem, 2.4vw, 1.75rem) var(--gutter);
+  }
+  .fo-exit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 2.75rem;
+    padding-inline: 0.25rem;
+    font-size: 0.9375rem;
+    color: rgb(255 255 255 / 0.78);
+    cursor: pointer;
+    transition: color 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .fo-exit svg { transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+  .fo-exit:hover { color: var(--color-paper); }
+  .fo-exit:hover svg { transform: translateX(-3px); }
+
+  /* The cloud. The stage lets the hand through to the lens under it;
+     only the photos take it. */
+  .fo-stage {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+    perspective: 1400px;
+  }
+  .fo-lean { position: absolute; inset: 0; }
+  .fo-piece {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+    translate: -50% -50%;
+  }
+  .fo-piece[data-on] { z-index: 5; }
+  /* The near one larger and right of the middle, the far one smaller,
+     lower and to the left, after the reference's loose cloud. */
+  .fo-piece[data-i="0"] { --x: 60%; --y: 48%; --w: clamp(14rem, 21vw, 22rem); }
+  .fo-piece[data-i="1"] { --x: 35%; --y: 61%; --w: clamp(11rem, 15vw, 16rem); }
+  @media (max-height: 760px) and (min-width: 768px) {
+    .fo-piece[data-i="0"] { --w: clamp(12rem, 34svh, 20rem); }
+    .fo-piece[data-i="1"] { --w: clamp(9.5rem, 24svh, 14rem); }
+  }
+  @media (max-width: 767px) {
+    .fo-piece[data-i="0"] { --x: 62%; --y: 41%; --w: 58vw; }
+    .fo-piece[data-i="1"] { --x: 33%; --y: 73%; --w: 44vw; }
+  }
+
+  /* Each on a slow loop of its own length, never in step. */
+  .fo-drift {
+    position: relative;
+    animation: fo-drift-a 15s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+  }
+  .fo-piece[data-i="1"] .fo-drift { animation-name: fo-drift-b; animation-duration: 18.5s; }
+  .fo-stage[data-still] .fo-drift { animation-play-state: paused; }
+  @keyframes fo-drift-a {
+    0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    50% { transform: translate3d(9px, -12px, 0) rotate(0.5deg); }
+    100% { transform: translate3d(-6px, -4px, 0) rotate(-0.4deg); }
+  }
+  @keyframes fo-drift-b {
+    0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    50% { transform: translate3d(-10px, 8px, 0) rotate(-0.6deg); }
+    100% { transform: translate3d(7px, 12px, 0) rotate(0.3deg); }
+  }
+
+  .fo-tile {
     position: relative;
     display: block;
     width: 100%;
     aspect-ratio: 3 / 4;
+    padding: 0;
+    border-radius: 6px;
     overflow: hidden;
+    pointer-events: auto;
+    cursor: pointer;
+    background: #1c1c1c;
+    box-shadow: 0 1.75rem 3.5rem -1.5rem rgb(0 0 0 / 0.8);
   }
-  .fo-window .fo-img { transition: opacity 0.4s ease-out, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
-  /* Its name and state on the mat, the arrow level with the name. */
-  .fo-cap {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: calc(var(--fo-mat) * 1.15) 0.15rem 0.2rem;
+  .fo-tile .fo-window {
+    position: absolute;
+    inset: 0;
+    display: block;
+    transition:
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .fo-cap-text { display: flex; min-width: 0; flex-direction: column; gap: 0.2rem; }
-  .fo-cap-name {
-    font-family: var(--font-title);
-    font-size: clamp(1.125rem, 1.4vw, 1.375rem);
-    font-weight: 500;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-  }
-  .fo-cap-meta {
-    font-size: 0.8125rem;
-    color: var(--color-ash);
-  }
-  /* The arrow white on a small black square, level with the name (user:
-     the square, close round the arrow). */
-  .fo-cap-arrow {
-    display: grid;
-    flex: none;
-    place-items: center;
-    width: 1.75rem;
-    height: 1.75rem;
-    margin-top: 0.05rem;
-    background: var(--color-ink);
-    color: var(--color-paper);
-  }
-  .fo-cap-arrow svg { width: 0.875rem; height: 0.875rem; transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
-  /* Pointed at: it rises a little and its photo leans in. */
-  .fo-row[data-active="0"] .fo-card[data-i="0"],
-  .fo-row[data-active="1"] .fo-card[data-i="1"],
-  .fo-row[data-active="2"] .fo-card[data-i="2"],
-  .fo-row[data-active="3"] .fo-card[data-i="3"],
-  .fo-row[data-active="4"] .fo-card[data-i="4"],
-  .fo-row[data-active="5"] .fo-card[data-i="5"] {
-    transform: translateY(-0.5rem);
-  }
-  .fo-card:hover .fo-img[data-loaded],
-  .fo-card:focus-visible .fo-img[data-loaded] { transform: scale(1.04); }
-  .fo-card:hover .fo-cap-arrow svg,
-  .fo-card:focus-visible .fo-cap-arrow svg { transform: translateX(2px); }
-  .fo-card:focus-visible { outline: 1px solid var(--color-paper); outline-offset: 5px; }
-  /* The carousel's arrows, under the row, only when it scrolls. */
-  .fo-row-nav { display: flex; gap: 0.5rem; margin-top: 1rem; }
-  .fo-row-nav button {
-    display: grid;
-    place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    background: var(--color-paper);
+  /* Pointed at: it comes forward a little; the other steps back. */
+  .fo-piece[data-on] .fo-window { transform: scale(1.035); }
+  .fo-stage[data-active] .fo-piece:not([data-on]) .fo-window { opacity: 0.42; }
+
+  /* The label: frosted glass over the photo's lower outer corner,
+     hanging off it, black on white. Leaving is quicker and quieter than
+     arriving. */
+  .fo-note {
+    position: absolute;
+    top: calc(100% - 4.5rem);
+    width: min(16.5rem, 80vw);
+    padding: 1rem 1.1rem 1.1rem;
+    border-radius: 6px;
+    border: 1px solid rgb(255 255 255 / 0.6);
+    background: rgb(255 255 255 / 0.8);
+    -webkit-backdrop-filter: blur(18px) saturate(1.15);
+    backdrop-filter: blur(18px) saturate(1.15);
+    box-shadow: 0 1.25rem 2.5rem -1.25rem rgb(0 0 0 / 0.55);
     color: var(--color-ink);
-    box-shadow: 0 0.75rem 1.5rem -1rem rgb(0 0 0 / 0.5);
-    transition: opacity 0.3s ease;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(4px);
+    transition:
+      opacity 0.16s ease-out,
+      transform 0.16s ease-out,
+      filter 0.16s ease-out;
   }
-  .fo-row-nav button:disabled { opacity: 0.4; cursor: default; }
-  @media (max-width: 639px) {
-    .fo-row { --pf-w: min(58vw, 14.5rem); padding-inline: calc((100vw - var(--pf-w)) / 2); scroll-padding-inline: 0; }
-    /* A phone swipes, and the next card showing at the edge says so; the
-       arrows' room goes to the water. */
-    .fo-row-nav { display: none; }
+  .fo-piece[data-i="0"] .fo-note { left: 34%; }
+  .fo-piece[data-i="1"] .fo-note { right: 34%; }
+  .fo-piece[data-on] .fo-note {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition:
+      opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   }
+  /* No hand on a phone: the label only comes with the keyboard, inside
+     the photo, where there is room for it. */
+  @media (max-width: 767px) {
+    .fo-piece[data-i] .fo-note { top: auto; bottom: 0.5rem; left: 0.5rem; right: 0.5rem; width: auto; }
+  }
+  .fo-note-name {
+    font-family: var(--font-title);
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.22em;
+  }
+  .fo-note-sector { margin-top: 0.45rem; font-size: 0.875rem; line-height: 1.4; }
+  .fo-note-key { color: rgb(0 0 0 / 0.62); margin-right: 0.25rem; }
+
+  /* The services the studio took, as small outlined tags: on the label
+     and on the large card. */
+  .fo-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .fo-note .fo-tags { margin-top: 0.75rem; }
+  .fo-tags li {
+    padding: 0.28rem 0.55rem 0.3rem;
+    border: 1px solid rgb(0 0 0 / 0.28);
+    border-radius: 3px;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .fo-card, .fo-window .fo-img, .fo-cap-arrow svg { transition: none; }
+    .fo-drift { animation: none; }
+    .fo-tile .fo-window, .fo-note, .fo-exit, .fo-exit svg { transition: none; }
   }
 
   /* The photo, over the project's name for when it cannot be had. */

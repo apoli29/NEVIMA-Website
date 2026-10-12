@@ -14,7 +14,7 @@ const RISE = 0.22;
 const WORDMARK = "/nevima-wordmark-white.svg";
 const EMAIL = "ola@nevima.pt";
 /** Where a visitor's choice to hold the backdrop still is remembered. */
-const STILL_KEY = "nevima:footer-still";
+export const STILL_KEY = "nevima:footer-still";
 
 /* ==================================================================
    Footer
