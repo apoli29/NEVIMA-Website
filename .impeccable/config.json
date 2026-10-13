@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "layout-transition",
+        "value": "*",
+        "files": [
+          "src/app/globals.css"
+        ],
+        "createdAt": "2026-10-13T16:42:12.708Z",
+        "reason": "user confirmed 2026-10-13: the .rp-band-link padding hover (band widening) stays as designed"
+      }
+    ]
+  }
+}
