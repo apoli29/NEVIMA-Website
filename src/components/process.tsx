@@ -179,7 +179,7 @@ const PHASES: Phase[] = [
         id: "hosting",
         name: "Logistics",
         principle: "We handle the logistics.",
-        text: "We take care of everything around the website, from the legal pages (privacy policy, cookie policy and the rest) to hosting it and connecting your domain.",
+        text: "We take care of everything around the website, from the legal pages (privacy policy, cookie policy and the rest, whose content the law requires your business to produce itself; we put them on the website) to hosting it and connecting your domain.",
         who: "Us",
       },
     ],
