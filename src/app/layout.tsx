@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Instrument_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import { CtaGlassFilters } from "@/components/cta-glass";
+import { PageWipe } from "@/components/page-wipe";
 import { ReturnKeeper } from "@/components/return-keeper";
 import "./globals.css";
 
@@ -63,6 +64,7 @@ export default function RootLayout({
       <body className="antialiased">
         <CtaGlassFilters />
         <ReturnKeeper />
+        <PageWipe />
         {children}
       </body>
     </html>

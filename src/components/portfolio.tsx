@@ -15,6 +15,7 @@ import { LiquidLens } from "./liquid-lens";
 import { ProjectReport } from "./project-report";
 import { ProposalOverlay, useProposalController } from "./proposal-flow";
 import { leavePortfolio } from "@/lib/return-spot";
+import { wipeThen } from "./page-wipe";
 import { PROJECTS, shown, type Project } from "@/lib/work";
 
 /* ==================================================================
@@ -101,7 +102,7 @@ export function Portfolio() {
               alike, each its own look). */}
           <button
             type="button"
-            onClick={leavePortfolio}
+            onClick={(e) => wipeThen(e.currentTarget, leavePortfolio)}
             className="fo-exit cta-drop inline-flex text-[0.9375rem] leading-none"
           >
             <span className="btn-neu-face">
