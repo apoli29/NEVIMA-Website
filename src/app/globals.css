@@ -7,8 +7,7 @@
 
 @theme {
   /* ---- surfaces --------------------------------------------------
-     Pure white, matched byte-for-byte to the AeroShards backgroundColor
-     so the canvas layer never shows a seam against the page.         */
+     Pure white.                                                       */
   --color-paper: #ffffff;
 
   /* ---- type ------------------------------------------------------
