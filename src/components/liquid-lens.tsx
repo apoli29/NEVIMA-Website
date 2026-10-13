@@ -71,8 +71,9 @@ const MAX_DPR = 2;
 const BACKDROP_SCALE = 0.5;
 /** Where the still backdrop is frozen, in seconds of its loop. */
 const STILL_T = 40;
-/** How many pools of light there are. */
-const POOLS = 7;
+/** How many pools of light there are, at most; the footer has 7 (see
+    `pools`). */
+const POOLS = 9;
 /** How far a pool held to one of the open corners of a wide footer may
     wander, as a share of how far a free one does. */
 const HELD_REACH = 0.35;
@@ -106,6 +107,7 @@ uniform float u_mk;
 uniform vec2 u_pool[${POOLS}];
 // How far each pool wanders round its base, as a share of the full reach.
 uniform float u_poolReach[${POOLS}];
+uniform int u_pools;
 
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float noise(vec2 p) {
@@ -135,6 +137,7 @@ float field(vec2 p) {
   // narrow one, and never more than a share of the footer's height.
   float reach = min(0.16 * u_aspect, 0.22);
   for (int i = 0; i < ${POOLS}; i++) {
+    if (i >= u_pools) break;
     float fi = float(i);
     vec2 c = u_pool[i];
     c += vec2(sin(u_t * (0.07 + 0.013 * fi) + fi * 1.7) * reach,
@@ -422,6 +425,7 @@ export function LiquidLens({
   mark,
   src,
   still = false,
+  pools: poolsWanted = 7,
 }: {
   host: RefObject<HTMLElement | null>;
   /** The wordmark's element, whose box the mark's copy is placed on. */
@@ -430,6 +434,8 @@ export function LiquidLens({
   /** The visitor has asked for the light to hold still. The drop still
       follows the hand, which is motion they are making themselves. */
   still?: boolean;
+  /** How many pools of light (at most 9): 7 in the footer. */
+  pools?: number;
 }) {
   const reduce = useReducedMotion() ?? false;
   const back = useRef<HTMLCanvasElement>(null);
@@ -445,6 +451,7 @@ export function LiquidLens({
   useEffect(() => {
     const surface = host.current;
     const sign = mark.current;
+    const count = Math.min(Math.max(Math.round(poolsWanted), 1), POOLS);
     const backView = back.current;
     const frontView = front.current;
     if (!surface || !sign || !backView || !frontView) return;
@@ -562,7 +569,7 @@ export function LiquidLens({
         }
       }
 
-      for (let i = placed.length; i < POOLS; i++) {
+      for (let i = placed.length; i < count; i++) {
         let best: [number, number] = [aspect * (0.1 + 0.2 * i), 0.5];
         let bestScore = -Infinity;
         for (let tries = 0; tries < 80; tries++) {
@@ -592,6 +599,7 @@ export function LiquidLens({
       gl.uniform4fv(u("u_calm"), calm);
       gl.uniform2fv(u("u_pool"), pools);
       gl.uniform1fv(u("u_poolReach"), poolReach);
+      gl.uniform1i(u("u_pools"), count);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     };
 
@@ -718,6 +726,7 @@ export function LiquidLens({
       gl.uniform4fv(u("u_calm"), calm);
       gl.uniform2fv(u("u_pool"), pools);
       gl.uniform1fv(u("u_poolReach"), poolReach);
+      gl.uniform1i(u("u_pools"), count);
       gl.uniform4f(
         u("u_markBox"),
         (markBox.left - box.left) * dpr,
@@ -925,7 +934,7 @@ export function LiquidLens({
       }
       bg.dispose();
     };
-  }, [host, mark, src, reduce]);
+  }, [host, mark, src, reduce, poolsWanted]);
 
   return (
     <>

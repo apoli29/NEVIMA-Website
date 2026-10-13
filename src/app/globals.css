@@ -280,6 +280,10 @@
   .idx-link:focus-visible .idx-name { transform: translateX(0.5rem); }
   .idx-link:hover .idx-arrow,
   .idx-link:focus-visible .idx-arrow { transform: translateX(-0.35rem) rotate(90deg); }
+  /* A row that leaves for another page points on, not down (user,
+     2026-10-13): down is for the section below on this page. */
+  .idx-link[data-away]:hover .idx-arrow,
+  .idx-link[data-away]:focus-visible .idx-arrow { transform: translateX(0.35rem); }
   .idx-link:focus-visible { outline: none; }
 
   /* The row the index leads with, kept inked: its words in white, a
@@ -2418,17 +2422,19 @@
     translate: -50% -50%;
   }
   .fo-piece[data-on] { z-index: 5; }
+  /* Going round the room: placed from the stage's corner by the lap. */
+  .fo-piece[data-lap] { left: 0; top: 0; will-change: transform; }
   /* The near one larger and right of the middle, the far one smaller,
      lower and to the left, after the reference's loose cloud. */
   .fo-piece[data-i="0"] { --x: 60%; --y: 48%; --w: clamp(14rem, 21vw, 22rem); }
-  .fo-piece[data-i="1"] { --x: 35%; --y: 61%; --w: clamp(12.5rem, 17vw, 18rem); }
+  .fo-piece[data-i="1"] { --x: 35%; --y: 61%; --w: clamp(14.5rem, 19.5vw, 21rem); }
   @media (max-height: 760px) and (min-width: 768px) {
     .fo-piece[data-i="0"] { --w: clamp(12rem, 34svh, 20rem); }
-    .fo-piece[data-i="1"] { --w: clamp(11.5rem, 27svh, 16rem); }
+    .fo-piece[data-i="1"] { --w: clamp(13rem, 31svh, 18.5rem); }
   }
   @media (max-width: 767px) {
     .fo-piece[data-i="0"] { --x: 62%; --y: 41%; --w: 58vw; }
-    .fo-piece[data-i="1"] { --x: 33%; --y: 73%; --w: 44vw; }
+    .fo-piece[data-i="1"] { --x: 33%; --y: 73%; --w: 50vw; }
   }
 
   /* Each on a slow loop of its own length, never in step. */
@@ -2861,6 +2867,29 @@
     box-shadow: 0 0.5rem 1.25rem -0.5rem rgb(0 0 0 / 0.55), 0 0 0 1px rgb(0 0 0 / 0.12);
     pointer-events: none;
     will-change: transform;
+  }
+  /* At rest, a white ring goes out from the handle, again and again,
+     until the card is moved (user: "o branco a piscar"). */
+  .rp-ba-handle::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid var(--color-paper);
+    opacity: 0;
+  }
+  .rp-ba[data-rest] .rp-ba-handle::after { animation: rp-ba-pulse 2s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+  .rp-ba[data-rest] .rp-ba-handle { animation: rp-ba-glow 2s ease-in-out infinite; }
+  @keyframes rp-ba-pulse {
+    0% { transform: scale(1); opacity: 0.85; }
+    80%, 100% { transform: scale(1.9); opacity: 0; }
+  }
+  @keyframes rp-ba-glow {
+    0%, 100% { background: var(--color-paper); }
+    50% { background: rgb(255 255 255 / 0.7); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rp-ba[data-rest] .rp-ba-handle, .rp-ba[data-rest] .rp-ba-handle::after { animation: none; }
   }
   .rp-ba:focus-visible .rp-ba-handle { box-shadow: 0 0 0 2px var(--color-ink), 0 0.5rem 1.25rem -0.5rem rgb(0 0 0 / 0.55); }
   .rp-ba-tag { position: absolute; top: 0.75rem; padding: 0.2em 0.5em 0.15em; pointer-events: none; }

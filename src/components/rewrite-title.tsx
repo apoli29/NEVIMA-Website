@@ -116,9 +116,10 @@ export function RewriteTitle({
             opacity: { duration: OPEN_S * 0.6, delay: at >= 3 ? OPEN_S * 0.4 : 0 },
           }}
         >
-          <span className="inline-block pr-[0.26em]">way more than</span>
+          <span className="inline-block pr-[0.26em] font-medium">way more than</span>
         </motion.span>
-        websites
+        {/* What is true, in the titles' bold (user, 2026-10-13). */}
+        <span className="font-medium">websites</span>
       </span>
     </h2>
   );

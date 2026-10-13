@@ -180,6 +180,11 @@ function BeforeAfter({ before, after, name }: { before: string | null; after: st
     // The handle stays whole inside the card, even at its edges.
     if (handle.current) handle.current.style.transform = `translate(clamp(1.5rem, ${v}cqw, calc(100cqw - 1.5rem)), 0) translate(-50%, -50%)`;
     if (beforeTag.current) beforeTag.current.style.opacity = String(Math.min(1, (100 - v) / 25));
+    // At rest on after, the handle pulses to say it can be moved.
+    if (card.current) {
+      if (v >= 99.5) card.current.setAttribute("data-rest", "");
+      else card.current.removeAttribute("data-rest");
+    }
     card.current?.setAttribute("aria-valuenow", String(Math.round(v)));
     card.current?.setAttribute("aria-valuetext", v < 50 ? "Showing more of before" : "Showing more of after");
   }, []);
@@ -263,6 +268,7 @@ function BeforeAfter({ before, after, name }: { before: string | null; after: st
         aria-valuemax={100}
         aria-valuenow={100}
         aria-valuetext="Showing more of after"
+        data-rest=""
         onPointerMove={(e) => follow(e.clientX)}
         onPointerDown={(e) => follow(e.clientX)}
         // At rest it shows after: the hand gone, after closes back over.
