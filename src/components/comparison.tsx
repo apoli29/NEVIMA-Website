@@ -116,16 +116,16 @@ const ROWS: Row[] = [
   {
     id: "relationship",
     criterion: "Client service and relationship",
-    them: "Distant. Sometimes the client never gets in direct contact with the people mainly responsible for the project. As a result, the client doesn’t feel heard and the service becomes impersonal.",
+    them: "Distant. Sometimes the client never gets in direct contact with those in charge of the project. As a result, the client doesn’t feel heard and the service becomes impersonal.",
     lead: "Close and personalized:",
     us: "you are always in direct contact with us. Our process keeps you up to date as the project develops, and we adjust it down to the detail based on your feedback.",
   },
   {
     id: "knowledge",
     criterion: "Knowledge and tools",
-    them: "Outdated methods: they keep relying on expensive but obsolete tools and aging processes.",
+    them: "Outdated methods: expensive but obsolete tools and aging processes.",
     lead: "Cutting-edge:",
-    us: "state-of-the-art tools, constant tracking of how the market evolves and technical expertise that is always up to date.",
+    us: "avant-garde tools, constant tracking of how the market evolves and technical expertise that is always up to date.",
   },
   {
     id: "costs",
