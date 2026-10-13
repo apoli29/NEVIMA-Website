@@ -19,6 +19,20 @@ import { useReducedMotion } from "motion/react";
  * triggered the opening would then be waiting in the new one and land the
  * moment the page is released.
  */
+let live: Lenis | null = null;
+
+/** The page's Lenis, for code that moves the page itself; null under
+    reduced motion. */
+export function getLenis() {
+  return live;
+}
+
+/** Puts the page at `y` at once, Lenis included. */
+export function jumpTo(y: number) {
+  if (live) live.scrollTo(y, { immediate: true, force: true });
+  else window.scrollTo(0, y);
+}
+
 export function useSmoothScroll(locked: boolean) {
   const lenis = useRef<Lenis | null>(null);
   const reduce = useReducedMotion();
@@ -37,6 +51,7 @@ export function useSmoothScroll(locked: boolean) {
       anchors: true,
     });
     lenis.current = instance;
+    live = instance;
 
     let frame = requestAnimationFrame(function raf(time) {
       instance.raf(time);
@@ -47,6 +62,7 @@ export function useSmoothScroll(locked: boolean) {
       cancelAnimationFrame(frame);
       instance.destroy();
       lenis.current = null;
+      if (live === instance) live = null;
     };
   }, [reduce]);
 

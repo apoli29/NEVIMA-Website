@@ -18,6 +18,8 @@ const SPOT_KEY = "nevima:return";
 const RESTORE_KEY = "nevima:restore";
 /** How long a note to restore a page is good for, in ms. */
 const RESTORE_TTL = 8000;
+/** How long going back may take before the portfolio goes there itself. */
+const BACK_GRACE = 900;
 
 import { goTo } from "@/components/page-wipe";
 
@@ -70,8 +72,16 @@ export function leavePortfolio() {
   // Back, when the portfolio is the entry straight after the spot, so the
   // browser's own back button and this one agree; otherwise there again.
   // Either way through the router, so the page wipe carries over.
-  if (window.history.length === spot.depth + 1) window.history.back();
-  else goTo(spot.path);
+  if (window.history.length !== spot.depth + 1) {
+    goTo(spot.path);
+    return;
+  }
+  window.history.back();
+  // If going back has taken them nowhere (the entry was not what it
+  // seemed), they are taken there instead, never left on the black.
+  window.setTimeout(() => {
+    if (window.location.pathname.startsWith(PORTFOLIO_PATH)) goTo(spot.path);
+  }, BACK_GRACE);
 }
 
 type Restore = { path: string; y: number; at: number };
@@ -80,6 +90,11 @@ function pending(path: string): Restore | null {
   const note = read<Restore>(RESTORE_KEY);
   if (!note || note.path.split("?")[0] !== path || Date.now() - note.at > RESTORE_TTL) return null;
   return note;
+}
+
+/** Whether this page is being put back by "Exit portfolio" just now. */
+export function returningTo(path: string) {
+  return pending(path) !== null;
 }
 
 /** The place to put this page back at, used up as it is read. */

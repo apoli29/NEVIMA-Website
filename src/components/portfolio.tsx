@@ -79,22 +79,35 @@ export function Portfolio() {
      back into the dark, smaller and out of focus, the buttons go, and
      the screen falls to black before the page the visitor came from
      comes up out of it. */
+  const going = useRef<Animation[]>([]);
   const leave = () => {
     const el = room.current;
     const reduceNow = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (el && !reduceNow) {
       const out = { duration: 560, easing: "cubic-bezier(0.4, 0, 0.2, 1)", fill: "forwards" as const };
-      el.querySelector(".fo-stage")?.animate(
+      const stage = el.querySelector(".fo-stage")?.animate(
         [
           { opacity: 1, transform: "scale(1)", filter: "blur(0px)" },
           { opacity: 0, transform: "scale(0.92)", filter: "blur(10px)" },
         ],
         out,
       );
-      el.querySelector(".fo-top")?.animate([{ opacity: 1 }, { opacity: 0 }], { ...out, duration: 260 });
+      const top = el.querySelector(".fo-top")?.animate([{ opacity: 1 }, { opacity: 0 }], { ...out, duration: 260 });
+      going.current = [stage, top].filter((a): a is Animation => !!a);
     }
     fadeThen("#000000", leavePortfolio, reduceNow ? 0 : 300, 360);
   };
+  // Shown again by the browser as it was left (back or forward): the
+  // room comes back as it was before the exit, not dark.
+  useEffect(() => {
+    const onShow = (event: PageTransitionEvent) => {
+      if (!event.persisted) return;
+      going.current.forEach((a) => a.cancel());
+      going.current = [];
+    };
+    window.addEventListener("pageshow", onShow);
+    return () => window.removeEventListener("pageshow", onShow);
+  }, []);
   const sign = useRef<HTMLSpanElement>(null);
 
   return (

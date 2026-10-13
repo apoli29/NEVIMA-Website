@@ -14,7 +14,9 @@ import { SlideIn } from "./enter";
 import { Rise, Rule, Uncover, useSeen } from "./exhibit";
 import { PassLink } from "./floating-nav";
 import { useInkAlign } from "./ink-align";
+import { foldProcess } from "./process";
 import { RewriteTitle } from "./rewrite-title";
+import { getLenis, jumpTo } from "./smooth-scroll";
 
 /* ==================================================================
    Services
@@ -99,34 +101,65 @@ export function Services({ ready }: { ready: boolean }) {
   );
 
   /* Sent here for one service (the foot's service links point at
-     /#open-<slug>, user 2026-10-12): that row opens, and once the page
-     is handed back the list is put at once with the row a third of the
-     way down the screen. A hash no element carries, so neither the
-     browser nor Lenis scrolls to it on its own: from the foot of the home
-     page that smooth scroll ran How we work backwards on the way up
-     (user, 2026-10-13). The jump is instant, Lenis included. */
-  const [asked, setAsked] = useState<string | null>(null);
+     /#open-<slug>, user 2026-10-12): that row opens and the list is put
+     with the row a third of the way down the screen. A hash no element
+     carries, so neither the browser nor Lenis scrolls to it on its own.
+     From another page the jump is instant, once the page is handed back.
+     From the foot of this page the page glides up to it (user,
+     2026-10-13), with How we work folded on the way so it passes as one
+     still screen instead of running its slide backwards (see
+     foldProcess). */
+  const [asked, setAsked] = useState<{ slug: string; glide: boolean } | null>(null);
   useEffect(() => {
-    const read = () => {
+    const read = (glide: boolean) => {
       const slug = /^#open-([a-z-]+)$/.exec(window.location.hash)?.[1];
       if (!slug || !SERVICES.some((s) => s.slug === slug)) return;
       history.replaceState(null, "", window.location.pathname + window.location.search);
       setOpen(slug);
-      setAsked(slug);
+      setAsked({ slug, glide });
     };
-    read();
-    window.addEventListener("hashchange", read);
-    return () => window.removeEventListener("hashchange", read);
+    read(false);
+    const onHash = () => read(true);
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
   }, []);
   useEffect(() => {
     if (!ready || !asked) return;
-    const t = window.setTimeout(() => {
-      const head = document.getElementById(`service-${asked}-name`);
-      if (head) window.scrollTo(0, head.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.3);
+    const head = document.getElementById(`service-${asked.slug}-name`);
+    const target = () =>
+      head ? head.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.3 : window.scrollY;
+    if (!asked.glide || reduce || !getLenis()) {
+      // Once the row has begun to open, so it is measured where it stays.
+      const t = window.setTimeout(() => {
+        jumpTo(target());
+        setAsked(null);
+      }, 120);
+      return () => window.clearTimeout(t);
+    }
+    const lenis = getLenis()!;
+    const unfold = foldProcess();
+    const far = Math.abs(target() - window.scrollY) / window.innerHeight;
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      off();
+      unfold?.();
       setAsked(null);
-    }, 120);
-    return () => window.clearTimeout(t);
-  }, [ready, asked]);
+    };
+    // Lenis's own glide, so nothing else moves the page meanwhile; the
+    // visitor's own wheel, touch or key takes the page back at once.
+    const events = ["wheel", "touchstart", "keydown", "pointerdown"] as const;
+    const off = () => events.forEach((e) => window.removeEventListener(e, finish, true));
+    events.forEach((e) => window.addEventListener(e, finish, { capture: true, passive: true }));
+    lenis.scrollTo(target(), {
+      duration: Math.min(2.2, 0.9 + far * 0.22),
+      easing: (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
+      force: true,
+      onComplete: finish,
+    });
+    return finish;
+  }, [ready, asked, reduce]);
 
   const openIndex = SERVICES.findIndex((s) => s.slug === open);
   const shown = pointed ?? (openIndex >= 0 ? openIndex : 0);
