@@ -2745,6 +2745,14 @@
     box-decoration-break: clone;
   }
   .rp-cover-head .rp-tags { justify-content: flex-end; max-width: 50%; }
+  /* "Meet the co-founders", on the same black band as a report's name. */
+  .cf-title > span {
+    padding: 0 0.2em 0.06em;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
   .rp-lede { max-width: 68ch; margin-top: 1.25rem; font-size: 1.0625rem; line-height: 1.6; }
   /* The way to the website, set as the name is: white on a black band,
      over the black rule the name stands on. */

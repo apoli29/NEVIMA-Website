@@ -76,3 +76,4 @@ The page is `noindex` (`robots: { index: false, follow: true }` in `src/app/abou
 ## 4. FAQ (`about-faq.tsx`)
 
 - Sticky heading + "Ask us" drop (mailto) on the left, accordion on the right using the services' "n" toggle (`Chevron`, now exported) and the `xs-*` drawer styles. Answers lit grey to black. Prices (€1,900 / €3,900) and timelines are stand-ins taken from the old draft for the studio to confirm.
+- 2026-10-13 (user): the co-founders' title is now "Meet the co-founders", white on a black band (the report's name band). Emanuel gains a skill: "Photo and video shooting".

@@ -15,7 +15,7 @@ import { LiquidLens } from "./liquid-lens";
 import { ProjectReport } from "./project-report";
 import { ProposalOverlay, useProposalController } from "./proposal-flow";
 import { leavePortfolio } from "@/lib/return-spot";
-import { fadeThen } from "./page-wipe";
+import { covered, fadeThen } from "./page-wipe";
 import { PROJECTS, shown, type Project } from "@/lib/work";
 
 /* ==================================================================
@@ -97,6 +97,19 @@ export function Portfolio() {
     }
     fadeThen("#000000", leavePortfolio, reduceNow ? 0 : 300, 360);
   };
+  // Come in under the cover (a link into the portfolio): the photos come
+  // up out of the black, the way they go back into it on the way out.
+  useEffect(() => {
+    if (!covered() || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const ease = "cubic-bezier(0.22, 1, 0.36, 1)";
+    room.current?.querySelector(".fo-stage")?.animate(
+      [
+        { opacity: 0, transform: "scale(0.92)", filter: "blur(10px)" },
+        { opacity: 1, transform: "scale(1)", filter: "blur(0px)" },
+      ],
+      { duration: 760, delay: 140, easing: ease, fill: "backwards" },
+    );
+  }, []);
   // Shown again by the browser as it was left (back or forward): the
   // room comes back as it was before the exit, not dark.
   useEffect(() => {

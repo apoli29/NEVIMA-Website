@@ -53,6 +53,7 @@ const FOUNDERS: Founder[] = [
     skills: [
       "Web structuring and programming",
       "User interface and user experience",
+      "Photo and video shooting",
     ],
     photo: "/cofounders/ec.jpeg",
     focus: "44% 50%",
@@ -106,9 +107,11 @@ export function CoFounders({
           <Title
             ref={titleRef}
             id="cofounders-title"
-            className="display text-[clamp(2.25rem,4.2vw,4.25rem)] font-light text-ink"
+            className="display cf-title text-[clamp(2.25rem,4.2vw,4.25rem)] font-light"
           >
-            Co-founders
+            {/* White on a black band, as the report's names are (user,
+                2026-10-13). */}
+            <span>Meet the co-founders</span>
           </Title>
         </SlideIn>
         <SlideIn
