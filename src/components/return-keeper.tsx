@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { booted } from "@/lib/opened";
 import { PORTFOLIO_PATH, keepSpot, takeReturn } from "@/lib/return-spot";
 
 /* ==================================================================
@@ -22,6 +23,12 @@ const SETTLE_MS = 1200;
 
 export function ReturnKeeper() {
   const path = usePathname();
+
+  // The site is awake: every page from now on comes by the router. Set
+  // after the first page's own effects, which run before the layout's.
+  useEffect(() => {
+    booted.done = true;
+  }, []);
 
   // Captured, so it is read before anything else handles the click.
   useEffect(() => {
