@@ -53,55 +53,24 @@ export type Project = {
 /* ==================================================================
    The project report
 
-   One structure for every project: what every report has, and a block
-   for each service the project took (see docs/report-template.md for
-   what goes in each field and the privacy rules). Nothing about a client
-   is made up: every field the studio has not given is null and reads as
-   TO_FILL.
+   One structure for every project (see docs/report-template.md): the
+   overview, then a chapter for each service the project took, each with
+   only what that service needs. Nothing about a client is made up: every
+   field the studio has not given is null and reads as TO_FILL.
    ================================================================== */
 
-/** The three phases of How we work, in order. */
-export const PHASES = ["Proposal and contract", "Production", "Review and launch"] as const;
-
 export type CaseStudy = {
-  /** where the business is, as a region or country, never an address */
-  region: string | null;
-  /** when the website went live (or is due), month and year */
-  delivered: string | null;
-  /** how long it took, start to launch, e.g. "6 weeks" */
-  duration: string | null;
-  /** where the business stood before: what it had, what was missing */
-  startingPoint: string | null;
-  /** what the website had to achieve, three or four short lines */
-  goals: string[] | null;
-  /** the studio's answer, in a few sentences */
-  approach: string | null;
-  /** the website's pages, in the order of its menu */
-  sitemap: string[] | null;
-  /** what the website does for its visitors, a few short lines */
-  features: string[] | null;
-  /** how long each phase of How we work took, in PHASES' order */
-  phases: (string | null)[] | null;
-  /** measured on the live website, mobile, with Lighthouse */
-  scores: {
-    performance: string | null;
-    accessibility: string | null;
-    bestPractices: string | null;
-    seo: string | null;
-    loadTime: string | null;
-  };
+  /** Web Design: the website, in one justified paragraph */
+  website: string | null;
+  /** the languages the website is in, e.g. "Portuguese, English" */
+  languages: string | null;
   /** with Visual identity */
   identity: {
-    /** the logo, as an image in /public, on white */
-    logo: string | null;
-    /** the symbol, if the identity has one */
-    symbol: string | null;
-    palette: { name: string; hex: string }[] | null;
-    typefaces: { role: string; name: string }[] | null;
-    /** where the identity is used beyond the website */
-    applications: string[] | null;
-    /** the idea behind it, in two or three sentences */
+    /** the idea behind it, a few sentences */
     idea: string | null;
+    /** the brand before and after, as images in /public, the same size */
+    before: string | null;
+    after: string | null;
   };
   /** with SEO */
   seo: {
@@ -128,30 +97,16 @@ export type CaseStudy = {
     /** what was photographed, in a sentence */
     subject: string | null;
   };
-  /** what changed for the client, in a few sentences */
-  outcome: string | null;
-  /** the client's words, only with their consent, signed by role */
-  quote: { text: string; by: string } | null;
 };
 
 /** A report the studio has not filled in yet. */
 const emptyStudy = (): CaseStudy => ({
-  region: null,
-  delivered: null,
-  duration: null,
-  startingPoint: null,
-  goals: null,
-  approach: null,
-  sitemap: null,
-  features: null,
-  phases: null,
-  scores: { performance: null, accessibility: null, bestPractices: null, seo: null, loadTime: null },
-  identity: { logo: null, symbol: null, palette: null, typefaces: null, applications: null, idea: null },
+  website: null,
+  languages: null,
+  identity: { idea: null, before: null, after: null },
   seo: { searches: null, work: null, before: null, after: null },
   geo: { work: null, presence: null },
   shoot: { photos: null, videos: null, subject: null },
-  outcome: null,
-  quote: null,
 });
 
 /** A free Unsplash photo, at a width the cards can use. */

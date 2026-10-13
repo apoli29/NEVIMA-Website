@@ -2,8 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { useAnimate, useReducedMotion } from "motion/react";
-import { SERVICES } from "@/lib/services";
-import { PHASES, STATUS_LABEL, TO_FILL, type Project } from "@/lib/work";
+import { TO_FILL, type Project } from "@/lib/work";
 
 /* ==================================================================
    The project report
@@ -17,8 +16,8 @@ import { PHASES, STATUS_LABEL, TO_FILL, type Project } from "@/lib/work";
    on the dark sends it back into the photo.
 
    Every report has the same structure, organised by service (see
-   docs/report-template.md): the overview, a chapter for each service the
-   project took, and the outcome.
+   docs/report-template.md): the overview, then a chapter for each
+   service the project took, each with only what that service needs.
 
    Nothing about a client is made up: every field the studio has not
    given reads as TO_FILL.
@@ -48,8 +47,7 @@ function Tags({ items, label = "Services" }: { items: readonly string[]; label?:
 /* --- the chapters ----------------------------------------------------------
    Organised by service (user, 2026-10-12): the overview, then one chapter
    for each service the project took, in the order the services section
-   lists them, each saying only what makes sense for that service, then
-   the outcome. Set in the site's own language: hairlines, the gallery's
+   lists them, each saying only what makes sense for that service. Set in the site's own language: hairlines, the gallery's
    mono labels, names in light Satoshi, black boxes for what kind of
    service it is, the services' ticked lists. */
 
@@ -145,10 +143,67 @@ function ServiceChapter({
   );
 }
 
+/** The brand before and after, in one card: the hand going left shows
+    more of before, going right more of after (user, 2026-10-13). From the
+    keyboard it is a slider; on a touch screen it follows the finger. */
+function BeforeAfter({ before, after, name }: { before: string | null; after: string | null; name: string }) {
+  const [at, setAt] = useState(50);
+  const card = useRef<HTMLDivElement>(null);
+  const follow = (clientX: number) => {
+    const box = card.current?.getBoundingClientRect();
+    if (!box || !box.width) return;
+    setAt(Math.min(100, Math.max(0, ((clientX - box.left) / box.width) * 100)));
+  };
+  const face = (src: string | null, label: string, dark: boolean) =>
+    src ? (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={src} alt="" draggable={false} />
+    ) : (
+      <span className="rp-ba-empty" data-dark={dark ? "" : undefined}>
+        <span className="rp-fill">{TO_FILL}</span>
+      </span>
+    );
+  return (
+    <div>
+      <div
+        ref={card}
+        className="rp-ba"
+        role="slider"
+        tabIndex={0}
+        aria-label={`${name}: before and after`}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(at)}
+        aria-valuetext={at < 50 ? "Showing more of before" : "Showing more of after"}
+        onPointerMove={(e) => follow(e.clientX)}
+        onPointerDown={(e) => follow(e.clientX)}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowLeft") setAt((v) => Math.max(0, v - 5));
+          else if (e.key === "ArrowRight") setAt((v) => Math.min(100, v + 5));
+          else return;
+          e.preventDefault();
+        }}
+      >
+        {/* Before underneath, whole; after over it, cut at the hand: the
+            further right the hand, the more of after. */}
+        <div className="rp-ba-face">{face(before, "Before", false)}</div>
+        <div className="rp-ba-face" style={{ clipPath: `inset(0 ${100 - at}% 0 0)` }}>
+          {face(after, "After", true)}
+        </div>
+        <span className="rp-ba-line" style={{ left: `${at}%` }} aria-hidden="true" />
+        <span className="mono-label rp-ba-tag rp-ba-tag-after" aria-hidden="true">After</span>
+        <span className="mono-label rp-ba-tag rp-ba-tag-before" aria-hidden="true">Before</span>
+      </div>
+      <p className="rp-note">Move left for before, right for after.</p>
+    </div>
+  );
+}
+
 function chaptersFor(project: Project): Chapter[] {
   const s = project.study;
   const chapters: Chapter[] = [];
   const took = (title: string) => project.services.some((x) => x.toLowerCase() === title.toLowerCase());
+  const live = project.status === "live" && project.url;
 
   chapters.push({
     id: "overview",
@@ -164,33 +219,32 @@ function chaptersFor(project: Project): Chapter[] {
             <h2 id="rp-title" className="rp-cover-name">
               <span>{project.name}</span>
             </h2>
-            <span className="rp-state mono-label">
-              <span
-                aria-hidden="true"
-                className={project.status === "live" ? "live-dot" : "rp-dot-idle"}
-              />
-              {STATUS_LABEL[project.status]}
-            </span>
+            <Tags items={project.services} />
           </div>
           <p className="rp-lede rp-justify">{project.summary}</p>
-          <Readouts
-            items={[
-              ["Sector", project.sector],
-              ["Region", s.region],
-              ["Delivered", s.delivered],
-              ["Start to launch", s.duration],
-            ]}
-          />
-          <div className="rp-services">
-            <p className="mono-label text-ash-2">Services</p>
-            <Tags items={project.services} />
+          <div className="rp-cover-cta">
+            {live ? (
+              <a href={project.url!} target="_blank" rel="noopener" className="cta-drop fo-exit rp-bar-button">
+                <span className="btn-neu-face">
+                  Go to website
+                  <span aria-hidden="true">&#8599;</span>
+                </span>
+              </a>
+            ) : (
+              // Nowhere to go yet: the button at rest.
+              <span aria-disabled="true" title="The website is not online yet" className="cta-drop fo-exit wk-rest rp-bar-button">
+                <span className="btn-neu-face">
+                  Go to website
+                  <span aria-hidden="true">&#8599;</span>
+                </span>
+              </span>
+            )}
           </div>
         </div>
       </>
     ),
   });
 
-  const web = SERVICES.find((x) => x.slug === "web-design");
   chapters.push({
     id: "web-design",
     label: "Web Design",
@@ -199,68 +253,31 @@ function chaptersFor(project: Project): Chapter[] {
         name="Web Design"
         main
         left={
-          <>
-            <Para title="The brief" value={s.startingPoint} />
-            <Para title="What we built" value={s.approach} />
-          </>
+          <p className="rp-text rp-justify">
+            <Fill value={s.website} />
+          </p>
         }
         right={
-          <>
-            <dl className="rp-specs">
-              {[
-                ["Website type", project.websiteType],
-                ["Pages", project.pages],
-                ["Design level", project.designLevel],
-              ].map(([label, value]) => (
-                <div key={label}>
-                  <dt className="mono-label text-ash-2">{label}</dt>
-                  <dd>
-                    <Fill value={value} />
-                  </dd>
-                </div>
-              ))}
-            </dl>
-            <div>
-              <p className="mono-label text-ash-2">Its pages</p>
-              <div className="rp-gap">
-                {s.sitemap?.length ? <Tags items={s.sitemap} label="Pages" /> : <p className="rp-fill">{TO_FILL}</p>}
+          <dl className="rp-specs">
+            {[
+              ["Design level", project.designLevel],
+              ["Pages", project.pages],
+              ["Languages", s.languages],
+            ].map(([label, value]) => (
+              <div key={label}>
+                <dt className="mono-label text-ash-2">{label}</dt>
+                <dd>
+                  <Fill value={value} />
+                </dd>
               </div>
-            </div>
-          </>
+            ))}
+          </dl>
         }
-      >
-        <div className="rp-three">
-          <Ticks title="Goals" items={s.goals} />
-          <Ticks title="What it does" items={s.features} />
-          <Ticks title={web?.included?.title ?? "Also included"} items={web?.included?.items} />
-        </div>
-        <div className="rp-pair">
-          <div>
-            <p className="rp-sub">How it ran</p>
-            <Readouts items={PHASES.map((phase, i) => [phase, s.phases?.[i]])} />
-          </div>
-          <div>
-            <p className="rp-sub">Measured on the live website</p>
-            <Readouts
-              big
-              items={[
-                ["Performance", s.scores.performance],
-                ["Accessibility", s.scores.accessibility],
-                ["Best practices", s.scores.bestPractices],
-                ["SEO", s.scores.seo],
-              ]}
-            />
-            <p className="rp-note">
-              Lighthouse, on a phone, out of 100. Load time: <Fill value={s.scores.loadTime} />
-            </p>
-          </div>
-        </div>
-      </ServiceChapter>
+      />
     ),
   });
 
   if (took("Visual identity")) {
-    const id = s.identity;
     chapters.push({
       id: "visual-identity",
       label: "Visual Identity",
@@ -268,63 +285,9 @@ function chaptersFor(project: Project): Chapter[] {
         <ServiceChapter
           name="Visual Identity"
           main={false}
-          left={<Para title="The idea" value={id.idea} />}
-          right={
-            <dl className="rp-specs">
-              <div>
-                <dt className="mono-label text-ash-2">Typefaces</dt>
-                <dd>
-                  <Fill value={id.typefaces?.map((f) => `${f.name} (${f.role.toLowerCase()})`).join(", ")} />
-                </dd>
-              </div>
-              <div>
-                <dt className="mono-label text-ash-2">Where it is used</dt>
-                <dd>
-                  <Fill value={id.applications?.join(", ")} />
-                </dd>
-              </div>
-            </dl>
-          }
-        >
-          <div className="rp-logos">
-            {[
-              { src: id.logo, alt: `${project.name} logo`, caption: "Logo, on white", dark: false },
-              { src: id.logo, alt: "", caption: "Logo, on black", dark: true },
-              { src: id.symbol, alt: `${project.name} symbol`, caption: "Symbol, if there is one", dark: false },
-            ].map((logo) => (
-              <figure key={logo.caption} className="rp-logo" data-dark={logo.dark ? "" : undefined}>
-                <span className="rp-logo-box">
-                  {logo.src ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={logo.src} alt={logo.alt} />
-                  ) : (
-                    <span className="rp-fill">{TO_FILL}</span>
-                  )}
-                </span>
-                <figcaption className="mono-label text-ash-2">{logo.caption}</figcaption>
-              </figure>
-            ))}
-          </div>
-          <div className="rp-block">
-            <p className="mono-label text-ash-2">Colours</p>
-            <ul className="rp-swatches">
-              {(id.palette ?? Array.from({ length: 5 }, () => null)).map((colour, i) =>
-                colour ? (
-                  <li key={colour.hex}>
-                    <span className="rp-swatch" style={{ background: colour.hex }} />
-                    <span>{colour.name}</span>
-                    <span className="mono-label text-ash-2">{colour.hex}</span>
-                  </li>
-                ) : (
-                  <li key={i}>
-                    <span className="rp-swatch rp-swatch-empty" />
-                    <span className="rp-fill">{TO_FILL}</span>
-                  </li>
-                ),
-              )}
-            </ul>
-          </div>
-        </ServiceChapter>
+          left={<BeforeAfter before={s.identity.before} after={s.identity.after} name={project.name} />}
+          right={<Para title="The idea" value={s.identity.idea} />}
+        />
       ),
     });
   }
@@ -373,8 +336,7 @@ function chaptersFor(project: Project): Chapter[] {
     });
   }
 
-  const shoot = took("Photo shoot");
-  if (shoot) {
+  if (took("Photo shoot")) {
     chapters.push({
       id: "photo-shoot",
       label: "Photo Shoot",
@@ -394,41 +356,6 @@ function chaptersFor(project: Project): Chapter[] {
       ),
     });
   }
-
-  chapters.push({
-    id: "outcome",
-    label: "Outcome",
-    body: (
-      <>
-        <div className="rp-svc-head">
-          <h3 className="rp-svc-name">The outcome</h3>
-        </div>
-        <div className="rp-cols">
-          <Para title="What changed" value={s.outcome} />
-          <figure className="rp-quote">
-            <blockquote>
-              <Fill value={s.quote?.text} />
-            </blockquote>
-            <figcaption className="mono-label">
-              <Fill value={s.quote?.by} />
-            </figcaption>
-          </figure>
-        </div>
-        <Readouts
-          items={[
-            ["Strategy, design and build", "nevima"],
-            ...(took("Visual identity") ? ([["Visual identity", "nevima"]] as [string, string][]) : []),
-            ["Photography", shoot ? "nevima" : `${project.photo.credit}, a stand-in`],
-          ]}
-        />
-        <p className="rp-privacy">
-          This report leaves out the client&rsquo;s personal and commercial information. Results
-          are shown rounded or as a change, and the client&rsquo;s words appear only with their
-          consent.
-        </p>
-      </>
-    ),
-  });
 
   return chapters;
 }
@@ -458,8 +385,6 @@ export function ProjectReport({
   const [current, setCurrent] = useState("overview");
 
   const chapters = chaptersFor(project);
-  const live = project.status === "live" && project.url;
-
   // The tile and the sheet, measured before the first paint, so the sheet
   // is drawn over the tile from its very first frame.
   useLayoutEffect(() => {
@@ -591,14 +516,6 @@ export function ProjectReport({
               <span aria-hidden="true">&times;</span>
             </span>
           </button>
-          {live && (
-            <a href={project.url!} target="_blank" rel="noopener" className="cta-drop fo-exit rp-bar-button">
-              <span className="btn-neu-face">
-                Go to the website
-                <span aria-hidden="true">&#8599;</span>
-              </span>
-            </a>
-          )}
         </div>
 
         <article
@@ -617,22 +534,20 @@ export function ProjectReport({
             <div ref={content} style={flying ? { opacity: 0 } : undefined}>
               <header className="rp-head">
                 <div className="rp-head-row">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/nevima-wordmark.svg" alt="nevima" className="rp-mark" />
-                  <span className="mono-label idx-title">Project report</span>
+                  <nav aria-label="Report chapters" className="rp-nav">
+                    {chapters.map((chapter) => (
+                      <button
+                        key={chapter.id}
+                        type="button"
+                        aria-current={current === chapter.id ? "true" : undefined}
+                        onClick={() => go(chapter.id)}
+                      >
+                        {chapter.label}
+                      </button>
+                    ))}
+                  </nav>
+                  <span className="mono-label idx-title rp-head-label">Project report</span>
                 </div>
-                <nav aria-label="Report chapters" className="rp-nav">
-                  {chapters.map((chapter) => (
-                    <button
-                      key={chapter.id}
-                      type="button"
-                      aria-current={current === chapter.id ? "true" : undefined}
-                      onClick={() => go(chapter.id)}
-                    >
-                      {chapter.label}
-                    </button>
-                  ))}
-                </nav>
                 <span className="rp-progress" aria-hidden="true">
                   <span ref={progress} />
                 </span>
