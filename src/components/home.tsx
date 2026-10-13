@@ -272,26 +272,27 @@ export function Home() {
      its own, as one gesture would have fired it, and the form opens out
      of the bar's button once the page is handed back. */
   const asked = useRef(false);
+  // Read once, as the page is drawn: the effects below may run again (the
+  // opening's trigger is rebuilt as reduced motion resolves) and must not
+  // lose the request, so it is kept until it has been answered.
   useEffect(() => {
     if (window.location.hash !== "#proposal") return;
-    history.replaceState(null, "", window.location.pathname + window.location.search);
-    // Already opened earlier in the visit: the form opens straight away.
-    if (phaseRef.current === "open") {
-      const t = window.setTimeout(() => {
-        document.querySelector<HTMLElement>("[data-nav-proposal]")?.click();
-      }, 250);
-      return () => window.clearTimeout(t);
-    }
     asked.current = true;
+    history.replaceState(null, "", window.location.pathname + window.location.search);
+  }, []);
+  // Not opened yet: the opening runs on its own.
+  useEffect(() => {
+    if (!asked.current || phaseRef.current !== "waiting") return;
     const t = window.setTimeout(open, 350);
     return () => window.clearTimeout(t);
   }, [open]);
+  // Open (at once, if the opening was played earlier in the visit): the
+  // form opens out of the bar's button.
   useEffect(() => {
     if (phase !== "open" || !asked.current) return;
-    asked.current = false;
     const t = window.setTimeout(() => {
-      const ask = document.querySelector<HTMLElement>("[data-nav-proposal]");
-      if (ask) ask.click();
+      asked.current = false;
+      document.querySelector<HTMLElement>("[data-nav-proposal]")?.click();
     }, 250);
     return () => window.clearTimeout(t);
   }, [phase]);

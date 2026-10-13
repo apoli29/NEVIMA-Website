@@ -19,6 +19,8 @@ const RESTORE_KEY = "nevima:restore";
 /** How long a note to restore a page is good for, in ms. */
 const RESTORE_TTL = 8000;
 
+import { goTo } from "@/components/page-wipe";
+
 export const PORTFOLIO_PATH = "/portfolio";
 
 export type Spot = {
@@ -61,14 +63,15 @@ export function keepSpot() {
 export function leavePortfolio() {
   const spot = read<Spot>(SPOT_KEY);
   if (!spot || spot.path.startsWith(PORTFOLIO_PATH)) {
-    window.location.assign("/");
+    goTo("/");
     return;
   }
   write(RESTORE_KEY, { path: spot.path, y: spot.y, at: Date.now() });
   // Back, when the portfolio is the entry straight after the spot, so the
   // browser's own back button and this one agree; otherwise there again.
+  // Either way through the router, so the page wipe carries over.
   if (window.history.length === spot.depth + 1) window.history.back();
-  else window.location.assign(spot.path);
+  else goTo(spot.path);
 }
 
 type Restore = { path: string; y: number; at: number };
