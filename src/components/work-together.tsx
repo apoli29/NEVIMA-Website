@@ -121,6 +121,23 @@ function InlineProposal() {
 
   const title = useRef<HTMLHeadingElement>(null);
   const scroller = useRef<HTMLDivElement>(null);
+  const box = useRef<HTMLDivElement>(null);
+
+  // The form has no scroller of its own (it would catch the wheel on the
+  // way to the footer): it grows with its screen, and the page brings back
+  // whatever has gone out of sight.
+  const bringBack = useCallback(
+    (el: HTMLElement | null, at: number) => {
+      if (!el) return;
+      const top = el.getBoundingClientRect().top;
+      if (top >= 64 && top <= window.innerHeight * 0.8) return;
+      window.scrollTo({
+        top: window.scrollY + top - window.innerHeight * at,
+        behavior: reduce ? "auto" : "smooth",
+      });
+    },
+    [reduce],
+  );
   const trap = useRef<HTMLInputElement>(null);
   const readTrap = useCallback(() => trap.current?.value ?? "", []);
   const openedAt = useRef(Date.now());
@@ -154,7 +171,7 @@ function InlineProposal() {
   useEffect(() => {
     setConfirming(false);
     if (!touched.current) return;
-    scroller.current?.scrollTo({ top: 0 });
+    if ((box.current?.getBoundingClientRect().top ?? 0) < 0) bringBack(box.current, 0.08);
     title.current?.focus({ preventScroll: true });
   }, [step, offline]);
 
@@ -173,7 +190,7 @@ function InlineProposal() {
     setSend({ status: "idle" });
     setStep("basics");
     setConfirming(false);
-    scroller.current?.scrollTo({ top: 0 });
+    if ((box.current?.getBoundingClientRect().top ?? 0) < 0) bringBack(box.current, 0.08);
     requestAnimationFrame(() => title.current?.focus({ preventScroll: true }));
   };
 
@@ -233,12 +250,7 @@ function InlineProposal() {
           scroller.current?.querySelector<HTMLElement>(`[aria-describedby="${first}-error"]`);
         el?.focus({ preventScroll: true });
         const row = el?.closest<HTMLElement>("[data-question], .prop-row, .pf-consent-row");
-        if (row && scroller.current) {
-          scroller.current.scrollTo({
-            top: row.offsetTop - scroller.current.clientHeight / 3,
-            behavior: reduce ? "auto" : "smooth",
-          });
-        }
+        bringBack(row ?? null, 1 / 3);
       });
       return;
     }
@@ -273,7 +285,7 @@ function InlineProposal() {
   const progress = steps.length > 1 ? index / (steps.length - 1) : 0;
 
   return (
-    <div className="wt-form relative isolate text-ink">
+    <div ref={box} className="wt-form relative isolate text-ink">
       <div aria-hidden="true" className="pf-pane" />
       <form noValidate onSubmit={onSubmit} aria-labelledby="wt-form-title" className="flex h-full min-h-0 flex-col">
         <p className="mono-label mb-2.5 flex items-center justify-between text-ash-2">
@@ -308,7 +320,7 @@ function InlineProposal() {
               transition={{ duration: reduce ? 0 : 0.6, ease: [0.65, 0, 0.35, 1] }}
             />
           </div>
-          <div ref={scroller} data-lenis-prevent className="pf-scroll">
+          <div ref={scroller} className="pf-scroll">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={offline ? "offline" : step}

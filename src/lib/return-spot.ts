@@ -20,7 +20,6 @@ const RESTORE_KEY = "nevima:restore";
 const RESTORE_TTL = 8000;
 
 import { goTo } from "@/components/page-wipe";
-import { OPENED_COOKIE } from "./opened";
 
 export const PORTFOLIO_PATH = "/portfolio";
 
@@ -93,22 +92,18 @@ export function takeReturn(path: string): number | null {
   return note.y;
 }
 
-/* The home page's opening is played once, as the visit begins (user,
-   2026-10-12): coming back to the home page later, from the bar, the foot,
-   the browser's back button or a reload, goes straight to the page.
-
-   Kept in a cookie for the browser session, not only in the tab's
-   storage, so the server knows it too and draws the page already open:
-   decided in the browser alone, a reload showed the opening for the
-   second it took to wake up, then dropped it (user, 2026-10-13). */
+/* The home page's opening plays whenever the site is loaded afresh (a
+   first visit, a reload, a new tab, a typed address) and not when the
+   visitor comes back to the home page from inside the site (the bar's or
+   the foot's Home, the back button, "Exit portfolio"), user 2026-10-13.
+   What is noted here is that it has been played in this tab, so a page
+   the router brings can skip it (see home.tsx). */
 const OPENED_KEY = "nevima:opened";
 
 export function markOpened() {
   try {
     sessionStorage.setItem(OPENED_KEY, "1");
   } catch {}
-  // No expiry: it lasts as long as the browser session.
-  document.cookie = `${OPENED_COOKIE}=1; path=/; SameSite=Lax`;
 }
 
 export function hasOpened() {
