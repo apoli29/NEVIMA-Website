@@ -54,15 +54,7 @@ const REACH = { x: 26, y: 18 };
 const LEAN = { x: 2.4, y: 3 };
 /** How deep each photo stands, 1 the nearest: the far one moves less. */
 const DEPTH = [1, 0.55];
-/** One whole lap of the room, in seconds (user, 2026-10-13: the photos
-    going slowly round the whole page). */
-const LAP_S = 90;
-/** Where on its lap each photo starts, in turns: the near one up and to
-    the right, the far one opposite it. */
-const LAP_FROM = [0.88, 0.38];
-/** The room kept between a photo and the edges, and under the buttons. */
-const LAP_MARGIN = 24;
-const LAP_TOP = 96;
+
 
 const IN = [0.22, 1, 0.36, 1] as const;
 
@@ -186,8 +178,7 @@ export function Portfolio() {
    Each photo is three layers deep: where it is placed (CSS, per screen
    size), how far it has followed the hand (motion values, sprung so it
    trails), and its own slow drift (a CSS loop, so it costs nothing on the
-   main thread). Round all of it, the whole room is a slow lap (see the
-   lap below). Only transforms move. For a finger there is no hand to
+   main thread). Only transforms move. For a finger there is no hand to
    follow, so only the drift; for anyone who asked for less motion, none
    of it: the hand is never read, the drift is stopped in CSS, and the
    photos only fade in. */
@@ -219,52 +210,6 @@ function Cloud({
     frozenAt.current = frozen;
   }, [frozen]);
 
-  /* The lap: each photo goes round an ellipse as wide and tall as the
-     room allows it, at its own size, the two always opposite each other.
-     It slows to a stop while a photo is pointed at or something is open
-     over the room, and picks up again after. Set straight on the pieces
-     every frame; under reduced motion they stay where the CSS puts them. */
-  const stage = useRef<HTMLDivElement>(null);
-  const paused = useRef(false);
-  useEffect(() => {
-    paused.current = frozen || active !== null;
-  }, [frozen, active]);
-  useEffect(() => {
-    const el = stage.current;
-    if (!el || reduce) return;
-    const pieces = [...el.querySelectorAll<HTMLElement>(".fo-piece")];
-    pieces.forEach((p) => p.setAttribute("data-lap", ""));
-    let turn = 0;
-    let speed = 1;
-    let last = performance.now();
-    let frame = 0;
-    const step = (now: number) => {
-      const dt = Math.min((now - last) / 1000, 0.05);
-      last = now;
-      speed += ((paused.current ? 0 : 1) - speed) * (1 - Math.exp(-dt * 3));
-      turn += (dt * speed) / LAP_S;
-      const w = el.clientWidth;
-      const h = el.clientHeight;
-      const top = Math.min(LAP_TOP, h * 0.12);
-      const cx = w / 2;
-      const cy = top + (h - top) / 2;
-      pieces.forEach((p, i) => {
-        const rx = Math.max(0, w / 2 - p.offsetWidth / 2 - LAP_MARGIN);
-        const ry = Math.max(0, (h - top) / 2 - p.offsetHeight / 2 - LAP_MARGIN);
-        const a = (LAP_FROM[i % LAP_FROM.length] + turn) * Math.PI * 2;
-        p.style.transform = `translate3d(${cx + rx * Math.cos(a)}px, ${cy + ry * Math.sin(a)}px, 0)`;
-      });
-      frame = requestAnimationFrame(step);
-    };
-    frame = requestAnimationFrame(step);
-    return () => {
-      cancelAnimationFrame(frame);
-      pieces.forEach((p) => {
-        p.removeAttribute("data-lap");
-        p.style.transform = "";
-      });
-    };
-  }, [reduce]);
 
   useEffect(() => {
     if (reduce || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
@@ -289,7 +234,6 @@ function Cloud({
 
   return (
     <div
-      ref={stage}
       className="fo-stage"
       data-active={active ?? undefined}
       data-still={frozen ? "" : undefined}

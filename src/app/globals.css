@@ -2422,8 +2422,6 @@
     translate: -50% -50%;
   }
   .fo-piece[data-on] { z-index: 5; }
-  /* Going round the room: placed from the stage's corner by the lap. */
-  .fo-piece[data-lap] { left: 0; top: 0; will-change: transform; }
   /* The near one larger and right of the middle, the far one smaller,
      lower and to the left, after the reference's loose cloud. */
   .fo-piece[data-i="0"] { --x: 60%; --y: 48%; --w: clamp(14rem, 21vw, 22rem); }

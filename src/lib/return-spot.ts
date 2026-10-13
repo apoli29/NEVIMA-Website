@@ -83,12 +83,6 @@ function pending(path: string): Restore | null {
   return note;
 }
 
-/** Whether this page is being come back to from the portfolio (read, not
-    used up: the home page asks it to skip its opening). */
-export function isReturning(path: string) {
-  return pending(path) !== null;
-}
-
 /** The place to put this page back at, used up as it is read. */
 export function takeReturn(path: string): number | null {
   const note = pending(path);
@@ -119,7 +113,8 @@ export function markOpened() {
 
 export function hasOpened() {
   try {
-    if (sessionStorage.getItem(OPENED_KEY) === "1") return true;
-  } catch {}
-  return document.cookie.split("; ").includes(`${OPENED_COOKIE}=1`);
+    return sessionStorage.getItem(OPENED_KEY) === "1";
+  } catch {
+    return false;
+  }
 }

@@ -22,7 +22,8 @@ import { Services } from "./services";
 import { StatementScreen } from "./statement-screen";
 import { useSmoothScroll } from "./smooth-scroll";
 import { Studio } from "./studio";
-import { hasOpened, isReturning, markOpened } from "@/lib/return-spot";
+import { hasOpened, markOpened } from "@/lib/return-spot";
+import { booted } from "@/lib/opened";
 
 /* ==================================================================
    One gesture, one take.
@@ -255,16 +256,29 @@ export function Home({ opened = false }: { opened?: boolean }) {
     });
   }, [progress, reduce]);
 
-  /* The opening is played once, as the visit begins. Come back to later
-     (the bar's or the foot's Home, the browser's back button, or the
-     portfolio's "Exit portfolio", which also puts the page back where the
-     visitor left it, see return-keeper.tsx), the page is simply there.
-     Before the first paint, so the curtain is never seen. */
+  /* The opening is played once, as the visit begins. On a page the
+     server draws (a first load, a reload, a typed address), whether it
+     has been is the server's to say (the session cookie, see
+     app/page.tsx), so the page is drawn as it will stay from the first
+     paint: decided here instead, the curtain the server had drawn showed
+     for a moment and then went (user, 2026-10-13). On a page the router
+     brings (the bar's or the foot's Home, the back button, "Exit
+     portfolio"), it may come from the router's memory of an earlier
+     visit; nothing has been painted yet, so it is decided here, before
+     the first paint. */
   useMeasureEffect(() => {
-    if (!isReturning("/") && !hasOpened()) return;
+    if (phaseRef.current === "open") return;
+    if (!booted.done || !hasOpened()) return;
     progress.set(1);
     phaseRef.current = "open";
     setPhase("open");
+    // Once, as the page is drawn.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  // A visit that marked the opening as played before the cookie existed
+  // gets it now, so its next load is drawn open too.
+  useEffect(() => {
+    if (!opened && hasOpened()) markOpened();
     // Once, as the page is drawn.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
