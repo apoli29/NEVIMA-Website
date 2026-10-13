@@ -124,8 +124,8 @@ const ROWS: Row[] = [
     id: "knowledge",
     criterion: "Knowledge and tools",
     them: "Outdated methods: expensive but obsolete tools and aging processes.",
-    lead: "Cutting-edge:",
-    us: "avant-garde tools, constant tracking of how the market evolves and technical expertise that is always up to date.",
+    lead: "Ahead of the curve:",
+    us: "cutting-edge tools, constant tracking of how the market evolves and technical expertise that is always up to date.",
   },
   {
     id: "costs",

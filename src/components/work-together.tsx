@@ -97,9 +97,6 @@ export function WorkTogether() {
             <span className="block font-light">Let&rsquo;s work</span>
             <span className="block font-medium">together.</span>
           </h2>
-          <p className="mt-6 max-w-[22rem] text-[1.0625rem] leading-[1.45] text-paper/75 md:mt-8">
-            Tell us about your business. Your proposal is free.
-          </p>
         </div>
         <div className="lg:col-span-7">
           <InlineProposal />

@@ -99,13 +99,16 @@ export function Services({ ready }: { ready: boolean }) {
   );
 
   /* Sent here for one service (the foot's service links point at
-     /#service-<slug>, user 2026-10-12): that row opens, and once the page
-     is handed back the list is brought up with the row a third of the
-     way down the screen. */
+     /#open-<slug>, user 2026-10-12): that row opens, and once the page
+     is handed back the list is put at once with the row a third of the
+     way down the screen. A hash no element carries, so neither the
+     browser nor Lenis scrolls to it on its own: from the foot of the home
+     page that smooth scroll ran How we work backwards on the way up
+     (user, 2026-10-13). The jump is instant, Lenis included. */
   const [asked, setAsked] = useState<string | null>(null);
   useEffect(() => {
     const read = () => {
-      const slug = /^#service-([a-z-]+)$/.exec(window.location.hash)?.[1];
+      const slug = /^#open-([a-z-]+)$/.exec(window.location.hash)?.[1];
       if (!slug || !SERVICES.some((s) => s.slug === slug)) return;
       history.replaceState(null, "", window.location.pathname + window.location.search);
       setOpen(slug);

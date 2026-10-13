@@ -15,7 +15,7 @@ import { LiquidLens } from "./liquid-lens";
 import { ProjectReport } from "./project-report";
 import { ProposalOverlay, useProposalController } from "./proposal-flow";
 import { leavePortfolio } from "@/lib/return-spot";
-import { wipeThen } from "./page-wipe";
+import { fadeThen } from "./page-wipe";
 import { PROJECTS, shown, type Project } from "@/lib/work";
 
 /* ==================================================================
@@ -54,6 +54,15 @@ const REACH = { x: 26, y: 18 };
 const LEAN = { x: 2.4, y: 3 };
 /** How deep each photo stands, 1 the nearest: the far one moves less. */
 const DEPTH = [1, 0.55];
+/** One whole lap of the room, in seconds (user, 2026-10-13: the photos
+    going slowly round the whole page). */
+const LAP_S = 90;
+/** Where on its lap each photo starts, in turns: the near one up and to
+    the right, the far one opposite it. */
+const LAP_FROM = [0.88, 0.38];
+/** The room kept between a photo and the edges, and under the buttons. */
+const LAP_MARGIN = 24;
+const LAP_TOP = 96;
 
 const IN = [0.22, 1, 0.36, 1] as const;
 
@@ -72,6 +81,28 @@ export function Portfolio() {
   }, []);
 
   const ground = useRef<HTMLDivElement>(null);
+  const room = useRef<HTMLElement>(null);
+
+  /* Leaving (user, 2026-10-13: not the growing drop): the photos draw
+     back into the dark, smaller and out of focus, the buttons go, and
+     the screen falls to black before the page the visitor came from
+     comes up out of it. */
+  const leave = () => {
+    const el = room.current;
+    const reduceNow = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (el && !reduceNow) {
+      const out = { duration: 560, easing: "cubic-bezier(0.4, 0, 0.2, 1)", fill: "forwards" as const };
+      el.querySelector(".fo-stage")?.animate(
+        [
+          { opacity: 1, transform: "scale(1)", filter: "blur(0px)" },
+          { opacity: 0, transform: "scale(0.92)", filter: "blur(10px)" },
+        ],
+        out,
+      );
+      el.querySelector(".fo-top")?.animate([{ opacity: 1 }, { opacity: 0 }], { ...out, duration: 260 });
+    }
+    fadeThen("#000000", leavePortfolio, reduceNow ? 0 : 300, 360);
+  };
   const sign = useRef<HTMLSpanElement>(null);
 
   return (
@@ -79,11 +110,11 @@ export function Portfolio() {
     // motion Motion drops the movement itself and CSS stops the drift.
     <MotionConfig reducedMotion="user">
       {/* Everything but the open card or form, out of reach while it is out. */}
-      <main id="top" inert={away} className="fo-room">
+      <main ref={room} id="top" inert={away} className="fo-room">
         {/* The foot's ground. The lens follows the hand over the black and
             gives way as the hand reaches a photo, which sits above it. */}
         <div ref={ground} className="absolute inset-0 z-0">
-          <LiquidLens host={ground} mark={sign} src={WORDMARK} still={still || away} />
+          <LiquidLens host={ground} mark={sign} src={WORDMARK} still={still || away} pools={9} />
           {/* The lens carries a mark; this room has none, so it is given
               an empty one. */}
           <span ref={sign} aria-hidden="true" className="absolute bottom-0 left-0 size-0" />
@@ -102,7 +133,7 @@ export function Portfolio() {
               alike, each its own look). */}
           <button
             type="button"
-            onClick={(e) => wipeThen(e.currentTarget, leavePortfolio)}
+            onClick={leave}
             className="fo-exit cta-drop inline-flex text-[0.9375rem] leading-none"
           >
             <span className="btn-neu-face">
@@ -155,7 +186,8 @@ export function Portfolio() {
    Each photo is three layers deep: where it is placed (CSS, per screen
    size), how far it has followed the hand (motion values, sprung so it
    trails), and its own slow drift (a CSS loop, so it costs nothing on the
-   main thread). Only transforms move. For a finger there is no hand to
+   main thread). Round all of it, the whole room is a slow lap (see the
+   lap below). Only transforms move. For a finger there is no hand to
    follow, so only the drift; for anyone who asked for less motion, none
    of it: the hand is never read, the drift is stopped in CSS, and the
    photos only fade in. */
@@ -187,6 +219,53 @@ function Cloud({
     frozenAt.current = frozen;
   }, [frozen]);
 
+  /* The lap: each photo goes round an ellipse as wide and tall as the
+     room allows it, at its own size, the two always opposite each other.
+     It slows to a stop while a photo is pointed at or something is open
+     over the room, and picks up again after. Set straight on the pieces
+     every frame; under reduced motion they stay where the CSS puts them. */
+  const stage = useRef<HTMLDivElement>(null);
+  const paused = useRef(false);
+  useEffect(() => {
+    paused.current = frozen || active !== null;
+  }, [frozen, active]);
+  useEffect(() => {
+    const el = stage.current;
+    if (!el || reduce) return;
+    const pieces = [...el.querySelectorAll<HTMLElement>(".fo-piece")];
+    pieces.forEach((p) => p.setAttribute("data-lap", ""));
+    let turn = 0;
+    let speed = 1;
+    let last = performance.now();
+    let frame = 0;
+    const step = (now: number) => {
+      const dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      speed += ((paused.current ? 0 : 1) - speed) * (1 - Math.exp(-dt * 3));
+      turn += (dt * speed) / LAP_S;
+      const w = el.clientWidth;
+      const h = el.clientHeight;
+      const top = Math.min(LAP_TOP, h * 0.12);
+      const cx = w / 2;
+      const cy = top + (h - top) / 2;
+      pieces.forEach((p, i) => {
+        const rx = Math.max(0, w / 2 - p.offsetWidth / 2 - LAP_MARGIN);
+        const ry = Math.max(0, (h - top) / 2 - p.offsetHeight / 2 - LAP_MARGIN);
+        const a = (LAP_FROM[i % LAP_FROM.length] + turn) * Math.PI * 2;
+        p.style.transform = `translate3d(${cx + rx * Math.cos(a)}px, ${cy + ry * Math.sin(a)}px, 0)`;
+      });
+      frame = requestAnimationFrame(step);
+    };
+    frame = requestAnimationFrame(step);
+    return () => {
+      cancelAnimationFrame(frame);
+      pieces.forEach((p) => {
+        p.removeAttribute("data-lap");
+        p.style.transform = "";
+      });
+    };
+  }, [reduce]);
+
   useEffect(() => {
     if (reduce || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     const onMove = (event: PointerEvent) => {
@@ -210,6 +289,7 @@ function Cloud({
 
   return (
     <div
+      ref={stage}
       className="fo-stage"
       data-active={active ?? undefined}
       data-still={frozen ? "" : undefined}

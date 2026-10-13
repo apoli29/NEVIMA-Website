@@ -144,7 +144,7 @@ export function Footer() {
                   {/* Each to its row in the services on the home page, opened
                       (user, 2026-10-12): the list there is the services'
                       one home. */}
-                  <a href={`/#service-${service.slug}`} className="ftr-link ftr-item">
+                  <a href={`/#open-${service.slug}`} className="ftr-link ftr-item">
                     {service.title}
                   </a>
                 </li>

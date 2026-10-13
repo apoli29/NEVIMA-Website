@@ -386,7 +386,12 @@ function SectionIndex({ settled }: { settled: boolean }) {
                   }}
                 >
                   {link ? (
-                    <a href={link.href} className={`idx-link ${link.lead ? "idx-lead" : ""}`}>
+                    <a
+                      href={link.href}
+                      className={`idx-link ${link.lead ? "idx-lead" : ""}`}
+                      // To another page: its arrow goes on rather than down.
+                      data-away={link.href.startsWith("#") ? undefined : ""}
+                    >
                       <span className="idx-name flex items-center gap-2.5">
                         {link.lead && <span aria-hidden="true" className="live-dot" />}
                         {link.label}
