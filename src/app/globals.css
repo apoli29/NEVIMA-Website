@@ -2797,6 +2797,7 @@
      hand is. */
   .rp-ba {
     position: relative;
+    container-type: inline-size;
     aspect-ratio: 4 / 3;
     overflow: hidden;
     border: 1px solid rgb(0 0 0 / 0.14);
@@ -2805,7 +2806,7 @@
     user-select: none;
   }
   .rp-ba:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 3px; }
-  .rp-ba-face { position: absolute; inset: 0; }
+  .rp-ba-face { position: absolute; inset: 0; will-change: clip-path; }
   .rp-ba-face img { width: 100%; height: 100%; object-fit: cover; }
   .rp-ba-empty { display: grid; width: 100%; height: 100%; place-items: center; background: #efefee; font-size: 0.875rem; }
   .rp-ba-empty[data-dark] { background: #000; }
@@ -2814,12 +2815,32 @@
     position: absolute;
     top: 0;
     bottom: 0;
+    left: 0;
     width: 1px;
     margin-left: -0.5px;
+    will-change: transform;
     background: var(--color-paper);
     box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.35);
     pointer-events: none;
   }
+  /* The handle on the cut: a white disc with arrows both ways, the one
+     thing on the card that says it moves. */
+  .rp-ba-handle {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    display: grid;
+    width: 2.6rem;
+    height: 2.6rem;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    box-shadow: 0 0.5rem 1.25rem -0.5rem rgb(0 0 0 / 0.55), 0 0 0 1px rgb(0 0 0 / 0.12);
+    pointer-events: none;
+    will-change: transform;
+  }
+  .rp-ba:focus-visible .rp-ba-handle { box-shadow: 0 0 0 2px var(--color-ink), 0 0.5rem 1.25rem -0.5rem rgb(0 0 0 / 0.55); }
   .rp-ba-tag { position: absolute; top: 0.75rem; padding: 0.2em 0.5em 0.15em; pointer-events: none; }
   .rp-ba-tag-after { left: 0.75rem; background: var(--color-paper); color: var(--color-ink); }
   .rp-ba-tag-before { right: 0.75rem; background: var(--color-ink); color: var(--color-paper); }
