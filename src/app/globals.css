@@ -2724,8 +2724,8 @@
   /* The cover. */
   .rp-hero { aspect-ratio: 16 / 6; overflow: hidden; background: #1c1c1c; }
   .rp-hero img { width: 100%; height: 100%; object-fit: cover; }
-  .rp-cover { padding: clamp(1.75rem, 4.5cqw, 2.5rem) var(--rp-pad) clamp(2rem, 5cqw, 2.75rem); }
-  .rp-cover-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem 1.5rem; }
+  .rp-cover { padding: clamp(1.25rem, 3cqw, 1.75rem) var(--rp-pad) clamp(2rem, 5cqw, 2.75rem); }
+  .rp-cover-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem 1.5rem; padding-top: clamp(1.1rem, 2.6cqw, 1.5rem); border-top: 1px solid var(--color-ink); }
   .rp-cover-name {
     font-family: var(--font-title);
     font-size: clamp(2.25rem, 6.5cqw, 3.75rem);
@@ -2742,8 +2742,30 @@
   }
   .rp-cover-head .rp-tags { justify-content: flex-end; max-width: 50%; }
   .rp-lede { max-width: 68ch; margin-top: 1.25rem; font-size: 1.0625rem; line-height: 1.6; }
-  .rp-cover-cta { margin-top: 1.5rem; margin-left: 0.85em; }
-  .rp-cover-cta .wk-rest { opacity: 0.35; pointer-events: none; }
+  /* The way to the website, set as the name is: white on a black band,
+     over the black rule the name stands on. */
+  .rp-cover-cta { margin-bottom: clamp(1.1rem, 2.6cqw, 1.5rem); }
+  .rp-band-link {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    font-family: var(--font-title);
+    font-size: 1.0625rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+  .rp-band-link > span {
+    padding: 0.2em 0.5em 0.25em;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    transition: padding 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .rp-band-link:hover > span,
+  .rp-band-link:focus-visible > span { padding-right: 0.8em; }
+  .rp-band-link:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 3px; }
+  .rp-band-link[data-rest] { opacity: 0.35; cursor: default; }
+  .rp-band-link[data-rest] > span { padding-right: 0.5em; }
 
   /* Readouts: mono labels over values, on a hairline, as the second
      screen's. */
@@ -2871,7 +2893,7 @@
     .rp-svc-head { flex-wrap: wrap; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .rp-nav button, .rp-top-link { transition: none; }
+    .rp-nav button, .rp-top-link, .rp-band-link > span { transition: none; }
   }
 }
 

@@ -325,6 +325,24 @@ function chaptersFor(project: Project): Chapter[] {
           <img src={project.photo.src} alt={project.photo.alt} draggable={false} />
         </div>
         <div className="rp-cover">
+          {/* Between the photo and the rule: the way to the website, set as
+              the name is, white on a black band (user, 2026-10-13). */}
+          <div className="rp-cover-cta">
+            {live ? (
+              <a href={project.url!} target="_blank" rel="noopener" className="rp-band-link">
+                <span>
+                  Go to website <span aria-hidden="true">&#8599;</span>
+                </span>
+              </a>
+            ) : (
+              // Nowhere to go yet: at rest.
+              <span aria-disabled="true" title="The website is not online yet" className="rp-band-link" data-rest="">
+                <span>
+                  Go to website <span aria-hidden="true">&#8599;</span>
+                </span>
+              </span>
+            )}
+          </div>
           <div className="rp-cover-head">
             <h2 id="rp-title" className="rp-cover-name">
               <span>{project.name}</span>
@@ -332,24 +350,6 @@ function chaptersFor(project: Project): Chapter[] {
             <Tags items={project.services} />
           </div>
           <p className="rp-lede rp-justify">{project.summary}</p>
-          <div className="rp-cover-cta">
-            {live ? (
-              <a href={project.url!} target="_blank" rel="noopener" className="cta-drop fo-exit rp-bar-button">
-                <span className="btn-neu-face">
-                  Go to website
-                  <span aria-hidden="true">&#8599;</span>
-                </span>
-              </a>
-            ) : (
-              // Nowhere to go yet: the button at rest.
-              <span aria-disabled="true" title="The website is not online yet" className="cta-drop fo-exit wk-rest rp-bar-button">
-                <span className="btn-neu-face">
-                  Go to website
-                  <span aria-hidden="true">&#8599;</span>
-                </span>
-              </span>
-            )}
-          </div>
         </div>
       </>
     ),
