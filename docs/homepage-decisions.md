@@ -5,7 +5,7 @@ What was decided for each part of the homepage, and why. Newest notes sit lower 
 The Nevima homepage is two screens. Screen one is black with the white wordmark centred.
 The first scroll gesture sends the mark flying to the exact slot it occupies in the
 floating bar; the bar fades in around it while everything is still black; then the black
-lifts off the second screen, which is the WebGPU shard field (`AeroShards`) carrying the
+lifts off the second screen, which is the WebGPU shard field carrying the
 English value proposition. Everything that existed before (Portuguese hero, services,
 method, work, pricing, founders, FAQ, contact) was taken off the page on 2026-09-11.
 
@@ -37,10 +37,6 @@ rejecting the shatter.
   the user asked for as temporary scaffolding. Do not treat them as settled IA.
 - Site copy is English. On 2026-09-18 `lang` was set to `en` (user said "corrige tudo" to an
   a11y audit listing it); the `layout.tsx` metadata/OG text is still Portuguese and untranslated.
-- `AeroShards.jsx` is vendored third-party code with a prop configuration the user supplied
-  verbatim. Do not edit the component or change those prop values. The user sometimes
-  renames these files mid-session; if the dev server cannot resolve `AeroShards.css`,
-  check the filenames before assuming a real break.
 - Brand assets live in `nevima.identity/`; the cropped wordmarks served to the page are
   `public/nevima-wordmark.svg` (black) and `public/nevima-wordmark-white.svg` (white). They are
   the identity SVGs with only the root tag swapped for a cropped `viewBox="222 591 1103 243"`.
@@ -120,8 +116,7 @@ rejecting the shatter.
   the words now draws live hover colour, underline and focus ring; canvases must only be
   resized via `fit()` — resetting them on every `transitionend` was the hover flicker the user
   reported. The footer is also on `/services/[slug]`. "Work" still points at a missing `#work`.
-- On 2026-09-18 the shard field was taken off the second screen (AeroShards stays in the repo,
-  unused) and replaced by `PixelField` (`src/components/pixel-field.tsx`), from a user sketch:
+- On 2026-09-18 the shard field was taken off the second screen and replaced by `PixelField` (`src/components/pixel-field.tsx`), from a user sketch:
   white ground; the brand boomerang huge on the right, elbow pointing left and arms off the
   top/bottom of the right edge, built of grid pixels; pixels continuously fly current→mark
   (landing on the grid) and mark→current. Revised the same day on user feedback: the mark is
