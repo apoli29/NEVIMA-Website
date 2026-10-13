@@ -331,21 +331,18 @@ function chaptersFor(project: Project): Chapter[] {
           <img src={project.photo.src} alt={project.photo.alt} draggable={false} />
         </div>
         <div className="rp-cover">
-          {/* Between the photo and the rule: the way to the website, set as
-              the name is, white on a black band (user, 2026-10-13). */}
+          {/* Between the photo and the rule: the way to the website, as
+              the home page's index asks for a proposal, a black band with
+              the green light (user, 2026-10-13). */}
           <div className="rp-cover-cta">
             {live ? (
-              <a href={project.url!} target="_blank" rel="noopener" className="rp-band-link">
-                <span>
-                  Go to website <span aria-hidden="true">&#8599;</span>
-                </span>
+              <a href={project.url!} target="_blank" rel="noopener" data-away="" className="idx-link idx-ask rp-go">
+                <GoInner />
               </a>
             ) : (
               // Nowhere to go yet: at rest.
-              <span aria-disabled="true" title="The website is not online yet" className="rp-band-link" data-rest="">
-                <span>
-                  Go to website <span aria-hidden="true">&#8599;</span>
-                </span>
+              <span aria-disabled="true" title="The website is not online yet" className="idx-link idx-ask rp-go" data-rest="">
+                <GoInner />
               </span>
             )}
           </div>
@@ -693,5 +690,22 @@ export function ProjectReport({
       </div>
       {!ready && <style>{`.rp-scope { visibility: hidden; }`}</style>}
     </div>
+  );
+}
+
+/** "Go to website", set as the index's ask: the light, the words, the arrow. */
+function GoInner() {
+  return (
+    <>
+      <span className="idx-name flex items-center gap-2.5">
+        <span aria-hidden="true" className="live-dot live-dot-loud" />
+        Go to website
+      </span>
+      <span aria-hidden="true" className="idx-arrow">
+        <svg viewBox="0 0 16 16" width="16" height="16" fill="none" className="block">
+          <path d="M4 12 12 4M5.5 4H12v6.5" stroke="currentColor" strokeWidth="1.25" />
+        </svg>
+      </span>
+    </>
   );
 }

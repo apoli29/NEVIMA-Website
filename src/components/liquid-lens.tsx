@@ -431,8 +431,8 @@ export function LiquidLens({
   /** The wordmark's element, whose box the mark's copy is placed on. */
   mark: RefObject<HTMLElement | null>;
   src: string;
-  /** The visitor has asked for the light to hold still. The drop still
-      follows the hand, which is motion they are making themselves. */
+  /** The visitor has asked for the light to hold still: the backdrop
+      stops and the drop under the hand is put away. */
   still?: boolean;
   /** How many pools of light (at most 9): 7 in the footer. */
   pools?: number;
@@ -789,7 +789,9 @@ export function LiquidLens({
         vel.y += ((ny - pos.y) / dt - vel.y) * g;
         pos.x = nx;
         pos.y = ny;
-        k += ((hovering ? 1 : 0) - k) * (1 - Math.pow(1 - 0.09, dt));
+        // Paused, the drop goes too (user, 2026-10-13: "Pause motion"
+        // has to stop everything, the drop under the hand included).
+        k += ((hovering && !held.current ? 1 : 0) - k) * (1 - Math.pow(1 - 0.09, dt));
 
         for (const el of moving.keys()) changed.add(el);
         for (const el of changed) repaintAround(el);
@@ -800,7 +802,7 @@ export function LiquidLens({
 
       // Held still and left alone, there is nothing to draw until
       // something changes.
-      const busy = !held.current || hovering || k > 0.002 || moving.size > 0;
+      const busy = !held.current || k > 0.002 || moving.size > 0;
       frame = visible && busy ? requestAnimationFrame(tick) : 0;
       if (!frame) last = 0;
     };

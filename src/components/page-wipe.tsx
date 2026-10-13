@@ -27,6 +27,12 @@ const EASE_FADE = "cubic-bezier(0.22, 1, 0.36, 1)";
 let cover: HTMLDivElement | null = null;
 let push: ((href: string) => void) | null = null;
 let safety = 0;
+/** The router's own state for the page on screen (see the mending below). */
+let known: unknown = null;
+const note = () => {
+  const state = window.history.state as { __NA?: boolean } | null;
+  if (state?.__NA) known = state;
+};
 
 const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -142,6 +148,27 @@ export function PageWipe() {
     };
   }, [router]);
 
+  // A link to a place on the same page ("#top") is left to the browser,
+  // which makes a history entry of its own, with no state the router can
+  // use: going back to it, the router did nothing, and a visitor leaving
+  // the portfolio was left in it (user, 2026-10-13). Such an entry is
+  // given the page's own state the moment it is made.
+  useEffect(() => {
+    const mend = () => {
+      const state = window.history.state as { __NA?: boolean } | null;
+      if (!state?.__NA && known) window.history.replaceState(known, "", window.location.href);
+      note();
+    };
+    const timer = window.setInterval(note, 500);
+    window.addEventListener("hashchange", mend);
+    window.addEventListener("popstate", note);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("hashchange", mend);
+      window.removeEventListener("popstate", note);
+    };
+  }, []);
+
   // A page the browser kept and shows again (back or forward) comes back
   // as it was left, cover and all: it goes at once.
   useEffect(() => {
@@ -154,6 +181,7 @@ export function PageWipe() {
 
   // The next page is in: let it be seen once it has drawn itself.
   useEffect(() => {
+    note();
     if (!cover) return;
     let a = 0;
     let b = 0;

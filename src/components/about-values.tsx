@@ -39,11 +39,11 @@ import { PIECE_PAD, useValuesWater, type ValuesControl } from "./values-water";
    holds with the other three, and the join is that said without words.
    A press anywhere on the water, or Esc, lets the four go back.
 
-   The four come from what the studio is built on. Less is more is the
-   philosophy (Less, on purpose); being two people means the client
-   speaks with whoever does the work (Direct line); leverage is not
-   doing less but wasting nothing (Fast, not rushed); and modern tools,
-   kept up with, are what make two people enough (Always current).
+   The four are the studio's own (user, 2026-10-13), polished from
+   their words: efficiency that never costs quality (Efficient, never
+   careless); the process and the price shown up front (Nothing
+   hidden); no charging for every little thing (Peace of mind); and
+   keeping up with the market's tools and practices (Always current).
 
    The drops are drawn on a canvas; what is pressed is a real button set
    exactly under each one, so the page works from the keyboard and to a
@@ -52,24 +52,24 @@ import { PIECE_PAD, useValuesWater, type ValuesControl } from "./values-water";
 
 const VALUES = [
   {
-    id: "less",
-    name: "Less, on purpose",
-    text: "Every page, every step and every pixel has to earn its place. What doesn’t, we leave out.",
+    id: "quality",
+    name: "Efficient, never careless",
+    text: "Every step of our process is efficient, and quality is never what gives. The result: excellent websites, in less time, with far more quality for what they cost.",
   },
   {
-    id: "direct",
-    name: "Direct line",
-    text: "You talk to the two people who design and build your website. No account managers, no feedback lost on the way.",
+    id: "open",
+    name: "Nothing hidden",
+    text: "You should know how we work and how we price it, so we explain our whole process and give you a price estimate from the very start.",
   },
   {
-    id: "fast",
-    name: "Fast, not rushed",
-    text: "We cut waste, never care. The speed comes from focus and the right tools, not from shortcuts.",
+    id: "ease",
+    name: "Peace of mind",
+    text: "We bring peace of mind, not complications, so we don’t charge for every little thing: no monthly hosting fee, and basic SEO included.",
   },
   {
     id: "current",
     name: "Always current",
-    text: "We keep up with the tools and with how people search, from Google to AI, so your business doesn’t fall behind.",
+    text: "We keep up with the market’s tools and practices, so what we deliver is always innovative and distinctive, from Google to AI.",
   },
 ] as const;
 

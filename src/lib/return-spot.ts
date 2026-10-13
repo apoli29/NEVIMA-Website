@@ -20,6 +20,8 @@ const RESTORE_KEY = "nevima:restore";
 const RESTORE_TTL = 8000;
 /** How long going back may take before the portfolio goes there itself. */
 const BACK_GRACE = 900;
+/** How long the router may take after that before the page is loaded. */
+const HARD_GRACE = 1600;
 
 import { goTo } from "@/components/page-wipe";
 
@@ -66,22 +68,38 @@ export function leavePortfolio() {
   const spot = read<Spot>(SPOT_KEY);
   if (!spot || spot.path.startsWith(PORTFOLIO_PATH)) {
     goTo("/");
+    insist("/", BACK_GRACE);
     return;
   }
   write(RESTORE_KEY, { path: spot.path, y: spot.y, at: Date.now() });
   // Back, when the portfolio is the entry straight after the spot, so the
   // browser's own back button and this one agree; otherwise there again.
-  // Either way through the router, so the page wipe carries over.
   if (window.history.length !== spot.depth + 1) {
     goTo(spot.path);
+    insist(spot.path, BACK_GRACE);
     return;
   }
   window.history.back();
-  // If going back has taken them nowhere (the entry was not what it
-  // seemed), they are taken there instead, never left on the black.
+  // Going back can take the address back without the page (the router
+  // ignores an entry it did not make, such as one a "#top" link left):
+  // what is checked is the page on screen, not the address.
   window.setTimeout(() => {
-    if (window.location.pathname.startsWith(PORTFOLIO_PATH)) goTo(spot.path);
+    if (!stillHere()) return;
+    goTo(spot.path);
+    insist(spot.path, HARD_GRACE);
   }, BACK_GRACE);
+}
+
+/** Whether the portfolio is still the page on screen. */
+const stillHere = () => document.querySelector(".fo-room") !== null;
+
+/** The last resort: if the router has not taken the visitor out after
+    `wait` ms, the page is loaded outright, so no one is ever left in
+    the room with its photos gone. */
+function insist(path: string, wait: number) {
+  window.setTimeout(() => {
+    if (stillHere()) window.location.assign(path);
+  }, wait + HARD_GRACE);
 }
 
 type Restore = { path: string; y: number; at: number };
