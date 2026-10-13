@@ -21,7 +21,9 @@ import { useSeen } from "./use-seen";
    on every press. One open at a time, and its answer is lit as the
    service copy is, grey to black.
 
-   Figures here (weeks, prices) are stand-ins for the studio to confirm.
+   Every answer is taken from what the site says elsewhere (the process,
+   the proposal form, the services), user 2026-10-13. No prices: those
+   only ever come from the estimate.
    ================================================================== */
 
 const EMAIL = "ola@nevima.pt";
@@ -33,14 +35,29 @@ const QUESTIONS = [
     a: "For a business website, a landing page or a new visual identity, yes. Modern tools take the repetitive work off our hands, so our time goes into the decisions that matter. If a project ever needs more hands, we bring in specialists we trust and stay your single point of contact.",
   },
   {
-    id: "time",
-    q: "How long does a website take?",
-    a: "Most websites go live four to six weeks after the first call. The launch date is fixed in the proposal, not loosely estimated, and it only moves if the scope does.",
+    id: "cost",
+    q: "How much does a website cost?",
+    a: "It depends on its size, its languages, its forms and the services you add. Fill in our free proposal form and you get an estimate straight away; within a few hours we come back with the exact price, always with the reasoning behind it. Prices are set for Portugal, for Spain and Italy, and for the USA; anywhere else is quoted on request.",
   },
   {
-    id: "cost",
-    q: "How much does it cost?",
-    a: "Websites start at €1,900, and a website with a new visual identity at €3,900. Every project gets a fixed quote after the first conversation, so you know the full price before anything starts.",
+    id: "monthly",
+    q: "Will I pay a monthly fee?",
+    a: "Not for your website: hosting is free for as long as it is live, and basic SEO comes with it. Only SEO and GEO, which are ongoing work, are paid monthly, and only if you choose them.",
+  },
+  {
+    id: "time",
+    q: "How long does a website take?",
+    a: "From 4 to 7 working days for a landing page to 12 to 16 for a website of 7 to 10 pages. The count starts once we have all your materials; a new visual identity or a photo shoot comes first. Your estimate gives your own project’s timeline, and if you need it sooner, there is an urgent option at an extra cost.",
+  },
+  {
+    id: "process",
+    q: "How does it work, from start to finish?",
+    a: "You fill in the form and see your estimate. We send you the exact price, then the contract, and start the moment we have your materials. Once part of the website is built, a call shows you where it is heading; at the end, another lets you approve it. Then it goes live.",
+  },
+  {
+    id: "after",
+    q: "What if I need changes after launch?",
+    a: "We stay on hand. Changes that take us only a few minutes are never charged; for anything bigger, you get a quote before we start.",
   },
   {
     id: "ai",
@@ -48,9 +65,14 @@ const QUESTIONS = [
     a: "No templates. Modern tools, AI included, yes: they are a large part of why we are fast. Every design decision and every line that goes live is ours, and reviewed by one of us.",
   },
   {
-    id: "own",
-    q: "Will the website be mine?",
-    a: "Yes. Domain, code, files and access are in your name from day one, and we show you how to edit your own content. You are never locked in with us.",
+    id: "languages",
+    q: "In which languages can my website be?",
+    a: "Portuguese is always included; English and any other language are added to the price. Languages other than Portuguese and English are translated by an AI specialised in translation, with over 95% accuracy, and we always send you the final text so you can point out anything you’d like written differently.",
+  },
+  {
+    id: "domain",
+    q: "Do I need my own domain?",
+    a: "No. If your business doesn’t have one yet, we include it. If you already have yours, its cost is taken off the final price.",
   },
   {
     id: "seo",
@@ -65,12 +87,17 @@ const QUESTIONS = [
   {
     id: "geo",
     q: "What is GEO?",
-    a: "Generative Engine Optimization. More and more people ask AI tools for recommendations, and GEO works on getting your business named as a source in those answers, the way SEO works on search results.",
+    a: "Generative Engine Optimization. More and more people turn to AI to find businesses, and GEO raises the chances of yours appearing in AI recommendations and answers, the way SEO does in search results.",
+  },
+  {
+    id: "photo",
+    q: "Where do you do photo shoots?",
+    a: "In mainland Portugal only. In some parts of the Porto area and in the rest of the country, travel costs are added. The photos and videos are yours outright, free to use anywhere.",
   },
   {
     id: "where",
     q: "Do you only work with businesses in Porto?",
-    a: "No. We are based in Porto and work remotely with clients anywhere, in Portuguese or English.",
+    a: "No. We are based in Porto and work remotely with businesses in Portugal, Spain, Italy and the USA, and anywhere else on request, in Portuguese or English.",
   },
 ] as const;
 

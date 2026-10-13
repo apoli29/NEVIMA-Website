@@ -2757,6 +2757,23 @@
   /* The way to the website, set as the name is: white on a black band,
      over the black rule the name stands on. */
   .rp-cover-cta { margin-bottom: clamp(1.1rem, 2.6cqw, 1.5rem); }
+  /* "Go to website": the index's ask (a black band, the green light). */
+  .rp-go {
+    font-family: var(--font-title);
+    font-size: 1.0625rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+  .rp-go.idx-ask:hover .idx-arrow,
+  .rp-go.idx-ask:focus-visible .idx-arrow { transform: translate(0.2rem, -0.2rem); }
+  .rp-go[data-rest] { cursor: default; opacity: 0.55; }
+  .rp-go[data-rest]::before,
+  .rp-go[data-rest]::after { animation: none; }
+  .rp-go[data-rest] .live-dot { background: #8a8a8a; box-shadow: none; }
+  .rp-go[data-rest] .live-dot::after { animation: none; }
+  .rp-go[data-rest]:hover .idx-name { transform: none; }
+  .rp-go[data-rest]:hover .idx-arrow { transform: none; }
   .rp-band-link {
     display: inline-flex;
     min-height: 2.75rem;
