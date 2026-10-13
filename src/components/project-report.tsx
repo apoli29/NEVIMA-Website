@@ -143,18 +143,105 @@ function ServiceChapter({
   );
 }
 
-/** The brand before and after, in one card: the hand going left shows
-    more of before, going right more of after (user, 2026-10-13). From the
-    keyboard it is a slider; on a touch screen it follows the finger. */
+/** The brand before and after, in one card (user, 2026-10-13). At rest
+    it shows after; the hand going left uncovers before, and leaving the
+    card lets after close back over it. A handle on the cut, and a brief
+    peek at before the first time the card comes into view, say that it
+    can be moved. From the keyboard it is a slider; on a touch screen it
+    follows the finger.
+
+    The cut trails the hand on its own clock, eased every frame and set
+    straight on the elements, so the card is never drawn again by React
+    while the hand moves. The last tenth of the card at either side
+    counts as the end, so a sweep always finishes. */
+const BA_EDGE = 0.1;
+const BA_FOLLOW = 14;
+/** How far the first peek uncovers before, and for how long. */
+const BA_PEEK = 72;
+const BA_PEEK_MS = 700;
+
 function BeforeAfter({ before, after, name }: { before: string | null; after: string | null; name: string }) {
-  const [at, setAt] = useState(50);
+  const reduce = useReducedMotion() ?? false;
   const card = useRef<HTMLDivElement>(null);
+  const top = useRef<HTMLDivElement>(null);
+  const line = useRef<HTMLSpanElement>(null);
+  const handle = useRef<HTMLSpanElement>(null);
+  const beforeTag = useRef<HTMLSpanElement>(null);
+  const at = useRef(100);
+  const aim = useRef(100);
+  const frame = useRef(0);
+  const last = useRef(0);
+  const touched = useRef(false);
+
+  const paint = useCallback((raw: number) => {
+    const v = Math.min(100, Math.max(0, raw));
+    if (top.current) top.current.style.clipPath = `inset(0 ${100 - v}% 0 0)`;
+    if (line.current) line.current.style.transform = `translateX(${v}cqw)`;
+    // The handle stays whole inside the card, even at its edges.
+    if (handle.current) handle.current.style.transform = `translate(clamp(1.5rem, ${v}cqw, calc(100cqw - 1.5rem)), 0) translate(-50%, -50%)`;
+    if (beforeTag.current) beforeTag.current.style.opacity = String(Math.min(1, (100 - v) / 25));
+    card.current?.setAttribute("aria-valuenow", String(Math.round(v)));
+    card.current?.setAttribute("aria-valuetext", v < 50 ? "Showing more of before" : "Showing more of after");
+  }, []);
+
+  const run = useCallback(() => {
+    cancelAnimationFrame(frame.current);
+    if (reduce) {
+      at.current = aim.current;
+      paint(at.current);
+      return;
+    }
+    last.current = performance.now();
+    const step = (now: number) => {
+      const dt = Math.min((now - last.current) / 1000, 0.05);
+      last.current = now;
+      at.current += (aim.current - at.current) * (1 - Math.exp(-dt * BA_FOLLOW));
+      if (Math.abs(aim.current - at.current) < 0.05) at.current = aim.current;
+      paint(at.current);
+      if (at.current !== aim.current) frame.current = requestAnimationFrame(step);
+    };
+    frame.current = requestAnimationFrame(step);
+  }, [paint, reduce]);
+
+  // The first time the card comes into view, a brief peek at before, so
+  // the cut reads as something to move. Once, and not if the hand got
+  // there first.
+  useEffect(() => {
+    const el = card.current;
+    if (!el || reduce) return;
+    let back = 0;
+    const seen = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting || touched.current) return;
+        seen.disconnect();
+        aim.current = BA_PEEK;
+        run();
+        back = window.setTimeout(() => {
+          if (touched.current) return;
+          aim.current = 100;
+          run();
+        }, BA_PEEK_MS);
+      },
+      { threshold: 0.75 },
+    );
+    seen.observe(el);
+    return () => {
+      seen.disconnect();
+      window.clearTimeout(back);
+      cancelAnimationFrame(frame.current);
+    };
+  }, [reduce, run]);
+
   const follow = (clientX: number) => {
     const box = card.current?.getBoundingClientRect();
     if (!box || !box.width) return;
-    setAt(Math.min(100, Math.max(0, ((clientX - box.left) / box.width) * 100)));
+    touched.current = true;
+    const f = (clientX - box.left) / box.width;
+    aim.current = Math.min(100, Math.max(0, ((f - BA_EDGE) / (1 - 2 * BA_EDGE)) * 100));
+    run();
   };
-  const face = (src: string | null, label: string, dark: boolean) =>
+
+  const face = (src: string | null, dark: boolean) =>
     src ? (
       // eslint-disable-next-line @next/next/no-img-element
       <img src={src} alt="" draggable={false} />
@@ -163,6 +250,7 @@ function BeforeAfter({ before, after, name }: { before: string | null; after: st
         <span className="rp-fill">{TO_FILL}</span>
       </span>
     );
+
   return (
     <div>
       <div
@@ -173,28 +261,50 @@ function BeforeAfter({ before, after, name }: { before: string | null; after: st
         aria-label={`${name}: before and after`}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-valuenow={Math.round(at)}
-        aria-valuetext={at < 50 ? "Showing more of before" : "Showing more of after"}
+        aria-valuenow={100}
+        aria-valuetext="Showing more of after"
         onPointerMove={(e) => follow(e.clientX)}
         onPointerDown={(e) => follow(e.clientX)}
+        // At rest it shows after: the hand gone, after closes back over.
+        onPointerLeave={(e) => {
+          if (e.pointerType !== "mouse") return;
+          aim.current = 100;
+          run();
+        }}
         onKeyDown={(e) => {
-          if (e.key === "ArrowLeft") setAt((v) => Math.max(0, v - 5));
-          else if (e.key === "ArrowRight") setAt((v) => Math.min(100, v + 5));
+          if (e.key === "ArrowLeft") aim.current = Math.max(0, aim.current - 10);
+          else if (e.key === "ArrowRight") aim.current = Math.min(100, aim.current + 10);
+          else if (e.key === "Home") aim.current = 0;
+          else if (e.key === "End") aim.current = 100;
           else return;
+          touched.current = true;
           e.preventDefault();
+          run();
         }}
       >
         {/* Before underneath, whole; after over it, cut at the hand: the
-            further right the hand, the more of after. */}
-        <div className="rp-ba-face">{face(before, "Before", false)}</div>
-        <div className="rp-ba-face" style={{ clipPath: `inset(0 ${100 - at}% 0 0)` }}>
-          {face(after, "After", true)}
+            further left the hand, the more of before. */}
+        <div className="rp-ba-face">{face(before, false)}</div>
+        <div ref={top} className="rp-ba-face" style={{ clipPath: "inset(0 0% 0 0)" }}>
+          {face(after, true)}
         </div>
-        <span className="rp-ba-line" style={{ left: `${at}%` }} aria-hidden="true" />
+        <span ref={line} className="rp-ba-line" style={{ transform: "translateX(100cqw)" }} aria-hidden="true" />
+        <span
+          ref={handle}
+          className="rp-ba-handle"
+          style={{ transform: "translate(calc(100cqw - 1.5rem), 0) translate(-50%, -50%)" }}
+          aria-hidden="true"
+        >
+          <svg viewBox="0 0 24 12" width="22" height="11" fill="none">
+            <path d="M5 1 1 6l4 5M19 1l4 5-4 5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
         <span className="mono-label rp-ba-tag rp-ba-tag-after" aria-hidden="true">After</span>
-        <span className="mono-label rp-ba-tag rp-ba-tag-before" aria-hidden="true">Before</span>
+        <span ref={beforeTag} className="mono-label rp-ba-tag rp-ba-tag-before" style={{ opacity: 0 }} aria-hidden="true">
+          Before
+        </span>
       </div>
-      <p className="rp-note">Move left for before, right for after.</p>
+      <p className="rp-note">Move left to see how it was before.</p>
     </div>
   );
 }
@@ -215,6 +325,24 @@ function chaptersFor(project: Project): Chapter[] {
           <img src={project.photo.src} alt={project.photo.alt} draggable={false} />
         </div>
         <div className="rp-cover">
+          {/* Between the photo and the rule: the way to the website, set as
+              the name is, white on a black band (user, 2026-10-13). */}
+          <div className="rp-cover-cta">
+            {live ? (
+              <a href={project.url!} target="_blank" rel="noopener" className="rp-band-link">
+                <span>
+                  Go to website <span aria-hidden="true">&#8599;</span>
+                </span>
+              </a>
+            ) : (
+              // Nowhere to go yet: at rest.
+              <span aria-disabled="true" title="The website is not online yet" className="rp-band-link" data-rest="">
+                <span>
+                  Go to website <span aria-hidden="true">&#8599;</span>
+                </span>
+              </span>
+            )}
+          </div>
           <div className="rp-cover-head">
             <h2 id="rp-title" className="rp-cover-name">
               <span>{project.name}</span>
@@ -222,24 +350,6 @@ function chaptersFor(project: Project): Chapter[] {
             <Tags items={project.services} />
           </div>
           <p className="rp-lede rp-justify">{project.summary}</p>
-          <div className="rp-cover-cta">
-            {live ? (
-              <a href={project.url!} target="_blank" rel="noopener" className="cta-drop fo-exit rp-bar-button">
-                <span className="btn-neu-face">
-                  Go to website
-                  <span aria-hidden="true">&#8599;</span>
-                </span>
-              </a>
-            ) : (
-              // Nowhere to go yet: the button at rest.
-              <span aria-disabled="true" title="The website is not online yet" className="cta-drop fo-exit wk-rest rp-bar-button">
-                <span className="btn-neu-face">
-                  Go to website
-                  <span aria-hidden="true">&#8599;</span>
-                </span>
-              </span>
-            )}
-          </div>
         </div>
       </>
     ),
