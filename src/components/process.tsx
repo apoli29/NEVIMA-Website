@@ -109,7 +109,7 @@ const PHASES: Phase[] = [
         id: "analysis",
         name: "We set the exact price",
         principle: "We send you the real quote.",
-        text: "We read through your answers and, within a few hours, come back with the exact price for your project and the reasoning behind it.",
+        text: "We read through your answers and come back with the exact price for your project within a few hours, always with the reasoning behind it.",
         who: "Us",
       },
       {
@@ -123,7 +123,7 @@ const PHASES: Phase[] = [
         id: "materials",
         name: "Your materials",
         principle: "The clock starts with you.",
-        text: "With the contract, we ask for everything we need from you: photos you already have of your business, your logo and symbol, and anything else the project calls for. Work begins the moment it is all in.",
+        text: "With the contract, we ask for everything we need from you: photos you already have of your business, your logo and symbol, and anything else the project calls for. Work begins the moment we have everything.",
         who: "You",
       },
     ],
@@ -166,7 +166,7 @@ const PHASES: Phase[] = [
         id: "finish",
         name: "Finishing the website and basic SEO",
         principle: "Finished, and ready to be found.",
-        text: "We finish the website and apply the basic SEO that comes with our web design service, then walk you through the final result on a video call, where you may still want a few changes. Changes that take us only a few minutes are never charged; for anything bigger, you get a quote before we start.",
+        text: "We finish the website and apply the basic SEO that comes with our web design service. Then we arrange a call to walk you through the final result, where you either approve it or ask for changes. Changes that take us only a few minutes are never charged; for anything bigger, you get a quote before we start.",
         // The client now sees the result and asks for changes here.
         who: "You and us",
         wide: true,
