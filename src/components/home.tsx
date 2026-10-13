@@ -145,10 +145,12 @@ function useCovered(ready: boolean) {
   return covered;
 }
 
-export function Home() {
+export function Home({ opened = false }: { opened?: boolean }) {
   const reduce = useReducedMotion() ?? false;
-  const progress = useMotionValue(0);
-  const [phase, setPhase] = useState<Phase>("waiting");
+  // Opened earlier in the visit (read on the server, see app/page.tsx):
+  // the page starts where the opening would have left it.
+  const progress = useMotionValue(opened ? 1 : 0);
+  const [phase, setPhase] = useState<Phase>(opened ? "open" : "waiting");
   // The free-proposal form, carried out of the index (see proposal-flow.tsx).
   // While it is out, the page behind is held still and out of reach.
   const proposal = useProposalController();
@@ -165,7 +167,7 @@ export function Home() {
   const covered = useCovered(phase === "open");
   // The listeners need the current phase without being torn down and rebuilt
   // by it, and they fire before React has re-rendered.
-  const phaseRef = useRef<Phase>("waiting");
+  const phaseRef = useRef<Phase>(opened ? "open" : "waiting");
 
   /* --- the flight, measured rather than guessed --------------------- */
 

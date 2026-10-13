@@ -20,6 +20,7 @@ const RESTORE_KEY = "nevima:restore";
 const RESTORE_TTL = 8000;
 
 import { goTo } from "@/components/page-wipe";
+import { OPENED_COOKIE } from "./opened";
 
 export const PORTFOLIO_PATH = "/portfolio";
 
@@ -99,21 +100,26 @@ export function takeReturn(path: string): number | null {
 }
 
 /* The home page's opening is played once, as the visit begins (user,
-   2026-10-12): coming back to the home page later, from the bar, the foot
-   or the browser's back button, goes straight to the page. Kept for the
-   tab, like the spot. */
+   2026-10-12): coming back to the home page later, from the bar, the foot,
+   the browser's back button or a reload, goes straight to the page.
+
+   Kept in a cookie for the browser session, not only in the tab's
+   storage, so the server knows it too and draws the page already open:
+   decided in the browser alone, a reload showed the opening for the
+   second it took to wake up, then dropped it (user, 2026-10-13). */
 const OPENED_KEY = "nevima:opened";
 
 export function markOpened() {
   try {
     sessionStorage.setItem(OPENED_KEY, "1");
   } catch {}
+  // No expiry: it lasts as long as the browser session.
+  document.cookie = `${OPENED_COOKIE}=1; path=/; SameSite=Lax`;
 }
 
 export function hasOpened() {
   try {
-    return sessionStorage.getItem(OPENED_KEY) === "1";
-  } catch {
-    return false;
-  }
+    if (sessionStorage.getItem(OPENED_KEY) === "1") return true;
+  } catch {}
+  return document.cookie.split("; ").includes(`${OPENED_COOKIE}=1`);
 }
