@@ -22,7 +22,7 @@ import { Services } from "./services";
 import { StatementScreen } from "./statement-screen";
 import { useSmoothScroll } from "./smooth-scroll";
 import { Studio } from "./studio";
-import { hasOpened, markOpened } from "@/lib/return-spot";
+import { hasOpened, markOpened, returningTo } from "@/lib/return-spot";
 import { booted } from "@/lib/opened";
 
 /* ==================================================================
@@ -260,9 +260,12 @@ export function Home() {
      back button, "Exit portfolio") after it has played in this tab, the
      page is simply there: decided before the first paint, and only for a
      page the router brought, where nothing was painted first (user,
-     2026-10-13). */
+     2026-10-13). One exception on a fresh load: "Exit portfolio" sent the
+     visitor here a moment ago (the browser went back by loading the page
+     anew), so they are put back where they were rather than at the start;
+     they come out of the black of the exit, so nothing flashes. */
   useMeasureEffect(() => {
-    if (!booted.done || !hasOpened()) return;
+    if (!(booted.done && hasOpened()) && !returningTo("/")) return;
     progress.set(1);
     phaseRef.current = "open";
     setPhase("open");

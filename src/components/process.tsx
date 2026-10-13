@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { flushSync } from "react-dom";
 import {
+  animate,
   motion,
+  useMotionValue,
   useMotionValueEvent,
   useReducedMotion,
   useScroll,
@@ -14,6 +17,7 @@ import { SlideIn } from "./enter";
 import { PassLink } from "./floating-nav";
 import { useInkAlign } from "./ink-align";
 import { useProposal } from "./proposal-flow";
+import { jumpTo } from "./smooth-scroll";
 
 /* ==================================================================
    How we work
@@ -260,6 +264,18 @@ type Layout = {
 
 const NO_LAYOUT: Layout = { travel: 0, tail: 0, railTop: 0, railWidth: 1, stops: [], phases: [] };
 
+let fold: (() => (() => void) | null) | null = null;
+
+/** For a trip up the page past How we work (the foot's service links,
+    user 2026-10-13): its pinned stretch, the length of the row's slide, is
+    taken out while the page goes by, so it passes as one still screen at
+    its end instead of running its slide backwards. Nothing on screen moves
+    as it folds. Returns the way to unfold it, or null when there is
+    nothing to fold (reduced motion, or it is not above the page yet). */
+export function foldProcess() {
+  return fold?.() ?? null;
+}
+
 export function Process({ ready }: { ready: boolean }) {
   const reduce = useReducedMotion() ?? false;
   const section = useRef<HTMLElement>(null);
@@ -320,11 +336,48 @@ export function Process({ ready }: { ready: boolean }) {
   }, []);
 
   const { scrollYProgress } = useScroll({ target: section, offset: ["start start", "end end"] });
-  const x = useTransform(scrollYProgress, [0, 1], [0, -layout.travel]);
+  // Where the row stands: the page's scroll, unless held (see foldProcess).
+  const held = useMotionValue(-1);
+  const progress = useTransform([held, scrollYProgress], ([h, p]: number[]) => (h! >= 0 ? h! : p!));
+  const x = useTransform(progress, [0, 1], [0, -layout.travel]);
+
+  // Folded for a trip up the page past it (see foldProcess).
+  const [folded, setFolded] = useState(false);
+  useEffect(() => {
+    if (reduce) return;
+    fold = () => {
+      const el = section.current;
+      // Only once it has been gone through, so it stands at its end.
+      if (!el || el.getBoundingClientRect().bottom > window.innerHeight + 1) return null;
+      const before = el.offsetHeight;
+      held.set(1);
+      flushSync(() => setFolded(true));
+      // What it gave up, taken off the scroll in the same frame, so
+      // nothing on screen moves.
+      jumpTo(window.scrollY - (before - el.offsetHeight));
+      return () => {
+        flushSync(() => setFolded(false));
+        const top = el.getBoundingClientRect().top;
+        if (top >= window.innerHeight) {
+          held.set(-1);
+          return;
+        }
+        // Still in sight at the foot of the screen (its top below the top
+        // of the screen, so the page has it at its start): the row eases
+        // back there, then follows the page again.
+        void animate(held, 0, { duration: 0.8, ease: [0.22, 1, 0.36, 1] }).then(() =>
+          held.set(-1),
+        );
+      };
+    };
+    return () => {
+      fold = null;
+    };
+  }, [reduce, held]);
 
   // Which stops the rail's fill has reached.
   const [reached, setReached] = useState(1);
-  useMotionValueEvent(scrollYProgress, "change", (p) => {
+  useMotionValueEvent(progress, "change", (p) => {
     const tip = p * layout.railWidth + 1;
     const n = Math.max(1, layout.stops.filter((at) => at <= tip).length);
     setReached((was) => (was === n ? was : n));
@@ -343,7 +396,9 @@ export function Process({ ready }: { ready: boolean }) {
       // the row as the pin lets go; it only ever covers blank paper.
       style={{
         marginBottom: -layout.tail,
-        ...(reduce ? {} : { height: `calc(100svh + ${Math.round(layout.travel * SLOW)}px)` }),
+        ...(reduce
+          ? {}
+          : { height: folded ? "100svh" : `calc(100svh + ${Math.round(layout.travel * SLOW)}px)` }),
       }}
     >
       {/* The heading and the row as one block, the row close under the
@@ -422,7 +477,7 @@ export function Process({ ready }: { ready: boolean }) {
             <motion.span
               aria-hidden="true"
               className="prc-rail prc-rail-fill"
-              style={{ scaleX: reduce ? 1 : scrollYProgress }}
+              style={{ scaleX: reduce ? 1 : progress }}
             />
             {phases.map((phase, p) => (
               <li key={phase.id} data-phase aria-labelledby={`phase-${phase.id}`} className="prc-phase">

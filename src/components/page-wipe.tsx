@@ -20,7 +20,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 const FADE_MS = 460;
 /** If the next page never reports in, the cover still goes. */
-const SAFETY_MS = 4000;
+const SAFETY_MS = 2500;
 const EASE_FADE = "cubic-bezier(0.22, 1, 0.36, 1)";
 
 let cover: HTMLDivElement | null = null;
@@ -129,6 +129,16 @@ export function PageWipe() {
       document.removeEventListener("pointerover", onOver);
     };
   }, [router]);
+
+  // A page the browser kept and shows again (back or forward) comes back
+  // as it was left, cover and all: it goes at once.
+  useEffect(() => {
+    const onShow = (event: PageTransitionEvent) => {
+      if (event.persisted) lift();
+    };
+    window.addEventListener("pageshow", onShow);
+    return () => window.removeEventListener("pageshow", onShow);
+  }, []);
 
   // The next page is in: let it be seen once it has drawn itself.
   useEffect(() => {
