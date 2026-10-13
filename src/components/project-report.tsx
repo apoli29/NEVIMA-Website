@@ -11,24 +11,14 @@ import { PHASES, STATUS_LABEL, TO_FILL, type Project } from "@/lib/work";
    Pressed in the portfolio, a photo grows into the report (user,
    2026-10-12): one sheet in the middle of the darkened room, a little
    wider than an A4 page and as tall as the screen, and the report runs
-   down inside it as the visitor scrolls. It reads as a report (a cover,
-   chapters, figures, a closing note) but behaves as a website: its
-   header stays at the top of the sheet with the chapters to jump to and
-   a line showing how far through it the reader is. Close, Esc or a click
+   down inside it as the visitor scrolls, set in the site's own language.
+   Its header stays at the top of the sheet with the chapters to jump to
+   and a line showing how far through it the reader is. Close, Esc or a click
    on the dark sends it back into the photo.
 
-   Every report has the same structure (see docs/report-template.md):
-
-   - the cover: the project, what was made, its photo and its facts;
-   - the project: where the client stood, the goals, our approach and
-     how long each phase of How we work took;
-   - the website: its pages, what it does, what comes with it, and how
-     it measures, live;
-   - a chapter for each further service the project took: the visual
-     identity; search and AI answers (SEO and GEO share one); the photo
-     shoot;
-   - the outcome: what changed, the client's words, credits, and the
-     note on what the report leaves out.
+   Every report has the same structure, organised by service (see
+   docs/report-template.md): the overview, a chapter for each service the
+   project took, and the outcome.
 
    Nothing about a client is made up: every field the studio has not
    given reads as TO_FILL.
@@ -45,18 +35,6 @@ function Fill({ value, className }: { value: string | null | undefined; classNam
   return <span className={`rp-fill ${className ?? ""}`}>{TO_FILL}</span>;
 }
 
-/** A list, or the mark for one still to come. */
-function Lines({ items }: { items: readonly string[] | null | undefined }) {
-  if (!items?.length) return <p className="rp-fill">{TO_FILL}</p>;
-  return (
-    <ul className="rp-lines">
-      {items.map((item) => (
-        <li key={item}>{item}</li>
-      ))}
-    </ul>
-  );
-}
-
 function Tags({ items, label = "Services" }: { items: readonly string[]; label?: string }) {
   return (
     <ul className="fo-tags rp-tags" aria-label={label}>
@@ -67,43 +45,110 @@ function Tags({ items, label = "Services" }: { items: readonly string[]; label?:
   );
 }
 
-/** A score out of 100 as a ring that fills to it; empty until measured. */
-function Gauge({ name, value }: { name: string; value: string | null }) {
-  const n = value ? Number.parseFloat(value) : NaN;
-  const known = Number.isFinite(n);
-  const r = 26;
-  const c = 2 * Math.PI * r;
+/* --- the chapters ----------------------------------------------------------
+   Organised by service (user, 2026-10-12): the overview, then one chapter
+   for each service the project took, in the order the services section
+   lists them, each saying only what makes sense for that service, then
+   the outcome. Set in the site's own language: hairlines, the gallery's
+   mono labels, names in light Satoshi, black boxes for what kind of
+   service it is, the services' ticked lists. */
+
+type Chapter = { id: string; label: string; body: ReactNode };
+
+/** A ticked list, as the services' "Also included". */
+function Ticks({ title, items }: { title: string; items: readonly string[] | null | undefined }) {
   return (
-    <div className="rp-gauge">
-      <svg viewBox="0 0 64 64" aria-hidden="true">
-        <circle cx="32" cy="32" r={r} className="rp-gauge-track" />
-        {known && (
-          <circle
-            cx="32"
-            cy="32"
-            r={r}
-            className="rp-gauge-fill"
-            strokeDasharray={c}
-            strokeDashoffset={c * (1 - Math.min(Math.max(n, 0), 100) / 100)}
-          />
-        )}
-      </svg>
-      <span className="rp-gauge-value">{known ? Math.round(n) : "–"}</span>
-      <span className="rp-gauge-name">
-        {name}
-        {!known && <span className="rp-fill rp-gauge-fill-note"> {TO_FILL}</span>}
-      </span>
+    <div>
+      <p className="mono-label text-ash-2">{title}</p>
+      {items?.length ? (
+        <ul className="rp-ticks">
+          {items.map((item) => (
+            <li key={item}>
+              <svg viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                <path
+                  d="M3.4 9.7 7.1 13.3C9.4 9.5 11.8 6.7 15 4.3"
+                  stroke="currentColor"
+                  strokeWidth={1.35}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="rp-fill rp-gap">{TO_FILL}</p>
+      )}
     </div>
   );
 }
 
-/* --- the chapters ---------------------------------------------------------- */
+/** A label over a short paragraph. */
+function Para({ title, value }: { title: string; value: string | null | undefined }) {
+  return (
+    <div>
+      <p className="mono-label text-ash-2">{title}</p>
+      <p className="rp-text rp-justify rp-gap">
+        <Fill value={value} />
+      </p>
+    </div>
+  );
+}
 
-type Chapter = { id: string; label: string; body: ReactNode };
+/** A row of readouts over a hairline, as the second screen's. */
+function Readouts({ items, big = false }: { items: [string, string | null | undefined][]; big?: boolean }) {
+  return (
+    <dl className="rp-readouts" data-big={big ? "" : undefined} style={{ ["--n" as string]: items.length }}>
+      {items.map(([label, value]) => (
+        <div key={label}>
+          <dt className="mono-label text-ash-2">{label}</dt>
+          <dd>
+            <Fill value={value} />
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+/** A service's chapter: its name, what kind of service it is, then two
+    columns (what was asked and done on the left, the specifics on the
+    right) and whatever else that service needs below. */
+function ServiceChapter({
+  name,
+  main,
+  left,
+  right,
+  children,
+}: {
+  name: string;
+  main: boolean;
+  left: ReactNode;
+  right: ReactNode;
+  children?: ReactNode;
+}) {
+  return (
+    <>
+      <div className="rp-svc-head">
+        <h3 className="rp-svc-name">{name}</h3>
+        <span className={`mono-label ${main ? "rp-tag-main" : "idx-title"}`}>
+          {main ? "Main service" : "Additional service"}
+        </span>
+      </div>
+      <div className="rp-cols">
+        <div className="rp-stack">{left}</div>
+        <div className="rp-stack">{right}</div>
+      </div>
+      {children}
+    </>
+  );
+}
 
 function chaptersFor(project: Project): Chapter[] {
   const s = project.study;
   const chapters: Chapter[] = [];
+  const took = (title: string) => project.services.some((x) => x.toLowerCase() === title.toLowerCase());
 
   chapters.push({
     id: "overview",
@@ -119,31 +164,25 @@ function chaptersFor(project: Project): Chapter[] {
             <h2 id="rp-title" className="rp-cover-name">
               <span>{project.name}</span>
             </h2>
-            <span className="rp-state" data-live={project.status === "live" ? "" : undefined}>
-              <span aria-hidden="true" className="rp-state-dot" />
+            <span className="rp-state mono-label">
+              <span
+                aria-hidden="true"
+                className={project.status === "live" ? "live-dot" : "rp-dot-idle"}
+              />
               {STATUS_LABEL[project.status]}
             </span>
           </div>
           <p className="rp-lede rp-justify">{project.summary}</p>
-          <dl className="rp-facts">
-            {[
+          <Readouts
+            items={[
               ["Sector", project.sector],
               ["Region", s.region],
-              ["Website type", project.websiteType],
-              ["Pages", project.pages],
-              ["Design level", project.designLevel],
               ["Delivered", s.delivered],
-            ].map(([name, value]) => (
-              <div key={name}>
-                <dt>{name}</dt>
-                <dd>
-                  <Fill value={value} />
-                </dd>
-              </div>
-            ))}
-          </dl>
+              ["Start to launch", s.duration],
+            ]}
+          />
           <div className="rp-services">
-            <p className="rp-key">Services</p>
+            <p className="mono-label text-ash-2">Services</p>
             <Tags items={project.services} />
           </div>
         </div>
@@ -151,132 +190,130 @@ function chaptersFor(project: Project): Chapter[] {
     ),
   });
 
+  const web = SERVICES.find((x) => x.slug === "web-design");
   chapters.push({
-    id: "project",
-    label: "The project",
+    id: "web-design",
+    label: "Web Design",
     body: (
-      <>
-        <h3 className="rp-h">The project</h3>
-        <div className="rp-split">
-          <section className="rp-card">
-            <h4 className="rp-sub">Where it started</h4>
-            <p className="rp-text rp-justify">
-              <Fill value={s.startingPoint} />
-            </p>
-          </section>
-          <section className="rp-card">
-            <h4 className="rp-sub">Goals</h4>
-            <Lines items={s.goals} />
-          </section>
+      <ServiceChapter
+        name="Web Design"
+        main
+        left={
+          <>
+            <Para title="The brief" value={s.startingPoint} />
+            <Para title="What we built" value={s.approach} />
+          </>
+        }
+        right={
+          <>
+            <dl className="rp-specs">
+              {[
+                ["Website type", project.websiteType],
+                ["Pages", project.pages],
+                ["Design level", project.designLevel],
+              ].map(([label, value]) => (
+                <div key={label}>
+                  <dt className="mono-label text-ash-2">{label}</dt>
+                  <dd>
+                    <Fill value={value} />
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            <div>
+              <p className="mono-label text-ash-2">Its pages</p>
+              <div className="rp-gap">
+                {s.sitemap?.length ? <Tags items={s.sitemap} label="Pages" /> : <p className="rp-fill">{TO_FILL}</p>}
+              </div>
+            </div>
+          </>
+        }
+      >
+        <div className="rp-three">
+          <Ticks title="Goals" items={s.goals} />
+          <Ticks title="What it does" items={s.features} />
+          <Ticks title={web?.included?.title ?? "Also included"} items={web?.included?.items} />
         </div>
-        <section className="rp-block">
-          <h4 className="rp-sub">Our approach</h4>
-          <p className="rp-text rp-justify">
-            <Fill value={s.approach} />
-          </p>
-        </section>
-        <section className="rp-block">
-          <h4 className="rp-sub">How it ran</h4>
-          <ol className="rp-steps">
-            {PHASES.map((phase, i) => (
-              <li key={phase}>
-                <span className="rp-step-dot" aria-hidden="true" />
-                <span className="rp-step-name">{phase}</span>
-                <Fill value={s.phases?.[i]} className="rp-step-time" />
-              </li>
-            ))}
-          </ol>
-          <p className="rp-note">
-            Start to launch: <Fill value={s.duration} />
-          </p>
-        </section>
-      </>
-    ),
-  });
-
-  const included = SERVICES.find((x) => x.slug === "web-design")?.included?.items ?? [];
-  chapters.push({
-    id: "website",
-    label: "The website",
-    body: (
-      <>
-        <h3 className="rp-h">The website</h3>
-        <section className="rp-block rp-block-first">
-          <h4 className="rp-sub">Its pages</h4>
-          {s.sitemap?.length ? (
-            <Tags items={s.sitemap} label="Pages" />
-          ) : (
-            <p className="rp-fill">{TO_FILL}</p>
-          )}
-        </section>
-        <div className="rp-split rp-block">
-          <section className="rp-card">
-            <h4 className="rp-sub">What it does</h4>
-            <Lines items={s.features} />
-          </section>
-          <section className="rp-card">
-            <h4 className="rp-sub">Included with it</h4>
-            <Lines items={included} />
-          </section>
-        </div>
-        <section className="rp-block">
-          <h4 className="rp-sub">Measured on the live website</h4>
-          <div className="rp-gauges">
-            <Gauge name="Performance" value={s.scores.performance} />
-            <Gauge name="Accessibility" value={s.scores.accessibility} />
-            <Gauge name="Best practices" value={s.scores.bestPractices} />
-            <Gauge name="SEO" value={s.scores.seo} />
+        <div className="rp-pair">
+          <div>
+            <p className="rp-sub">How it ran</p>
+            <Readouts items={PHASES.map((phase, i) => [phase, s.phases?.[i]])} />
           </div>
-          <p className="rp-note">
-            Lighthouse, on a phone, out of 100. Load time: <Fill value={s.scores.loadTime} />
-          </p>
-        </section>
-      </>
+          <div>
+            <p className="rp-sub">Measured on the live website</p>
+            <Readouts
+              big
+              items={[
+                ["Performance", s.scores.performance],
+                ["Accessibility", s.scores.accessibility],
+                ["Best practices", s.scores.bestPractices],
+                ["SEO", s.scores.seo],
+              ]}
+            />
+            <p className="rp-note">
+              Lighthouse, on a phone, out of 100. Load time: <Fill value={s.scores.loadTime} />
+            </p>
+          </div>
+        </div>
+      </ServiceChapter>
     ),
   });
 
-  if (has(project, "Visual identity")) {
+  if (took("Visual identity")) {
     const id = s.identity;
     chapters.push({
-      id: "identity",
-      label: "Identity",
+      id: "visual-identity",
+      label: "Visual Identity",
       body: (
-        <>
-          <h3 className="rp-h">Visual identity</h3>
-          <p className="rp-text rp-justify rp-block-first">
-            <Fill value={id.idea} />
-          </p>
-          <section className="rp-block">
-            <h4 className="rp-sub">The logo</h4>
-            <div className="rp-logos">
-              {[
-                { src: id.logo, alt: `${project.name} logo`, caption: "On white", dark: false },
-                { src: id.logo, alt: "", caption: "On black", dark: true },
-                { src: id.symbol, alt: `${project.name} symbol`, caption: "Symbol, if there is one", dark: false },
-              ].map((logo) => (
-                <figure key={logo.caption} className="rp-logo" data-dark={logo.dark ? "" : undefined}>
-                  <span className="rp-logo-box">
-                    {logo.src ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={logo.src} alt={logo.alt} />
-                    ) : (
-                      <span className="rp-fill">{TO_FILL}</span>
-                    )}
-                  </span>
-                  <figcaption>{logo.caption}</figcaption>
-                </figure>
-              ))}
-            </div>
-          </section>
-          <section className="rp-block">
-            <h4 className="rp-sub">Colours</h4>
+        <ServiceChapter
+          name="Visual Identity"
+          main={false}
+          left={<Para title="The idea" value={id.idea} />}
+          right={
+            <dl className="rp-specs">
+              <div>
+                <dt className="mono-label text-ash-2">Typefaces</dt>
+                <dd>
+                  <Fill value={id.typefaces?.map((f) => `${f.name} (${f.role.toLowerCase()})`).join(", ")} />
+                </dd>
+              </div>
+              <div>
+                <dt className="mono-label text-ash-2">Where it is used</dt>
+                <dd>
+                  <Fill value={id.applications?.join(", ")} />
+                </dd>
+              </div>
+            </dl>
+          }
+        >
+          <div className="rp-logos">
+            {[
+              { src: id.logo, alt: `${project.name} logo`, caption: "Logo, on white", dark: false },
+              { src: id.logo, alt: "", caption: "Logo, on black", dark: true },
+              { src: id.symbol, alt: `${project.name} symbol`, caption: "Symbol, if there is one", dark: false },
+            ].map((logo) => (
+              <figure key={logo.caption} className="rp-logo" data-dark={logo.dark ? "" : undefined}>
+                <span className="rp-logo-box">
+                  {logo.src ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={logo.src} alt={logo.alt} />
+                  ) : (
+                    <span className="rp-fill">{TO_FILL}</span>
+                  )}
+                </span>
+                <figcaption className="mono-label text-ash-2">{logo.caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+          <div className="rp-block">
+            <p className="mono-label text-ash-2">Colours</p>
             <ul className="rp-swatches">
               {(id.palette ?? Array.from({ length: 5 }, () => null)).map((colour, i) =>
                 colour ? (
                   <li key={colour.hex}>
                     <span className="rp-swatch" style={{ background: colour.hex }} />
-                    <span className="rp-swatch-name">{colour.name}</span>
-                    <span className="rp-swatch-hex">{colour.hex}</span>
+                    <span>{colour.name}</span>
+                    <span className="mono-label text-ash-2">{colour.hex}</span>
                   </li>
                 ) : (
                   <li key={i}>
@@ -286,132 +323,74 @@ function chaptersFor(project: Project): Chapter[] {
                 ),
               )}
             </ul>
-          </section>
-          <div className="rp-split rp-block">
-            <section className="rp-card">
-              <h4 className="rp-sub">Typefaces</h4>
-              {id.typefaces?.length ? (
-                <ul className="rp-faces">
-                  {id.typefaces.map((face) => (
-                    <li key={face.role}>
-                      <span className="rp-face-sample" style={{ fontFamily: face.name }}>
-                        Aa
-                      </span>
-                      <span>
-                        <span className="rp-face-name">{face.name}</span>
-                        <span className="rp-key">{face.role}</span>
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="rp-fill">{TO_FILL}</p>
-              )}
-            </section>
-            <section className="rp-card">
-              <h4 className="rp-sub">Where it is used</h4>
-              <Lines items={id.applications} />
-            </section>
           </div>
-        </>
+        </ServiceChapter>
       ),
     });
   }
 
-  const seo = has(project, "SEO");
-  const geo = has(project, "GEO");
-  if (seo || geo) {
-    const title =
-      seo && geo ? "Found on search and in AI answers" : seo ? "Found on search" : "Found in AI answers";
+  if (took("SEO")) {
     chapters.push({
-      id: "visibility",
-      label: seo && geo ? "Search & AI" : seo ? "Search" : "AI answers",
+      id: "seo",
+      label: "SEO",
       body: (
-        <>
-          <h3 className="rp-h">{title}</h3>
-          {seo && (
-            <section className="rp-card rp-block-first">
-              <h4 className="rp-sub">Search (SEO)</h4>
-              <p className="rp-key">The searches it is set up for</p>
-              {s.seo.searches?.length ? (
-                <Tags items={s.seo.searches} label="Searches" />
-              ) : (
-                <p className="rp-fill">{TO_FILL}</p>
-              )}
-              <div className="rp-split rp-block-tight">
-                <div>
-                  <p className="rp-key">What we put in place</p>
-                  <Lines items={s.seo.work} />
-                </div>
-                <div className="rp-shift">
-                  <div>
-                    <p className="rp-key">Before</p>
-                    <Fill value={s.seo.before} className="rp-shift-value" />
-                  </div>
-                  <span aria-hidden="true" className="rp-shift-arrow">
-                    &rarr;
-                  </span>
-                  <div>
-                    <p className="rp-key">After</p>
-                    <Fill value={s.seo.after} className="rp-shift-value" />
-                  </div>
+        <ServiceChapter
+          name="SEO"
+          main={false}
+          left={<Ticks title="What we put in place" items={s.seo.work} />}
+          right={
+            <>
+              <div>
+                <p className="mono-label text-ash-2">The searches it is set up for</p>
+                <div className="rp-gap">
+                  {s.seo.searches?.length ? (
+                    <Tags items={s.seo.searches} label="Searches" />
+                  ) : (
+                    <p className="rp-fill">{TO_FILL}</p>
+                  )}
                 </div>
               </div>
-            </section>
-          )}
-          {geo && (
-            <section className={`rp-card ${seo ? "rp-block-tight" : "rp-block-first"}`}>
-              <h4 className="rp-sub">AI answers (GEO)</h4>
-              <div className="rp-split">
-                <div>
-                  <p className="rp-key">What we put in place</p>
-                  <Lines items={s.geo.work} />
-                </div>
-                <div>
-                  <p className="rp-key">How it shows now</p>
-                  <p className="rp-text">
-                    <Fill value={s.geo.presence} />
-                  </p>
-                </div>
-              </div>
-            </section>
-          )}
-        </>
+              <Readouts big items={[["Before", s.seo.before], ["After", s.seo.after]]} />
+            </>
+          }
+        />
       ),
     });
   }
 
-  const shoot = has(project, "Photo shoot");
+  if (took("GEO")) {
+    chapters.push({
+      id: "geo",
+      label: "GEO",
+      body: (
+        <ServiceChapter
+          name="GEO"
+          main={false}
+          left={<Ticks title="What we put in place" items={s.geo.work} />}
+          right={<Para title="How it shows in AI answers now" value={s.geo.presence} />}
+        />
+      ),
+    });
+  }
+
+  const shoot = took("Photo shoot");
   if (shoot) {
     chapters.push({
-      id: "shoot",
-      label: "Photo shoot",
+      id: "photo-shoot",
+      label: "Photo Shoot",
       body: (
-        <>
-          <h3 className="rp-h">Photo shoot</h3>
-          <p className="rp-text rp-justify rp-block-first">
-            <Fill value={s.shoot.subject} />
-          </p>
-          <dl className="rp-facts rp-block">
-            <div>
-              <dt>Photos</dt>
-              <dd>
-                <Fill value={s.shoot.photos} />
-              </dd>
-            </div>
-            <div>
-              <dt>Videos</dt>
-              <dd>
-                <Fill value={s.shoot.videos} />
-              </dd>
-            </div>
-          </dl>
-          <div className="rp-gallery rp-block" aria-hidden="true">
+        <ServiceChapter
+          name="Photo Shoot"
+          main={false}
+          left={<Para title="What we photographed" value={s.shoot.subject} />}
+          right={<Readouts items={[["Photos", s.shoot.photos], ["Videos", s.shoot.videos]]} />}
+        >
+          <div className="rp-gallery" aria-hidden="true">
             {Array.from({ length: 6 }, (_, i) => (
               <span key={i} />
             ))}
           </div>
-        </>
+        </ServiceChapter>
       ),
     });
   }
@@ -421,42 +400,28 @@ function chaptersFor(project: Project): Chapter[] {
     label: "Outcome",
     body: (
       <>
-        <h3 className="rp-h">The outcome</h3>
-        <p className="rp-text rp-justify rp-block-first">
-          <Fill value={s.outcome} />
-        </p>
-        <figure className="rp-quote rp-block">
-          <blockquote>
-            <Fill value={s.quote?.text} />
-          </blockquote>
-          <figcaption>
-            <Fill value={s.quote?.by} />
-          </figcaption>
-        </figure>
-        <section className="rp-block">
-          <h4 className="rp-sub">Credits</h4>
-          <dl className="rp-facts rp-credits">
-            <div>
-              <dt>Strategy, design and build</dt>
-              <dd>nevima</dd>
-            </div>
-            {has(project, "Visual identity") && (
-              <div>
-                <dt>Visual identity</dt>
-                <dd>nevima</dd>
-              </div>
-            )}
-            <div>
-              <dt>Photography</dt>
-              <dd>{shoot ? "nevima" : `${project.photo.credit}, a stand-in`}</dd>
-            </div>
-          </dl>
-        </section>
+        <div className="rp-svc-head">
+          <h3 className="rp-svc-name">The outcome</h3>
+        </div>
+        <div className="rp-cols">
+          <Para title="What changed" value={s.outcome} />
+          <figure className="rp-quote">
+            <blockquote>
+              <Fill value={s.quote?.text} />
+            </blockquote>
+            <figcaption className="mono-label">
+              <Fill value={s.quote?.by} />
+            </figcaption>
+          </figure>
+        </div>
+        <Readouts
+          items={[
+            ["Strategy, design and build", "nevima"],
+            ...(took("Visual identity") ? ([["Visual identity", "nevima"]] as [string, string][]) : []),
+            ["Photography", shoot ? "nevima" : `${project.photo.credit}, a stand-in`],
+          ]}
+        />
         <p className="rp-privacy">
-          <svg aria-hidden="true" viewBox="0 0 16 16" width="14" height="14" fill="none">
-            <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.2" />
-            <path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" stroke="currentColor" strokeWidth="1.2" />
-          </svg>
           This report leaves out the client&rsquo;s personal and commercial information. Results
           are shown rounded or as a change, and the client&rsquo;s words appear only with their
           consent.
@@ -654,9 +619,7 @@ export function ProjectReport({
                 <div className="rp-head-row">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/nevima-wordmark.svg" alt="nevima" className="rp-mark" />
-                  <span className="rp-head-title">
-                    Project report <span aria-hidden="true">/</span> {project.name}
-                  </span>
+                  <span className="mono-label idx-title">Project report</span>
                 </div>
                 <nav aria-label="Report chapters" className="rp-nav">
                   {chapters.map((chapter) => (

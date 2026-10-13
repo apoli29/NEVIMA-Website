@@ -6,33 +6,26 @@ The structure was designed on 2026-10-12 (user: "a structure that will be used f
 
 ## Form
 
-- One sheet, not a stack of pages (user, 2026-10-12): 953px wide (an A4 page at 96dpi, 794px, and a fifth more), as tall as the screen under the two buttons, white, 14px corners, over the darkened portfolio room. The report runs down inside it as the reader scrolls. The photo that was pressed grows into the sheet.
-- It reads as a report (a cover, chapters, figures, a closing note) but is styled as a website, not a PDF (user): no page numbers or running heads; soft grey cards for groups of facts, rings for scores, steps for the phases, a black card for the client's words.
-- The header stays at the top of the sheet, on frosted white: the nevima wordmark, "Project report / <name>", the chapters as pills to jump to (the one being read is black), and a thin line along its foot showing how far through the report the reader is.
+- One sheet: 953px wide (an A4 page at 96dpi, 794px, and a fifth more), as tall as the screen under the two buttons, over the darkened portfolio room. The report runs down inside it as the reader scrolls. The photo that was pressed grows into the sheet.
+- Organised by service (user, 2026-10-13): the overview, then one chapter for each service the project took, in the order the services section lists them, each saying only what makes sense for that service, then the outcome.
+- Set in the site's own language, not a PDF's and not an app's: black hairlines, the gallery's mono labels (as the second screen's readouts), service names in light Satoshi (as the services list), black boxes for "Main service" / "Additional service" and "Project report" (as the index's label), the services' ticked lists, the client's words on a black panel. No rounded cards, no grey fills.
+- The header stays at the top of the sheet: the wordmark and "Project report", the chapters as plain links (the one being read underlined), and a thin reading line along its foot.
 - On top, two drops: "Close ×" (white) and, for a live project, "Go to the website ↗" (black). Close, Esc or a click on the dark around the sheet closes it.
-- The cover: the photo across the sheet (16:7), then the name in white on a black band (as on the portfolio's hover glass), the status as a pill with a dot (green when live), the summary justified, the six facts as cards, the services as outlined tags.
-- On a narrow sheet (under 40rem: phones) the columns fold: one column for paired cards and steps, two for facts, scores and logos.
-- Type: titles in Satoshi (medium, tight), text in Instrument Sans at 1rem; descriptions justified; `--color-ash` for labels and notes. No mono, no numbered titles.
+- Every service chapter has the same shape: a black rule, the name with its kind of service, then two columns (what was asked and done on the left, the specifics as a hairline list on the right), then what that service needs below.
+- On a narrow sheet (under 40rem: phones) the columns fold to one; readouts go two to a row.
 - Anything the studio has not filled in yet reads as `[a preencher]`, in grey. Nothing about a client is ever made up.
 
-## Chapters every report has
+## The chapters
 
-1. **Overview (the cover).** The name (large), the status (Live / In production) as an outlined tag, the summary (`summary`, two or three sentences, justified), the main photo (16:9), then six facts in three columns: Sector, Region, Website type, Pages, Design level, Delivered. Last, the services taken, as outlined tags.
-2. **The project.** Two columns: "Where it started" (`startingPoint`: what the business had, what was missing) and "Goals" (`goals`: three or four short lines). Below them, "Our approach" (`approach`: the studio's answer, a few sentences). Last, "How it ran": the three phases of How we work on one line (Proposal and contract, Production, Review and launch) with how long each took (`phases`), and "Start to launch" (`duration`).
-3. **The website.** "Its pages" (`sitemap`, as outlined boxes, in the order of the menu). Two columns: "What it does" (`features`) and "Included with it" (read from the Web Design service's own "Also included" list, so it never drifts from the services section). Last, "Measured on the live website": four Lighthouse scores (Performance, Accessibility, Best practices, SEO, mobile, out of 100) and the load time (`scores`).
-4. **The outcome** (always last). What changed for the client (`outcome`), the client's words (`quote`, signed by role), credits (Strategy, design and build; Visual identity, if taken; Photography), and the privacy note.
+1. **Overview** (always). The photo across the sheet, the name in white on a black band, the status (green dot when live), the summary (`summary`, justified), four readouts (Sector, Region, Delivered, Start to launch), the services as outlined tags.
+2. **Web Design** (always; main service). Left: "The brief" (`startingPoint`) and "What we built" (`approach`). Right: Website type, Pages, Design level; "Its pages" (`sitemap`, tags). Below, three ticked lists: Goals (`goals`), What it does (`features`), Also included (read from the Web Design service itself). Then two readout rows: "How it ran" (the three phases of How we work, `phases`) and "Measured on the live website" (four Lighthouse scores, mobile, out of 100, and the load time, `scores`).
+3. **Visual Identity** (if taken). Left: "The idea" (`identity.idea`). Right: Typefaces, Where it is used. Below: the logo on white, on black, and the symbol if there is one; up to five colours (name and hex).
+4. **SEO** (if taken). Left: "What we put in place" (`seo.work`, ticked). Right: "The searches it is set up for" (`seo.searches`, tags); Before and After (`seo.before`, `seo.after`), as positions or a share.
+5. **GEO** (if taken). Left: "What we put in place" (`geo.work`, ticked). Right: "How it shows in AI answers now" (`geo.presence`).
+6. **Photo Shoot** (if taken). Left: "What we photographed" (`shoot.subject`). Right: Photos, Videos. Below: a gallery of six.
+7. **The outcome** (always, last). "What changed" (`outcome`) beside the client's words on black (`quote`, signed by role); credits as readouts; the privacy note.
 
-## Chapters a report has only if the project took that service
-
-They come between "The website" and "The outcome", in this order, each a chapter of its own in the header.
-
-- **Visual identity** (`identity`): the idea behind it (two or three sentences); the logo on white, on black, and the symbol if there is one; up to five colours (name and hex); the typefaces (a sample, the name and its role); where it is used beyond the website.
-- **Search and AI answers.** One chapter for SEO and GEO, titled by what was taken: "Found on search", "Found in AI answers", or "Found on search and in AI answers".
-  - SEO (`seo`): the searches the website is set up for (as tags), what was put in place, and where it stood before and after (as positions or a share).
-  - GEO (`geo`): what was put in place, and how the business shows in AI answers now, in a sentence.
-- **Photo shoot** (`shoot`): what was photographed, how many photos and videos, and a gallery of six.
-
-Web design is always taken, so chapters 1 to 3 and the outcome are always there. Bsmartish (Web design, Visual identity, SEO, GEO) has six chapters; Estamento de Gerona (Web design, Visual identity) has five.
+Bsmartish (Web design, Visual identity, SEO, GEO) has seven chapters; Estamento de Gerona (Web design, Visual identity) has four.
 
 ## Privacy: what never goes in
 
