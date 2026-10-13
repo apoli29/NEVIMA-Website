@@ -9,8 +9,9 @@ import { usePathname, useRouter } from "next/navigation";
    Links between the site's pages are followed by the router, at once,
    with no transition: the growing cover that once carried every button
    into the next page was taken out (user, 2026-10-13: "horrível"). The
-   cover that is left is for a page that leaves
-   by its own gesture, the portfolio's "Exit portfolio": the screen falls
+   cover that is left is for the way into the portfolio and out of it.
+   In, the page falls to black and the portfolio comes up out of it.
+   Out, by its own gesture, the portfolio's "Exit portfolio": the screen falls
    to black under a cover (`fadeThen`), the router loads the page the
    visitor came from behind it (`goTo`), and the cover fades away once
    that page has drawn. Mounted once, in the layout, so the cover
@@ -75,6 +76,12 @@ function lift() {
   );
 }
 
+/** Whether a page is arriving under the cover just now (the portfolio
+    comes up out of it, see portfolio.tsx). */
+export function covered() {
+  return cover !== null;
+}
+
 /** The router's way to a page, for code that leaves one on its own. */
 export function goTo(href: string) {
   if (push) push(href);
@@ -108,7 +115,12 @@ export function PageWipe() {
       const url = new URL(link.href, window.location.href);
       if (url.origin !== window.location.origin || url.pathname === window.location.pathname) return;
       event.preventDefault();
-      router.push(url.pathname + url.search + url.hash);
+      const href = url.pathname + url.search + url.hash;
+      // Into the portfolio, the way out of it played backwards (user,
+      // 2026-10-13): the page falls to black, and the portfolio's photos
+      // come up out of it, from small and out of focus.
+      if (url.pathname === "/portfolio") fadeThen("#000000", () => router.push(href), 0, 320);
+      else router.push(href);
     };
     // Fetched as the hand reaches the link, so the page is there by the
     // time it is pressed.

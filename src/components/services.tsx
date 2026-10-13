@@ -52,14 +52,9 @@ const ROW_STAGGER_S = 0.09;
 /** How long an open service's picture stays before the next, in ms. */
 const SLIDE_MS = 3200;
 
-/* The line under each name: what an acronym stands for, or how the
-   service is sold, or, for the one that needs neither, what it is for,
-   in the words of its own description. */
-const LINE: Record<string, string> = {
-  "web-design": "Our main area of work",
-  "visual-identity": "Only together with a website",
-  "photo-shoot": "Photos, or photos and video",
-};
+/** Where the services' title is put when the foot sends a visitor to a
+    service: clear of the bar, in px from the top of the screen. */
+const FRAME_TOP = () => Math.min(Math.max(window.innerHeight * 0.15, 112), 152);
 
 /** The ticks start once the light is most of the way through the
     description, in s, and follow one another at this pace. */
@@ -101,11 +96,11 @@ export function Services({ ready }: { ready: boolean }) {
   );
 
   /* Sent here for one service (the foot's service links point at
-     /#open-<slug>, user 2026-10-12): that row opens and the list is put
-     with the row a third of the way down the screen. A hash no element
+     /#open-<slug>, user 2026-10-12): that row opens and the section is
+     always framed the same way, its title just under the bar. A hash no element
      carries, so neither the browser nor Lenis scrolls to it on its own.
      From another page the jump is instant, once the page is handed back.
-     From the foot of this page the page glides up to it (user,
+     From the foot of this page the page glides up to it, quickly (user,
      2026-10-13), with How we work folded on the way so it passes as one
      still screen instead of running its slide backwards (see
      foldProcess). */
@@ -125,11 +120,12 @@ export function Services({ ready }: { ready: boolean }) {
   }, []);
   useEffect(() => {
     if (!ready || !asked) return;
-    const head = document.getElementById(`service-${asked.slug}-name`);
-    const target = () =>
-      head ? head.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.3 : window.scrollY;
+    // Always the same framing, whichever service was asked for (user,
+    // 2026-10-13): the section's title just under the bar. The rows
+    // opening and closing below it cannot move it.
+    const title = document.getElementById("services-title");
+    const target = () => (title ? title.getBoundingClientRect().top + window.scrollY - FRAME_TOP() : window.scrollY);
     if (!asked.glide || reduce || !getLenis()) {
-      // Once the row has begun to open, so it is measured where it stays.
       const t = window.setTimeout(() => {
         jumpTo(target());
         setAsked(null);
@@ -153,8 +149,9 @@ export function Services({ ready }: { ready: boolean }) {
     const off = () => events.forEach((e) => window.removeEventListener(e, finish, true));
     events.forEach((e) => window.addEventListener(e, finish, { capture: true, passive: true }));
     lenis.scrollTo(target(), {
-      duration: Math.min(2.2, 0.9 + far * 0.22),
-      easing: (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
+      // Off at once, settling at the end: quick to answer the click.
+      duration: Math.min(1.25, 0.55 + far * 0.1),
+      easing: (t) => 1 - Math.pow(1 - t, 4),
       force: true,
       onComplete: finish,
     });
@@ -384,7 +381,6 @@ function Row({
   const [turns, setTurns] = useState(0);
   // The light runs again every time the drawer is opened.
   const [opened, setOpened] = useState(0);
-  const line = service.full ?? LINE[service.slug];
   const main = service.tier === "main";
 
   return (
@@ -432,16 +428,6 @@ function Row({
                 </sup>
               </span>
             </Rise>
-            {line && (
-              <motion.span
-                className={`mono-label mt-2 block md:mt-2.5 ${main ? "text-paper/70" : "text-ash"}`}
-                initial={false}
-                animate={{ opacity: seen || reduce ? 1 : 0 }}
-                transition={{ duration: 0.6, delay: delay + 0.3 }}
-              >
-                {line}
-              </motion.span>
-            )}
           </span>
 
           <motion.span
