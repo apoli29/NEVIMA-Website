@@ -1529,6 +1529,23 @@
     -webkit-text-stroke-color: var(--color-ink);
   }
 
+  /* A co-founder's links (LinkedIn, a portfolio): the index's black
+     marker as a button, inverted when pointed at. */
+  .cf-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    padding: 0.55em 0.8em 0.5em;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    border: 1px solid var(--color-ink);
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  .cf-link:hover,
+  .cf-link:focus-visible { background: var(--color-paper); color: var(--color-ink); outline: none; }
+  .cf-link[data-rest] { cursor: default; }
+
   /* ---- exhibit: the services index and the co-founders ------------
      A catalogue rather than cards: type straight on the page, hairlines
      between the entries and small captions over the names. See
@@ -1656,51 +1673,44 @@
                   beside the criterion as it can, up to 15rem, and the
                   table slides. On a phone, one answer fills the view.  */
   /* The section is the service card's surface, whole (user, 2026-10-14):
-     the card's near-black and corner light, its grain, and the light
-     line along its top edge. Its faint all-round line is left off: at
-     the screen's edges it read as a stray border. The table no longer
-     has a ground of its own. */
-  .cmp-section {
-    /* Its top is the shade's own black, plain: the corner light and the
-       grain come in under it, so where the shade ends no edge shows. */
-    background:
-      linear-gradient(to bottom, #0b0b0b 0, rgb(11 11 11 / 0) 38svh),
-      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0) 42%),
-      #0b0b0b;
-  }
-  /* The lights go down (user, 2026-10-14): no edge where the black
-     begins. A shade rises ahead of the section, from nothing to its
-     black, eased so it has no band in it, while How we work dims in step
-     (process.tsx). */
-  .cmp-section::before {
-    content: "";
+     the card's near-black, corner light and grain, under a liquid edge
+     (liquid-edge.tsx). The table no longer has a ground of its own. */
+  .cmp-section { --cmp-edge: clamp(4.5rem, 13svh, 8.5rem); }
+  /* The liquid edge: a band at the top of the section, the ground
+     starting at its foot. */
+  .cmp-edge {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: calc(100% - 1px);
-    height: 50svh;
+    top: 0;
+    height: calc(var(--cmp-edge) + 1px);
+    z-index: -1;
     pointer-events: none;
-    background: linear-gradient(
-      to bottom,
-      rgb(11 11 11 / 0) 0%,
-      rgb(11 11 11 / 0.05) 18%,
-      rgb(11 11 11 / 0.16) 34%,
-      rgb(11 11 11 / 0.34) 50%,
-      rgb(11 11 11 / 0.58) 66%,
-      rgb(11 11 11 / 0.82) 82%,
-      rgb(11 11 11 / 1) 100%
-    );
   }
-  .cmp-section::after {
+  .cmp-ground {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--cmp-edge);
+    bottom: 0;
+    z-index: -2;
+    pointer-events: none;
+    /* Its top is the edge's own plain black: the corner light and the
+       grain come in under it. */
+    background:
+      linear-gradient(to bottom, #0b0b0b 0, rgb(11 11 11 / 0) 30svh),
+      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0) 42%),
+      #0b0b0b;
+  }
+  .cmp-ground::after {
     content: "";
     position: absolute;
     inset: 0;
-    z-index: -1;
     pointer-events: none;
     opacity: 0.1;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 32svh);
-    mask-image: linear-gradient(to bottom, transparent 0, #000 32svh);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 26svh);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 26svh);
   }
 
   /* The frame is now only the room between the agency's column and our
