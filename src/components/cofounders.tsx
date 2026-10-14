@@ -37,6 +37,9 @@ type Founder = {
   bio: string;
   skills: readonly string[];
   photo: string;
+  /** Where to find them elsewhere. An empty href is a link still to come:
+      the button is shown, at rest (user, 2026-10-14). */
+  links: readonly { label: string; href: string }[];
   /** Where the crop sits across the frame. Emanuel is lit from the side
       and looking off to the left, so his crop leaves room on that side. */  focus?: string;
 };
@@ -56,6 +59,10 @@ const FOUNDERS: Founder[] = [
       "Photo and video shooting",
     ],
     photo: "/cofounders/ec.jpeg",
+    links: [
+      { label: "LinkedIn", href: "" },
+      { label: "Portfolio", href: "" },
+    ],
     focus: "44% 50%",
   },
   {
@@ -71,6 +78,7 @@ const FOUNDERS: Founder[] = [
       "SEO",
     ],
     photo: "/cofounders/ap.jpeg",
+    links: [{ label: "LinkedIn", href: "" }],
   },
 ];
 
@@ -265,6 +273,32 @@ function Plate({
               </motion.li>
             ))}
           </ul>
+          {/* Where to find them: LinkedIn, and Emanuel's own portfolio. */}
+          <motion.div {...fade(0.7)} className="mt-6 flex flex-wrap gap-2">
+            {founder.links.map((link) =>
+              link.href ? (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener"
+                  className="cf-link mono-label"
+                >
+                  {link.label} <span aria-hidden="true">&#8599;</span>
+                </a>
+              ) : (
+                <span
+                  key={link.label}
+                  aria-disabled="true"
+                  title="Coming soon"
+                  className="cf-link mono-label"
+                  data-rest=""
+                >
+                  {link.label} <span aria-hidden="true">&#8599;</span>
+                </span>
+              ),
+            )}
+          </motion.div>
         </div>
       </div>
     </article>

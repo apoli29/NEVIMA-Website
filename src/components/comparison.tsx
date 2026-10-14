@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
 import { SlideIn } from "./enter";
+import { LiquidEdge } from "./liquid-edge";
 import { Illuminated } from "./services";
 
 /* The answer to the question above it, run through with the same black
@@ -230,8 +231,14 @@ export function Comparison({ ready }: { ready: boolean }) {
       // section is the card's surface now (.cmp-section), so its edge is
       // seen: the heading gets a full section's room inside it, and the
       // foot the same.
-      className="cmp-section relative isolate z-10 pt-(--section-gap) pb-(--section-gap) text-paper"
+      // The black is under a liquid edge (see liquid-edge.tsx): a band at
+      // the top that comes up with a swell on it and settles flat. The
+      // ground starts at the band's foot, so the band's room is added to
+      // the heading's.
+      className="cmp-section relative isolate z-10 pt-[calc(var(--section-gap)+var(--cmp-edge))] pb-(--section-gap) text-paper"
     >
+      <LiquidEdge colour="#0b0b0b" className="cmp-edge" />
+      <div aria-hidden="true" className="cmp-ground" />
       <div className="shell">
         <SlideIn ready={ready}>
           <h2
