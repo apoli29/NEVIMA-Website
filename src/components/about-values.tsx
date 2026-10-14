@@ -217,7 +217,7 @@ export function AboutValues() {
         if (joined) part();
       }}
       data-joined={joined ? "" : undefined}
-      className="abt-val relative isolate flex flex-col overflow-hidden bg-paper pt-[calc(var(--section-gap)*0.85)]"
+      className="abt-val relative isolate flex min-h-[100svh] flex-col justify-center overflow-hidden bg-paper pt-[calc(var(--section-gap)*0.85)]"
     >
       <canvas
         ref={canvas}
@@ -225,7 +225,9 @@ export function AboutValues() {
         className="absolute inset-0 -z-10 block size-full"
       />
 
-      {/* A little less room above than a section's usual head room, and
+      {/* A whole screen of water (user, 2026-10-14: the values are a
+          section of their own), the heading and the drops held in the
+          middle of it. A little less room above than a section's usual head room, and
           below as much as it takes for the space under the drops (whose
           glass reaches past their buttons) to match the space over the
           title, so the heading and the drops sit as one piece in the

@@ -9,8 +9,8 @@ import { Illuminated } from "./services";
 /* ==================================================================
    Studio
 
-   The section has no title. It opens on a statement set straight on
-   the page, two thirds of the shell wide from its left edge, with the
+   The section has no title. It is a screen of its own (2026-10-14), a
+   statement set straight on the page in the middle of it, two thirds of the shell wide from its left edge, with the
    pillar beside it from lg. The co-founders once hung underneath; on
    2026-10-06 the user moved them to the about page (see
    cofounders.tsx).
@@ -51,12 +51,14 @@ export function Studio({ ready }: { ready: boolean }) {
     <section
       id="studio"
       aria-labelledby="studio-title"
-      // No foot padding: the services section below brings its own head
-      // room, and the two together would open a gap twice the rhythm. One
-      // layer above the services, though: the "Learn more" drop's glass and
-      // shadow reach past the foot of this section, and the services'
-      // ground, painted after it, was cutting them off.
-      className="relative z-[11] bg-paper pt-(--section-gap)"
+      // A section of its own (user, 2026-10-14): a whole screen, the copy
+      // held in the middle of it, with at least a section's room above and
+      // below, so it stands well clear of the second screen it is drawn
+      // over and of the services under it. A little more room on top: the
+      // bar hangs over that end. One layer above the services, so the
+      // "Learn more" drop's glass and shadow are never cut off by their
+      // ground.
+      className="relative z-[11] flex min-h-[100svh] flex-col justify-center bg-paper pt-[calc(var(--section-gap)+2rem)] pb-(--section-gap)"
     >
       <div className="shell">
         <h2 id="studio-title" className="sr-only">

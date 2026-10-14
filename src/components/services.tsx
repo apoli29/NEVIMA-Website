@@ -180,7 +180,7 @@ export function Services({ ready }: { ready: boolean }) {
               <RewriteTitle
                 ready={ready}
                 id="services-title"
-                className="display text-[clamp(2.25rem,4.2vw,4.25rem)] font-light text-ink lg:whitespace-nowrap"
+                className="display text-[clamp(2rem,3.4vw,3.25rem)] font-light text-ink lg:whitespace-nowrap"
               />
             </div>
           </SlideIn>
@@ -197,7 +197,7 @@ export function Services({ ready }: { ready: boolean }) {
           </SlideIn>
         </div>
 
-        <div ref={listRef} className="relative mt-12 grid grid-cols-12 gap-x-4 md:mt-16">
+        <div ref={listRef} className="relative mt-8 grid grid-cols-12 gap-x-4 md:mt-10">
           <Rule shown={seen} className="absolute inset-x-0 top-0 bg-ink" />
 
           <Showcase index={shown} open={openIndex >= 0 && pointed === null} seen={seen} reduce={reduce} />
@@ -222,10 +222,10 @@ export function Services({ ready }: { ready: boolean }) {
             ))}
           </ol>
 
-          {/* Hung straight from the list's last row, in its column, so the
-              two read as one: the list opens on the inked Web Design row
-              and closes on this (user: tie it to the services). */}
-          <div className="col-span-12 lg:col-span-7 lg:col-start-6">
+          {/* Under the list's last row, in its column, its right edge on the
+              rows' "n" rings (user, 2026-10-14: small and thin, after the
+              tags and the ring; its left edge is free). */}
+          <div className="col-span-12 flex justify-end pt-6 md:pt-7 lg:col-span-7 lg:col-start-6">
             <PortfolioCall />
           </div>
         </div>
@@ -236,24 +236,20 @@ export function Services({ ready }: { ready: boolean }) {
 
 /* ==================================================================
    The way to the portfolio: the section's one call to see the work
-   (user, 2026-10-11: one call, hard to miss, in place of the web
-   design page's own), closing the list as the inked Web Design row
-   opens it: a black band reaching past the list as that row does, the
-   light passing over it on its slow clock, the words large, an arrow in
-   a ring standing where the rows' toggles stand.
+   (user, 2026-10-11: one call, in place of the web design page's own).
+   Since 2026-10-14 (user: smaller and thinner, after the services'
+   tags and the "n" ring) it is cut from the rows' own parts: a black
+   band as high as the ring, its words in the tags' mono, an arrow
+   after them, hung under the list with its right edge on the rings'.
+   The light still passes over it on its slow clock.
    ================================================================== */
 
 function PortfolioCall() {
   return (
-    <a href="/portfolio" className="svc-folio group">
-      <span className="min-w-0">
-        <span className="mono-label block text-paper/60">Portfolio</span>
-        <span className="svc-folio-name display mt-3 block text-[clamp(2rem,3.6vw,3.5rem)] leading-[0.95] font-medium tracking-[-0.035em] md:mt-4">
-          See our work.
-        </span>
-      </span>
-      <span aria-hidden="true" className="svc-folio-ring">
-        <svg viewBox="0 0 16 16" width="22" height="22" fill="none" className="block">
+    <a href="/portfolio" className="svc-folio">
+      <span className="mono-label">See our work</span>
+      <span aria-hidden="true" className="svc-folio-arrow">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" className="block">
           <path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.25" />
         </svg>
       </span>
@@ -305,8 +301,8 @@ function Showcase({
   }, [src]);
 
   return (
-    <figure className="hidden lg:col-span-4 lg:block">
-      <div className="sticky top-28 pt-10">
+    <figure className="hidden lg:col-span-3 lg:block">
+      <div className="sticky top-28 pt-6">
         <Uncover shown={seen} className="relative aspect-[4/5] bg-ink/5">
           {layers.filter((layer) => layer.src).map((layer, i, shownLayers) => (
             <motion.div
@@ -404,7 +400,7 @@ function Row({
           onPointerEnter={(event) => {
             if (event.pointerType === "mouse") onPoint(true);
           }}
-          className="xs-head grid w-full grid-cols-[1fr_auto] items-center gap-x-3 py-5 text-left md:gap-x-4 md:py-7"
+          className="xs-head grid w-full grid-cols-[1fr_auto] items-center gap-x-3 py-4 text-left md:gap-x-4 md:py-5"
         >
           <span className="min-w-0">
             {/* Sized on the slot, not the name, so the room the slot leaves
@@ -412,7 +408,7 @@ function Row({
             <Rise
               shown={seen}
               delay={delay}
-              className="text-[clamp(1.44rem,2.52vw,2.43rem)]"
+              className="text-[clamp(1.3rem,2.1vw,2rem)]"
             >
               <span
                 className={`xs-name display block leading-[0.98] font-light tracking-[-0.03em] ${main ? "text-paper" : "text-ink"}`}
@@ -440,7 +436,7 @@ function Row({
             <span className={`mono-label max-sm:hidden ${main ? "xs-tag-main" : "idx-title"}`}>
               {main ? "Main service" : "Additional service"}
             </span>
-            <Chevron open={open} turns={turns} reduce={reduce} />
+            <Chevron open={open} turns={turns} reduce={reduce} small />
           </motion.span>
         </button>
       </h3>
@@ -457,7 +453,7 @@ function Row({
       >
         <div>
           {/* Hung from the line the name starts on. */}
-          <div className="pr-0 pb-9 md:pr-[4.5rem] md:pb-11">
+          <div className="pr-0 pb-7 md:pr-[4rem] md:pb-9">
             {open && !reduce ? (
               <Illuminated
                 key={opened}
@@ -603,19 +599,22 @@ export function Chevron({
   open,
   turns,
   reduce,
+  small = false,
 }: {
   open: boolean;
   turns: number;
   reduce: boolean;
+  /** A size down, for the services' tighter rows. */
+  small?: boolean;
 }) {
   return (
     <span
       aria-hidden="true"
       data-open={open}
-      className="xs-toggle grid size-10 place-items-center rounded-full md:size-12"
+      className={`xs-toggle grid place-items-center rounded-full ${small ? "size-9 md:size-10" : "size-10 md:size-12"}`}
     >
       <motion.span
-        className="block w-3 md:w-[0.875rem]"
+        className={`block ${small ? "w-[0.6875rem] md:w-3" : "w-3 md:w-[0.875rem]"}`}
         initial={false}
         animate={{ rotate: turns * 360 }}
         transition={

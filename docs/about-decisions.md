@@ -37,6 +37,8 @@ The page is `noindex` (`robots: { index: false, follow: true }` in `src/app/abou
 - 2026-10-05 (later): the studio supplied its own mission and vision in Portuguese; translated as closely as English allows (user declined a shorter rewrite). `.abt-piece` sized down to fit the longer statements.
 - Mission and vision are **justified** (user); size down to clamp(1.375rem, 2.15vw, 2.125rem) and the vision column widened to 8 cols so the gaps close.
 
+- 2026-10-14 (user): mission and vision are a section of their own, apart from the values: a whole screen (`min-h-[100svh]`), the two pieces centred in it as one hang, a full section gap above and below (was 0.425× and 0.85×). The vision's drop under the mission is shorter (`clamp(2.5rem, 5vw, 4.5rem)`, was up to 8.5rem) so the pair reads as one composition.
+
 ## 2b. Values (`about-values.tsx`, `values-water.ts`)
 
 - Same water as the home page's second screen, re-implemented in `values-water.ts` (shader copied by hand from `jelly-field.tsx`; keep the two in step).
@@ -59,6 +61,7 @@ The page is `noindex` (`robots: { index: false, follow: true }` in `src/app/abou
 - Callouts no longer write over each other (user's screenshot: two neighbours pointing at each other). Each callout picks the first placement that keeps clear of those already up (`placed` registry, `collides`): up-right/left, then **down** off the drop's foot either way, then a step higher. Measured 0 overlaps over ~130 two-callout moments each at 1100, 820 and 390 wide.
 - 2026-10-07, callouts recomposed as one system (user found the 2nd and 4th ugly: rings floating off the drops, lines at random heights). The ring (now white-filled) sits on the drop itself, `INSET` 0.8 of the way from the drop's centre to its real outline along the 45° line, read from the water every frame (`control.probe` in values-water.ts sums the drop's body and lobes); it follows the drop as it drifts. Every label turns level on one shared line `LIFT` 26px over the row's drop buttons; a callout that would clash takes the next line up (`LEVEL_STEP` 40px). No more callouts going down. If no placement is clear (neighbours on a phone), that call shows no callout rather than clash, so phones show one at a time. Measured: 0 labels within 12px of each other at 1440/1100/390.
 - The section is no longer a full screen: its height is the heading plus the drops' row with callout room (~700px at 1440x900).
+- 2026-10-14 (user: the values a whole section): a full screen again (`min-h-[100svh]`), the heading and drops centred on the water, the paddings above as they were.
 
 ## Let's work together
 
