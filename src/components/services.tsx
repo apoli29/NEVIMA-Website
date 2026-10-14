@@ -180,7 +180,7 @@ export function Services({ ready }: { ready: boolean }) {
               <RewriteTitle
                 ready={ready}
                 id="services-title"
-                className="display text-[clamp(2rem,3.4vw,3.25rem)] font-light text-ink lg:whitespace-nowrap"
+                className="display text-[clamp(2.25rem,4.2vw,4.25rem)] font-light text-ink lg:whitespace-nowrap"
               />
             </div>
           </SlideIn>
@@ -197,7 +197,7 @@ export function Services({ ready }: { ready: boolean }) {
           </SlideIn>
         </div>
 
-        <div ref={listRef} className="relative mt-8 grid grid-cols-12 gap-x-4 md:mt-10">
+        <div ref={listRef} className="relative mt-12 grid grid-cols-12 gap-x-4 md:mt-16">
           <Rule shown={seen} className="absolute inset-x-0 top-0 bg-ink" />
 
           <Showcase index={shown} open={openIndex >= 0 && pointed === null} seen={seen} reduce={reduce} />
@@ -301,8 +301,8 @@ function Showcase({
   }, [src]);
 
   return (
-    <figure className="hidden lg:col-span-3 lg:block">
-      <div className="sticky top-28 pt-6">
+    <figure className="hidden lg:col-span-4 lg:block">
+      <div className="sticky top-28 pt-10">
         <Uncover shown={seen} className="relative aspect-[4/5] bg-ink/5">
           {layers.filter((layer) => layer.src).map((layer, i, shownLayers) => (
             <motion.div
@@ -400,7 +400,7 @@ function Row({
           onPointerEnter={(event) => {
             if (event.pointerType === "mouse") onPoint(true);
           }}
-          className="xs-head grid w-full grid-cols-[1fr_auto] items-center gap-x-3 py-4 text-left md:gap-x-4 md:py-5"
+          className="xs-head grid w-full grid-cols-[1fr_auto] items-center gap-x-3 py-5 text-left md:gap-x-4 md:py-8"
         >
           <span className="min-w-0">
             {/* Sized on the slot, not the name, so the room the slot leaves
@@ -408,7 +408,7 @@ function Row({
             <Rise
               shown={seen}
               delay={delay}
-              className="text-[clamp(1.3rem,2.1vw,2rem)]"
+              className="text-[clamp(1.6rem,2.9vw,2.75rem)]"
             >
               <span
                 className={`xs-name display block leading-[0.98] font-light tracking-[-0.03em] ${main ? "text-paper" : "text-ink"}`}
@@ -436,7 +436,7 @@ function Row({
             <span className={`mono-label max-sm:hidden ${main ? "xs-tag-main" : "idx-title"}`}>
               {main ? "Main service" : "Additional service"}
             </span>
-            <Chevron open={open} turns={turns} reduce={reduce} small />
+            <Chevron open={open} turns={turns} reduce={reduce} />
           </motion.span>
         </button>
       </h3>
@@ -453,7 +453,7 @@ function Row({
       >
         <div>
           {/* Hung from the line the name starts on. */}
-          <div className="pr-0 pb-7 md:pr-[4rem] md:pb-9">
+          <div className="pr-0 pb-9 md:pr-[4.5rem] md:pb-11">
             {open && !reduce ? (
               <Illuminated
                 key={opened}

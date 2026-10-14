@@ -385,14 +385,14 @@
     display: inline-flex;
     align-items: center;
     gap: 0.875rem;
-    /* The ring's size: 2.25rem, 2.5rem from md (see Chevron's small). */
-    height: 2.25rem;
+    /* The rows' ring's size: 2.5rem, 3rem from md (see Chevron). */
+    height: 2.5rem;
     padding-inline: 1rem 0.875rem;
     background: var(--color-ink);
     color: var(--color-paper);
   }
   @media (min-width: 768px) {
-    .svc-folio { height: 2.5rem; padding-inline: 1.125rem 1rem; }
+    .svc-folio { height: 3rem; padding-inline: 1.25rem 1.125rem; }
   }
   .svc-folio::after {
     content: "";
