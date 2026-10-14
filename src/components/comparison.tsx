@@ -238,7 +238,7 @@ export function Comparison({ ready }: { ready: boolean }) {
       // the top that comes up with a swell on it and settles flat. The
       // ground starts at the band's foot, so the band's room is added to
       // the heading's.
-      className="cmp-section relative isolate z-10 mt-[68svh] pt-[calc(var(--section-gap)+var(--cmp-edge))] pb-(--section-gap) text-paper"
+      className="cmp-section relative isolate z-10 mt-[41svh] pt-[calc(var(--section-gap)+var(--cmp-edge))] pb-(--section-gap) text-paper"
     >
       <LiquidEdge colour="#0b0b0b" className="cmp-edge" />
       <div aria-hidden="true" className="cmp-ground" />

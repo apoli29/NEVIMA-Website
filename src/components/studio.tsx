@@ -9,27 +9,27 @@ import { Illuminated } from "./services";
 /* ==================================================================
    Studio
 
-   A screen of its own (2026-10-14), and a full one (user, same day: it
-   felt empty, and whatever moves in it has to leave it full once it has
-   stopped). Everything that fills it stays when the motion is over:
+   A screen of its own (2026-10-14), full at rest: whatever moves in it
+   leaves it full once it has stopped. Composed in two halves (user, same
+   day: smaller, justified, half the page, and everything else on the
+   right with room to breathe):
 
-   - a head row in the gallery's mono: the "The studio" marker, a
-     hairline drawn across, and who and where (two people, Porto);
-   - the statement, the whole width of the shell and large, read in ink:
-     it waits in a pale grey and each word turns black as the page
-     brings it up, at the pace of the scroll, so it is read rather than
-     shown. After "two" the two co-founders are set into the line, two
-     round portraits in a capsule that part a little when pointed at;
-     "academic background" is underlined by a stroke drawn as it is read;
-   - a foot row over a hairline: the two names in mono on the left, and
-     on the right the pillar, its answer run through with the black
-     marker, and "Learn more about us".
+   - on the left, the statement, justified, read in ink: it waits in a
+     pale grey and each word turns black as the page brings it up, at the
+     pace of the scroll. After "two" the co-founders are set into the
+     line, two round portraits in colour in a capsule that part when
+     pointed at and lead to the about page; its last words are underlined
+     by a stroke drawn as they are read;
+   - on the right, spread down the statement's height: the "The studio"
+     marker with a hairline drawn across and who and where; the pillar,
+     its answer run through with the black marker, and "Learn more about
+     us"; and at the foot, over a hairline, the two names.
 
    The co-founders' full plates are on the about page (cofounders.tsx).
    ================================================================== */
 
 const STATEMENT =
-  "Nevima was born from two young people who share a fascination with web development, a field that is part of their academic background.";
+  "Nevima is a studio of two young friends who go way back, sharing a fascination with communication and web development. We’re not here to be one more studio doing more of the same: we came with a completely different proposition.";
 
 /* The pillar, up to and including the colon it turns on. */
 const PILLAR =
@@ -54,7 +54,8 @@ const FOUNDERS = [
    stroke. */
 const WORDS = STATEMENT.split(" ");
 const PORTRAITS_AFTER = WORDS.indexOf("two");
-const STROKE_FROM = WORDS.indexOf("academic");
+/* "a completely different proposition." */
+const STROKE_FROM = WORDS.lastIndexOf("completely") - 1;
 
 /* ================================================================== */
 
@@ -131,36 +132,29 @@ function Statement({ ready }: { ready: boolean }) {
 
   return (
     <div ref={ref} className="std-lede">
-      <motion.div className="std-head mono-label" {...enter(-1)}>
-        <span className="idx-title">The studio</span>
-        <motion.span
-          aria-hidden="true"
-          className="std-head-rule"
-          initial={false}
-          animate={{ scaleX: lit ? 1 : 0 }}
-          transition={{ duration: reduce ? 0 : 1.1, delay: 0.2, ease: ENTER_EASE }}
-        />
-        <span className="std-head-note">Two people &middot; Porto, Portugal</span>
+      {/* The measure the statement is sized from (see .std-statement). */}
+      <motion.div className="std-copy std-measure" {...enter(-1)}>
+        <InkStatement reduce={reduce} />
       </motion.div>
 
-      {/* The measure the statement is sized from (see .std-statement). */}
-      <div className="std-copy std-measure">
-        <InkStatement reduce={reduce} />
-      </div>
+      <motion.div className="std-aside" {...enter(1)}>
+        <div>
+          <div className="std-head mono-label">
+            <span className="idx-title">The studio</span>
+            <motion.span
+              aria-hidden="true"
+              className="std-head-rule"
+              initial={false}
+              animate={{ scaleX: lit ? 1 : 0 }}
+              transition={{ duration: reduce ? 0 : 1.1, delay: 0.2, ease: ENTER_EASE }}
+            />
+          </div>
+          <p className="std-head-note mono-label">Two people &middot; Porto, Portugal</p>
+        </div>
 
-      <div className="std-foot">
-        <motion.dl className="std-names mono-label" {...enter(-1)}>
-          {FOUNDERS.map((f) => (
-            <div key={f.name}>
-              <dt>{f.name}</dt>
-              <dd>Co-founder</dd>
-            </div>
-          ))}
-        </motion.dl>
-        {/* The second half, with everything after the colon run through
-            with a black marker: the answer the sentence has been building
-            to is the only thing on the page set out of black. */}
-        <motion.div className="std-pillar-col" {...enter(1)}>
+        {/* The pillar, with everything after the colon run through with
+            a black marker: the answer is the one thing set out of black. */}
+        <div>
           <LitCopy
             lit={lit}
             reduce={reduce}
@@ -170,8 +164,17 @@ function Statement({ ready }: { ready: boolean }) {
             className="svc-copy std-ink std-pillar"
           />
           <LearnMore />
-        </motion.div>
-      </div>
+        </div>
+
+        <dl className="std-names mono-label">
+          {FOUNDERS.map((f) => (
+            <div key={f.name}>
+              <dt>{f.name}</dt>
+              <dd>Co-founder</dd>
+            </div>
+          ))}
+        </dl>
+      </motion.div>
     </div>
   );
 }
@@ -197,13 +200,15 @@ function InkStatement({ reduce }: { reduce: boolean }) {
   const out: React.ReactNode[] = [];
   for (let i = 0; i < n; i++) {
     if (i === STROKE_FROM) {
-      // "academic background." under one stroke, drawn as it is read.
+      // The last words under one stroke, drawn as they are read.
+      const under: React.ReactNode[] = [];
+      for (let j = i; j < n; j++) under.push(word(j), j < n - 1 ? " " : null);
       out.push(
-        <Stroke key="stroke" progress={scrollYProgress} from={at(i + 1)} reduce={reduce}>
-          {word(i)} {word(i + 1)}
+        <Stroke key="stroke" progress={scrollYProgress} from={at(i + 1)} to={Math.min(1, at(n - 1) + span)} reduce={reduce}>
+          {under}
         </Stroke>,
       );
-      i += 1;
+      break;
     } else out.push(word(i));
     if (i === PORTRAITS_AFTER) out.push(<Fragment key="p"> <Portraits progress={scrollYProgress} from={at(i)} reduce={reduce} /></Fragment>);
     if (i < n - 1) out.push(" ");
@@ -240,15 +245,17 @@ function InkWord({
 function Stroke({
   progress,
   from,
+  to,
   reduce,
   children,
 }: {
   progress: MotionValue<number>;
   from: number;
+  to: number;
   reduce: boolean;
   children: React.ReactNode;
 }) {
-  const draw = useTransform(progress, [from, from + 0.12], ["0%", "100%"]);
+  const draw = useTransform(progress, [from, to], ["0%", "100%"]);
   // Drawn as the span's own background, so it runs on across a line break
   // like the words it is under.
   return (
@@ -258,9 +265,9 @@ function Stroke({
   );
 }
 
-/* The two of them, set into the line after "two": round portraits in a
-   capsule, inked in with the words around them, and parted a little when
-   pointed at. */
+/* The two of them, set into the line after "two": round portraits in
+   colour in a capsule, inked in with the words around them, parted a
+   little when pointed at, and the way to the about page. */
 function Portraits({
   progress,
   from,
@@ -273,11 +280,11 @@ function Portraits({
   const opacity = useTransform(progress, [from, from + 0.06], [0.35, 1]);
   const scale = useTransform(progress, [from, from + 0.08], [0.82, 1]);
   return (
-    <motion.span
+    <motion.a
+      href="/about"
       className="std-faces"
       style={reduce ? undefined : { opacity, scale }}
-      role="img"
-      aria-label="Emanuel Costa and António Policarpo, the co-founders"
+      aria-label="Emanuel Costa and António Policarpo, the co-founders: about us"
     >
       {FOUNDERS.map((f) => (
         <span key={f.name} className="std-face">
@@ -285,7 +292,7 @@ function Portraits({
           <img src={f.photo} alt="" draggable={false} style={{ objectPosition: f.focus }} />
         </span>
       ))}
-    </motion.span>
+    </motion.a>
   );
 }
 

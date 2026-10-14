@@ -1412,28 +1412,45 @@
      over. The wrap is the size container the statement is measured
      against.                                                          */
   .std-wrap { container-type: inline-size; }
-  .std-lede { display: flex; flex-direction: column; gap: clamp(2rem, 4.5svh, 3.25rem); }
+  /* Two halves from lg: the statement on the left, half the shell, and
+     everything else on the right, spread down the statement's height,
+     with a column of air between them. */
+  .std-lede { display: grid; gap: clamp(2.75rem, 6svh, 4rem); }
+  .std-aside { display: flex; flex-direction: column; gap: 2.5rem; }
+  @media (min-width: 1024px) {
+    .std-lede { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 1rem; }
+    .std-copy { grid-column: 1 / span 6; }
+    .std-aside { grid-column: 8 / span 5; justify-content: space-between; }
+  }
 
   .std-head { display: flex; align-items: center; gap: 1rem; color: var(--color-ash); }
   .std-head-rule { flex: 1; height: 1px; background: var(--color-ink); transform-origin: left; }
-  @media (max-width: 639px) { .std-head-note { display: none; } }
+  .std-head-note { margin-top: 0.85rem; color: var(--color-ash-2); }
 
   /* The statement, sized from its own measure, so it breaks in the same
-     places at every width. Left-set: the portraits sit inside a line, and
-     justified type would pull the gaps around them apart. */
+     places at every width, and justified. */
   .std-measure { container-type: inline-size; }
+  /* Justified type only sets evenly where the words fall well on each
+     line. The size is tied to the measure, so the lines break in the same
+     places at every width, and the two sizes were picked by measuring the
+     word gaps of every line (the widest is about half an em): 6.1cqi on
+     the half-page column, 7.6cqi on a phone. Recalculate them if the copy
+     changes. No hyphenation: where a browser has it, it would move the
+     breaks this was tuned on. */
   .std-statement {
-    font-size: 9.6cqi;
-    line-height: 1.02;
-    letter-spacing: -0.026em;
-    text-align: left;
+    font-size: 7.6cqi;
+    line-height: 1.12;
+    letter-spacing: -0.022em;
+    text-align: justify;
+    text-align-last: left;
+    hyphens: manual;
   }
   @container (min-width: 28rem) {
-    .std-statement { font-size: 5.7cqi; }
+    .std-statement { font-size: 6.1cqi; }
   }
   .std-read { color: var(--color-ink); }
   .std-word {
-    -webkit-text-stroke: 0.035em currentColor;
+    -webkit-text-stroke: 0.03em currentColor;
     paint-order: stroke fill;
   }
   .std-stroke {
@@ -1445,7 +1462,8 @@
     box-decoration-break: slice;
   }
   /* The two co-founders in a capsule, a line's height, set into the line
-     after "two". Pointed at, they part a little. */
+     after "two", in colour, and the way to the about page. Pointed at,
+     they part a little. */
   .std-faces {
     display: inline-flex;
     vertical-align: -0.12em;
@@ -1453,7 +1471,9 @@
     padding: 0.06em 0.12em;
     border-radius: 999px;
     background: var(--color-ink);
+    cursor: pointer;
   }
+  .std-faces:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 3px; }
   .std-face {
     display: block;
     width: 0.74em;
@@ -1464,29 +1484,22 @@
     transition: margin 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .std-face + .std-face { margin-left: -0.2em; }
-  .std-face img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.05); transition: filter 0.5s ease; }
-  .std-faces:hover .std-face + .std-face { margin-left: 0.08em; }
+  .std-face img { width: 100%; height: 100%; object-fit: cover; }
+  .std-faces:hover .std-face + .std-face,
+  .std-faces:focus-visible .std-face + .std-face { margin-left: 0.08em; }
   .std-faces:hover .std-face:first-child { transform: rotate(-6deg); }
   .std-faces:hover .std-face:last-child { transform: rotate(6deg); }
-  .std-faces:hover .std-face img { filter: none; }
   @media (prefers-reduced-motion: reduce) {
-    .std-face, .std-face img { transition: none; }
+    .std-face { transition: none; }
   }
 
-  /* The foot: over a hairline, the names on the left and the pillar on
-     the right. */
-  .std-foot {
+  /* The names, at the foot of the right half, over a hairline. */
+  .std-names {
     display: grid;
-    gap: 1.75rem;
-    padding-top: clamp(1.25rem, 2.6svh, 1.75rem);
+    gap: 0.6rem;
+    padding-top: 1.1rem;
     border-top: 1px solid var(--color-hair-strong);
   }
-  @media (min-width: 1024px) {
-    .std-foot { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 1rem; }
-    .std-names { grid-column: 1 / span 4; }
-    .std-pillar-col { grid-column: 7 / span 6; }
-  }
-  .std-names { display: grid; gap: 0.6rem; align-content: start; }
   .std-names > div { display: flex; gap: 0.75rem; }
   .std-names dt { color: var(--color-ink); }
   .std-names dd { color: var(--color-ash-2); }
@@ -1494,8 +1507,8 @@
   /* The pillar: a reading size, its answer run through with a black
      marker. Led openly, so the bands of two wrapped lines never touch. */
   .std-pillar {
-    font-size: clamp(1.0625rem, 1.5vw, 1.4375rem);
-    line-height: 1.42;
+    font-size: clamp(1.0625rem, 1.35vw, 1.3125rem);
+    line-height: 1.45;
     letter-spacing: -0.014em;
   }
 
