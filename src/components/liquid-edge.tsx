@@ -36,8 +36,6 @@ function swell(u: number, t: number) {
   );
 }
 
-const easeOut = (x: number) => 1 - Math.pow(1 - x, 3);
-
 export function LiquidEdge({ colour, className }: { colour: string; className?: string }) {
   const reduce = useReducedMotion() ?? false;
   const host = useRef<HTMLDivElement>(null);
@@ -88,7 +86,9 @@ export function LiquidEdge({ colour, className }: { colour: string; className?: 
       // 0 as the edge's foot comes up from under the screen, 1 once it is
       // three fifths of the way up: the swell dies away in between.
       const p = Math.min(Math.max((vh - r.bottom) / (vh * 0.6), 0), 1);
-      const calm = easeOut(p);
+      // The swell holds most of its size through the first half of the
+      // way and dies away in the second.
+      const calm = 1 - Math.pow(1 - p, 1.3);
       const amp = h * 0.92 * (1 - calm);
 
       const near = pointer.y > r.top - 160 && pointer.y < r.bottom + 160 && pointer.x >= r.left && pointer.x <= r.right;
