@@ -1175,6 +1175,8 @@
     pointer-events: none;
     opacity: 0.1;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 32svh);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 32svh);
   }
 
   /* The glow the card warms with, tinted from its own photos. It answers
@@ -1404,104 +1406,105 @@
   }
 
   /* ---- studio -----------------------------------------------------
-     The statement and the pillar, set straight on the page. The wrap is
-     the size container both are measured against.                     */
+     A full screen (user, 2026-10-14): a head row, the statement the
+     whole width of the shell, read in ink, and a foot row with the names
+     and the pillar. Everything that fills it stays once its motion is
+     over. The wrap is the size container the statement is measured
+     against.                                                          */
   .std-wrap { container-type: inline-size; }
+  .std-lede { display: flex; flex-direction: column; gap: clamp(2rem, 4.5svh, 3.25rem); }
 
-  /* The statement sits straight on the page and is sized from the width it
-     fills, not from the viewport. Justified type only sets evenly when the
-     words fall well on each line, and a size tied to its own measure breaks
-     the sentence in the same places at every width: four lines wherever
-     there is room, six on a phone. The ratios, tracking and word spacing
-     were picked by measuring how much space each line is left to spread
-     across its gaps. */
+  .std-head { display: flex; align-items: center; gap: 1rem; color: var(--color-ash); }
+  .std-head-rule { flex: 1; height: 1px; background: var(--color-ink); transform-origin: left; }
+  @media (max-width: 639px) { .std-head-note { display: none; } }
+
+  /* The statement, sized from its own measure, so it breaks in the same
+     places at every width. Left-set: the portraits sit inside a line, and
+     justified type would pull the gaps around them apart. */
   .std-measure { container-type: inline-size; }
   .std-statement {
-    font-size: 9.85cqi;
-    line-height: 0.99;
-    letter-spacing: -0.022em;
+    font-size: 9.6cqi;
+    line-height: 1.02;
+    letter-spacing: -0.026em;
+    text-align: left;
   }
   @container (min-width: 28rem) {
-    .std-statement { font-size: 6.2cqi; }
+    .std-statement { font-size: 5.7cqi; }
+  }
+  .std-read { color: var(--color-ink); }
+  .std-word {
+    -webkit-text-stroke: 0.035em currentColor;
+    paint-order: stroke fill;
+  }
+  .std-stroke {
+    background-image: linear-gradient(var(--color-ink), var(--color-ink));
+    background-repeat: no-repeat;
+    background-position: 0 96%;
+    background-size: var(--draw, 100%) 0.06em;
+    -webkit-box-decoration-break: slice;
+    box-decoration-break: slice;
+  }
+  /* The two co-founders in a capsule, a line's height, set into the line
+     after "two". Pointed at, they part a little. */
+  .std-faces {
+    display: inline-flex;
+    vertical-align: -0.12em;
+    height: 0.86em;
+    padding: 0.06em 0.12em;
+    border-radius: 999px;
+    background: var(--color-ink);
+  }
+  .std-face {
+    display: block;
+    width: 0.74em;
+    height: 0.74em;
+    border-radius: 999px;
+    overflow: hidden;
+    box-shadow: 0 0 0 0.04em var(--color-ink);
+    transition: margin 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .std-face + .std-face { margin-left: -0.2em; }
+  .std-face img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.05); transition: filter 0.5s ease; }
+  .std-faces:hover .std-face + .std-face { margin-left: 0.08em; }
+  .std-faces:hover .std-face:first-child { transform: rotate(-6deg); }
+  .std-faces:hover .std-face:last-child { transform: rotate(6deg); }
+  .std-faces:hover .std-face img { filter: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .std-face, .std-face img { transition: none; }
   }
 
-  /* The pillar. It stands well under the statement in size, and what it
-     loses there it is given back in ground: everything after the colon
-     the sentence turns on is run through with a black marker and comes
-     back out of it in white.
+  /* The foot: over a hairline, the names on the left and the pillar on
+     the right. */
+  .std-foot {
+    display: grid;
+    gap: 1.75rem;
+    padding-top: clamp(1.25rem, 2.6svh, 1.75rem);
+    border-top: 1px solid var(--color-hair-strong);
+  }
+  @media (min-width: 1024px) {
+    .std-foot { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 1rem; }
+    .std-names { grid-column: 1 / span 4; }
+    .std-pillar-col { grid-column: 7 / span 6; }
+  }
+  .std-names { display: grid; gap: 0.6rem; align-content: start; }
+  .std-names > div { display: flex; gap: 0.75rem; }
+  .std-names dt { color: var(--color-ink); }
+  .std-names dd { color: var(--color-ash-2); }
 
-     Under the statement it keeps a plain reading size. From lg it stands
-     beside it, its top level with the statement's and its column held to
-     the right edge of the shell, and it is sized from that column the way
-     the statement is sized from its own: a justified column this narrow
-     only sets evenly where the words fall well, and a size tied to the
-     measure breaks it in the same places at every width. The column is
-     26.4cqw, and the type follows it, so the pillar can be made larger or
-     smaller by its width alone. */
-  /* Led more openly than the copy it came from: the marker draws a band
-     the height of the type, and at the old leading the bands of two
-     wrapped lines would touch and close back into the block this is not.
-     The gap between them is what makes it read as a marker. */
+  /* The pillar: a reading size, its answer run through with a black
+     marker. Led openly, so the bands of two wrapped lines never touch. */
   .std-pillar {
-    font-size: clamp(1rem, 1.2vw, 1.1875rem);
+    font-size: clamp(1.0625rem, 1.5vw, 1.4375rem);
     line-height: 1.42;
     letter-spacing: -0.014em;
   }
-  .std-pillar-col { margin-top: 1.5rem; }
-  @media (min-width: 768px) {
-    .std-pillar-col { margin-top: 2rem; }
-  }
-  @media (min-width: 1024px) {
-    /* The two first lines share a baseline, which the browser places
-       exactly for both, rounding included. Aligning their boxes instead
-       and offsetting by a share of the size cannot work: the browser
-       rounds each font's ascent and descent to whole pixels, so where a
-       baseline lands in its box drifts by up to a pixel from one width to
-       the next, differently for each size. */
-    .std-lede {
-      display: flex;
-      align-items: first baseline;
-      justify-content: space-between;
-    }
-    .std-lede > .std-copy { flex-shrink: 0; }
-    .std-pillar-col {
-      flex: 0 0 26.4cqw;
-      margin-top: 0;
-      container-type: inline-size;
-    }
-    /* From the shared baseline the pillar is raised until the top of its
-       first line is level with the top of the "g" in "young", the last
-       word of the statement's first line and the letter the pillar sits
-       beside. Lit stroke included on both:
 
-         (g top + stroke/2) x statement size - (line top + stroke/2) x pillar size
-         = ((0.52 + 0.02) x 2.92454 - (0.73 + 0.014)) x pillar size
-
-       0.52em is the top of Instrument Sans's "g" and 0.73em the highest ink
-       on the pillar's first line (the "O" of "Our" and the "f"s), both read
-       off the rendered glyphs. The statement is 2.92454 times the pillar at
-       every width (6.2cqi of 66cqw against 5.3cqi of 26.4cqw), so this is
-       one share of the pillar's size. It is rounded to a whole pixel so the
-       two lines stay on the same pixel grid. Recalculate it if either size,
-       the stroke or either first line changes. */
-    .std-pillar {
-      font-size: 5.3cqi;
-      position: relative;
-      top: round(-0.8352em, 1px);
-    }
-  }
-
-  /* The marker is not there before the light is. Unlit, the tail is the
-     same grey as the rest of the pillar and sits on the same white; the
-     black and the white out of it belong to the lit copy, which the
-     light uncovers left to right. So the stroke is not found already
-     drawn: it is laid down as the words are read, and the marker arrives
-     with the words it marks.
-
-     The padding is kept on both, black or not, so the two copies measure
-     the same and the lit one lands exactly over the grey one. Cloned
-     across line breaks, so a tail that wraps is marked line by line
-     rather than as one ragged block. */
+  /* The marker is not there before the light is: unlit, the tail is the
+     same grey as the rest of the pillar; the black and the white out of
+     it belong to the lit copy, which the light uncovers left to right.
+     The padding is kept on both, so the two copies measure the same.
+     Cloned across line breaks, so a tail that wraps is marked line by
+     line. */
   .std-pillar mark {
     background: transparent;
     color: inherit;
@@ -1518,22 +1521,12 @@
     -webkit-text-stroke-color: var(--color-paper);
   }
 
-  /* The service copy turned over for the page: grey until the light
-     reaches it, ink once it has passed. Ink on white reads lighter than
-     white on black at the same stroke, so the statement takes a heavier
-     one to carry the weight of the service copy. */
+  /* Grey until the light reaches it, ink once it has passed. */
   .std-ink { color: rgb(0 0 0 / 0.3); }
   .std-ink[data-lit="true"],
   .std-ink .svc-line-lit {
     color: var(--color-ink);
     -webkit-text-stroke-color: var(--color-ink);
-  }
-  .std-statement[data-lit="true"],
-  .std-statement .svc-line-lit { -webkit-text-stroke-width: 0.04em; }
-
-  /* From lg the statement takes two thirds of the shell from its left edge. */
-  @media (min-width: 1024px) {
-    .std-copy { width: 66cqw; }
   }
 
   /* ---- exhibit: the services index and the co-founders ------------
@@ -1668,10 +1661,35 @@
      the screen's edges it read as a stray border. The table no longer
      has a ground of its own. */
   .cmp-section {
+    /* Its top is the shade's own black, plain: the corner light and the
+       grain come in under it, so where the shade ends no edge shows. */
     background:
+      linear-gradient(to bottom, #0b0b0b 0, rgb(11 11 11 / 0) 38svh),
       radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0) 42%),
       #0b0b0b;
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+  }
+  /* The lights go down (user, 2026-10-14): no edge where the black
+     begins. A shade rises ahead of the section, from nothing to its
+     black, eased so it has no band in it, while How we work dims in step
+     (process.tsx). */
+  .cmp-section::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(100% - 1px);
+    height: 50svh;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      rgb(11 11 11 / 0) 0%,
+      rgb(11 11 11 / 0.05) 18%,
+      rgb(11 11 11 / 0.16) 34%,
+      rgb(11 11 11 / 0.34) 50%,
+      rgb(11 11 11 / 0.58) 66%,
+      rgb(11 11 11 / 0.82) 82%,
+      rgb(11 11 11 / 1) 100%
+    );
   }
   .cmp-section::after {
     content: "";
@@ -1681,6 +1699,8 @@
     pointer-events: none;
     opacity: 0.1;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 32svh);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 32svh);
   }
 
   /* The frame is now only the room between the agency's column and our

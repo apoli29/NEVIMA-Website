@@ -165,9 +165,9 @@ export function Services({ ready }: { ready: boolean }) {
     <section
       id="services"
       aria-labelledby="services-title"
-      // No foot padding: the comparison below brings its own head room, as
-      // this section does for the studio above it.
-      className="relative z-10 bg-paper pt-(--section-gap)"
+      // A section's room at its foot too (user, 2026-10-14: How we work
+      // came on too close under it).
+      className="relative z-10 bg-paper pt-(--section-gap) pb-(--section-gap)"
     >
       <div className="shell">
         {/* Side by side from lg, the subtitle's first line level with the top
