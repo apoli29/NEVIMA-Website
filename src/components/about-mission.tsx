@@ -9,6 +9,7 @@ import { useSeen } from "./use-seen";
 /* ==================================================================
    Mission and vision
 
+   A screen of its own (2026-10-14), apart from the values below.
    Two pieces hung on a white wall, not side by side but staggered, the
    mission high on the left and the vision lower on the right, the way
    a curator hangs two works that answer each other. Each has its wall
@@ -33,7 +34,7 @@ const PIECES = [
     label: "Vision",
     tense: "Where it leads",
     text: "To make Nevima a reference in web development, able to take on projects of different sizes through constantly evolving know-how and the best, most advanced technologies.",
-    place: "lg:col-span-8 lg:col-start-5 lg:mt-[clamp(4rem,9vw,8.5rem)]",
+    place: "lg:col-span-8 lg:col-start-5 lg:mt-[clamp(2.5rem,5vw,4.5rem)]",
   },
 ] as const;
 
@@ -42,18 +43,17 @@ export function AboutMission() {
     <section
       id="mission"
       aria-labelledby="mission-title"
-      // Its own foot room too: the values below are water from their very
-      // top edge, and with no room here the vision ran straight into it.
-      // A shade under a section's usual room (the user's ask), and half
-      // that above: the way in from the co-founders was halved, their
-      // last row's foot with it (2026-10-07, see cofounders.tsx).
-      className="relative bg-paper pt-[calc(var(--section-gap)*0.425)] pb-[calc(var(--section-gap)*0.85)]"
+      // A section of its own, apart from the values (user, 2026-10-14): a
+      // whole screen, the two pieces held in the middle of it as one hang,
+      // with a full section's room at least above (clear of the
+      // co-founders) and below (clear of the values' water).
+      className="relative flex min-h-[100svh] flex-col justify-center bg-paper py-(--section-gap)"
     >
       <div className="shell">
         <h2 id="mission-title" className="sr-only">
           Mission and vision
         </h2>
-        <div className="grid grid-cols-1 gap-y-20 md:gap-y-24 lg:grid-cols-12 lg:gap-x-4 lg:gap-y-0">
+        <div className="grid grid-cols-1 gap-y-16 md:gap-y-20 lg:grid-cols-12 lg:gap-x-4 lg:gap-y-0">
           {PIECES.map((piece, i) => (
             <Piece key={piece.id} piece={piece} index={i} />
           ))}

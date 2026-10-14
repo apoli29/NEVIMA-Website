@@ -376,27 +376,24 @@
   }
 
   /* ---- the way to the portfolio (services.tsx) -------------------
-     The index's inked ask, grown to the shell's width: black, the light
-     passing over it on the ask's clock, an arrow in a ring that fills
-     white on pointing. */
+     Cut from the services' own parts (user, 2026-10-14): a black band
+     exactly as high as the rows' "n" ring, its words in the tags' mono,
+     an arrow after them, the index ask's light passing over it. */
   .svc-folio {
-    --xs-bleed: var(--gutter);
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1.5rem;
-    /* Out past the list as the Web Design row is, its words and ring
-       back on the rows' lines. */
-    margin-inline: calc(-1 * var(--xs-bleed));
-    padding: clamp(1.5rem, 2.6vw, 2.25rem) var(--xs-bleed);
+    gap: 0.875rem;
+    /* The ring's size: 2.25rem, 2.5rem from md (see Chevron's small). */
+    height: 2.25rem;
+    padding-inline: 1rem 0.875rem;
     background: var(--color-ink);
     color: var(--color-paper);
   }
   @media (min-width: 768px) {
-    .svc-folio { --xs-bleed: 1.5rem; }
+    .svc-folio { height: 2.5rem; padding-inline: 1.125rem 1rem; }
   }
   .svc-folio::after {
     content: "";
@@ -410,26 +407,11 @@
   }
   .svc-folio:hover::after,
   .svc-folio:focus-visible::after { animation-play-state: paused; }
-  .svc-folio-name { transition: transform 0.7s var(--ease-out-quint); }
-  .svc-folio-ring {
-    display: grid;
-    flex-shrink: 0;
-    place-items: center;
-    width: 3rem;
-    aspect-ratio: 1;
-    border-radius: 999px;
-    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.45);
-    transition: background-color 0.4s ease, color 0.4s ease, transform 0.6s var(--ease-out-quint);
-  }
+  .svc-folio-arrow { transition: transform 0.6s var(--ease-out-quint); }
   @media (hover: hover) {
-    .svc-folio:hover .svc-folio-name { transform: translateX(0.12em); }
-    .svc-folio:hover .svc-folio-ring {
-      background: var(--color-paper);
-      color: var(--color-ink);
-      transform: translateX(4px);
-    }
+    .svc-folio:hover .svc-folio-arrow { transform: translateX(3px); }
   }
-  .svc-folio:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 4px; }
+  .svc-folio:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 3px; }
   @media (prefers-reduced-motion: reduce) {
     .svc-folio::after { animation: none; }
   }
@@ -1681,13 +1663,35 @@
                   from there each answer holds as much of the view
                   beside the criterion as it can, up to 15rem, and the
                   table slides. On a phone, one answer fills the view.  */
+  /* The section is the service card's surface, whole (user, 2026-10-14):
+     the card's near-black and corner light, its grain, and the light
+     line along its top edge. Its faint all-round line is left off: at
+     the screen's edges it read as a stray border. The table no longer
+     has a ground of its own. */
+  .cmp-section {
+    background:
+      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0) 42%),
+      #0b0b0b;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+  }
+  .cmp-section::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* The frame is now only the room between the agency's column and our
+     panel; the table itself starts on the heading's edge. */
   .cmp-card {
     --cmp-frame: 0.5rem;
     --cmp-px: 1rem;
     --cmp-py: 1.5rem;
     --cmp-radius: 0px;
     --cmp-rule: rgb(255 255 255 / 0.08);
-    padding: var(--cmp-frame);
   }
   @media (min-width: 768px) {
     .cmp-card { --cmp-frame: 0.625rem; --cmp-px: 1.25rem; }
@@ -1749,6 +1753,9 @@
      keeps the same distance from the panel's edge as the rest keeps from
      the card's. */
   .cmp-table .cmp-us { padding-left: calc(var(--cmp-px) + var(--cmp-frame)); }
+  /* The criteria stand on the heading's edge, with no card to be padded
+     in from. */
+  .cmp-table .cmp-crit { padding-left: 0; }
 
   .cmp-table thead th:not(.cmp-us) { border-bottom: 1px solid var(--cmp-rule); }
   .cmp-table tbody tr + tr > :not(.cmp-us) { border-top: 1px solid var(--cmp-rule); }
@@ -1793,9 +1800,11 @@
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
   }
+  /* On the section's near-black the marker is turned over: a white band,
+     the words coming out of it in black. */
   .cmp-marked-ink {
-    background: var(--color-ink);
-    color: var(--color-paper);
+    background: var(--color-paper);
+    color: var(--color-ink);
   }
   .cmp-marked-over {
     position: absolute;

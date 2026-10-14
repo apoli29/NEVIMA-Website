@@ -48,14 +48,17 @@ function MarkedLine({ text }: { text: string }) {
 /* ==================================================================
    Comparison
 
-   The last argument on the page, set as a table on the service card's
-   surface: the same near-black, the grain, the corner light. Hung the
-   way everything else on the site now is (2026-10-05, the user kept the
-   colours and asked for the rest to follow the site): square cornered,
-   ruled with hairlines, its column heads in the gallery's mono labels,
-   and no light chasing the pointer.
+   The last argument on the page. The whole section is laid on the
+   service card's surface: the same near-black, the grain, the corner
+   light (user, 2026-10-14: the table no longer carries a ground of its
+   own; the section does). The table is set straight on it, its first
+   column on the heading's edge. Hung the way everything else on the
+   site now is (2026-10-05, the user kept the colours and asked for the
+   rest to follow the site): square cornered, ruled with hairlines, its
+   column heads in the gallery's mono labels, and no light chasing the
+   pointer.
 
-   Our column is one raised panel, a tone above the card, from its
+   Our column is one raised panel, a tone above the ground, from its
    header to the last row. The lines that part the rows run across the
    other two columns and stop at its edge, so the agency's side reads as
    a chain of steps and ours as a single piece.
@@ -73,14 +76,6 @@ function MarkedLine({ text }: { text: string }) {
    travelling down the column rather than landing everywhere at once.
    It runs once.
    ================================================================== */
-
-/* Square, as the bar and every label on the wall are; the inner lines
-   as on the service cards. */
-const SURFACE = {
-  borderRadius: 0,
-  boxShadow:
-    "inset 0 1px 0 rgba(255,255,255,0.08), inset 0 0 0 1px rgba(255,255,255,0.05)",
-};
 
 /** From a row being seen to its light starting, in milliseconds. */
 const FIRST_LIGHT_MS = 180;
@@ -231,15 +226,17 @@ export function Comparison({ ready }: { ready: boolean }) {
     <section
       id="comparison"
       aria-labelledby="comparison-title"
-      // Under How we work, whose screen's empty foot it covers: its head
-      // room is what is left between the two, 40% of what it was (user).
-      className="relative z-10 bg-paper pt-[calc(var(--section-gap)*0.6)] pb-28 md:pt-[calc(var(--section-gap)*0.8)] md:pb-40"
+      // Under How we work, whose screen's empty foot it covers. The whole
+      // section is the card's surface now (.cmp-section), so its edge is
+      // seen: the heading gets a full section's room inside it, and the
+      // foot the same.
+      className="cmp-section relative isolate z-10 pt-(--section-gap) pb-(--section-gap) text-paper"
     >
       <div className="shell">
         <SlideIn ready={ready}>
           <h2
             id="comparison-title"
-            className="display text-[clamp(2.25rem,4.4vw,3.75rem)] leading-[0.98] text-ink"
+            className="display text-[clamp(2.25rem,4.4vw,3.75rem)] leading-[0.98] text-paper"
           >
             <span className="block font-light text-balance">
               The perks of working with us instead of a big agency?
@@ -251,11 +248,8 @@ export function Comparison({ ready }: { ready: boolean }) {
         </SlideIn>
 
         <SlideIn ready={ready} distance={0} className="mt-10 md:mt-14">
-          <div
-            className="svc-card cmp-card relative isolate overflow-hidden text-paper"
-            style={SURFACE}
-          >
-
+          {/* No ground of its own: the table is set on the section's. */}
+          <div className="cmp-card relative">
             {/* Focusable so the slide can be driven from the keyboard too. */}
             <div
               ref={scroller}
