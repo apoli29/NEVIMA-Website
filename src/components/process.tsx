@@ -336,6 +336,11 @@ export function Process({ ready }: { ready: boolean }) {
   }, []);
 
   const { scrollYProgress } = useScroll({ target: section, offset: ["start start", "end end"] });
+  // From the comparison's shade reaching the foot of the screen to its
+  // heading coming up: the screen dims in step (see the comparison's
+  // ::before in globals.css).
+  const { scrollYProgress: leaving } = useScroll({ target: section, offset: ["end 1.5", "end 0.5"] });
+  const dusk = useTransform(leaving, [0, 0.25, 1], [0, 0.12, 1]);
   // Where the row stands: the page's scroll, unless held (see foldProcess).
   const held = useMotionValue(-1);
   const progress = useTransform([held, scrollYProgress], ([h, p]: number[]) => (h! >= 0 ? h! : p!));
@@ -406,6 +411,14 @@ export function Process({ ready }: { ready: boolean }) {
           screen, which left twice the room the user wanted between the
           services and the heading. */}
       <div ref={screen} className="sticky top-0 flex h-[100svh] flex-col overflow-hidden pt-[clamp(5.5rem,12svh,7rem)] pb-[clamp(1.5rem,4svh,3rem)]">
+        {/* The lights go down (user, 2026-10-14): as the comparison comes
+            up under it, this screen dims to the comparison's black, so the
+            black never arrives with an edge. Tied to the scroll. */}
+        <motion.div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-30 bg-[#0b0b0b]"
+          style={{ opacity: dusk }}
+        />
         <div className="shell">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
             <SlideIn ready={ready}>
