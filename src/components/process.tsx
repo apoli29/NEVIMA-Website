@@ -402,10 +402,10 @@ export function Process({ ready }: { ready: boolean }) {
       }}
     >
       {/* The heading and the row as one block, the row close under the
-          heading, hung from the top clear of the bar. It was centred on the
-          screen, which left twice the room the user wanted between the
-          services and the heading. */}
-      <div ref={screen} className="sticky top-0 flex h-[100svh] flex-col overflow-hidden pt-[clamp(5.5rem,12svh,7rem)] pb-[clamp(1.5rem,4svh,3rem)]">
+          heading, held in the middle of the screen below the bar while the
+          row slides (user, 2026-10-15: hung from the top it sat too close
+          under the bar and the whole section too high). */}
+      <div ref={screen} className="sticky top-0 flex h-[100svh] flex-col justify-center overflow-hidden pt-[clamp(5.5rem,11svh,6.5rem)] pb-[clamp(1.5rem,4svh,3rem)]">
         <div className="shell">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
             <SlideIn ready={ready}>
