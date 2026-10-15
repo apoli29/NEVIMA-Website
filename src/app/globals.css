@@ -1412,20 +1412,20 @@
      over. The wrap is the size container the statement is measured
      against.                                                          */
   .std-wrap { container-type: inline-size; }
-  /* Two halves from lg: the statement on the left, half the shell, and
-     everything else on the right, spread down the statement's height,
-     with a column of air between them. */
+  /* Two halves from lg: the statement on the left, 40% of the shell,
+     and the pillar on the right, wider, with a column of air between;
+     the two stand on one line, their last lines level. */
   .std-lede { display: grid; gap: clamp(2.75rem, 6svh, 4rem); }
-  .std-aside { display: flex; flex-direction: column; gap: 2.5rem; }
   @media (min-width: 1024px) {
-    .std-lede { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 1rem; }
-    .std-copy { grid-column: 1 / span 6; }
-    .std-aside { grid-column: 8 / span 5; justify-content: space-between; }
+    .std-lede {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: 1rem;
+      align-items: end;
+      align-items: last baseline;
+    }
+    .std-copy { grid-column: 1 / span 5; }
+    .std-aside { grid-column: 7 / span 6; }
   }
-
-  .std-head { display: flex; align-items: center; gap: 1rem; color: var(--color-ash); }
-  .std-head-rule { flex: 1; height: 1px; background: var(--color-ink); transform-origin: left; }
-  .std-head-note { margin-top: 0.85rem; color: var(--color-ash-2); }
 
   /* The statement, sized from its own measure, so it breaks in the same
      places at every width, and justified. */
@@ -1433,12 +1433,13 @@
   /* Justified type only sets evenly where the words fall well on each
      line. The size is tied to the measure, so the lines break in the same
      places at every width, and the two sizes were picked by measuring the
-     word gaps of every line (the widest is about half an em): 6.1cqi on
-     the half-page column, 7.6cqi on a phone. Recalculate them if the copy
-     changes. No hyphenation: where a browser has it, it would move the
+     word gaps of every line (the widest about two thirds of an em): 8.8cqi,
+     on the 40% column and on a phone alike, with soft hyphens set in the
+     long words (studio.tsx). Recalculate it if the copy changes. No
+     automatic hyphenation: where a browser has it, it would move the
      breaks this was tuned on. */
   .std-statement {
-    font-size: 7.6cqi;
+    font-size: 8.8cqi;
     line-height: 1.12;
     letter-spacing: -0.022em;
     text-align: justify;
@@ -1446,7 +1447,7 @@
     hyphens: manual;
   }
   @container (min-width: 28rem) {
-    .std-statement { font-size: 6.1cqi; }
+    .std-statement { font-size: 8.8cqi; }
   }
   .std-read { color: var(--color-ink); }
   .std-word {
@@ -1462,18 +1463,39 @@
     box-decoration-break: slice;
   }
   /* The two co-founders in a capsule, a line's height, set into the line
-     after "two", in colour, and the way to the about page. Pointed at,
-     they part a little. */
+     after "two", in colour: the way to the about page. Every few seconds
+     they give a little shake. Pointed at, the capsule's black stretches
+     out over the words beside it, the two part to its ends and "Find out
+     more about us" comes up between them; all of it drawn over the line,
+     so the justified text never moves. */
   .std-faces {
-    display: inline-flex;
+    display: inline-block;
     vertical-align: -0.12em;
     height: 0.86em;
-    padding: 0.06em 0.12em;
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .std-faces:focus-visible { outline: none; }
+  .std-faces-in {
+    --part: 1.9em;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 0.12em;
+    animation: std-faces-shake 4.8s ease-in-out 1.6s infinite;
+  }
+  .std-faces-in::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
     border-radius: 999px;
     background: var(--color-ink);
-    cursor: pointer;
+    transition: inset 0.55s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .std-faces:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 3px; }
   .std-face {
     display: block;
     width: 0.74em;
@@ -1481,33 +1503,78 @@
     border-radius: 999px;
     overflow: hidden;
     box-shadow: 0 0 0 0.04em var(--color-ink);
-    transition: margin 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .std-face + .std-face { margin-left: -0.2em; }
+  .std-faces-say + .std-face { margin-left: -0.2em; }
   .std-face img { width: 100%; height: 100%; object-fit: cover; }
-  .std-faces:hover .std-face + .std-face,
-  .std-faces:focus-visible .std-face + .std-face { margin-left: 0.08em; }
-  .std-faces:hover .std-face:first-child { transform: rotate(-6deg); }
-  .std-faces:hover .std-face:last-child { transform: rotate(6deg); }
+  /* The words between the two, centred on the capsule's black however
+     it opens. The box is in the line's own size, so the reach (in em) is
+     the capsule's; only the words inside are set small. */
+  .std-faces-say {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .std-faces-say > span {
+    font-family: var(--font-mono);
+    font-size: 0.21em;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--color-paper);
+    -webkit-text-stroke: 0;
+  }
+  .std-faces:hover .std-faces-in,
+  .std-faces:focus-visible .std-faces-in { animation-play-state: paused; }
+  /* Open both ways, or all to one side where the line ends (data-side,
+     set as the pointer arrives). */
+  .std-faces:hover .std-faces-in::before,
+  .std-faces:focus-visible .std-faces-in::before { inset: 0 calc(-1 * var(--part)); }
+  .std-faces:hover .std-face:first-child,
+  .std-faces:focus-visible .std-face:first-child { transform: translateX(calc(-1 * var(--part))) rotate(-6deg); }
+  .std-faces:hover .std-face:last-child,
+  .std-faces:focus-visible .std-face:last-child { transform: translateX(var(--part)) rotate(6deg); }
+  .std-faces[data-side="right"]:hover .std-faces-in::before,
+  .std-faces[data-side="right"]:focus-visible .std-faces-in::before { inset: 0 calc(-2 * var(--part)) 0 0; }
+  .std-faces[data-side="right"]:hover .std-face:first-child,
+  .std-faces[data-side="right"]:focus-visible .std-face:first-child { transform: rotate(-6deg); }
+  .std-faces[data-side="right"]:hover .std-face:last-child,
+  .std-faces[data-side="right"]:focus-visible .std-face:last-child { transform: translateX(calc(2 * var(--part))) rotate(6deg); }
+  .std-faces[data-side="right"] .std-faces-say { right: calc(-2 * var(--part)); }
+  .std-faces[data-side="left"]:hover .std-faces-in::before,
+  .std-faces[data-side="left"]:focus-visible .std-faces-in::before { inset: 0 0 0 calc(-2 * var(--part)); }
+  .std-faces[data-side="left"]:hover .std-face:first-child,
+  .std-faces[data-side="left"]:focus-visible .std-face:first-child { transform: translateX(calc(-2 * var(--part))) rotate(-6deg); }
+  .std-faces[data-side="left"]:hover .std-face:last-child,
+  .std-faces[data-side="left"]:focus-visible .std-face:last-child { transform: rotate(6deg); }
+  .std-faces[data-side="left"] .std-faces-say { left: calc(-2 * var(--part)); }
+  .std-faces:hover .std-faces-say,
+  .std-faces:focus-visible .std-faces-say { opacity: 1; transition-delay: 0.15s; }
+  /* A short, quick shake, then still for the rest of the beat. */
+  @keyframes std-faces-shake {
+    0%, 84%, 100% { transform: none; }
+    86% { transform: rotate(-5deg) translateX(-0.03em); }
+    88% { transform: rotate(5deg) translateX(0.03em); }
+    90% { transform: rotate(-4deg); }
+    92% { transform: rotate(3deg); }
+    94% { transform: rotate(-1.5deg); }
+    96% { transform: none; }
+  }
   @media (prefers-reduced-motion: reduce) {
-    .std-face { transition: none; }
+    .std-faces-in { animation: none; }
+    .std-face, .std-faces-in::before { transition: none; }
   }
-
-  /* The names, at the foot of the right half, over a hairline. */
-  .std-names {
-    display: grid;
-    gap: 0.6rem;
-    padding-top: 1.1rem;
-    border-top: 1px solid var(--color-hair-strong);
-  }
-  .std-names > div { display: flex; gap: 0.75rem; }
-  .std-names dt { color: var(--color-ink); }
-  .std-names dd { color: var(--color-ash-2); }
 
   /* The pillar: a reading size, its answer run through with a black
      marker. Led openly, so the bands of two wrapped lines never touch. */
   .std-pillar {
-    font-size: clamp(1.0625rem, 1.35vw, 1.3125rem);
+    font-size: clamp(1.0625rem, 1.55vw, 1.5rem);
     line-height: 1.45;
     letter-spacing: -0.014em;
   }
