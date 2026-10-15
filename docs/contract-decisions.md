@@ -118,3 +118,4 @@ A v1.1 foi aplicada em 2026-10-16, e a v1.2 e a v1.3 (alojamento) no mesmo dia; 
   - o simulador de estimativa ainda desconta o domínio existente (10 a 30 €);
   - cobra 45 € pelo inglês e 20 € por cada outra língua, contra 35 / 55 / 80 € no contrato.
 - NIF e morada de cada sócio, revisão pelo advogado.
+- **Atualizações de segurança (a explorar mais tarde):** decidir se o alojamento gratuito inclui aplicar as correções de segurança do Next.js (ex.: as falhas de março de 2025 e "React2Shell", de dezembro de 2025), e como fazê-lo em muitos sites ao mesmo tempo: a mesma base em todos, Dependabot. Frase proposta para a cl. 11: "O alojamento inclui manter o website no ar tal como foi entregue e aplicar as atualizações de segurança que a nevima considere necessárias. Não inclui alterações, funcionalidades novas nem atualizações de outra natureza, que seguem a cláusula 9."
