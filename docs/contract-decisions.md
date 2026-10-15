@@ -88,20 +88,24 @@ Estes trechos ficam destacados a laranja escuro no HTML e no PDF, para os sócio
 
 ### Alojamento (cl. 11)
 - O alojamento é feito no plano **Pro** da Vercel (decidido 2026-10-16).
-- O contrato passa a dizer o mesmo que o site: o alojamento é gratuito enquanto o website estiver no ar. Saem os períodos de 2 anos.
-- O Cliente pode terminar o alojamento quando quiser. A nevima só o termina em três casos:
-  - se o Cliente recusar o orçamento por excesso de tráfego;
-  - se o website for usado para fins ilícitos (cl. 22.3);
-  - se a nevima deixar de prestar o serviço de alojamento, avisando com 90 dias de antecedência.
+- **Correção de 2026-10-16 (v1.2):** os sócios querem manter os **períodos de 2 anos renováveis automaticamente**, com a salvaguarda da cl. 11.3. É o **site** que muda para bater com o contrato. A v1.1 tinha feito o contrário, por erro de leitura.
+- Qualquer das partes pode não renovar, avisando com 90 dias de antecedência. Nesse caso, a nevima apresenta as condições em vigor nessa altura para continuar a alojar o website, ou entrega o código e os ficheiros sem custo.
+- **O site não foi alterado** (pedido do utilizador, 2026-10-16: só o contrato muda). O site continua a dizer "for as long as your website is live" em `services.ts`, `about-faq.tsx`, `comparison.tsx` e `pricing.ts`. Fica em aberto se e quando o site muda.
+- O limite de tráfego passa a **100 mil CDN requests por mês**, sem limite em GB. Fica a laranja até ser confirmado.
+- Contas da Vercel: com cerca de 100 visitas por site por mês, os 30 sites cabem no Pro (20 $/mês) sem custos extra.
 
 ## Estado
-A v1.1 foi aplicada em 2026-10-16: `contratos/contrato-nevima-v1.1.pdf`, com 18 páginas e 5 partes. A Descrição dos serviços passou a Parte II, a Proposta a Parte III, o anexo para particulares a Parte IV e o Acordo de Tratamento de Dados a Parte V.
+A v1.1 foi aplicada em 2026-10-16 e a v1.2 (alojamento por períodos de 2 anos) no mesmo dia: `contratos/contrato-nevima-v1.1.pdf`, com 18 páginas e 5 partes. A Descrição dos serviços passou a Parte II, a Proposta a Parte III, o anexo para particulares a Parte IV e o Acordo de Tratamento de Dados a Parte V.
 
 ## Por decidir (a laranja na v1.1)
 - **Domínio (cl. 10):** confirmar o processo da partilha de conta.
 - **Formulários:** confirmar como funcionam (secção de web design da Parte II e Parte V, art. 2.4).
 - **SEO e GEO:** cl. 12 e as respetivas secções da Parte II.
-- **Limites do alojamento (cl. 11.3):** a recomendação é 1 milhão de edge requests ou 50 GB por mês, em dois meses seguidos.
+- **Limites do alojamento (cl. 11.4):** 100 mil CDN requests por mês na v1.2, por confirmar. O valor da v1.1 (1 milhão de edge requests e 50 GB por site) está **mal dimensionado**.
+  - O plano Pro inclui o escalão Flat Rate CDN mais baixo: 1 milhão de CDN requests e 1 TB por mês para a **equipa inteira**, todos os sites somados. O escalão seguinte custa 20 $/mês e dá 10 milhões de requests e 50 TB.
+  - A Vercel já chama "CDN requests" ao que antes chamava "edge requests".
+  - Nova recomendação: um limite por site em CDN requests (cerca de 300 mil por mês), calibrado com o consumo real do nevima.studio no painel da Vercel. Retirar o limite em GB, que nunca é o limite que se atinge primeiro.
+  - Fonte: documentação Vercel (Pro plan, Flat Rate CDN), atualizada em 2026-09-14/15.
 - **Identidade visual:** quantas rondas de revisão estão incluídas.
 
 ## Por confirmar (sem marca)
