@@ -35,14 +35,14 @@
     --shell: 1360px;
     /* The room above each section, which is the whole gap between two of
        them: a section brings its head room and leaves no foot padding. */
-    /* 15% less than it was (user, 2026-10-15): 7.2rem and 9.6rem. */
-    --section-gap: 6.12rem;
+    /* 15% less, twice (user, 2026-10-15): from 7.2rem and 9.6rem. */
+    --section-gap: 5.2rem;
 
     /* The headline's size (see .h1). */
     --h1-size: clamp(2rem, min(6.6vw, 9.6svh), 5rem);
   }
   @media (min-width: 768px) {
-    :root { --gutter: 2.5rem; --section-gap: 8.16rem; }
+    :root { --gutter: 2.5rem; --section-gap: 6.94rem; }
   }
   @media (min-width: 1280px) {
     :root { --gutter: 4rem; }
@@ -1468,41 +1468,32 @@
     box-decoration-break: slice;
   }
   /* The two co-founders in a capsule, a line's height, set into the line
-     after "two", in colour: the way to the about page. Every few seconds
-     they give a little shake. Pointed at, the capsule's black stretches
-     out over the words beside it, the two part to its ends and "Find out
-     more about us" comes up between them; all of it drawn over the line,
-     so the justified text never moves. */
+     after "two", in colour: the way to the about page. Every 6s they
+     shake for about three seconds. Pointed at, the capsule opens in the
+     line, the two part and "Find out more about us" comes up between
+     them; the words around make room for it. Opened from studio.tsx
+     (data-open), so the reflow it causes cannot close it again. */
   .std-faces {
     display: inline-block;
     vertical-align: -0.12em;
     height: 0.86em;
-    position: relative;
-    z-index: 1;
     cursor: pointer;
     text-decoration: none;
   }
   .std-faces:focus-visible { outline: none; }
   .std-faces-in {
-    --part: 1.9em;
-    position: relative;
     display: inline-flex;
     align-items: center;
     height: 100%;
     padding: 0 0.12em;
-    animation: std-faces-shake 4.8s ease-in-out 1.6s infinite;
-  }
-  .std-faces-in::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
     border-radius: 999px;
     background: var(--color-ink);
-    transition: inset 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    animation: std-faces-shake 6s linear 1.2s infinite;
   }
+  .std-faces:focus-visible .std-faces-in { outline: 1px solid var(--color-ink); outline-offset: 3px; }
   .std-face {
     display: block;
+    flex-shrink: 0;
     width: 0.74em;
     height: 0.74em;
     border-radius: 999px;
@@ -1510,70 +1501,74 @@
     box-shadow: 0 0 0 0.04em var(--color-ink);
     transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .std-faces-say + .std-face { margin-left: -0.2em; }
   .std-face img { width: 100%; height: 100%; object-fit: cover; }
-  /* The words between the two, centred on the capsule's black however
-     it opens. The box is in the line's own size, so the reach (in em) is
-     the capsule's; only the words inside are set small. */
+  /* The words between the two: no room at rest (the faces overlap), and
+     opened out in the line when pointed at. */
   .std-faces-say {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
+    max-width: 0;
+    margin-inline: -0.1em;
+    overflow: hidden;
     opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
+    transition:
+      max-width 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      margin 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.3s ease;
   }
   .std-faces-say > span {
+    display: block;
+    padding-inline: 0.7em;
     font-family: var(--font-mono);
     font-size: 0.21em;
     font-weight: 400;
+    line-height: 1;
     letter-spacing: 0.05em;
     text-transform: uppercase;
     white-space: nowrap;
     color: var(--color-paper);
     -webkit-text-stroke: 0;
   }
-  .std-faces:hover .std-faces-in,
+  .std-faces[data-open] .std-faces-in,
   .std-faces:focus-visible .std-faces-in { animation-play-state: paused; }
-  /* Open both ways, or all to one side where the line ends (data-side,
-     set as the pointer arrives). */
-  .std-faces:hover .std-faces-in::before,
-  .std-faces:focus-visible .std-faces-in::before { inset: 0 calc(-1 * var(--part)); }
-  .std-faces:hover .std-face:first-child,
-  .std-faces:focus-visible .std-face:first-child { transform: translateX(calc(-1 * var(--part))) rotate(-6deg); }
-  .std-faces:hover .std-face:last-child,
-  .std-faces:focus-visible .std-face:last-child { transform: translateX(var(--part)) rotate(6deg); }
-  .std-faces[data-side="right"]:hover .std-faces-in::before,
-  .std-faces[data-side="right"]:focus-visible .std-faces-in::before { inset: 0 calc(-2 * var(--part)) 0 0; }
-  .std-faces[data-side="right"]:hover .std-face:first-child,
-  .std-faces[data-side="right"]:focus-visible .std-face:first-child { transform: rotate(-6deg); }
-  .std-faces[data-side="right"]:hover .std-face:last-child,
-  .std-faces[data-side="right"]:focus-visible .std-face:last-child { transform: translateX(calc(2 * var(--part))) rotate(6deg); }
-  .std-faces[data-side="right"] .std-faces-say { right: calc(-2 * var(--part)); }
-  .std-faces[data-side="left"]:hover .std-faces-in::before,
-  .std-faces[data-side="left"]:focus-visible .std-faces-in::before { inset: 0 0 0 calc(-2 * var(--part)); }
-  .std-faces[data-side="left"]:hover .std-face:first-child,
-  .std-faces[data-side="left"]:focus-visible .std-face:first-child { transform: translateX(calc(-2 * var(--part))) rotate(-6deg); }
-  .std-faces[data-side="left"]:hover .std-face:last-child,
-  .std-faces[data-side="left"]:focus-visible .std-face:last-child { transform: rotate(6deg); }
-  .std-faces[data-side="left"] .std-faces-say { left: calc(-2 * var(--part)); }
-  .std-faces:hover .std-faces-say,
-  .std-faces:focus-visible .std-faces-say { opacity: 1; transition-delay: 0.15s; }
-  /* A short, quick shake, then still for the rest of the beat. */
+  .std-faces[data-open] .std-faces-say,
+  .std-faces:focus-visible .std-faces-say {
+    max-width: 4em;
+    margin-inline: 0.06em;
+    opacity: 1;
+    transition-delay: 0s, 0s, 0.15s;
+  }
+  .std-faces[data-open] .std-face:first-child,
+  .std-faces:focus-visible .std-face:first-child { transform: rotate(-8deg); }
+  .std-faces[data-open] .std-face:last-child,
+  .std-faces:focus-visible .std-face:last-child { transform: rotate(8deg); }
+  /* About three seconds of a strong shake (half the 6s beat), easing off
+     only at its very end, then still. */
   @keyframes std-faces-shake {
-    0%, 84%, 100% { transform: none; }
-    86% { transform: rotate(-5deg) translateX(-0.03em); }
-    88% { transform: rotate(5deg) translateX(0.03em); }
-    90% { transform: rotate(-4deg); }
-    92% { transform: rotate(3deg); }
-    94% { transform: rotate(-1.5deg); }
-    96% { transform: none; }
+    0% { transform: none; }
+    2.5% { transform: rotate(-11deg) translateX(-0.05em); }
+    5% { transform: rotate(10deg) translateX(0.05em); }
+    7.5% { transform: rotate(-11deg) translateX(-0.04em); }
+    10% { transform: rotate(10deg) translateX(0.05em); }
+    12.5% { transform: rotate(-10deg) translateX(-0.05em); }
+    15% { transform: rotate(11deg) translateX(0.04em); }
+    17.5% { transform: rotate(-10deg) translateX(-0.05em); }
+    20% { transform: rotate(10deg) translateX(0.05em); }
+    22.5% { transform: rotate(-11deg) translateX(-0.04em); }
+    25% { transform: rotate(10deg) translateX(0.05em); }
+    27.5% { transform: rotate(-10deg) translateX(-0.05em); }
+    30% { transform: rotate(11deg) translateX(0.04em); }
+    32.5% { transform: rotate(-10deg) translateX(-0.05em); }
+    35% { transform: rotate(10deg) translateX(0.04em); }
+    37.5% { transform: rotate(-9deg) translateX(-0.04em); }
+    40% { transform: rotate(8deg) translateX(0.03em); }
+    42.5% { transform: rotate(-6deg) translateX(-0.02em); }
+    45% { transform: rotate(4deg); }
+    47.5% { transform: rotate(-2deg); }
+    50%, 100% { transform: none; }
   }
   @media (prefers-reduced-motion: reduce) {
     .std-faces-in { animation: none; }
-    .std-face, .std-faces-in::before { transition: none; }
+    .std-face, .std-faces-say { transition: none; }
   }
 
   /* The pillar: a reading size, its answer run through with a black

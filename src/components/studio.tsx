@@ -155,7 +155,7 @@ function Statement({ ready }: { ready: boolean }) {
    Done, it is simply black. */
 function InkStatement({ reduce }: { reduce: boolean }) {
   const ref = useRef<HTMLParagraphElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.95", "end 0.78"] });
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 1.05", "end 1"] });
   const n = WORDS.length;
   // Each word takes a little longer than its share, so the ink runs on
   // as a soft front rather than word by word in steps.
@@ -251,29 +251,45 @@ function Portraits({
   from: number;
   reduce: boolean;
 }) {
-  // It opens towards the side with room: at the start of a line it
-  // grows to the right, at the end to the left, otherwise both ways.
-  const [side, setSide] = useState<"both" | "left" | "right">("both");
-  const aim = (el: HTMLElement) => {
-    const line = el.closest("p")?.getBoundingClientRect();
-    const box = el.getBoundingClientRect();
-    if (!line) return;
-    const reach = box.height * 2.4;
-    if (box.left - line.left < reach) setSide("right");
-    else if (line.right - box.right < reach) setSide("left");
-    else setSide("both");
-  };
+  // Opened as the pointer arrives and held open until it is clearly away
+  // from the opened capsule: opening reflows the justified line and can
+  // slide the capsule a little, which must not read as leaving it.
+  const [open, setOpen] = useState(false);
+  const self = useRef<HTMLAnchorElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onMove = (event: PointerEvent) => {
+      const r = self.current?.getBoundingClientRect();
+      if (!r) return;
+      const pad = 18;
+      const inside =
+        event.clientX > r.left - pad &&
+        event.clientX < r.right + pad &&
+        event.clientY > r.top - pad &&
+        event.clientY < r.bottom + pad;
+      if (!inside) setOpen(false);
+    };
+    const onLeave = () => setOpen(false);
+    window.addEventListener("pointermove", onMove, { passive: true });
+    document.documentElement.addEventListener("pointerleave", onLeave);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      document.documentElement.removeEventListener("pointerleave", onLeave);
+    };
+  }, [open]);
   const opacity = useTransform(progress, [from, from + 0.06], [0.35, 1]);
   const scale = useTransform(progress, [from, from + 0.08], [0.82, 1]);
   return (
     <motion.a
+      ref={self}
       href="/about"
       className="std-faces"
-      data-side={side}
+      data-open={open ? "" : undefined}
+      onPointerEnter={(e) => {
+        if (e.pointerType === "mouse") setOpen(true);
+      }}
       style={reduce ? undefined : { opacity, scale }}
       aria-label="Find out more about us"
-      onPointerEnter={(e) => aim(e.currentTarget)}
-      onFocus={(e) => aim(e.currentTarget)}
     >
       <span className="std-faces-in">
         <span className="std-face">
