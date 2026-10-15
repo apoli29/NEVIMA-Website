@@ -2040,8 +2040,8 @@
      the photos' crossing, and the crossing stuttered. Here it is only
      dimmed, which the compositor does for free. */
   .abt-hero-photo { opacity: 0.5; }
-  /* The two photographs take turns: each crosses into the other over
-     most of a second and a half. */
+  /* Photographs that take turns (the last screen's, work-together.tsx):
+     each crosses into the other over most of a second and a half. */
   .abt-hero-slide {
     opacity: 0;
     transition: opacity 1.6s cubic-bezier(0.45, 0, 0.55, 1);
