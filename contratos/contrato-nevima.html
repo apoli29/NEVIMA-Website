@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<title>nevima — Contrato de prestação de serviços</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=block" rel="stylesheet">
+<style>
+  /* The site's own system: white paper, black ink, two greys, hairlines;
+     Satoshi for titles, Instrument Sans for reading, Geist Mono for labels. */
+  @font-face {
+    font-family: "Satoshi";
+    src: url("../fonts/Satoshi/Satoshi-Variable.woff2") format("woff2");
+    font-weight: 300 900;
+    font-display: block;
+  }
+  :root {
+    --paper: #ffffff;
+    --ink: #000000;
+    --ash: #55534f;
+    --ash-2: #8a8783;
+    --hair: rgba(0, 0, 0, 0.1);
+    --hair-strong: rgba(0, 0, 0, 0.22);
+    --title: "Satoshi", ui-sans-serif, system-ui, sans-serif;
+    --read: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+    --mono: "Geist Mono", ui-monospace, monospace;
+  }
+
+  @page {
+    size: A4;
+    margin: 22mm 20mm 22mm 20mm;
+    @bottom-left {
+      content: "nevima · Contrato de prestação de serviços · versão 1.0";
+      font-family: "Geist Mono", monospace;
+      font-size: 6.5pt;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #8a8783;
+    }
+    @bottom-right {
+      content: counter(page) " / " counter(pages);
+      font-family: "Geist Mono", monospace;
+      font-size: 6.5pt;
+      letter-spacing: 0.06em;
+      color: #8a8783;
+    }
+  }
+  @page cover {
+    margin: 20mm;
+    @bottom-left { content: none; }
+    @bottom-right { content: none; }
+  }
+
+  * { box-sizing: border-box; }
+  html { background: var(--paper); }
+  body {
+    margin: 0;
+    color: var(--ink);
+    font-family: var(--read);
+    font-size: 9.4pt;
+    line-height: 1.55;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  p { margin: 0 0 0.6em; }
+  strong { font-weight: 600; }
+
+  .mono {
+    font-family: var(--mono);
+    font-size: 6.8pt;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ash-2);
+  }
+
+  /* ---- cover --------------------------------------------------- */
+  .cover {
+    page: cover;
+    height: 257mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    break-after: page;
+  }
+  .cover-mark { width: 34mm; display: block; }
+  .cover-title {
+    font-family: var(--title);
+    font-weight: 500;
+    font-size: 40pt;
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    margin: 0 0 9mm;
+    max-width: 14ch;
+  }
+  .cover-lede {
+    font-size: 10.5pt;
+    line-height: 1.5;
+    color: var(--ash);
+    max-width: 52ch;
+    margin: 0;
+  }
+  .cover-index {
+    margin-top: 16mm;
+    border-top: 1px solid var(--ink);
+  }
+  .cover-index div {
+    display: grid;
+    grid-template-columns: 26mm 1fr;
+    align-items: baseline;
+    padding: 3.2mm 0;
+    border-bottom: 1px solid var(--hair);
+  }
+  .cover-index span:last-child {
+    font-family: var(--title);
+    font-weight: 500;
+    font-size: 12pt;
+    letter-spacing: -0.01em;
+  }
+  .cover-foot {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8mm;
+    font-size: 8.4pt;
+    color: var(--ash);
+  }
+  .cover-foot .mono { display: block; margin-bottom: 1.5mm; }
+
+  /* ---- parts --------------------------------------------------- */
+  .part { break-before: page; }
+  .part-head {
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 5mm;
+    margin-bottom: 7mm;
+  }
+  .part-head h2 {
+    font-family: var(--title);
+    font-weight: 500;
+    font-size: 24pt;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 2mm 0 0;
+  }
+  .part-intro { color: var(--ash); max-width: 62ch; margin-bottom: 6mm; }
+
+  /* ---- clauses ------------------------------------------------- */
+  .clause { margin: 0 0 6.5mm; }
+  .clause > .mono { display: block; margin-bottom: 1mm; }
+  .clause h3 {
+    font-family: var(--title);
+    font-weight: 500;
+    font-size: 12.5pt;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0 0 2.4mm;
+    padding-bottom: 2.4mm;
+    border-bottom: 1px solid var(--hair-strong);
+    break-after: avoid;
+  }
+  .clause > .mono { break-after: avoid; }
+
+  ol.items {
+    list-style: none;
+    counter-reset: item;
+    margin: 0;
+    padding: 0;
+  }
+  ol.items > li {
+    counter-increment: item;
+    position: relative;
+    padding-left: 7mm;
+    margin-bottom: 1.6mm;
+    break-inside: avoid;
+  }
+  ol.items > li::before {
+    content: counter(item);
+    position: absolute;
+    left: 0;
+    top: 0.18em;
+    font-family: var(--mono);
+    font-size: 7pt;
+    font-weight: 500;
+    color: var(--ash-2);
+  }
+  ol.items.alpha > li::before { content: counter(item, upper-alpha); }
+  ul.sub {
+    list-style: none;
+    margin: 1.2mm 0 0;
+    padding: 0;
+  }
+  ul.sub > li {
+    position: relative;
+    padding-left: 4.5mm;
+    margin-bottom: 0.8mm;
+  }
+  ul.sub > li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.72em;
+    width: 2.2mm;
+    height: 1px;
+    background: var(--ink);
+  }
+  dl.defs { margin: 0; }
+  dl.defs > div {
+    display: grid;
+    grid-template-columns: 34mm 1fr;
+    gap: 4mm;
+    padding: 1.6mm 0;
+    border-bottom: 1px solid var(--hair);
+    break-inside: avoid;
+  }
+  dl.defs dt { font-weight: 600; }
+  dl.defs dd { margin: 0; }
+
+  .formula {
+    margin: 2mm 0 1.6mm;
+    padding: 3mm 4mm;
+    border: 1px solid var(--hair-strong);
+    font-family: var(--mono);
+    font-size: 8pt;
+    letter-spacing: 0.01em;
+  }
+
+  /* ---- blanks to fill in -------------------------------------- */
+  .blank {
+    display: inline-block;
+    min-width: 34mm;
+    border-bottom: 1px solid var(--ink);
+    height: 1.05em;
+    vertical-align: -0.2em;
+  }
+  .blank.s { min-width: 18mm; }
+  .blank.l { min-width: 70mm; }
+  .box {
+    display: inline-block;
+    width: 3mm;
+    height: 3mm;
+    border: 1px solid var(--ink);
+    vertical-align: -0.35mm;
+    margin-right: 1.6mm;
+  }
+
+  /* ---- forms (the proposal) ----------------------------------- */
+  .form-block { margin: 0 0 7mm; }
+  .form-block > .mono, .form-block h3 { break-after: avoid; }
+  tr { break-inside: avoid; }
+  .opt { display: grid; grid-template-columns: 30mm 1fr; padding: 1.8mm 0; border-bottom: 1px solid var(--hair); break-inside: avoid; }
+  .opt > .mono { padding-top: 0.25em; }
+  .opt > div > div + div { margin-top: 1.2mm; }
+  .form-block > .mono { display: block; margin-bottom: 1mm; }
+  .form-block h3 {
+    font-family: var(--title);
+    font-weight: 500;
+    font-size: 12.5pt;
+    letter-spacing: -0.01em;
+    margin: 0 0 2.4mm;
+    padding-bottom: 2.4mm;
+    border-bottom: 1px solid var(--hair-strong);
+  }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; column-gap: 8mm; }
+  .field { padding: 2.2mm 0 0; break-inside: avoid; }
+  .field.full { grid-column: 1 / -1; }
+  .field .mono { display: block; }
+  .field .line { border-bottom: 1px solid var(--ink); height: 7.5mm; }
+  .choice { padding: 1.4mm 0; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.8pt;
+  }
+  th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 6.6pt;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ash-2);
+    padding: 0 3mm 1.6mm 0;
+    border-bottom: 1px solid var(--ink);
+  }
+  td {
+    padding: 2.4mm 3mm 2.4mm 0;
+    border-bottom: 1px solid var(--hair);
+    vertical-align: top;
+  }
+  td.amount { width: 30mm; white-space: nowrap; }
+  td.amount .blank { min-width: 20mm; }
+  td.what { color: var(--ash); }
+  tr.total td { border-bottom: 1px solid var(--ink); font-weight: 600; }
+  .note { color: var(--ash); font-size: 8.4pt; margin-top: 2mm; }
+
+  .sign {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7mm;
+    margin-top: 2mm;
+    break-inside: avoid;
+  }
+  .sign .line { border-bottom: 1px solid var(--ink); height: 13mm; }
+  .sign .who { font-size: 8.2pt; margin-top: 1.6mm; line-height: 1.35; }
+  .sign .mono { display: block; margin-top: 2.6mm; }
+
+  .letter {
+    border: 1px solid var(--hair-strong);
+    padding: 5mm 6mm;
+    break-inside: avoid;
+  }
+  .letter p { margin-bottom: 3mm; }
+  .letter .line { border-bottom: 1px solid var(--ink); height: 6.5mm; margin-bottom: 1mm; }
+</style>
+</head>
+<body>
+
+<!-- =============================================================== COVER -->
+<section class="cover">
+  <img class="cover-mark" src="../public/nevima-wordmark.svg" alt="nevima">
+
+  <div>
+    <p class="mono" style="margin-bottom:5mm">Versão 1.0 · Outubro de 2026</p>
+    <h1 class="cover-title">Contrato de prestação de serviços</h1>
+    <p class="cover-lede">As condições em que a nevima desenha, constrói e aloja o website do Cliente, e presta os serviços que o acompanham: identidade visual, SEO, GEO e sessão fotográfica.</p>
+
+    <div class="cover-index">
+      <div><span class="mono">Parte I</span><span>Condições Gerais</span></div>
+      <div><span class="mono">Parte II</span><span>Proposta / Ordem de Serviço</span></div>
+      <div><span class="mono">Parte III</span><span>Anexo para clientes particulares</span></div>
+    </div>
+  </div>
+
+  <div class="cover-foot">
+    <div>
+      <span class="mono">Prestadores</span>
+      António Maria das Neves Sepúlveda de Sá Policarpo<br>
+      Emanuel Augusto Soares da Costa
+    </div>
+    <div>
+      <span class="mono">Contacto</span>
+      ola@nevima.studio<br>
+      nevima.studio
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================== PART I -->
+<section class="part">
+  <header class="part-head">
+    <span class="mono">Parte I</span>
+    <h2>Condições Gerais de Prestação de Serviços</h2>
+  </header>
+
+  <div class="clause">
+    <span class="mono">Cláusula 01</span>
+    <h3>Partes</h3>
+    <ol class="items">
+      <li>Os serviços são prestados, em conjunto, por <strong>António Maria das Neves Sepúlveda de Sá Policarpo</strong>, NIF <span class="blank"></span>, com domicílio fiscal em <span class="blank l"></span>, e <strong>Emanuel Augusto Soares da Costa</strong>, NIF <span class="blank"></span>, com domicílio fiscal em <span class="blank l"></span>, trabalhadores independentes que atuam sob a marca comercial <strong>nevima</strong> (doravante “a nevima”).</li>
+      <li>“nevima” é uma marca e não uma pessoa coletiva. As obrigações deste contrato são assumidas pelos dois prestadores.</li>
+      <li>O cliente é a pessoa singular ou coletiva identificada na Proposta / Ordem de Serviço (doravante “o Cliente”).</li>
+      <li>A Proposta indica qual dos prestadores, ou se ambos, emite as faturas de cada serviço.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 02</span>
+    <h3>Objeto</h3>
+    <ol class="items">
+      <li>Estas Condições Gerais regulam a prestação pela nevima dos serviços identificados na Proposta: web design, identidade visual, SEO, GEO, sessão fotográfica e serviços associados (domínio e alojamento).</li>
+      <li>A identidade visual, o SEO, o GEO e a sessão fotográfica só são prestados em conjunto com um website feito pela nevima.</li>
+      <li>O âmbito concreto de cada projeto (páginas, línguas, formulários, serviços, preço e prazo) é o que consta da Proposta.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 03</span>
+    <h3>Definições</h3>
+    <dl class="defs">
+      <div><dt>Proposta</dt><dd>O documento em que a nevima fixa o âmbito, o preço e o prazo do projeto, assinado pelo Cliente.</dd></div>
+      <div><dt>Materiais</dt><dd>Tudo o que o Cliente tem de entregar para o projeto começar: textos, fotografias, logótipo, acessos e outros indicados na Proposta.</dd></div>
+      <div><dt>Prazo Acordado</dt><dd>O número de dias úteis fixado na Proposta para concluir o website.</dd></div>
+      <div><dt>Chamada de Validação</dt><dd>A videochamada em que a nevima apresenta o website concluído ao Cliente.</dd></div>
+      <div><dt>Lançamento</dt><dd>A publicação do website no domínio do Cliente.</dd></div>
+      <div><dt>Particular</dt><dd>O Cliente que contrata para uso não profissional, a quem se aplica também o Anexo da Parte III.</dd></div>
+    </dl>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 04</span>
+    <h3>Estimativa, Proposta e formação do contrato</h3>
+    <ol class="items">
+      <li>A estimativa obtida no formulário do site da nevima é indicativa e não constitui uma proposta contratual.</li>
+      <li>A Proposta é válida por 30 dias a contar da data em que é enviada.</li>
+      <li>O contrato fica celebrado quando o Cliente assina a Proposta. A assinatura pode ser digital (por exemplo, com a Chave Móvel Digital) ou manuscrita num documento digitalizado.</li>
+      <li>Estas Condições Gerais fazem parte de cada Proposta. Em caso de divergência, prevalece a Proposta.</li>
+      <li>A versão portuguesa deste contrato é a oficial. Qualquer tradução é apenas de apoio e, em caso de divergência, prevalece a versão portuguesa.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 05</span>
+    <h3>Preço</h3>
+    <ol class="items">
+      <li>O preço de cada serviço é o indicado na Proposta, em euros.</li>
+      <li>Os prestadores estão isentos de IVA ao abrigo do artigo 53.º do Código do IVA, pelo que as faturas mencionam “IVA — regime de isenção (art. 53.º do CIVA)”. Se algum deles deixar de estar isento, os preços ainda por faturar passam a acrescer de IVA à taxa legal, o que a nevima comunica ao Cliente por escrito.</li>
+      <li>Um prazo urgente, pedido pelo Cliente e aceite pela nevima, acresce 40% ao preço do website e dos seus extras.</li>
+      <li>Quando o Cliente já tem domínio, a nevima desconta ao preço o valor que o Cliente pagou por ele, entre 10 € e 30 €, mediante comprovativo.</li>
+      <li>As despesas de deslocação da sessão fotográfica, quando existam, são indicadas na Proposta e pagas pelo Cliente.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 06</span>
+    <h3>Pagamento</h3>
+    <ol class="items">
+      <li><strong>Sinal:</strong> 25% do preço total, pago na assinatura da Proposta. O trabalho só começa depois de o sinal ser recebido e de os Materiais estarem completos.</li>
+      <li><strong>Pagamento final:</strong> os restantes 75%, pagos no prazo de 48 horas a contar da Chamada de Validação, quer o Cliente peça alterações nessa chamada, quer não.</li>
+      <li>O website só é lançado depois de o pagamento final ser recebido na conta da nevima.</li>
+      <li><strong>Meios de pagamento:</strong>
+        <ul class="sub">
+          <li>Clientes na zona euro: transferência imediata (SEPA Instant) ou MB WAY.</li>
+          <li>Clientes fora da zona euro: transferência internacional ou outro meio indicado na Proposta. Neste caso, o Cliente envia o comprovativo da ordem de transferência no prazo do n.º 2, e o Lançamento acontece quando o valor é recebido.</li>
+        </ul>
+      </li>
+      <li>Os serviços mensais (SEO e GEO) são pagos no início de cada mês, no prazo de 8 dias a contar da fatura.</li>
+      <li>As alterações orçamentadas à parte (cláusula 9) são pagas antes de serem aplicadas.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 07</span>
+    <h3>Atrasos no pagamento</h3>
+    <ol class="items">
+      <li>Qualquer valor não pago no prazo vence juros de mora:
+        <ul class="sub">
+          <li>Clientes profissionais: à taxa supletiva legal para créditos de empresas, acrescida da indemnização fixa de 40 € por custos de cobrança, nos termos do Decreto-Lei n.º 62/2013.</li>
+          <li>Particulares: à taxa legal de juros civis.</li>
+        </ul>
+      </li>
+      <li>Enquanto houver valores em atraso, a nevima pode suspender os trabalhos em curso, o Lançamento e a aplicação de alterações, sem que isso conte como atraso seu.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 08</span>
+    <h3>Materiais, prazos e fases</h3>
+    <ol class="items">
+      <li>O Prazo Acordado conta-se em dias úteis a partir do dia em que a nevima recebe todos os Materiais e o sinal.</li>
+      <li>Os atrasos do Cliente (Materiais, respostas, aprovações, acessos) prolongam o Prazo Acordado pelo mesmo tempo.</li>
+      <li>Se o Cliente não entregar os Materiais em 30 dias a contar da assinatura, a nevima pode suspender o projeto. Passados 60 dias sem entrega, pode dar o contrato por cancelado pelo Cliente, aplicando-se a cláusula 20.</li>
+      <li>Com prazo urgente (cláusula 5.3), a data de conclusão é acordada entre as partes e fica na Proposta.</li>
+      <li>Quando a Proposta inclui identidade visual, esta é feita primeiro e o website é construído com ela. Quando inclui sessão fotográfica, a nevima indica a data de entrega das fotografias depois da sessão, e o website é construído depois dessa entrega.</li>
+      <li>A meio do projeto, a nevima marca uma chamada para mostrar a direção do website. Os ajustes que dela resultem estão incluídos no preço.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 09</span>
+    <h3>Chamada de Validação, alterações e Lançamento</h3>
+    <ol class="items">
+      <li>Concluído o website, com as práticas básicas de SEO aplicadas, a nevima apresenta-o ao Cliente na Chamada de Validação.</li>
+      <li><strong>Alterações pequenas</strong> (cada uma com até 15 minutos de trabalho): são gratuitas, dentro de um uso razoável.</li>
+      <li><strong>Alterações maiores:</strong> a nevima apresenta um orçamento antes de as fazer. Só são feitas se o Cliente o aceitar, e só são aplicadas depois de pagas.</li>
+      <li>Pedir alterações na Chamada de Validação não adia o pagamento final (cláusula 6.2). O website é lançado na versão apresentada assim que o pagamento final é recebido, e as alterações são aplicadas depois:
+        <ul class="sub">
+          <li>as pequenas, nos 5 dias úteis seguintes ao pagamento final;</li>
+          <li>as maiores, no prazo do respetivo orçamento, depois de pagas.</li>
+        </ul>
+      </li>
+      <li>Depois do Lançamento, os pedidos de alteração seguem as mesmas regras dos n.ºs 2 e 3.</li>
+      <li>O website considera-se aceite com o pagamento final ou, se este não ocorrer, 8 dias depois da Chamada de Validação sem que o Cliente indique defeitos concretos por escrito. Pedidos de alteração não são defeitos.</li>
+      <li>Defeitos (algo que não funciona como consta da Proposta) são corrigidos sem custo.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 10</span>
+    <h3>Domínio</h3>
+    <ol class="items">
+      <li>Quando o Cliente ainda não tem domínio, a nevima regista-o em nome do Cliente, que fica como titular desde o primeiro dia, e paga os primeiros 2 anos de registo.</li>
+      <li>A partir do terceiro ano, a renovação é paga pelo Cliente. A nevima avisa-o pelo menos 30 dias antes de o domínio expirar, mas a renovação é da responsabilidade do Cliente. Se o domínio expirar, o website e o email associados deixam de funcionar.</li>
+      <li>A pedido do Cliente, a nevima transfere para ele, sem custo, o acesso à gestão do domínio.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 11</span>
+    <h3>Alojamento</h3>
+    <ol class="items">
+      <li>O alojamento do website é gratuito e é garantido por períodos de 2 anos, que se renovam automaticamente.</li>
+      <li>Qualquer das partes pode decidir não renovar o período seguinte, avisando a outra por escrito com pelo menos 90 dias de antecedência em relação ao fim do período em curso.</li>
+      <li>Se o período não for renovado, a nevima apresenta ao Cliente as condições para continuar a alojar o website ou entrega-lhe, sem custo, o código e os ficheiros do website para que o aloje noutro serviço.</li>
+      <li>O alojamento é prestado em infraestrutura de terceiros (atualmente a Vercel). A nevima faz o melhor esforço para manter o website disponível, mas não garante disponibilidade contínua e não responde por falhas do fornecedor.</li>
+      <li>O alojamento gratuito destina-se a um uso normal do website. Um tráfego ou armazenamento excecional, que gere custos para a nevima, é tratado entre as partes antes de qualquer cobrança.</li>
+      <li>Se o contrato cessar, o Cliente tem direito a receber o código e os ficheiros do website, desde que esteja pago.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 12</span>
+    <h3>SEO e GEO</h3>
+    <ol class="items">
+      <li>O serviço de web design inclui as práticas básicas de SEO, aplicadas antes do Lançamento.</li>
+      <li>Os serviços mensais de SEO e GEO, quando contratados, não têm período mínimo. Pagam-se no início de cada mês e podem ser cancelados por qualquer das partes com 30 dias de aviso por escrito.</li>
+      <li>A nevima compromete-se a fazer o trabalho com diligência e segundo as boas práticas, mas não garante posições, tráfego nem menções em motores de pesquisa ou em ferramentas de inteligência artificial, que dependem de terceiros.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 13</span>
+    <h3>Sessão fotográfica</h3>
+    <ol class="items">
+      <li>A sessão é feita em Portugal continental, em data acordada entre as partes. Noutras regiões é orçamentada à parte.</li>
+      <li>Cabe ao Cliente obter a autorização das pessoas fotografadas ou filmadas (funcionários, clientes ou outras), usando o modelo de autorização de uso de imagem fornecido pela nevima.</li>
+      <li>Se o Cliente desmarcar a sessão com menos de 48 horas de antecedência, as despesas de deslocação já feitas são pagas pelo Cliente.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 14</span>
+    <h3>Línguas e tradução</h3>
+    <ol class="items">
+      <li>O português está incluído. O inglês e outras línguas são pagos à parte, como consta da Proposta.</li>
+      <li>As línguas além do português e do inglês são traduzidas com uma ferramenta de inteligência artificial especializada em tradução. A nevima envia ao Cliente o documento final para revisão, e a exatidão da versão publicada é da responsabilidade do Cliente depois de a aprovar.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 15</span>
+    <h3>Propriedade intelectual</h3>
+    <ol class="items">
+      <li>O website, a identidade visual, as fotografias, os vídeos e os restantes trabalhos feitos para o Cliente são obras feitas por encomenda. As partes convencionam que os direitos patrimoniais de autor sobre elas pertencem ao Cliente a partir do pagamento integral do preço.</li>
+      <li>Até ao pagamento integral, os direitos pertencem à nevima, e o Cliente não pode usar, publicar nem alterar os trabalhos entregues.</li>
+      <li>Ficam com a nevima, e podem ser reutilizados noutros projetos, as ferramentas, os componentes de código genéricos, os métodos e o conhecimento que não sejam específicos do Cliente. O Cliente recebe uma licença gratuita e permanente para os usar no seu website.</li>
+      <li>Fontes, imagens, bibliotecas e outros elementos de terceiros mantêm as licenças dos seus autores, que a nevima indica ao Cliente quando tenham condições próprias.</li>
+      <li>O registo do logótipo como marca não está incluído e é da responsabilidade do Cliente.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 16</span>
+    <h3>Portfólio e crédito</h3>
+    <ol class="items">
+      <li>A nevima pode mostrar o projeto no seu portfólio, site e redes sociais, incluindo o nome do Cliente e o website, salvo se o Cliente o recusar por escrito na Proposta ou mais tarde.</li>
+      <li>Com o acordo do Cliente, o website pode ter no rodapé um crédito discreto (“site por nevima”) com ligação para a nevima.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 17</span>
+    <h3>Obrigações do Cliente</h3>
+    <ol class="items">
+      <li>O Cliente garante que tem os direitos sobre os Materiais que entrega (textos, imagens, logótipos) e responde perante terceiros pelo seu uso.</li>
+      <li>O Cliente é responsável pela licitude dos conteúdos do website e da sua atividade.</li>
+      <li>O conteúdo das páginas legais do website (política de privacidade, política de cookies, termos e outras) é da responsabilidade do Cliente, que o deve produzir ou mandar produzir. A nevima coloca-as no website. A nevima não presta aconselhamento jurídico.</li>
+      <li>O Cliente responde às perguntas e aprovações da nevima em tempo útil.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 18</span>
+    <h3>Dados pessoais</h3>
+    <ol class="items">
+      <li>Cada parte trata os dados pessoais da outra apenas para executar este contrato e nos termos do RGPD. A informação sobre o tratamento feito pela nevima consta da sua Política de Privacidade.</li>
+      <li>Quando a nevima aloja o website do Cliente, ou trata dados de pessoas que o usam (por exemplo, mensagens de formulários), atua como subcontratante do Cliente. Esse tratamento rege-se pelo Acordo de Tratamento de Dados anexo a este contrato.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 19</span>
+    <h3>Confidencialidade</h3>
+    <ol class="items">
+      <li>As partes mantêm confidencial a informação não pública que recebam uma da outra, durante o contrato e nos 3 anos seguintes. Excetua-se o que a cláusula 16 permite mostrar.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 20</span>
+    <h3>Cancelamento pelo Cliente</h3>
+    <ol class="items">
+      <li>O Cliente pode cancelar o projeto a todo o tempo, por escrito.</li>
+      <li>O valor devido em caso de cancelamento calcula-se sempre sobre o <strong>preço total</strong> do projeto, na proporção dos dias úteis de trabalho já decorridos face ao Prazo Acordado na Proposta:
+        <div class="formula">valor devido = preço total × (dias úteis de trabalho decorridos até ao cancelamento ÷ Prazo Acordado)</div>
+        Exemplo: num Prazo Acordado de 10 dias úteis, um cancelamento ao 4.º dia de trabalho corresponde a 40% do preço total.
+      </li>
+      <li><strong>Clientes profissionais:</strong>
+        <ul class="sub">
+          <li>Se o trabalho ainda não começou, a nevima devolve o sinal no prazo de 14 dias.</li>
+          <li>Se o trabalho já começou, a nevima fica com o sinal. Se o valor do n.º 2 for superior ao sinal, o Cliente paga a diferença no prazo de 8 dias.</li>
+        </ul>
+      </li>
+      <li><strong>Particulares:</strong> o Cliente paga apenas o valor do n.º 2. Se o sinal for superior, a nevima devolve a diferença no prazo de 14 dias. Durante os primeiros 14 dias, aplica-se também o Anexo da Parte III.</li>
+      <li>Os trabalhos pagos por inteiro e as despesas já feitas por conta do Cliente (domínio, deslocações) não são devolvidos.</li>
+      <li>Os direitos sobre o trabalho feito até ao cancelamento seguem a cláusula 15: passam para o Cliente quando o valor devido estiver pago.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 21</span>
+    <h3>Responsabilidade</h3>
+    <ol class="items">
+      <li>A responsabilidade da nevima por danos resultantes deste contrato limita-se ao valor pago pelo Cliente nos 12 meses anteriores ao facto que lhes deu origem.</li>
+      <li>Este limite não se aplica a danos causados com dolo ou culpa grave, nem a Particulares quando a lei o proíba.</li>
+      <li>A nevima não responde por falhas de serviços de terceiros (alojamento, registadores de domínios, fornecedores de email), nem por perdas de negócio, de dados ou de receitas, salvo dolo ou culpa grave.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 22</span>
+    <h3>Duração e cessação</h3>
+    <ol class="items">
+      <li>O contrato vigora até à conclusão dos serviços pontuais. Os serviços continuados (alojamento, SEO e GEO mensais) seguem as regras próprias das cláusulas 11 e 12.</li>
+      <li>Qualquer das partes pode resolver o contrato se a outra incumprir uma obrigação essencial e não o corrigir em 15 dias depois de avisada por escrito.</li>
+      <li>A nevima pode suspender ou terminar o alojamento de um website usado para fins ilícitos.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 23</span>
+    <h3>Comunicações</h3>
+    <ol class="items">
+      <li>As comunicações entre as partes fazem-se por email, para os endereços indicados na Proposta. O endereço da nevima é ola@nevima.studio.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 24</span>
+    <h3>Lei aplicável e foro</h3>
+    <ol class="items">
+      <li>Este contrato rege-se pela lei portuguesa.</li>
+      <li>Para os litígios com Clientes profissionais é competente o tribunal da comarca do Porto. Para os litígios com Particulares aplicam-se as regras legais de competência e a informação sobre resolução alternativa de litígios do Anexo da Parte III.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================================================= PART II -->
+<section class="part">
+  <header class="part-head">
+    <span class="mono">Parte II</span>
+    <h2>Proposta / Ordem de Serviço</h2>
+  </header>
+
+  <div class="fields" style="margin-bottom:7mm">
+    <div class="field"><span class="mono">Proposta n.º</span><div class="line"></div></div>
+    <div class="field"><span class="mono">Data</span><div class="line"></div></div>
+    <div class="field full"><span class="mono">Válida até (30 dias após a data)</span><div class="line" style="width:50%"></div></div>
+  </div>
+
+  <div class="form-block">
+    <span class="mono">Secção 01</span>
+    <h3>Cliente</h3>
+    <div class="fields">
+      <div class="field full"><span class="mono">Nome ou firma</span><div class="line"></div></div>
+      <div class="field"><span class="mono">NIF / NIPC</span><div class="line"></div></div>
+      <div class="field"><span class="mono">Telefone</span><div class="line"></div></div>
+      <div class="field full"><span class="mono">Morada</span><div class="line"></div></div>
+      <div class="field"><span class="mono">Representante (se empresa)</span><div class="line"></div></div>
+      <div class="field"><span class="mono">Email para comunicações</span><div class="line"></div></div>
+    </div>
+    <div class="choice" style="margin-top:3mm">
+      <span class="mono" style="display:block;margin-bottom:1.4mm">Tipo de cliente</span>
+      <span class="box"></span>Profissional (contrata para a sua atividade)
+      &nbsp;&nbsp;&nbsp;
+      <span class="box"></span>Particular (aplica-se o Anexo da Parte III)
+    </div>
+  </div>
+
+  <div class="form-block">
+    <span class="mono">Secção 02</span>
+    <h3>Serviços e preço</h3>
+    <table>
+      <thead><tr><th>Serviço</th><th>O que inclui</th><th>Preço</th></tr></thead>
+      <tbody>
+        <tr><td>Web design</td><td class="what">Tipo de site, n.º de páginas, línguas, formulários: <span class="blank l"></span></td><td class="amount"><span class="blank"></span> €</td></tr>
+        <tr><td>Identidade visual</td><td class="what">Logótipo e símbolo</td><td class="amount"><span class="blank"></span> €</td></tr>
+        <tr><td>Sessão fotográfica</td><td class="what">Fotos / fotos e vídeo; local: <span class="blank"></span></td><td class="amount"><span class="blank"></span> €</td></tr>
+        <tr><td>Deslocação</td><td class="what">Se aplicável</td><td class="amount"><span class="blank"></span> €</td></tr>
+        <tr><td>Prazo urgente (+40%)</td><td class="what">Se aplicável</td><td class="amount"><span class="blank"></span> €</td></tr>
+        <tr><td>Desconto de domínio existente</td><td class="what">Se aplicável, com comprovativo</td><td class="amount">− <span class="blank"></span> €</td></tr>
+        <tr class="total"><td>Total do projeto</td><td></td><td class="amount"><span class="blank"></span> €</td></tr>
+        <tr><td>SEO mensal</td><td class="what">Primeiro mês na assinatura, depois mensal</td><td class="amount"><span class="blank"></span> €/mês</td></tr>
+        <tr><td>GEO mensal</td><td class="what">Primeiro mês na assinatura, depois mensal</td><td class="amount"><span class="blank"></span> €/mês</td></tr>
+      </tbody>
+    </table>
+    <p class="note">IVA — regime de isenção (art. 53.º do CIVA). Faturas emitidas por: <span class="box"></span>António Policarpo &nbsp; <span class="box"></span>Emanuel Costa &nbsp; <span class="box"></span>ambos, por serviço</p>
+  </div>
+
+  <div class="form-block">
+    <span class="mono">Secção 03</span>
+    <h3>Pagamento</h3>
+    <table>
+      <tbody>
+        <tr><td>Sinal (25%), na assinatura</td><td class="amount"><span class="blank"></span> €</td></tr>
+        <tr><td>Pagamento final (75%), até 48 horas depois da Chamada de Validação</td><td class="amount"><span class="blank"></span> €</td></tr>
+        <tr><td>Meio de pagamento: <span class="box"></span>transferência imediata &nbsp; <span class="box"></span>MB WAY &nbsp; <span class="box"></span>transferência internacional</td><td></td></tr>
+        <tr><td>IBAN <span class="blank l"></span></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="form-block">
+    <span class="mono">Secção 04</span>
+    <h3>Prazo Acordado</h3>
+    <p>A nevima e <span class="blank l"></span> acordaram um prazo de <span class="blank s"></span> <strong>dias úteis</strong>, contados a partir da receção de todos os Materiais e do sinal. Este prazo é a base do cálculo do valor devido em caso de cancelamento ou de livre resolução (cláusula 20 e Anexo da Parte III).</p>
+    <p>Se urgente, data de conclusão acordada: <span class="blank"></span></p>
+  </div>
+
+  <div class="form-block">
+    <span class="mono">Secção 05</span>
+    <h3>Materiais a entregar pelo Cliente</h3>
+    <div class="choice"><span class="box"></span>Textos de cada página</div>
+    <div class="choice"><span class="box"></span>Fotografias existentes</div>
+    <div class="choice"><span class="box"></span>Logótipo e símbolo, se não houver identidade nova</div>
+    <div class="choice"><span class="box"></span>Acessos ao domínio atual, se existir</div>
+    <div class="choice"><span class="box"></span>Conteúdo das páginas legais</div>
+    <div class="choice"><span class="box"></span>Outros: <span class="blank l"></span></div>
+  </div>
+
+  <div class="form-block">
+    <span class="mono">Secção 06</span>
+    <h3>Domínio, alojamento e portfólio</h3>
+    <div class="opt"><span class="mono">Domínio</span><div>
+      <div><span class="box"></span>Registado pela nevima em nome do Cliente, 2 anos incluídos: <span class="blank"></span></div>
+      <div><span class="box"></span>O Cliente já tem: <span class="blank l"></span></div>
+    </div></div>
+    <div class="opt"><span class="mono">Alojamento</span><div>Gratuito, por períodos de 2 anos renováveis automaticamente (cláusula 11).</div></div>
+    <div class="opt"><span class="mono">Portfólio</span><div>
+      <div><span class="box"></span>O Cliente autoriza que o projeto seja mostrado pela nevima</div>
+      <div><span class="box"></span>Não autoriza</div>
+    </div></div>
+    <div class="opt"><span class="mono">Crédito</span><div>“site por nevima” no rodapé: &nbsp;<span class="box"></span>Sim &nbsp; <span class="box"></span>Não</div></div>
+  </div>
+
+  <div class="form-block">
+    <span class="mono">Secção 07</span>
+    <h3>Aceitação</h3>
+    <p>Ao assinar, o Cliente aceita esta Proposta e as Condições Gerais da Parte I, que declara ter recebido e lido.</p>
+    <div class="sign">
+      <div><div class="line"></div><div class="who">O Cliente</div><span class="mono">Data</span></div>
+      <div><div class="line"></div><div class="who">António Maria das Neves Sepúlveda de Sá Policarpo</div><span class="mono">Data</span></div>
+      <div><div class="line"></div><div class="who">Emanuel Augusto Soares da Costa</div><span class="mono">Data</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ PART III -->
+<section class="part">
+  <header class="part-head">
+    <span class="mono">Parte III</span>
+    <h2>Anexo para clientes particulares</h2>
+  </header>
+  <p class="part-intro">Este anexo aplica-se apenas quando o Cliente contrata para uso não profissional. Resume a informação que a lei obriga a dar antes da assinatura (Decreto-Lei n.º 24/2014) e completa as Condições Gerais.</p>
+
+  <div class="clause">
+    <span class="mono">Secção A</span>
+    <h3>Direito de livre resolução (desistência)</h3>
+    <ol class="items">
+      <li>O Cliente pode desistir do contrato no prazo de <strong>14 dias</strong> a contar da assinatura da Proposta, sem indicar o motivo e sem custos, salvo o previsto no n.º 3.</li>
+      <li>Para desistir, basta enviar uma declaração clara para ola@nevima.studio, ou usar o formulário da secção D. Chega que a declaração seja enviada dentro do prazo.</li>
+      <li>Se o Cliente pediu que o trabalho começasse durante esses 14 dias (secção B) e depois desistir, paga o valor proporcional ao trabalho feito, calculado sobre o preço total como na cláusula 20.2. Se não fez esse pedido, não paga nada.</li>
+      <li>A nevima devolve tudo o que o Cliente pagou além desse valor no prazo de 14 dias a contar da desistência, pelo mesmo meio de pagamento.</li>
+      <li>Se o serviço estiver totalmente prestado dentro dos 14 dias, e o Cliente o tiver pedido e reconhecido como na secção B, o direito de desistência deixa de existir.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Secção B</span>
+    <h3>Pedido de início antecipado</h3>
+    <div class="choice"><span class="box"></span>Peço que a nevima comece o trabalho antes do fim do prazo de 14 dias para desistir.</div>
+    <div class="choice"><span class="box"></span>Sei que, se desistir depois de o trabalho começar, pago o valor proporcional ao trabalho já feito, e que perco o direito de desistir se o serviço for totalmente prestado dentro desse prazo.</div>
+    <div class="sign" style="grid-template-columns: 2fr 1fr">
+      <div><div class="line"></div><div class="who">Assinatura do Cliente</div></div>
+      <div><div class="line"></div><div class="who">Data</div></div>
+    </div>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Secção C</span>
+    <h3>Reclamações e resolução de litígios</h3>
+    <ol class="items">
+      <li>O Cliente pode reclamar no Livro de Reclamações Eletrónico, em www.livroreclamacoes.pt.</li>
+      <li>Em caso de litígio, o Cliente pode recorrer a uma entidade de resolução alternativa de litígios de consumo, nomeadamente o CICAP — Centro de Informação de Consumo e Arbitragem do Porto (www.cicap.pt). A lista completa está no Portal do Consumidor (www.consumidor.gov.pt).</li>
+      <li>O Cliente beneficia das garantias legais de conformidade aplicáveis aos serviços e conteúdos digitais prestados.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Secção D</span>
+    <h3>Formulário de livre resolução</h3>
+    <p class="part-intro" style="margin-bottom:3mm">Preencha e envie este formulário apenas se quiser desistir do contrato.</p>
+    <div class="letter">
+      <p><strong>Para:</strong> António Maria das Neves Sepúlveda de Sá Policarpo e Emanuel Augusto Soares da Costa (nevima), <span class="blank l"></span>, ola@nevima.studio</p>
+      <p>Pela presente comunico que desisto do meu contrato de prestação do seguinte serviço:</p>
+      <div class="line"></div>
+      <p style="margin-top:3mm">Proposta n.º <span class="blank"></span>, assinada em <span class="blank"></span></p>
+      <div class="fields">
+        <div class="field full"><span class="mono">Nome do Cliente</span><div class="line"></div></div>
+        <div class="field full"><span class="mono">Morada do Cliente</span><div class="line"></div></div>
+        <div class="field"><span class="mono">Assinatura (só se enviado em papel)</span><div class="line"></div></div>
+        <div class="field"><span class="mono">Data</span><div class="line"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
