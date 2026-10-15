@@ -11,6 +11,36 @@
         ],
         "createdAt": "2026-10-13T16:42:12.708Z",
         "reason": "user confirmed 2026-10-13: the .rp-band-link padding hover (band widening) stays as designed"
+      },
+      {
+        "rule": "overused-font",
+        "value": "geist mono",
+        "createdAt": "2026-10-15T17:19:09.121Z",
+        "reason": "CLAUDE.md settles Geist Mono as the site's label face; the contract reuses the site's design system at the user's request (2026-10-15)"
+      },
+      {
+        "rule": "tight-leading",
+        "value": "*",
+        "files": [
+          "contratos/contrato-nevima.html"
+        ],
+        "createdAt": "2026-10-15T17:19:09.470Z",
+        "reason": "display titles (cover, part and clause headings) set at 1.02-1.2 like the site's titles; body text is 1.55"
+      },
+      {
+        "rule": "all-caps-body",
+        "value": "*",
+        "files": [
+          "contratos/contrato-nevima.html"
+        ],
+        "createdAt": "2026-10-15T17:19:09.800Z",
+        "reason": "uppercase only on short Geist Mono labels (clause numbers, field labels, page footer), the site's mono-label style"
+      },
+      {
+        "rule": "overused-font",
+        "value": "instrument sans",
+        "createdAt": "2026-10-15T17:19:22.200Z",
+        "reason": "Instrument Sans is the site's reading face (src/app/layout.tsx); the contract reuses the site's design system at the user's request (2026-10-15)"
       }
     ]
   }
