@@ -3,33 +3,30 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "motion/react";
 import { ENTER_EASE } from "./enter";
-import { PassLink } from "./floating-nav";
 import { Illuminated } from "./services";
 
 /* ==================================================================
    Studio
 
-   A screen of its own (2026-10-14), full at rest: whatever moves in it
-   leaves it full once it has stopped. Composed in two halves (user, same
-   day: smaller, justified, half the page, and everything else on the
-   right with room to breathe):
+   A screen of its own (2026-10-14), full at rest, in two halves from lg
+   aligned on their last lines (user, same day):
 
-   - on the left, the statement, justified, read in ink: it waits in a
-     pale grey and each word turns black as the page brings it up, at the
-     pace of the scroll. After "two" the co-founders are set into the
-     line, two round portraits in colour in a capsule that part when
-     pointed at and lead to the about page; its last words are underlined
-     by a stroke drawn as they are read;
-   - on the right, spread down the statement's height: the "The studio"
-     marker with a hairline drawn across and who and where; the pillar,
-     its answer run through with the black marker, and "Learn more about
-     us"; and at the foot, over a hairline, the two names.
+   - on the left, the statement, large and justified, 40% of the page,
+     read in ink: it waits in a pale grey and each word turns black as
+     the page brings it up, at the pace of the scroll. After "two" the
+     co-founders are set into the line, two round portraits in colour in
+     a capsule: the section's way to the about page. Its last words are
+     underlined by a stroke drawn as they are read;
+   - on the right, wider and smaller, the pillar, justified, its answer
+     run through with the black marker.
 
    The co-founders' full plates are on the about page (cofounders.tsx).
    ================================================================== */
 
+/* Soft hyphens in the long words: justified in a narrow column, the
+   lines can break inside them rather than open gaps around them. */
 const STATEMENT =
-  "Nevima is a studio of two young friends who go way back, sharing a fascination with communication and web development. We’re not here to be one more studio doing more of the same: we came with a completely different proposition.";
+  "Nevima is a studio of two young friends who go way back, sharing a fas\u00adci\u00adna\u00adtion with com\u00admu\u00adni\u00adca\u00adtion and web de\u00advel\u00adop\u00adment. We\u2019re not here to be one more studio doing more of the same: we came with a com\u00adplete\u00adly dif\u00adfer\u00adent proposition.";
 
 /* The pillar, up to and including the colon it turns on. */
 const PILLAR =
@@ -55,7 +52,7 @@ const FOUNDERS = [
 const WORDS = STATEMENT.split(" ");
 const PORTRAITS_AFTER = WORDS.indexOf("two");
 /* "a completely different proposition." */
-const STROKE_FROM = WORDS.lastIndexOf("completely") - 1;
+const STROKE_FROM = WORDS.findIndex((w) => w.startsWith("com\u00adplete")) - 1;
 
 /* ================================================================== */
 
@@ -137,43 +134,17 @@ function Statement({ ready }: { ready: boolean }) {
         <InkStatement reduce={reduce} />
       </motion.div>
 
+      {/* The pillar, with everything after the colon run through with a
+          black marker: the answer is the one thing set out of black. */}
       <motion.div className="std-aside" {...enter(1)}>
-        <div>
-          <div className="std-head mono-label">
-            <span className="idx-title">The studio</span>
-            <motion.span
-              aria-hidden="true"
-              className="std-head-rule"
-              initial={false}
-              animate={{ scaleX: lit ? 1 : 0 }}
-              transition={{ duration: reduce ? 0 : 1.1, delay: 0.2, ease: ENTER_EASE }}
-            />
-          </div>
-          <p className="std-head-note mono-label">Two people &middot; Porto, Portugal</p>
-        </div>
-
-        {/* The pillar, with everything after the colon run through with
-            a black marker: the answer is the one thing set out of black. */}
-        <div>
-          <LitCopy
-            lit={lit}
-            reduce={reduce}
-            delayMs={PILLAR_LIGHT_MS}
-            text={PILLAR}
-            mark={PILLAR_MARK}
-            className="svc-copy std-ink std-pillar"
-          />
-          <LearnMore />
-        </div>
-
-        <dl className="std-names mono-label">
-          {FOUNDERS.map((f) => (
-            <div key={f.name}>
-              <dt>{f.name}</dt>
-              <dd>Co-founder</dd>
-            </div>
-          ))}
-        </dl>
+        <LitCopy
+          lit={lit}
+          reduce={reduce}
+          delayMs={PILLAR_LIGHT_MS}
+          text={PILLAR}
+          mark={PILLAR_MARK}
+          className="svc-copy std-ink std-pillar"
+        />
       </motion.div>
     </div>
   );
@@ -266,8 +237,11 @@ function Stroke({
 }
 
 /* The two of them, set into the line after "two": round portraits in
-   colour in a capsule, inked in with the words around them, parted a
-   little when pointed at, and the way to the about page. */
+   colour in a capsule, inked in with the words around them. They are
+   the section's way to the about page (user, 2026-10-14): every few
+   seconds they give a little shake, and pointed at they part and "Find
+   out more about us" comes up between them. The parting is drawn over
+   the line, never in it, so the justified text around never moves. */
 function Portraits({
   progress,
   from,
@@ -277,47 +251,44 @@ function Portraits({
   from: number;
   reduce: boolean;
 }) {
+  // It opens towards the side with room: at the start of a line it
+  // grows to the right, at the end to the left, otherwise both ways.
+  const [side, setSide] = useState<"both" | "left" | "right">("both");
+  const aim = (el: HTMLElement) => {
+    const line = el.closest("p")?.getBoundingClientRect();
+    const box = el.getBoundingClientRect();
+    if (!line) return;
+    const reach = box.height * 2.4;
+    if (box.left - line.left < reach) setSide("right");
+    else if (line.right - box.right < reach) setSide("left");
+    else setSide("both");
+  };
   const opacity = useTransform(progress, [from, from + 0.06], [0.35, 1]);
   const scale = useTransform(progress, [from, from + 0.08], [0.82, 1]);
   return (
     <motion.a
       href="/about"
       className="std-faces"
+      data-side={side}
       style={reduce ? undefined : { opacity, scale }}
-      aria-label="Emanuel Costa and António Policarpo, the co-founders: about us"
+      aria-label="Find out more about us"
+      onPointerEnter={(e) => aim(e.currentTarget)}
+      onFocus={(e) => aim(e.currentTarget)}
     >
-      {FOUNDERS.map((f) => (
-        <span key={f.name} className="std-face">
+      <span className="std-faces-in">
+        <span className="std-face">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={f.photo} alt="" draggable={false} style={{ objectPosition: f.focus }} />
+          <img src={FOUNDERS[0].photo} alt="" draggable={false} style={{ objectPosition: FOUNDERS[0].focus }} />
         </span>
-      ))}
+        <span aria-hidden="true" className="std-faces-say">
+          <span>Find out more about us</span>
+        </span>
+        <span className="std-face">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={FOUNDERS[1].photo} alt="" draggable={false} style={{ objectPosition: FOUNDERS[1].focus }} />
+        </span>
+      </span>
     </motion.a>
-  );
-}
-
-/* An invitation under the pillar: one black drop, the same glass as the
-   site's other buttons, reading "Learn more about us" in one weight, one
-   run of words, with an arrow. It once split the line in two (the plain
-   words beside a heavier link) and the gap and the change of weight
-   between them read as mistakes; it is all one link now, to the about
-   page. */
-function LearnMore() {
-  return (
-    <div className="mt-3 md:mt-4">
-      <PassLink
-        href="/about"
-        label={
-          <>
-            Learn more about us
-            <span aria-hidden="true" className="ml-2 inline-block">
-              &rarr;
-            </span>
-          </>
-        }
-        className="cta-drop inline-flex text-[0.875rem] leading-none md:text-[0.9375rem]"
-      />
-    </div>
   );
 }
 
