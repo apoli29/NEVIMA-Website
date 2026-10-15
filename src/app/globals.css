@@ -35,13 +35,14 @@
     --shell: 1360px;
     /* The room above each section, which is the whole gap between two of
        them: a section brings its head room and leaves no foot padding. */
-    --section-gap: 7.2rem;
+    /* 15% less than it was (user, 2026-10-15): 7.2rem and 9.6rem. */
+    --section-gap: 6.12rem;
 
     /* The headline's size (see .h1). */
     --h1-size: clamp(2rem, min(6.6vw, 9.6svh), 5rem);
   }
   @media (min-width: 768px) {
-    :root { --gutter: 2.5rem; --section-gap: 9.6rem; }
+    :root { --gutter: 2.5rem; --section-gap: 8.16rem; }
   }
   @media (min-width: 1280px) {
     :root { --gutter: 4rem; }
@@ -1412,19 +1413,20 @@
      over. The wrap is the size container the statement is measured
      against.                                                          */
   .std-wrap { container-type: inline-size; }
-  /* Two halves from lg: the statement on the left, 40% of the shell,
-     and the pillar on the right, wider, with a column of air between;
-     the two stand on one line, their last lines level. */
+  /* From lg the statement and the pillar are one group, centred on the
+     page with air on both sides (user, 2026-10-15): the statement 37.3%
+     of the shell, the pillar 33%, 9% between them, level on their last
+     lines. */
   .std-lede { display: grid; gap: clamp(2.75rem, 6svh, 4rem); }
   @media (min-width: 1024px) {
     .std-lede {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      column-gap: 1rem;
-      align-items: end;
+      display: flex;
+      justify-content: center;
+      column-gap: 9cqw;
       align-items: last baseline;
     }
-    .std-copy { grid-column: 1 / span 5; }
-    .std-aside { grid-column: 7 / span 6; }
+    .std-copy { flex: 0 0 37.3cqw; }
+    .std-aside { flex: 0 0 33cqw; }
   }
 
   /* The statement, sized from its own measure, so it breaks in the same
@@ -1446,8 +1448,11 @@
     text-align-last: left;
     hyphens: manual;
   }
-  @container (min-width: 28rem) {
-    .std-statement { font-size: 8.8cqi; }
+  /* The column from lg: 10.43cqi of it is 48px at 1440 (the user's 10%
+     more), the best-set size near it for this width (widest gap about
+     0.9em, "proposition." alone on the last line). */
+  @media (min-width: 1024px) {
+    .std-statement { font-size: 10.43cqi; }
   }
   .std-read { color: var(--color-ink); }
   .std-word {
