@@ -11,6 +11,7 @@ The original brief is imported below. Parts of it were written before the build 
 - The default branch is `main`. Work on a branch and merge back through a pull request.
 - Always finish a round of changes by opening that pull request and merging it into `main` yourself, so Vercel deploys it: the user reviews the work on the deployed site, not on branch previews.
 - The full history of homepage decisions, section by section, is in `docs/homepage-decisions.md`; the about page's is in `docs/about-decisions.md`; the web design page's, the work pages' and the portfolio's in `docs/web-design-decisions.md`. Read the part about a section before changing it.
+- The service contract (`contratos/contrato-nevima.html`, printed to PDF) has its decisions and open questions in `docs/contract-decisions.md`. Text marked dark orange (`.pending`) awaits the partners' final decision.
 - Every project report follows `docs/report-template.md` (structure, per-service pages, privacy rules). Change the template there and in `project-report.tsx` together.
 
 ## Working with the user
