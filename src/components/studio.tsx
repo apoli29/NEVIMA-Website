@@ -43,8 +43,8 @@ const ENTER_SHIFT = 56;
 const PILLAR_LIGHT_MS = 500;
 
 const FOUNDERS = [
-  { name: "Emanuel Costa", photo: "/cofounders/ec.jpeg", focus: "44% 45%" },
-  { name: "António Policarpo", photo: "/cofounders/ap.jpeg", focus: "50% 48%" },
+  { name: "Emanuel Costa", photo: "/cofounders/ec.webp", focus: "44% 45%" },
+  { name: "António Policarpo", photo: "/cofounders/ap.webp", focus: "50% 48%" },
 ] as const;
 
 /* The statement's words, and where it is given its two people and its

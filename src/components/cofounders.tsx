@@ -58,7 +58,7 @@ const FOUNDERS: Founder[] = [
       "User interface and user experience",
       "Photo and video shooting",
     ],
-    photo: "/cofounders/ec.jpeg",
+    photo: "/cofounders/ec.webp",
     links: [
       { label: "LinkedIn", href: "" },
       { label: "Portfolio", href: "" },
@@ -77,7 +77,7 @@ const FOUNDERS: Founder[] = [
       "Corporate identity (brand storytelling)",
       "SEO",
     ],
-    photo: "/cofounders/ap.jpeg",
+    photo: "/cofounders/ap.webp",
     links: [{ label: "LinkedIn", href: "" }],
   },
 ];
@@ -190,7 +190,7 @@ function Plate({
             alt={`Portrait of ${founder.first} ${founder.last}`}
             fill
             sizes="(min-width: 1024px) 24vw, (min-width: 768px) 40vw, 75vw"
-            quality={100}
+            quality={90}
             draggable={false}
             style={founder.focus ? { objectPosition: founder.focus } : undefined}
             className="object-cover select-none transition-transform duration-[1.4s] ease-out-quint group-hover:scale-[1.035] motion-reduce:transition-none"
