@@ -14,7 +14,7 @@ import { useSmoothScroll } from "./smooth-scroll";
    The about page
 
    No opening here: the mark's flight belongs to the home page, so the
-   bar is simply there. The page goes from the statement on stone, to
+   bar is simply there. The page goes from the statement on its photos, to
    who the studio is (the co-founders, moved here from the home page on
    2026-10-06), to what it is for (mission, vision, then the values on
    the water), to what people ask, and closes on the same black foot as

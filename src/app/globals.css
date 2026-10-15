@@ -2028,8 +2028,8 @@
   /* The opening statement's ground. A photograph pushed down with a
      filter and a dark spot over the middle read as a backdrop laid in
      behind the words (the user: "fundo forçado"). It is let go instead:
-     half seen over the black, its contrast eased and the sharp specks of
-     the stone softened a touch, so the type is the only hard thing on the
+     half seen over the black, its contrast eased and any sharp specks
+     softened a touch, so the type is the only hard thing on the
      screen and the photo sits behind it like the room it is in. The edges
      settle a little darker than the middle, as a lens would leave them,
      and the words carry a faint shade of their own. Tested against a
@@ -2054,7 +2054,7 @@
   .abt-hero-scrim {
     background: radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(0 0 0 / 0.35));
   }
-  /* Only a trace of grain: the stone has its own. */
+  /* Only a trace of grain: the photographs have their own. */
   .abt-grain {
     opacity: 0.06;
     mix-blend-mode: overlay;

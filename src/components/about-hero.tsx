@@ -14,8 +14,8 @@ import { useFontsReady } from "./use-seen";
 
    Behind them, two black-and-white photographs take turns, each held
    for four seconds and crossing slowly into the other (the user's ask,
-   for now: stone by Liz Grin and a swirl of light by Sudhanshu Singh,
-   both on Unsplash). They are ground, not picture: half seen over the
+   2026-10-15: soft folds of light by Alexander X and a dune-like slope
+   by Mathias Reding, both on Unsplash). They are ground, not picture: half seen over the
    black and softened, so the white type is the only hard thing on the
    screen. For anyone who has asked for less motion the first one simply
    stays.
@@ -45,15 +45,15 @@ const LIGHT_AT_MS = [450 / SPEED, 1500 / SPEED];
 /** A ground for the statement: one photograph at two widths. */
 export type HeroPhoto = { small: string; large: string };
 
-const STONE: HeroPhoto = {
-  small: "/about/stone-1280.jpg",
-  large: "/about/stone-2400.jpg",
+const FOLDS: HeroPhoto = {
+  small: "/about/folds-1280.jpg",
+  large: "/about/folds-2400.jpg",
 };
-const SWIRL: HeroPhoto = {
-  small: "/about/swirl-1280.jpg",
-  large: "/about/swirl-2400.jpg",
+const DUNE: HeroPhoto = {
+  small: "/about/dune-1280.jpg",
+  large: "/about/dune-2400.jpg",
 };
-const PHOTOS = [STONE, SWIRL];
+const PHOTOS = [FOLDS, DUNE];
 
 /** How long each photograph is held, in ms (the crossing is in CSS, see
     .abt-hero-slide). */
