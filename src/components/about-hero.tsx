@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useReducedMotion } from "motion/react";
 import { Illuminated } from "./services";
 import { useFontsReady } from "./use-seen";
@@ -12,13 +11,10 @@ import { useFontsReady } from "./use-seen";
    each paragraph's last line centred under the block, so the words
    stand as one slab.
 
-   Behind them, two black-and-white photographs take turns, each held
-   for four seconds and crossing slowly into the other (the user's ask,
-   2026-10-15: soft folds of light by Alexander X and a dune-like slope
-   by Mathias Reding, both on Unsplash). They are ground, not picture: half seen over the
-   black and softened, so the white type is the only hard thing on the
-   screen. For anyone who has asked for less motion the first one simply
-   stays.
+   Behind them, one black-and-white photograph (the user's pick,
+   2026-10-15: soft folds of light by Alexander X, on Unsplash). It is
+   ground, not picture: half seen over the black and softened, so the
+   white type is the only hard thing on the screen.
 
    The copy is lit as the service copy is, grey to white, one line after
    another, the second paragraph picking the light up as the first one
@@ -42,58 +38,32 @@ const SPEED = 2.5;
 const LIGHT_MS = 1500 / SPEED;
 const LIGHT_AT_MS = [450 / SPEED, 1500 / SPEED];
 
-/** A ground for the statement: one photograph at two widths. */
-export type HeroPhoto = { small: string; large: string };
-
-const FOLDS: HeroPhoto = {
+/** The statement's ground: one photograph at two widths. */
+const PHOTO = {
   small: "/about/folds-1280.jpg",
   large: "/about/folds-2400.jpg",
 };
-const DUNE: HeroPhoto = {
-  small: "/about/dune-1280.jpg",
-  large: "/about/dune-2400.jpg",
-};
-const PHOTOS = [FOLDS, DUNE];
-
-/** How long each photograph is held, in ms (the crossing is in CSS, see
-    .abt-hero-slide). */
-const HOLD_MS = 4000;
 
 export function AboutHero() {
   const reduce = useReducedMotion() ?? false;
   const fonts = useFontsReady();
-  const [shown, setShown] = useState(0);
-
-  useEffect(() => {
-    if (reduce) return;
-    const id = window.setInterval(() => setShown((i) => (i + 1) % PHOTOS.length), HOLD_MS);
-    return () => window.clearInterval(id);
-  }, [reduce]);
 
   return (
     <section
       aria-labelledby="about-title"
       className="abt-hero relative isolate flex min-h-[100svh] items-center overflow-hidden bg-ink text-paper"
     >
-      {PHOTOS.map((photo, i) => (
-        <span
-          key={photo.large}
-          aria-hidden="true"
-          data-shown={i === shown ? "" : undefined}
-          className="abt-hero-slide absolute inset-0 -z-20"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={photo.large}
-            srcSet={`${photo.small} 1280w, ${photo.large} 2400w`}
-            sizes="100vw"
-            alt=""
-            draggable={false}
-            fetchPriority={i === 0 ? "high" : "auto"}
-            className="abt-hero-photo size-full object-cover select-none"
-          />
-        </span>
-      ))}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={PHOTO.large}
+        srcSet={`${PHOTO.small} 1280w, ${PHOTO.large} 2400w`}
+        sizes="100vw"
+        alt=""
+        aria-hidden="true"
+        draggable={false}
+        fetchPriority="high"
+        className="abt-hero-photo absolute inset-0 -z-20 size-full object-cover select-none"
+      />
       <span aria-hidden="true" className="abt-hero-scrim absolute inset-0 -z-10" />
       <span aria-hidden="true" className="abt-grain absolute inset-0 -z-10" />
 
