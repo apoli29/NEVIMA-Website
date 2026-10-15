@@ -40,8 +40,8 @@ const LIGHT_AT_MS = [450 / SPEED, 1500 / SPEED];
 
 /** The statement's ground: one photograph at two widths. */
 const PHOTO = {
-  small: "/about/folds-1280.jpg",
-  large: "/about/folds-2400.jpg",
+  small: "/about/folds-1280.webp",
+  large: "/about/folds-2400.webp",
 };
 
 export function AboutHero() {

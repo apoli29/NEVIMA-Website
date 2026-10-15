@@ -58,7 +58,7 @@ const FOUNDERS: Founder[] = [
       "User interface and user experience",
       "Photo and video shooting",
     ],
-    photo: "/cofounders/ec.jpeg",
+    photo: "/cofounders/ec.webp",
     links: [
       { label: "LinkedIn", href: "" },
       { label: "Portfolio", href: "" },
@@ -77,7 +77,7 @@ const FOUNDERS: Founder[] = [
       "Corporate identity (brand storytelling)",
       "SEO",
     ],
-    photo: "/cofounders/ap.jpeg",
+    photo: "/cofounders/ap.webp",
     links: [{ label: "LinkedIn", href: "" }],
   },
 ];
