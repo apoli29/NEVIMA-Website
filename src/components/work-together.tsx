@@ -39,8 +39,8 @@ import {
    ================================================================== */
 
 const PHOTOS = [
-  { small: "/contact/water-1280.jpg", large: "/contact/water-2400.jpg" },
-  { small: "/contact/sand-1280.jpg", large: "/contact/sand-2400.jpg" },
+  { small: "/contact/water-1280.webp", large: "/contact/water-2400.webp" },
+  { small: "/contact/sand-1280.webp", large: "/contact/sand-2400.webp" },
 ];
 const HOLD_MS = 4000;
 
