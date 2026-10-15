@@ -88,14 +88,17 @@ Estes trechos ficam destacados a laranja escuro no HTML e no PDF, para os sócio
 
 ### Alojamento (cl. 11)
 - O alojamento é feito no plano **Pro** da Vercel (decidido 2026-10-16).
-- **Correção de 2026-10-16 (v1.2):** os sócios querem manter os **períodos de 2 anos renováveis automaticamente**, com a salvaguarda da cl. 11.3. É o **site** que muda para bater com o contrato. A v1.1 tinha feito o contrário, por erro de leitura.
-- Qualquer das partes pode não renovar, avisando com 90 dias de antecedência. Nesse caso, a nevima apresenta as condições em vigor nessa altura para continuar a alojar o website, ou entrega o código e os ficheiros sem custo.
+- **Períodos (v1.3, 2026-10-16):** o alojamento é gratuito. O primeiro período é de **1 ano** a contar do Lançamento. Depois renova-se automaticamente por **períodos de 6 meses**. (A v1.1 dizia "enquanto o website estiver no ar" e a v1.2 dizia períodos de 2 anos; ambas ficaram para trás.)
+- **Não renovação:** é preciso avisar com **2 meses** de antecedência.
+  - A nevima só pode não renovar por motivos alheios à sua vontade (preços ou condições da Vercel, alteração da lei, etc.) e indica o motivo no aviso.
+  - Nesse caso, apresenta condições para continuar, que podem incluir um preço.
+  - Se o Cliente não as aceitar, ou se for ele a não renovar, recebe o código e os ficheiros sem custo.
 - **O site não foi alterado** (pedido do utilizador, 2026-10-16: só o contrato muda). O site continua a dizer "for as long as your website is live" em `services.ts`, `about-faq.tsx`, `comparison.tsx` e `pricing.ts`. Fica em aberto se e quando o site muda.
 - O limite de tráfego passa a **100 mil CDN requests por mês**, sem limite em GB. Fica a laranja até ser confirmado.
 - Contas da Vercel: com cerca de 100 visitas por site por mês, os 30 sites cabem no Pro (20 $/mês) sem custos extra.
 
 ## Estado
-A v1.1 foi aplicada em 2026-10-16 e a v1.2 (alojamento por períodos de 2 anos) no mesmo dia: `contratos/contrato-nevima-v1.1.pdf`, com 18 páginas e 5 partes. A Descrição dos serviços passou a Parte II, a Proposta a Parte III, o anexo para particulares a Parte IV e o Acordo de Tratamento de Dados a Parte V.
+A v1.1 foi aplicada em 2026-10-16, e a v1.2 e a v1.3 (alojamento) no mesmo dia; o PDF atual é `contratos/contrato-nevima-v1.3.pdf`: `contratos/contrato-nevima-v1.1.pdf`, com 18 páginas e 5 partes. A Descrição dos serviços passou a Parte II, a Proposta a Parte III, o anexo para particulares a Parte IV e o Acordo de Tratamento de Dados a Parte V.
 
 ## Por decidir (a laranja na v1.1)
 - **Domínio (cl. 10):** confirmar o processo da partilha de conta.
