@@ -250,9 +250,6 @@ type PhaseBox = { left: number; width: number; head: number };
 type Layout = {
   /** How far the row has to travel to bring its last step in. */
   travel: number;
-  /** The pinned screen's empty room under the row, taken back from the
-      page so the next section follows the row, not the screen's foot. */
-  tail: number;
   /** The rail's height in the row: the top of the steps. */
   railTop: number;
   /** The rail's length: the row, less its padding on the right. */
@@ -262,7 +259,7 @@ type Layout = {
   phases: PhaseBox[];
 };
 
-const NO_LAYOUT: Layout = { travel: 0, tail: 0, railTop: 0, railWidth: 1, stops: [], phases: [] };
+const NO_LAYOUT: Layout = { travel: 0, railTop: 0, railWidth: 1, stops: [], phases: [] };
 
 let fold: (() => (() => void) | null) | null = null;
 
@@ -317,7 +314,6 @@ export function Process({ ready }: { ready: boolean }) {
       const first = t.querySelector<HTMLElement>("[data-steps]");
       setLayout({
         travel: Math.max(0, Math.ceil(t.scrollWidth - (v.clientWidth - lead))),
-        tail: Math.max(0, Math.floor(sc.clientHeight - (v.offsetTop + v.offsetHeight))),
         railTop: first?.offsetTop ?? 0,
         railWidth: Math.max(1, t.scrollWidth - trail),
         stops: steps.map((el) => (el.offsetParent as HTMLElement | null)?.offsetLeft ?? 0).map(
@@ -391,15 +387,14 @@ export function Process({ ready }: { ready: boolean }) {
       id="how-we-work"
       aria-labelledby="process-title"
       className="relative z-10 bg-paper"
-      // The next section is drawn up over the pinned screen's empty foot
-      // (user: too much room before it), so it comes to rest right under
-      // the row as the pin lets go; it only ever covers blank paper.
-      style={{
-        marginBottom: -layout.tail,
-        ...(reduce
-          ? {}
-          : { height: folded ? "100svh" : `calc(100svh + ${Math.round(layout.travel * SLOW)}px)` }),
-      }}
+      // The next section starts right at the foot of the pinned screen, so
+      // its black comes up from the bottom of the screen the moment the pin
+      // lets go (user, 2026-10-15), never while the row is still sliding.
+      style={
+        reduce
+          ? undefined
+          : { height: folded ? "100svh" : `calc(100svh + ${Math.round(layout.travel * SLOW)}px)` }
+      }
     >
       {/* The heading and the row as one block, the row close under the
           heading, held in the middle of the screen below the bar while the

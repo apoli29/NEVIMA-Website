@@ -1472,9 +1472,15 @@
      shake for about three seconds. Pointed at, the capsule opens in the
      line, the two part and "Find out more about us" comes up between
      them; the words around make room for it. Opened from studio.tsx
-     (data-open), so the reflow it causes cannot close it again. */
+     (data-open), which works out the opened width first, so the reflow
+     it causes cannot close it again. */
+  /* "two" and the capsule never part: no break and no stretchable space
+     between them, a word space's room instead (the face's space, with
+     the statement's tracking, is 0.1777em). */
+  .std-two { white-space: nowrap; }
   .std-faces {
     display: inline-block;
+    margin-left: 0.177em;
     vertical-align: -0.12em;
     height: 0.86em;
     cursor: pointer;
@@ -1505,7 +1511,8 @@
   /* The words between the two: no room at rest (the faces overlap), and
      opened out in the line when pointed at. */
   .std-faces-say {
-    display: block;
+    display: flex;
+    justify-content: center;
     max-width: 0;
     margin-inline: -0.1em;
     overflow: hidden;
@@ -1517,6 +1524,7 @@
   }
   .std-faces-say > span {
     display: block;
+    flex-shrink: 0;
     padding-inline: 0.7em;
     font-family: var(--font-mono);
     font-size: 0.21em;
@@ -1528,19 +1536,16 @@
     color: var(--color-paper);
     -webkit-text-stroke: 0;
   }
-  .std-faces[data-open] .std-faces-in,
-  .std-faces:focus-visible .std-faces-in { animation-play-state: paused; }
-  .std-faces[data-open] .std-faces-say,
-  .std-faces:focus-visible .std-faces-say {
-    max-width: 4em;
+  /* Opened, the shake stops (studio.tsx eases out a tilt under way). The
+     words' room is the width studio.tsx works out for them. */
+  .std-faces[data-open] .std-faces-in { animation: none; }
+  .std-faces[data-open] .std-faces-say {
     margin-inline: 0.06em;
     opacity: 1;
     transition-delay: 0s, 0s, 0.15s;
   }
-  .std-faces[data-open] .std-face:first-child,
-  .std-faces:focus-visible .std-face:first-child { transform: rotate(-8deg); }
-  .std-faces[data-open] .std-face:last-child,
-  .std-faces:focus-visible .std-face:last-child { transform: rotate(8deg); }
+  .std-faces[data-open] .std-face:first-child { transform: rotate(-8deg); }
+  .std-faces[data-open] .std-face:last-child { transform: rotate(8deg); }
   /* About three seconds of a strong shake (half the 6s beat), easing off
      only at its very end, then still. */
   @keyframes std-faces-shake {
