@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "motion/react";
 import { ENTER_EASE } from "./enter";
 import { Illuminated } from "./services";
@@ -180,8 +180,17 @@ function InkStatement({ reduce }: { reduce: boolean }) {
         </Stroke>,
       );
       break;
+    } else if (i === PORTRAITS_AFTER) {
+      // "two" and the two of them are held together, with no space the
+      // justification could stretch between them: opened, the capsule
+      // grows on from where it stands and never slides away from the word.
+      out.push(
+        <span key="two" className="std-two">
+          {word(i)}
+          <Portraits progress={scrollYProgress} from={at(i)} reduce={reduce} />
+        </span>,
+      );
     } else out.push(word(i));
-    if (i === PORTRAITS_AFTER) out.push(<Fragment key="p"> <Portraits progress={scrollYProgress} from={at(i)} reduce={reduce} /></Fragment>);
     if (i < n - 1) out.push(" ");
   }
 
@@ -239,9 +248,19 @@ function Stroke({
 /* The two of them, set into the line after "two": round portraits in
    colour in a capsule, inked in with the words around them. They are
    the section's way to the about page (user, 2026-10-14): every few
-   seconds they give a little shake, and pointed at they part and "Find
-   out more about us" comes up between them. The parting is drawn over
-   the line, never in it, so the justified text around never moves. */
+   seconds they give a shake, and pointed at (or reached from the
+   keyboard) the capsule opens in the line: the two part, "Find out more
+   about us" opens out between them and the words make room for it.
+
+   Opening reflows the justified paragraph, so the opened capsule is
+   worked out before it is shown (user, 2026-10-15: it opened and closed
+   in a loop, thrown back and forth along its line). It is held to "two"
+   (see InkStatement), so it only grows on from where it stands. Where
+   its opened width sends the next word down a line, it grows on to the
+   end of its own line, so the line stays full and the justification
+   has no gap to throw open. And it is held open until the pointer is
+   clearly away from both where it was and where it now is. A shake
+   under way is eased out, not frozen at its tilt. */
 function Portraits({
   progress,
   from,
@@ -251,32 +270,104 @@ function Portraits({
   from: number;
   reduce: boolean;
 }) {
-  // Opened as the pointer arrives and held open until it is clearly away
-  // from the opened capsule: opening reflows the justified line and can
-  // slide the capsule a little, which must not read as leaving it.
   const [open, setOpen] = useState(false);
   const self = useRef<HTMLAnchorElement>(null);
+  const shell = useRef<HTMLSpanElement>(null);
+  const say = useRef<HTMLSpanElement>(null);
+  const words = useRef<HTMLSpanElement>(null);
+  // Opened by the pointer, it closes once the pointer is away; from the
+  // keyboard, once the focus moves on.
+  const by = useRef<"pointer" | "focus">("pointer");
+  // Where the capsule stood as it was opened, the width it opens to, and
+  // the shake's tilt at that moment.
+  const was = useRef<DOMRect | null>(null);
+  const width = useRef(0);
+  const tilt = useRef("none");
+
+  const show = (how: "pointer" | "focus") => {
+    const a = self.current;
+    const s = say.current;
+    const w = words.current;
+    const line = a?.closest("p");
+    if (open || !a || !s || !w || !line) return;
+    by.current = how;
+    was.current = a.getBoundingClientRect();
+    tilt.current = shell.current ? getComputedStyle(shell.current).transform : "none";
+
+    // Set open for a moment, with nothing moving and the line ragged: its
+    // breaks fall where they will once open, and the room left at the end
+    // of the capsule's line can be read.
+    const before = getComputedStyle(s);
+    const fromMax = before.maxWidth;
+    const fromWidth = s.style.width;
+    const fromMargin = before.marginLeft;
+    s.style.transition = "none";
+    line.style.textAlign = "left";
+    const own = w.offsetWidth;
+    s.style.width = s.style.maxWidth = `${own}px`;
+    s.style.marginInline = "0.06em";
+    const capsule = a.getBoundingClientRect();
+    const next = a.parentElement?.nextElementSibling?.getBoundingClientRect();
+    const ends = !!next && next.top >= capsule.bottom;
+    const lineEnd = line.getBoundingClientRect().right - parseFloat(getComputedStyle(line).paddingRight);
+    width.current = own + (ends ? Math.max(0, Math.floor(lineEnd - capsule.right)) : 0);
+
+    // Back as it stood, closed or still closing, to be opened from there.
+    s.style.maxWidth = fromMax;
+    s.style.width = fromWidth;
+    s.style.marginInline = fromMargin;
+    line.style.textAlign = "";
+    void s.offsetWidth;
+    s.style.transition = "";
+    setOpen(true);
+  };
+
+  useLayoutEffect(() => {
+    const s = say.current;
+    if (!s) return;
+    // Closing, it keeps its width and its room is taken back to nothing.
+    if (!open) {
+      s.style.maxWidth = "";
+      return;
+    }
+    s.style.width = s.style.maxWidth = `${width.current}px`;
+    s.style.marginInline = "";
+    if (!reduce && tilt.current !== "none")
+      shell.current?.animate([{ transform: tilt.current }, { transform: "none" }], {
+        duration: 320,
+        easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+      });
+  }, [open, reduce]);
+
   useEffect(() => {
     if (!open) return;
+    // A new width sets the line anew: closed, it is worked out again.
+    const onResize = () => setOpen(false);
+    window.addEventListener("resize", onResize);
+    if (by.current === "focus")
+      return () => window.removeEventListener("resize", onResize);
     const onMove = (event: PointerEvent) => {
-      const r = self.current?.getBoundingClientRect();
-      if (!r) return;
+      const now = self.current?.getBoundingClientRect();
+      const then = was.current;
+      if (!now || !then) return;
       const pad = 18;
-      const inside =
+      const near = (r: DOMRect) =>
         event.clientX > r.left - pad &&
         event.clientX < r.right + pad &&
         event.clientY > r.top - pad &&
         event.clientY < r.bottom + pad;
-      if (!inside) setOpen(false);
+      if (!near(now) && !near(then)) setOpen(false);
     };
     const onLeave = () => setOpen(false);
     window.addEventListener("pointermove", onMove, { passive: true });
     document.documentElement.addEventListener("pointerleave", onLeave);
     return () => {
+      window.removeEventListener("resize", onResize);
       window.removeEventListener("pointermove", onMove);
       document.documentElement.removeEventListener("pointerleave", onLeave);
     };
   }, [open]);
+
   const opacity = useTransform(progress, [from, from + 0.06], [0.35, 1]);
   const scale = useTransform(progress, [from, from + 0.08], [0.82, 1]);
   return (
@@ -286,18 +377,24 @@ function Portraits({
       className="std-faces"
       data-open={open ? "" : undefined}
       onPointerEnter={(e) => {
-        if (e.pointerType === "mouse") setOpen(true);
+        if (e.pointerType === "mouse") show("pointer");
+      }}
+      onFocus={(e) => {
+        if (e.currentTarget.matches(":focus-visible")) show("focus");
+      }}
+      onBlur={() => {
+        if (by.current === "focus") setOpen(false);
       }}
       style={reduce ? undefined : { opacity, scale }}
       aria-label="Find out more about us"
     >
-      <span className="std-faces-in">
+      <span ref={shell} className="std-faces-in">
         <span className="std-face">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={FOUNDERS[0].photo} alt="" draggable={false} style={{ objectPosition: FOUNDERS[0].focus }} />
         </span>
-        <span aria-hidden="true" className="std-faces-say">
-          <span>Find out more about us</span>
+        <span ref={say} aria-hidden="true" className="std-faces-say">
+          <span ref={words}>Find out more about us</span>
         </span>
         <span className="std-face">
           {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -227,18 +227,17 @@ export function Comparison({ ready }: { ready: boolean }) {
     <section
       id="comparison"
       aria-labelledby="comparison-title"
-      // Under How we work, whose screen's empty foot it covers. The whole
-      // section is the card's surface now (.cmp-section), so its edge is
-      // seen: the heading gets a full section's room inside it, and the
-      // foot the same.
-      // Held well clear of How we work (user, 2026-10-14: the edge must
-      // not pull the eye while the process is being read), so it only
-      // comes up once the whole row has been seen and has gone by.
+      // Right under How we work's pinned screen. The whole section is the
+      // card's surface now (.cmp-section), so its edge is seen: the heading
+      // gets a full section's room inside it, and the foot the same.
+      // Its edge comes up from the foot of the screen the moment the pin
+      // lets go (user, 2026-10-15), so the black starts with the first
+      // scroll after the row has gone by, and never before.
       // The black is under a liquid edge (see liquid-edge.tsx): a band at
       // the top that comes up with a swell on it and settles flat. The
       // ground starts at the band's foot, so the band's room is added to
       // the heading's.
-      className="cmp-section relative isolate z-10 mt-[30svh] pt-[calc(var(--section-gap)+var(--cmp-edge))] pb-(--section-gap) text-paper"
+      className="cmp-section relative isolate z-10 pt-[calc(var(--section-gap)+var(--cmp-edge))] pb-(--section-gap) text-paper"
     >
       <LiquidEdge colour="#0b0b0b" className="cmp-edge" />
       <div aria-hidden="true" className="cmp-ground" />
