@@ -159,6 +159,14 @@ const PHASES: Phase[] = [
         cta: [explore("visual-identity", "Visual Identity")],
       },
       {
+        id: "trademark",
+        name: "Registering your trademark",
+        extra: "identity",
+        principle: "Your brand, registered.",
+        text: "With your identity ready, we book a meeting, included in the price, to register your trademark together.",
+        who: "You and us",
+      },
+      {
         id: "strategy",
         name: "A call for your feedback",
         principle: "Structure first, then we talk.",
