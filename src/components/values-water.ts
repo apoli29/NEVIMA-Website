@@ -100,12 +100,15 @@ const JOIN_S = 1.25;
 /** The room the joined piece leaves round the value's words, in the
     words' own ems, across and up and down (the user asked for more). The
     page's callout reads it too, to start at the piece's edge. */
-export const PIECE_PAD = { x: 2.9, y: 2.2 };
+export const PIECE_PAD = { x: 3.3, y: 3.1 };
 
 /** The room across, less on a phone, where the piece would otherwise
     reach the screen's edges. */
 export const padX = () =>
   typeof window !== "undefined" && window.innerWidth < 640 ? 2.1 : PIECE_PAD.x;
+/** The room up and down, likewise less on a phone. */
+export const padY = () =>
+  typeof window !== "undefined" && window.innerWidth < 640 ? 2.2 : PIECE_PAD.y;
 const WORDS_IN_S = 0.38;
 /** The joined piece: how much its outline still wanders and how much of
     its highlight it keeps, as shares of the loose drops'. */
@@ -493,9 +496,9 @@ export function useValuesWater(
         // outline never comes in over them.
         const fs = parseFloat(getComputedStyle(m).fontSize) || 16;
         const left = b.left - o.left - padX() * fs;
-        const top = b.top - o.top - PIECE_PAD.y * fs;
+        const top = b.top - o.top - padY() * fs;
         const bw = b.width + 2 * padX() * fs;
-        const bh = b.height + 2 * PIECE_PAD.y * fs;
+        const bh = b.height + 2 * padY() * fs;
         if (bw > 0 && bh > 0) meet = meetFor(left + bw / 2, top + bh / 2, bw, bh);
       }
       c.remeasure = false;
