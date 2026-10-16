@@ -16,8 +16,9 @@ import { useSeen } from "./use-seen";
    label over it: what it is on the left, the tense it speaks in on the
    right, on a black hairline drawn in as it is seen.
 
-   The words are the studio's own (written in Portuguese, translated
-   here as closely as English allows). The type is lit as the rest of
+   The words are the studio's own, written in Portuguese and adapted
+   so they read naturally in English, never changed in what they say
+   (user, 2026-10-16). The type is lit as the rest of
    the site's copy is, grey to black, so the page reads as one material.
    ================================================================== */
 
@@ -26,14 +27,14 @@ const PIECES = [
     id: "mission",
     label: "Mission",
     tense: "What we do, today",
-    text: "To provide small and medium-sized businesses around the world with top-tier web development services that are efficient, complete and free from the bureaucracy and complications usual in the sector, through the most cutting-edge technologies and know-how available.",
+    text: "To give small and medium-sized busi\u00adness\u00ades all over the world top-tier web de\u00advel\u00adop\u00adment: ef\u00adfi\u00adcient, com\u00adplete and free of the red tape and com\u00adpli\u00adca\u00adtions the in\u00addus\u00adtry is known for, powered by the most cutting-edge tech\u00adnol\u00adogy and know-how available.",
     place: "lg:col-span-8",
   },
   {
     id: "vision",
     label: "Vision",
     tense: "Where it leads",
-    text: "To make Nevima a reference in web development, able to take on projects of different sizes through constantly evolving know-how and the best, most advanced technologies.",
+    text: "To make Nevima a bench\u00admark in web de\u00advel\u00adop\u00adment, ready to take on proj\u00adects of every size, driven by con\u00adstant\u00adly e\u00advolv\u00ading know-how and the best, most ad\u00advanced tech\u00adnol\u00adogy.",
     place: "lg:col-span-8 lg:col-start-5 lg:mt-[clamp(2.5rem,5vw,4.5rem)]",
   },
 ] as const;
