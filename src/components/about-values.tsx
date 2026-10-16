@@ -39,12 +39,9 @@ import { PIECE_PAD, useValuesWater, type ValuesControl } from "./values-water";
    holds with the other three, and the join is that said without words.
    A press anywhere on the water, or Esc, lets the four go back.
 
-   The four are the studio's own (user, 2026-10-13), written in English
-   from their meaning rather than translated (user, 2026-10-16):
-   efficiency that never costs quality (Lean, not lesser); the process
-   and the price shown up front (No black boxes); no charging for every
-   little thing (No small print); and keeping up with the tools and
-   practices of the web (Always current).
+   The four are the studio's own (user, 2026-10-13): their content as
+   the user wrote it, only the writing adapted to read naturally in
+   English (user, 2026-10-16: adapt the writing, never the content).
 
    The drops are drawn on a canvas; what is pressed is a real button set
    exactly under each one, so the page works from the keyboard and to a
@@ -54,23 +51,23 @@ import { PIECE_PAD, useValuesWater, type ValuesControl } from "./values-water";
 const VALUES = [
   {
     id: "quality",
-    name: "Lean, not lesser",
-    text: "We cut out everything that slows a project down, never what makes it good. An excellent website, sooner, and more for your money.",
+    name: "Efficiency with quality",
+    text: "We focus on making all of our processes efficient, without ever compromising the quality we deliver. The result? Excellent websites, delivered in less time and with outstanding value for money.",
   },
   {
     id: "open",
-    name: "No black boxes",
-    text: "You see exactly how we work and how we price it: the whole process is laid out, and you get an estimate before we’ve even spoken.",
+    name: "Transparency",
+    text: "It matters to us that our clients know how we work and how we put a value on what we do. That’s why we explain our whole process and aim to give you a price estimate right from the start.",
   },
   {
     id: "ease",
-    name: "No small print",
-    text: "We take things off your plate, not add to them. No charging for every little extra: hosting is free and basic SEO comes built in.",
+    name: "Making it easy",
+    text: "We want to bring peace of mind, not complications, to the clients who trust us. That’s why we break with the market norm of charging for every little thing, such as a monthly hosting fee.",
   },
   {
     id: "current",
-    name: "Always current",
-    text: "We keep pace with the tools and practices shaping the web, so what we build is fresh and distinctive, never off the shelf.",
+    name: "Committed to the cutting edge",
+    text: "We make a point of keeping up with the market’s practices and tools, so that our service always offers innovative, distinctive solutions.",
   },
 ] as const;
 
