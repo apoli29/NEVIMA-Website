@@ -509,25 +509,37 @@ function Callout({
         const right = b.right - box.left;
         const rise = 46;
         const need = rise + RUN + 24;
-        // Off whichever end of the piece has room; where neither has (a
-        // phone), up off its top, towards the wider side.
-        let ax: number;
-        let ay = b.top - box.top - 4;
-        let dir: 1 | -1;
+        const make = (ax: number, ay: number, dir: 1 | -1, up: 1 | -1): Lead => {
+          const bx = ax + dir * rise;
+          const room = dir === 1 ? maxX - bx : bx - minX;
+          return { ax, ay, bx, by: ay - up * rise, run: Math.min(RUN + 24, room), dir };
+        };
+        // Off whichever end of the piece has room; where neither has, up
+        // off its top, towards the wider side, unless that runs into the
+        // heading over it (a wide piece reaches up to the title on a
+        // laptop): then down off its foot instead.
+        let lead: Lead;
         if (maxX - right >= need) {
-          dir = 1;
-          ax = right + 4;
+          lead = make(right + 4, b.top - box.top - 4, 1, 1);
         } else if (left - minX >= need) {
-          dir = -1;
-          ax = left - 4;
+          lead = make(left - 4, b.top - box.top - 4, -1, 1);
         } else {
-          dir = right - minX > maxX - left ? -1 : 1;
-          ax = dir === -1 ? right - b.width * 0.18 : left + b.width * 0.18;
-          ay = b.top - box.top - 2;
+          const dir: 1 | -1 = right - minX > maxX - left ? -1 : 1;
+          const ax = dir === -1 ? right - b.width * 0.18 : left + b.width * 0.18;
+          lead = make(ax, b.top - box.top - 2, dir, 1);
+          const heading = [...sec.querySelectorAll<HTMLElement>("#values-title, .abt-val-sub")].map((h) => {
+            const hr = h.getBoundingClientRect();
+            return { l: hr.left - box.left, r: hr.right - box.left, t: hr.top - box.top, b: hr.bottom - box.top };
+          });
+          const pad = 12;
+          const hits = boxesOf(lead).some((x) =>
+            heading.some((y) => x.l < y.r + pad && x.r + pad > y.l && x.t < y.b + pad && x.b + pad > y.t),
+          );
+          if (hits) {
+            const foot = r.bottom - box.top + padY() * fs;
+            lead = make(ax, foot + 2, dir, -1);
+          }
         }
-        const bx = ax + dir * rise;
-        const room = dir === 1 ? maxX - bx : bx - minX;
-        const lead = { ax, ay, bx, by: ay - rise, run: Math.min(RUN + 24, room), dir };
         placed.set(id, lead);
         setLead(lead);
       }
