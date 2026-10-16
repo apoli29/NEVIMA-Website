@@ -26,15 +26,15 @@ import { Illuminated } from "./services";
 /* Soft hyphens in the long words: justified in a narrow column, the
    lines can break inside them rather than open gaps around them. */
 const STATEMENT =
-  "Nevima is a studio of two young friends who go way back, sharing a fas\u00adci\u00adna\u00adtion with com\u00admu\u00adni\u00adca\u00adtion and web de\u00advel\u00adop\u00adment. We\u2019re not here to be one more studio doing more of the same: we came with a com\u00adplete\u00adly dif\u00adfer\u00adent proposition.";
+  "Nevima is a studio of two young friends who go way back and share a fas\u00adci\u00adna\u00adtion with com\u00admu\u00adni\u00adca\u00adtion and web de\u00advel\u00adop\u00adment. We didn\u2019t set out to be one more studio doing more of the same, but to bring a com\u00adplete\u00adly dif\u00adfer\u00adent proposition.";
 
 /* The pillar, up to and including the colon it turns on. */
 const PILLAR =
-  "Our pillar is efficiency, because we produce elite results without needing long execution times. The secret is simple:";
+  "Our pillar is efficiency, because we deliver elite results without long turnaround times. The secret is simple:";
 
 /* And what follows it, which is run through with a black marker. */
 // A non-breaking hyphen: "know-how" is never split across two lines.
-const PILLAR_MARK = "the know\u2011how we have and the use of the right tools.";
+const PILLAR_MARK = "the know\u2011how we have and using the right tools.";
 
 /** How far out of the shell each half of the statement starts, in pixels. */
 const ENTER_SHIFT = 56;

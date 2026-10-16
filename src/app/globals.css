@@ -1435,13 +1435,13 @@
   /* Justified type only sets evenly where the words fall well on each
      line. The size is tied to the measure, so the lines break in the same
      places at every width, and the two sizes were picked by measuring the
-     word gaps of every line (the widest about two thirds of an em): 8.8cqi,
-     on the 40% column and on a phone alike, with soft hyphens set in the
+     word gaps of every line (the widest about 0.6em): 8.6cqi on a phone
+     and 10.4cqi on the column from lg, with soft hyphens set in the
      long words (studio.tsx). Recalculate it if the copy changes. No
      automatic hyphenation: where a browser has it, it would move the
      breaks this was tuned on. */
   .std-statement {
-    font-size: 8.8cqi;
+    font-size: 8.6cqi;
     line-height: 1.12;
     letter-spacing: -0.022em;
     text-align: justify;
@@ -1452,7 +1452,7 @@
      more), the best-set size near it for this width (widest gap about
      0.9em, "proposition." alone on the last line). */
   @media (min-width: 1024px) {
-    .std-statement { font-size: 10.43cqi; }
+    .std-statement { font-size: 10.4cqi; }
   }
   .std-read { color: var(--color-ink); }
   .std-word {
