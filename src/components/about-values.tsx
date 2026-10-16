@@ -12,7 +12,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { SlideIn } from "./enter";
 import { useInkAlign } from "./ink-align";
 import { useSeen } from "./use-seen";
-import { PIECE_PAD, padX, useValuesWater, type ValuesControl } from "./values-water";
+import { padX, padY, useValuesWater, type ValuesControl } from "./values-water";
 
 /* ==================================================================
    Values
@@ -57,7 +57,7 @@ const VALUES = [
   {
     id: "open",
     name: "Transparency",
-    text: "It matters to us that our clients know how we work and how we put a value on what we do. That’s why we explain our whole process and aim to give you a price estimate right from the start.",
+    text: "For us, it\u2019s non-negotiable that our clients know how we work and how we put a value on what we do. That’s why we explain our whole process and aim to give you a price estimate right from the start.",
   },
   {
     id: "ease",
@@ -67,7 +67,7 @@ const VALUES = [
   {
     id: "current",
     name: "Committed to the cutting edge",
-    text: "We\u2019re whole\u00adheart\u00adedly com\u00admit\u00adted to being as in\u00adno\u00adva\u00adtive as possible, in the tools we use and in our practices and processes.",
+    text: "We\u2019re whole\u00adheart\u00adedly com\u00admit\u00adted to being as in\u00adno\u00adva\u00adtive as possible, in the tools we use and in our practices and processes. We constantly adapt our workflow precisely so we can offer a service with a level of innovation well above the norm.",
   },
 ] as const;
 
@@ -502,7 +502,7 @@ function Callout({
         const b = {
           left: r.left - padX() * fs,
           right: r.right + padX() * fs,
-          top: r.top - PIECE_PAD.y * fs,
+          top: r.top - padY() * fs,
           width: r.width + 2 * padX() * fs,
         };
         const left = b.left - box.left;
