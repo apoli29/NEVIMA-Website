@@ -98,7 +98,7 @@ const ROWS: Row[] = [
   {
     id: "hosting",
     criterion: "Website hosting",
-    them: "Excessively expensive, with prices that can reach hundreds of euros a year.",
+    them: "Excessive costs, for two reasons: relying on platforms such as Wix, among others, that can charge over \u20ac100 a year; and a lack of transparency, which leads to prices far above what the service really costs.",
     lead: "Completely free,",
     us: "for as long as your website is live with us.",
   },
