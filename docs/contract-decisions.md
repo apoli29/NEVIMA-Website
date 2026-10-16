@@ -1,8 +1,8 @@
 # Contrato de prestação de serviços: decisões
 
-O estado atual do contrato, as decisões dos sócios e o que ainda está em aberto. A fonte é `contratos/contrato-nevima.html`, impresso em PDF com o Edge sem interface (ver o histórico do git). Este ficheiro descreve a **v1.4** (2026-10-16), em `contratos/contrato-nevima-v1.4.pdf`, com 19 páginas.
+O estado atual do contrato, as decisões dos sócios e o que ainda está em aberto. A fonte é `contratos/contrato-nevima.html`, impresso em PDF com o Edge sem interface (ver o histórico do git). Este ficheiro descreve a **v1.5** (2026-10-16), em `contratos/contrato-nevima-v1.5.pdf`. A v1.5 é a v1.4 com os pontos ajustáveis indicados em cada cláusula.
 
-Os trechos a laranja escuro (`.pending`) aguardam a decisão final dos sócios. As cláusulas marcadas **Ajustável** (6, 8, 10, 16 e 21) têm a etiqueta e uma frase no texto. Um ajuste só vale se ficar escrito nas Condições específicas da Proposta (cl. 5.2).
+Os trechos a laranja escuro (`.pending`) aguardam a decisão final dos sócios. As cláusulas ajustáveis têm a etiqueta **Ajustável** no título e uma frase que diz **quais os pontos** se podem ajustar (v1.5): **6.1** (sinal), **6.2** (prazo do pagamento final), **6.5** (meios de pagamento), **8.2** (prazo dos Materiais), **10.6** (desmarcação da sessão) e **21.2** (o sinal no cancelamento). A cl. 16 deixou de ser ajustável, porque as escolhas de portfólio e de crédito já se fazem na Proposta. Um ajuste só vale se ficar escrito nas Condições específicas, com a cláusula e o ponto (cl. 5.2).
 
 ## Estrutura (v1.4)
 - **Parte I, Condições Gerais:**
