@@ -2164,7 +2164,9 @@
   .abt-val-drop {
     font-size: clamp(1.25rem, 1.8vw, 1.625rem);
     width: min(100% - 6rem, 34em);
-    padding: 0.4em 0.6em;
+    /* More room inside on a phone: the glass is drawn round this box, and
+       its uneven edge would otherwise reach the last line. */
+    padding: 0.7em 0.85em 1.1em;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     row-gap: 0.7em;
@@ -2174,6 +2176,7 @@
   }
   @media (min-width: 640px) {
     .abt-val-drop {
+      padding: 0.4em 0.6em;
       grid-template-columns: auto minmax(0, 1fr);
       column-gap: 1.2em;
       align-items: start;
@@ -2186,12 +2189,12 @@
     line-height: 1;
     letter-spacing: -0.025em;
     color: var(--color-paper);
-    white-space: nowrap;
+    text-wrap: balance;
     text-box: trim-start cap alphabetic;
   }
   .abt-val-text {
     font-family: var(--font-read);
-    font-size: clamp(1.125rem, 1.5vw, 1.5rem);
+    font-size: clamp(0.9375rem, 1.35vw, 1.375rem);
     font-weight: 400;
     line-height: 1.4;
     letter-spacing: -0.008em;
