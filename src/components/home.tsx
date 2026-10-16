@@ -16,7 +16,7 @@ import { WorkTogether } from "./work-together";
 import { FloatingNav } from "./floating-nav";
 import { useGateway } from "./gateway";
 import { JellyField } from "./jelly-field";
-import { Process } from "./process";
+import { Process, showProcess } from "./process";
 import { ProposalOverlay, ProposalProvider, useProposalController } from "./proposal-flow";
 import { Services } from "./services";
 import { StatementScreen } from "./statement-screen";
@@ -281,17 +281,39 @@ export function Home() {
   // Read once, as the page is drawn: the effects below may run again (the
   // opening's trigger is rebuilt as reduced motion resolves) and must not
   // lose the request, so it is kept until it has been answered.
+  /* Sent here for How we work (the about page's FAQ): /#process for the
+     section's start, /#process-<step> for one step, which blinks once it
+     is on screen (see showProcess). Neither names an element, so the
+     router does not scroll anywhere of its own. The same as the form
+     otherwise: the opening runs on its own if it has not yet. */
+  const sent = useRef<string | null>(null);
   useEffect(() => {
-    if (window.location.hash !== "#proposal") return;
-    asked.current = true;
-    history.replaceState(null, "", window.location.pathname + window.location.search);
+    const hash = window.location.hash;
+    if (hash === "#proposal") asked.current = true;
+    else if (hash === "#process" || hash.startsWith("#process-")) sent.current = hash.slice("#process-".length);
+    else return;
+    history.replaceState(history.state, "", window.location.pathname + window.location.search);
   }, []);
   // Not opened yet: the opening runs on its own.
   useEffect(() => {
-    if (!asked.current || phaseRef.current !== "waiting") return;
+    if ((!asked.current && sent.current === null) || phaseRef.current !== "waiting") return;
     const t = window.setTimeout(open, 350);
     return () => window.clearTimeout(t);
   }, [open]);
+  // Open: the page is put on How we work once the section has measured
+  // itself, trying again for a moment if it has not yet.
+  useEffect(() => {
+    if (phase !== "open" || sent.current === null) return;
+    const id = sent.current;
+    let tries = 0;
+    let t = 0;
+    const go = () => {
+      if (showProcess(id || undefined) || ++tries > 20) sent.current = null;
+      else t = window.setTimeout(go, 100);
+    };
+    t = window.setTimeout(go, 250);
+    return () => window.clearTimeout(t);
+  }, [phase]);
   // Open (at once, if the opening was played earlier in the visit): the
   // form opens out of the bar's button.
   useEffect(() => {
