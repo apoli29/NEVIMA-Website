@@ -35,7 +35,7 @@
     size: A4;
     margin: 22mm 20mm 22mm 20mm;
     @bottom-left {
-      content: "nevima · Contrato de prestação de serviços · versão 1.3";
+      content: "nevima · Contrato de prestação de serviços · versão 1.4";
       font-family: "Geist Mono", monospace;
       font-size: 6.5pt;
       letter-spacing: 0.06em;
@@ -173,6 +173,7 @@
 
   /* ---- clauses ------------------------------------------------- */
   .clause { margin: 0 0 6.5mm; }
+  .clause.whole, .form-block.whole { break-inside: avoid; }
   .clause > .mono { display: block; margin-bottom: 1mm; }
   .clause h3 {
     font-family: var(--title);
@@ -285,10 +286,9 @@
   }
   .key .mono { display: block; margin-bottom: 0.6mm; font-weight: 500; }
 
-  /* ---- the description of services --------------------------- */
-  .svc { display: grid; grid-template-columns: 26mm 1fr; gap: 4mm; padding: 1.8mm 0; border-bottom: 1px solid var(--hair); break-inside: avoid; }
-  .svc > .mono { padding-top: 0.3em; }
-  .svc ul.sub { margin-top: 0; }
+  /* ---- a clause that may be adjusted, said in words ---------- */
+  .adj-note { margin: -0.6mm 0 2mm; font-size: 8.2pt; font-style: italic; color: var(--ash); }
+
 
   /* ---- blanks to fill in -------------------------------------- */
   .blank {
@@ -392,16 +392,15 @@
   <img class="cover-mark" src="../public/nevima-wordmark.svg" alt="nevima">
 
   <div>
-    <p class="mono" style="margin-bottom:5mm">Versão 1.3 · Outubro de 2026</p>
+    <p class="mono" style="margin-bottom:5mm">Versão 1.4 · Outubro de 2026</p>
     <h1 class="cover-title">Contrato de prestação de serviços</h1>
-    <p class="cover-lede">As condições em que a nevima desenha, constrói e aloja o website do Cliente, e presta os serviços que o acompanham: identidade visual, SEO, GEO e sessão fotográfica.</p>
+    <p class="cover-lede">As condições em que a nevima desenha, constrói e aloja o website do Cliente, e presta os serviços que o acompanham: identidade visual, sessão fotográfica, SEO e GEO.</p>
 
     <div class="cover-index">
       <div><span class="mono">Parte I</span><span>Condições Gerais</span></div>
-      <div><span class="mono">Parte II</span><span>Descrição dos serviços</span></div>
-      <div><span class="mono">Parte III</span><span>Proposta / Ordem de Serviço</span></div>
-      <div><span class="mono">Parte IV</span><span>Anexo para clientes particulares</span></div>
-      <div><span class="mono">Parte V</span><span>Acordo de Tratamento de Dados</span></div>
+      <div><span class="mono">Parte II</span><span>Proposta / Ordem de Serviço</span></div>
+      <div><span class="mono">Parte III</span><span>Anexo para clientes particulares</span></div>
+      <div><span class="mono">Parte IV</span><span>Acordo de Tratamento de Dados</span></div>
     </div>
 
     <p class="cover-draft"><span class="pending">Rascunho interno: os trechos a laranja aguardam decisão final.</span></p>
@@ -443,9 +442,9 @@
     <span class="mono">Cláusula 02</span>
     <h3>Objeto</h3>
     <ol class="items">
-      <li>Estas Condições Gerais regulam a prestação pela nevima dos serviços identificados na Proposta: web design, identidade visual, SEO, GEO, sessão fotográfica e os serviços que os acompanham (ligação ao domínio e alojamento).</li>
-      <li>A identidade visual, o SEO, o GEO e a sessão fotográfica só são prestados em conjunto com um website feito pela nevima.</li>
-      <li>O que cada serviço inclui e não inclui está descrito na Parte II. O âmbito concreto de cada projeto (páginas, línguas, formulários, serviços, preço e prazo) é o que consta da Proposta.</li>
+      <li>Estas Condições Gerais regulam a prestação pela nevima dos serviços identificados na Proposta: web design, identidade visual, sessão fotográfica, SEO e GEO.</li>
+      <li>A identidade visual, a sessão fotográfica, o SEO e o GEO só são prestados em conjunto com um website feito pela nevima.</li>
+      <li>Cada serviço tem uma cláusula própria, com o que inclui, o que não inclui e as suas condições. O âmbito concreto de cada projeto (páginas, línguas, formulários, serviços, preço e prazo) é o que consta da Proposta.</li>
     </ol>
   </div>
 
@@ -453,23 +452,33 @@
     <span class="mono">Cláusula 03</span>
     <h3>Definições</h3>
     <dl class="defs">
-      <div><dt>Proposta</dt><dd>O documento da Parte III, em que a nevima fixa o âmbito, o preço e o prazo do projeto, assinado pelo Cliente.</dd></div>
+      <div><dt>Proposta</dt><dd>O documento da Parte II, em que a nevima fixa o âmbito, o preço e o prazo do projeto, assinado pelo Cliente.</dd></div>
       <div><dt>Condições específicas</dt><dd>O espaço no fim da Proposta onde ficam escritos os ajustes às cláusulas marcadas como Ajustável.</dd></div>
       <div><dt>Materiais</dt><dd>Tudo o que o Cliente tem de entregar para o projeto começar: textos, fotografias, logótipo, acessos e outros indicados na Proposta.</dd></div>
       <div><dt>Prazo Acordado</dt><dd>O número de dias úteis fixado na Proposta para concluir o website.</dd></div>
       <div><dt>Chamada de Acompanhamento</dt><dd>A chamada gratuita, a meio do projeto, em que a nevima mostra ao Cliente a direção do website, para o afinar cedo ao seu gosto e reduzir as alterações no fim.</dd></div>
       <div><dt>Chamada de Validação</dt><dd>A videochamada em que a nevima apresenta o website concluído ao Cliente.</dd></div>
       <div><dt>Lançamento</dt><dd>A publicação do website no domínio do Cliente.</dd></div>
-      <div><dt>Particular</dt><dd>O Cliente que contrata para uso não profissional, a quem se aplica também o Anexo da Parte IV.</dd></div>
+      <div><dt>Particular</dt><dd>O Cliente que contrata para uso não profissional, a quem se aplica também o Anexo da Parte III.</dd></div>
     </dl>
   </div>
 
   <div class="clause">
     <span class="mono">Cláusula 04</span>
-    <h3>Estimativa, Proposta e formação do contrato</h3>
+    <h3>Estimativa, Proposta e preços</h3>
     <ol class="items">
-      <li>A estimativa obtida no formulário do site da nevima é apenas indicativa. O preço e o âmbito vinculativos são os da Proposta, que a nevima envia em resposta ao formulário e que integra este contrato como Parte III.</li>
-      <li>A Proposta é válida por 10 dias a contar da data de emissão. Passado esse prazo, a nevima pode rever os preços e os prazos.</li>
+      <li>A estimativa obtida no formulário do site da nevima é apenas indicativa. O preço e o âmbito vinculativos são os da Proposta, que a nevima envia em resposta ao formulário e que integra este contrato como Parte II.</li>
+      <li>A Proposta é válida por 10 dias a contar da data de emissão. Passado esse prazo, a nevima pode rever os preços e os prazos, ou cancelar a Proposta.</li>
+      <li>O preço de cada serviço é o indicado na Proposta, em euros.</li>
+      <li>Os prestadores estão isentos de IVA ao abrigo do artigo 53.º do Código do IVA, pelo que as faturas mencionam “IVA — regime de isenção (art. 53.º do CIVA)”. Se algum deles deixar de estar isento, os preços ainda por faturar passam a acrescer de IVA à taxa legal, o que a nevima comunica ao Cliente por escrito.</li>
+      <li>Um prazo urgente, pedido pelo Cliente e aceite pela nevima, acresce 40% ao preço do website e dos seus extras.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 05</span>
+    <h3>Formação do contrato</h3>
+    <ol class="items">
       <li>O contrato fica celebrado quando o Cliente assina a Proposta. A assinatura pode ser digital (por exemplo, com a Chave Móvel Digital) ou manuscrita num documento digitalizado.</li>
       <li>As cláusulas marcadas como <strong>Ajustável</strong> podem ser alteradas por acordo com o Cliente. Um ajuste só vale se ficar escrito nas Condições específicas, com o número da cláusula a que se refere. Em tudo o resto, aplicam-se estas Condições Gerais.</li>
       <li>A versão portuguesa deste contrato é a oficial. Qualquer tradução é apenas de apoio e, em caso de divergência, prevalece a versão portuguesa.</li>
@@ -477,37 +486,26 @@
   </div>
 
   <div class="clause">
-    <span class="mono">Cláusula 05</span>
-    <h3>Preço</h3>
-    <ol class="items">
-      <li>O preço de cada serviço é o indicado na Proposta, em euros.</li>
-      <li>Os prestadores estão isentos de IVA ao abrigo do artigo 53.º do Código do IVA, pelo que as faturas mencionam “IVA — regime de isenção (art. 53.º do CIVA)”. Se algum deles deixar de estar isento, os preços ainda por faturar passam a acrescer de IVA à taxa legal, o que a nevima comunica ao Cliente por escrito.</li>
-      <li>Um prazo urgente, pedido pelo Cliente e aceite pela nevima, acresce 40% ao preço do website e dos seus extras.</li>
-      <li>O preço não inclui o registo nem a renovação do domínio, que o Cliente paga diretamente ao registador (cláusula 10).</li>
-      <li>As deslocações da sessão fotográfica seguem a cláusula 13.</li>
-    </ol>
-  </div>
-
-  <div class="clause">
     <span class="mono">Cláusula 06<span class="tag">Ajustável</span></span>
-    <h3>Pagamento</h3>
+    <h3>Pagamentos</h3>
+    <p class="adj-note">Esta cláusula é ajustável: o que for acordado de diferente com o Cliente fica escrito nas Condições específicas (cláusula 5.2).</p>
     <ol class="items">
       <li><strong>Sinal:</strong> 25% do preço total, pago na assinatura da Proposta.
         <span class="key">O trabalho só começa depois de o sinal ser recebido e de os Materiais estarem completos.</span>
       </li>
       <li><strong>Pagamento final:</strong> os restantes 75%, pagos no prazo de <strong>72 horas</strong> a contar do envio da fatura, quer o Cliente peça alterações na Chamada de Validação, quer não.
-        <span class="key"><span class="mono">Nota importante</span>Se o Cliente não puder garantir o pagamento final neste prazo, deve dizê-lo antes de assinar a Proposta. O prazo que as partes combinarem fica escrito nas Condições específicas.</span>
+        <span class="key"><span class="mono">Nota importante</span>Se o Cliente não puder garantir o pagamento final neste prazo, deve dizê-lo antes de assinar a Proposta. As partes acordam então uma nova data, que fica escrita nas Condições específicas. Se o Cliente não avisar e não pagar no prazo, aplica-se a cláusula 7.</span>
       </li>
       <li><strong>Faturação:</strong> no dia da Chamada de Validação, a nevima emite a fatura do pagamento final, com o prazo de pagamento indicado. Quando o pagamento é recebido, emite o recibo correspondente. Os valores pagos no próprio momento, como o sinal, recebem uma fatura-recibo.</li>
       <li>O website só é lançado depois de o pagamento final ser recebido na conta da nevima.</li>
       <li><strong>Meios de pagamento:</strong>
         <ul class="sub">
           <li>Clientes na zona euro: transferência imediata (SEPA Instant) ou MB WAY.</li>
-          <li>Clientes fora da zona euro: transferência internacional ou outro meio indicado na Proposta. Neste caso, o Cliente envia o comprovativo da ordem de transferência no prazo do n.º 2, e o Lançamento acontece quando o valor é recebido.</li>
+          <li>Clientes fora da zona euro: transferência internacional ou outro meio indicado na Proposta. Neste caso, o Cliente envia o comprovativo da ordem de transferência dentro das mesmas 72 horas do n.º 2, e o Lançamento acontece quando o valor é recebido.</li>
         </ul>
       </li>
-      <li>Os serviços mensais (SEO e GEO) são pagos no início de cada mês, no prazo de 8 dias a contar da fatura.</li>
-      <li>As alterações orçamentadas à parte (cláusula 9) são pagas antes de serem aplicadas.</li>
+      <li><span class="pending">Os serviços mensais (SEO e GEO) são pagos no início de cada mês, no prazo de 8 dias a contar da fatura.</span></li>
+      <li><span class="pending">As alterações orçamentadas à parte (cláusula 11) são pagas antes de serem aplicadas.</span></li>
     </ol>
   </div>
 
@@ -521,114 +519,153 @@
           <li>Particulares: à taxa legal de juros civis.</li>
         </ul>
       </li>
-      <li>Enquanto houver valores em atraso, a nevima pode suspender os trabalhos em curso, o Lançamento e a aplicação de alterações, sem que isso conte como atraso seu.</li>
+      <li>Enquanto houver valores em atraso, o website não é lançado, e a nevima pode suspender os trabalhos em curso e a aplicação de alterações, sem que isso conte como atraso seu.</li>
+      <li>Enquanto o preço não estiver pago, o Cliente não adquire quaisquer direitos sobre os trabalhos (cláusula 17).</li>
+      <li>Se o atraso continuar 15 dias depois de a nevima avisar o Cliente por escrito, a nevima pode, à sua escolha:
+        <ol class="alin">
+          <li>exigir o pagamento do valor em falta, com os juros e os custos de cobrança, nomeadamente através de um procedimento de injunção; ou</li>
+          <li>resolver o contrato e exigir, a título de indemnização, o preço total do projeto, descontado o que já recebeu.</li>
+        </ol>
+      </li>
+      <li>Com Particulares, a indemnização da alínea b) do n.º 4 aplica-se na medida em que a lei o permita.</li>
     </ol>
   </div>
 
   <div class="clause">
     <span class="mono">Cláusula 08<span class="tag">Ajustável</span></span>
-    <h3>Materiais, prazos e fases</h3>
+    <h3>Envio de materiais e prazos</h3>
+    <p class="adj-note">Esta cláusula é ajustável: o que for acordado de diferente com o Cliente fica escrito nas Condições específicas (cláusula 5.2).</p>
     <ol class="items">
       <li>O Prazo Acordado conta-se em dias úteis a partir do dia em que a nevima recebe todos os Materiais e o sinal.</li>
       <li>O Cliente entrega os Materiais completos no prazo de <strong>8 dias</strong> a contar do dia em que a nevima recebe a Proposta assinada. A pedido do Cliente, o prazo pode ser outro, e fica escrito nas Condições específicas. Até os Materiais estarem completos, o projeto não começa e o Prazo Acordado não corre.</li>
       <li>Se o prazo do n.º 2 terminar sem os Materiais completos, o contrato perde efeito, e a nevima retém o sinal na medida em que a lei o permita, tanto com Clientes profissionais como com Particulares.</li>
       <li>Durante o projeto, os atrasos do Cliente (respostas, aprovações, acessos) prolongam o Prazo Acordado pelo mesmo tempo.</li>
-      <li>Com prazo urgente (cláusula 5.3), a data de conclusão é acordada entre as partes e fica na Proposta.</li>
+      <li>Com prazo urgente (cláusula 4.5), a data de conclusão é acordada entre as partes e fica na Proposta.</li>
       <li>Quando a Proposta inclui identidade visual, esta é feita primeiro e o website é construído com ela. Quando inclui sessão fotográfica, a nevima indica a data de entrega das fotografias depois da sessão, e o website é construído depois dessa entrega.</li>
-      <li>A meio do projeto, a nevima marca a Chamada de Acompanhamento, que é gratuita. Os ajustes que dela resultem estão incluídos no preço.</li>
     </ol>
   </div>
 
   <div class="clause">
     <span class="mono">Cláusula 09</span>
-    <h3>Chamada de Validação, alterações e Lançamento</h3>
+    <h3>Identidade visual</h3>
     <ol class="items">
-      <li>Concluído o website, com as práticas básicas de SEO aplicadas, a nevima apresenta-o ao Cliente na Chamada de Validação.</li>
-      <li><strong>Alterações pequenas</strong> (cada uma com até 15 minutos de trabalho): são gratuitas, dentro de um uso razoável. Não têm prazo fixo: a nevima faz-as e avisa o Cliente quando estiverem aplicadas.</li>
-      <li><strong>Alterações maiores:</strong> a nevima apresenta um orçamento antes de as fazer, com o respetivo prazo. Só são feitas se o Cliente o aceitar, e só são aplicadas depois de pagas.</li>
-      <li>Na Chamada de Validação, o Cliente escolhe como avançar:
-        <ol class="alin">
-          <li><strong>Alterações antes do Lançamento:</strong> a nevima aplica as alterações pequenas e as maiores que o Cliente aceitar e pagar, e lança o website depois disso.</li>
-          <li><strong>Lançamento imediato:</strong> o website é lançado na versão apresentada assim que o pagamento final é recebido, e as alterações são aplicadas depois, segundo os n.ºs 2 e 3.</li>
-        </ol>
-        Em qualquer dos casos, o pagamento final vence no prazo da cláusula 6.2.
-      </li>
-      <li>Depois do Lançamento, os pedidos de alteração seguem as mesmas regras dos n.ºs 2 e 3.</li>
-      <li>O website considera-se aceite com o pagamento final ou, se este não ocorrer, 48 horas depois da Chamada de Validação sem que o Cliente indique defeitos concretos por escrito. Pedidos de alteração não são defeitos.</li>
-      <li>Defeitos (algo que não funciona como consta da Proposta) são corrigidos sem custo.</li>
+      <li><strong>Inclui:</strong> o logótipo e, quando se aplique, o símbolo.</li>
+      <li><strong>Não inclui:</strong> outras aplicações da marca, salvo se constarem da Proposta.</li>
+      <li>A identidade visual é feita antes do website, que é construído com ela (cláusula 8.6).</li>
+      <li><span class="pending">Rondas de revisão incluídas: a definir.</span></li>
+      <li>O registo do logótipo como marca é feito pelo Cliente, em seu nome. A nevima acompanha-o no processo, sem custo adicional, mas não o pode fazer por inteiro.</li>
     </ol>
   </div>
 
   <div class="clause">
-    <span class="mono">Cláusula 10<span class="tag pend">Decisão pendente</span></span>
-    <h3>Domínio</h3>
+    <span class="mono">Cláusula 10<span class="tag">Ajustável</span></span>
+    <h3>Sessão fotográfica</h3>
+    <p class="adj-note">Esta cláusula é ajustável: o que for acordado de diferente com o Cliente fica escrito nas Condições específicas (cláusula 5.2).</p>
     <ol class="items">
-      <li><span class="pending">O domínio é sempre do Cliente: fica registado em seu nome, e o registo e as renovações são pagos por ele diretamente ao registador.</span></li>
-      <li><span class="pending">Se o Cliente ainda não tiver domínio, a nevima trata do registo por ele. O Cliente cria uma conta no registador indicado pela nevima (atualmente o Hostinger) e dá-lhe acesso a essa conta. A nevima escolhe o domínio com o Cliente, prepara a encomenda e preenche os dados, e o Cliente faz o pagamento.</span></li>
-      <li><span class="pending">Nos domínios .pt, o nome e o NIF do titular têm de coincidir exatamente com o documento de identificação do Cliente. Se a entidade de registo pedir documentos, o Cliente envia-os no prazo que ela indicar (normalmente cerca de 2 dias). Se não o fizer, o domínio pode ser apagado sem reembolso, sem responsabilidade da nevima.</span></li>
-      <li><span class="pending">Para ligar o website ao domínio, a nevima gere o DNS através do acesso do n.º 2. Quando o Cliente já tem domínio, dá à nevima acesso à gestão do DNS ou aplica ele próprio os registos que a nevima lhe enviar.</span></li>
-      <li><span class="pending">A renovação é da responsabilidade do Cliente. Se o domínio expirar, o website e o email associados deixam de funcionar.</span></li>
+      <li><strong>Inclui:</strong> uma sessão de fotografia, ou de fotografia e vídeo, à escolha do Cliente, e as fotografias usadas no website.</li>
+      <li>A sessão é feita em Portugal continental, em data acordada entre as partes. Noutras regiões é orçamentada à parte.</li>
+      <li>A sessão inclui as deslocações até 30 km de Arcozelo. Acima dessa distância, as deslocações são cobradas ao valor por quilómetro indicado na Proposta.</li>
+      <li>A nevima indica a data de entrega das fotografias depois da sessão (cláusula 8.6).</li>
+      <li>Cabe ao Cliente obter a autorização das pessoas fotografadas ou filmadas (funcionários, clientes ou outras), usando o modelo de autorização de uso de imagem fornecido pela nevima.</li>
+      <li>Se o Cliente desmarcar a sessão com menos de 48 horas de antecedência, paga <span class="pending">15%</span> do preço da sessão, pelo tempo reservado na agenda, pela preparação já feita e pelos trabalhos recusados para essa data, e ainda as despesas de deslocação já feitas. <span class="pending">(A confirmar com parecer profissional.)</span></li>
     </ol>
   </div>
 
   <div class="clause">
     <span class="mono">Cláusula 11</span>
+    <h3>Web design</h3>
+    <ol class="items">
+      <li><strong>Inclui:</strong>
+        <ul class="sub">
+          <li>o design e a construção do website, com o número de páginas da Proposta;</li>
+          <li>os textos, escritos ou revistos a partir da informação dada pelo Cliente, e as imagens otimizadas para a web;</li>
+          <li>a versão em português;</li>
+          <li>as práticas básicas de SEO, aplicadas antes do Lançamento;</li>
+          <li>a Chamada de Acompanhamento e a Chamada de Validação;</li>
+          <li>a ligação do website ao domínio do Cliente (cláusula 13);</li>
+          <li>o alojamento gratuito (cláusula 12);</li>
+          <li>a colocação no website das páginas legais que o Cliente fornecer.</li>
+        </ul>
+      </li>
+      <li><strong>Não inclui:</strong> o conteúdo das páginas legais (cláusula 18.3), as alterações maiores (n.º 10), o SEO e o GEO mensais, a identidade visual e a sessão fotográfica, que são serviços próprios.</li>
+      <li><strong>Formulários:</strong> <span class="pending">o número de formulários indicado na Proposta. As mensagens são enviadas diretamente para o email do Cliente, e a nevima não as guarda nem as lê.</span></li>
+      <li><strong>Línguas:</strong> o português é sempre a língua incluída. Cada língua adicional é paga à parte: uma por 35 €, duas por 55 €, três por 80 €. As línguas adicionais incluem uma reunião de revisão dedicada a elas.</li>
+      <li><strong>Tradução:</strong> as línguas além do português e do inglês são traduzidas com uma ferramenta de inteligência artificial especializada em tradução. A nevima envia ao Cliente um documento formatado para ele indicar as correções necessárias, de forma simples para os dois lados. A exatidão da versão publicada é da responsabilidade do Cliente depois de a aprovar.</li>
+      <li><strong>Prazo:</strong> o Prazo Acordado da Proposta. Como referência, 4 a 7 dias úteis para uma landing page, 8 a 11 para 4 a 6 páginas, 12 a 16 para 7 a 10 páginas.</li>
+      <li><strong>Chamada de Acompanhamento:</strong> a meio do projeto, a nevima marca esta chamada, que é gratuita. Os ajustes que dela resultem são feitos sem custo, para que o website chegue ao fim já na direção que o Cliente quer e as alterações finais sejam as mínimas.</li>
+      <li><strong>Chamada de Validação:</strong> concluído o website, com as práticas básicas de SEO aplicadas, a nevima apresenta-o ao Cliente nesta chamada.</li>
+      <li><strong>Alterações pequenas</strong> (cada uma com até 15 minutos de trabalho): são gratuitas, até um máximo de 4. A partir da 5.ª, são orçamentadas como as alterações maiores. Não têm prazo fixo: a nevima faz-as e avisa o Cliente quando estiverem aplicadas.</li>
+      <li><strong>Alterações maiores:</strong> a nevima apresenta um orçamento antes de as fazer, com o respetivo prazo. Só são feitas se o Cliente o aceitar, e só são aplicadas depois de pagas.</li>
+      <li><strong>Lançamento:</strong> na Chamada de Validação, o Cliente escolhe como avançar:
+        <ol class="alin">
+          <li><strong>Alterações antes do Lançamento:</strong> a nevima aplica as alterações pequenas e as maiores que o Cliente aceitar e pagar, e lança o website depois disso.</li>
+          <li><strong>Lançamento imediato:</strong> o Cliente paga o pagamento final como habitualmente, e o website vai para o ar na versão apresentada. As alterações pequenas são aplicadas depois, sem custo. As maiores são orçamentadas e apresentadas ao Cliente, e vão para o ar quando ele as pagar.</li>
+        </ol>
+        Em qualquer dos casos, o pagamento final vence no prazo da cláusula 6.2.
+      </li>
+      <li>Depois do Lançamento, os pedidos de alteração seguem as mesmas regras dos n.ºs 9 e 10.</li>
+      <li><strong>Aceitação:</strong> o website considera-se aceite com o pagamento final ou, se este não ocorrer, 72 horas depois da Chamada de Validação sem que o Cliente indique defeitos concretos por escrito. A partir desse momento, o pagamento final é devido nos termos da cláusula 6.2. Pedidos de alteração não são defeitos.</li>
+      <li>Defeitos (algo que não funciona como consta da Proposta) são corrigidos sem custo.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 12</span>
     <h3>Alojamento</h3>
     <ol class="items">
       <li>O alojamento do website é gratuito. O primeiro período dura 1 ano, contado a partir do Lançamento, e renova-se depois automaticamente por períodos de 6 meses.</li>
-      <li>Qualquer das partes pode decidir não renovar o período seguinte, avisando a outra por escrito com pelo menos 2 meses de antecedência em relação ao fim do período em curso. A nevima só o pode fazer por motivos alheios à sua vontade, como uma mudança de preços ou de condições do fornecedor de alojamento (atualmente a Vercel), uma alteração da lei ou outro motivo que não dependa dela, e indica esse motivo no aviso.</li>
+      <li>Qualquer das partes pode decidir não renovar o período seguinte, avisando a outra por escrito com pelo menos 2 meses de antecedência em relação ao fim do período em curso.</li>
+      <li>Na renovação, a nevima pode passar a cobrar um valor simbólico pelo alojamento, destinado apenas a cobrir os custos que tem com ele e nunca superior a <span class="pending">60 € por ano</span>. Avisa o Cliente por escrito, com a antecedência do n.º 2, e indica o valor.</li>
+      <li>Se o Cliente não aceitar esse valor, ou se for ele a não renovar, a nevima entrega-lhe, sem custo, o código e os ficheiros do website, para que o possa alojar onde quiser.</li>
       <li>O website é alojado na Vercel, no plano profissional, uma das principais plataformas de alojamento de websites, com infraestrutura distribuída por vários continentes. A nevima acompanha o alojamento e faz o melhor esforço para manter o website disponível, mas não controla a infraestrutura da Vercel nem garante disponibilidade contínua.</li>
-      <li>O alojamento gratuito destina-se a um uso normal do website: até <span class="pending">100 mil CDN requests por mês</span> (os pedidos feitos ao servidor sempre que alguém abre uma página ou um ficheiro do website). Se o website ultrapassar este limite em dois meses seguidos, a nevima apresenta ao Cliente um orçamento de alojamento antes de qualquer cobrança.</li>
-      <li>Se a nevima não renovar, apresenta ao Cliente, no aviso do n.º 2, as condições em que pode continuar a alojar o website, que podem incluir um preço. Se o Cliente não as aceitar, ou se for ele a não renovar, a nevima entrega-lhe, sem custo, o código e os ficheiros do website, para que o possa alojar onde quiser.</li>
+      <li>Para manter o alojamento gratuito, a nevima definiu um limite justo de <span class="pending">100 mil CDN requests por mês</span> (os pedidos feitos ao servidor sempre que alguém abre uma página ou um ficheiro do website), que permite um número de visitas sólido a qualquer pequena ou média empresa. Se o website ultrapassar este limite em dois meses seguidos:
+        <ol class="alin">
+          <li>entre <span class="pending">100 mil e 1 milhão</span> de CDN requests por mês, o alojamento passa a custar <span class="pending">120 € por ano</span>;</li>
+          <li>acima de <span class="pending">1 milhão</span>, a nevima contacta o Cliente para lhe apresentar um orçamento especializado.</li>
+        </ol>
+        Em ambos os casos, a nevima avisa o Cliente antes de qualquer cobrança.
+      </li>
       <li>Se o contrato cessar, o Cliente tem direito a receber o código e os ficheiros do website, desde que esteja pago.</li>
     </ol>
   </div>
 
   <div class="clause">
-    <span class="mono">Cláusula 12<span class="tag pend">Decisão pendente</span></span>
-    <h3>SEO e GEO</h3>
+    <span class="mono">Cláusula 13<span class="tag pend">Decisão pendente</span></span>
+    <h3>Domínio</h3>
     <ol class="items">
-      <li><span class="pending">O serviço de web design inclui as práticas básicas de SEO, aplicadas antes do Lançamento.</span></li>
-      <li><span class="pending">Os serviços mensais de SEO e GEO, quando contratados, não têm período mínimo. Pagam-se no início de cada mês e podem ser cancelados por qualquer das partes com 30 dias de aviso por escrito.</span></li>
-      <li><span class="pending">A nevima compromete-se a fazer o trabalho com diligência e segundo as boas práticas, mas não garante posições, tráfego nem menções em motores de pesquisa ou em ferramentas de inteligência artificial, que dependem de terceiros.</span></li>
+      <li><span class="pending">O domínio fica sempre registado em nome do Cliente, que é o seu titular.</span></li>
+      <li><span class="pending">Se o Cliente ainda não tiver domínio, a nevima trata do registo por ele e cobra-lhe à parte o custo do domínio, indicado na Proposta.</span></li>
+      <li><span class="pending">Se o Cliente já tiver domínio, não há qualquer custo. A nevima liga-lhe o website sempre que isso seja exequível; caso contrário, o Cliente aplica os registos que a nevima lhe enviar.</span></li>
+      <li><span class="pending">Nos domínios .pt, o nome e o NIF do titular têm de coincidir exatamente com o documento de identificação do Cliente. Se a entidade de registo pedir documentos, o Cliente envia-os no prazo que ela indicar (normalmente cerca de 2 dias). Se não o fizer, o domínio pode ser apagado sem reembolso, sem responsabilidade da nevima.</span></li>
+      <li><span class="pending">A renovação do domínio é da responsabilidade do Cliente. Se o domínio expirar, o website e o email associados deixam de funcionar.</span></li>
     </ol>
   </div>
 
   <div class="clause">
-    <span class="mono">Cláusula 13<span class="tag">Ajustável</span></span>
-    <h3>Sessão fotográfica</h3>
+    <span class="mono">Cláusula 14<span class="tag pend">Decisão pendente</span></span>
+    <h3>SEO</h3>
     <ol class="items">
-      <li>A sessão é feita em Portugal continental, em data acordada entre as partes. Noutras regiões é orçamentada à parte.</li>
-      <li>A sessão inclui as deslocações até 30 km de Arcozelo. Acima dessa distância, as deslocações são cobradas ao valor por quilómetro indicado na Proposta.</li>
-      <li>Cabe ao Cliente obter a autorização das pessoas fotografadas ou filmadas (funcionários, clientes ou outras), usando o modelo de autorização de uso de imagem fornecido pela nevima.</li>
-      <li>Se o Cliente desmarcar a sessão com menos de 48 horas de antecedência, paga 10% do preço da sessão, pelo tempo reservado na agenda, pela preparação já feita e pelos trabalhos recusados para essa data, e ainda as despesas de deslocação já feitas.</li>
+      <li><span class="pending">O web design inclui as práticas básicas de SEO, aplicadas antes do Lançamento (cláusula 11.1).</span></li>
+      <li><span class="pending">O SEO mensal inclui o trabalho contínuo para melhorar a posição do website nas pesquisas do seu público, com alcance local ou nacional, conforme a Proposta.</span></li>
+      <li><span class="pending">O primeiro mês é pago na assinatura, e os seguintes no início de cada mês (cláusula 6.6). Não há período mínimo: qualquer das partes pode cancelar o serviço com 30 dias de aviso por escrito.</span></li>
+      <li><span class="pending">A nevima faz o trabalho com diligência e segundo as boas práticas, mas não garante posições nem tráfego, que dependem de terceiros.</span></li>
     </ol>
   </div>
 
   <div class="clause">
-    <span class="mono">Cláusula 14</span>
-    <h3>Tradução</h3>
+    <span class="mono">Cláusula 15<span class="tag pend">Decisão pendente</span></span>
+    <h3>GEO</h3>
     <ol class="items">
-      <li>O português é sempre a língua incluída no website. As línguas adicionais e os seus preços estão na Parte II.</li>
-      <li>As línguas além do português e do inglês são traduzidas com uma ferramenta de inteligência artificial especializada em tradução. A nevima envia ao Cliente o documento final para revisão, e a exatidão da versão publicada é da responsabilidade do Cliente depois de a aprovar.</li>
-    </ol>
-  </div>
-
-  <div class="clause">
-    <span class="mono">Cláusula 15</span>
-    <h3>Propriedade intelectual</h3>
-    <ol class="items">
-      <li>O website, a identidade visual, as fotografias, os vídeos e os restantes trabalhos feitos para o Cliente são obras feitas por encomenda. As partes convencionam que os direitos patrimoniais de autor sobre elas pertencem ao Cliente a partir do pagamento integral do preço.</li>
-      <li>Até ao pagamento integral, os direitos pertencem à nevima, e o Cliente não pode usar, publicar nem alterar os trabalhos entregues. Se quiser usá-los antes, pede-o à nevima, que calcula a parte do preço total a pagar antecipadamente.</li>
-      <li>Ficam com a nevima, e podem ser reutilizados noutros projetos, as ferramentas, os componentes de código genéricos, os métodos e o conhecimento que não sejam específicos do Cliente. O Cliente recebe uma licença gratuita e permanente para os usar no seu website. Nunca são reutilizados o logótipo, a identidade visual, os textos, as fotografias nem o design próprio do Cliente.</li>
-      <li>Fontes, imagens, bibliotecas e outros elementos de terceiros mantêm as licenças dos seus autores, que a nevima indica ao Cliente quando tenham condições próprias.</li>
-      <li>O registo do logótipo como marca não está incluído e é da responsabilidade do Cliente.</li>
+      <li><span class="pending">O GEO mensal inclui o trabalho contínuo para aumentar a probabilidade de o negócio aparecer nas recomendações e respostas de ferramentas de inteligência artificial, com alcance local ou nacional, conforme a Proposta.</span></li>
+      <li><span class="pending">O primeiro mês é pago na assinatura, e os seguintes no início de cada mês (cláusula 6.6). Não há período mínimo: qualquer das partes pode cancelar o serviço com 30 dias de aviso por escrito.</span></li>
+      <li><span class="pending">A nevima faz o trabalho com diligência e segundo as boas práticas, mas não garante menções, que dependem de terceiros.</span></li>
     </ol>
   </div>
 
   <div class="clause">
     <span class="mono">Cláusula 16<span class="tag">Ajustável</span></span>
     <h3>Portfólio e crédito</h3>
+    <p class="adj-note">Esta cláusula é ajustável: o que for acordado de diferente com o Cliente fica escrito nas Condições específicas (cláusula 5.2).</p>
     <ol class="items">
       <li>A nevima pode mostrar o projeto no seu portfólio, site e redes sociais, incluindo o nome do Cliente e o website, salvo se o Cliente o recusar por escrito na Proposta ou mais tarde.</li>
       <li>Se o Cliente aceitar na Proposta, o rodapé do website mostra o logótipo da nevima, discreto, com ligação para o site da nevima. Em troca, o Cliente tem um desconto de 5% no preço do website.</li>
@@ -637,30 +674,41 @@
 
   <div class="clause">
     <span class="mono">Cláusula 17</span>
-    <h3>Obrigações do Cliente</h3>
+    <h3>Propriedade intelectual</h3>
     <ol class="items">
-      <li>O Cliente garante que tem os direitos sobre os Materiais que entrega (textos, imagens, logótipos) e responde perante terceiros pelo seu uso.</li>
-      <li>O Cliente é responsável pela licitude dos conteúdos do website e da sua atividade.</li>
-      <li>O conteúdo das páginas legais do website (política de privacidade, política de cookies, termos e outras) é da responsabilidade do Cliente, que o deve produzir ou mandar produzir. A nevima coloca-as no website. A nevima não presta aconselhamento jurídico.</li>
-      <li>O Cliente responde às perguntas e aprovações da nevima no prazo de <strong>5 dias úteis</strong>. Passado esse prazo, o Prazo Acordado prolonga-se pelo tempo do atraso (cláusula 8.4).</li>
-      <li>O Cliente obtém as autorizações das pessoas fotografadas ou filmadas (cláusula 13.3) e envia os documentos pedidos no registo de um domínio .pt (cláusula 10.3).</li>
-      <li>O Cliente não usa, publica nem altera os trabalhos antes do pagamento integral, salvo o previsto na cláusula 15.2.</li>
-      <li>O Cliente cumpre ainda as restantes obrigações previstas neste contrato.</li>
+      <li>O website, a identidade visual, as fotografias, os vídeos e os restantes trabalhos feitos para o Cliente são obras feitas por encomenda. As partes convencionam que os direitos patrimoniais de autor sobre elas pertencem ao Cliente a partir do pagamento integral, isto é, de todo o preço.</li>
+      <li>Até lá, os direitos pertencem à nevima, e o Cliente não pode usar, publicar nem alterar os trabalhos entregues. Se precisar de usar algum trabalho antes (por exemplo, o logótipo), paga antecipadamente o preço desse serviço indicado na Proposta e recebe os direitos sobre esse trabalho.</li>
+      <li>Ficam com a nevima, e podem ser reutilizados noutros projetos, as ferramentas, os modelos, os componentes de código genéricos, os métodos e o conhecimento que não sejam específicos do Cliente. O Cliente não recebe direitos sobre eles. Os que fiquem integrados no seu website só podem ser usados como parte desse website: o Cliente não os pode extrair, usar noutros projetos nem ceder a terceiros. Nunca são reutilizados o logótipo, a identidade visual, os textos, as fotografias nem o design próprio do Cliente.</li>
+      <li>Fontes, imagens, bibliotecas e outros elementos de terceiros mantêm as licenças dos seus autores, que a nevima indica ao Cliente quando tenham condições próprias.</li>
     </ol>
   </div>
 
   <div class="clause">
     <span class="mono">Cláusula 18</span>
-    <h3>Dados pessoais</h3>
+    <h3>Obrigações do Cliente</h3>
     <ol class="items">
-      <li>Cada parte usa os dados pessoais da outra (nomes, contactos, NIF, moradas) apenas para cumprir este contrato, como manda o RGPD. A forma como a nevima trata esses dados está na sua Política de Privacidade.</li>
-      <li>Enquanto aloja o website, a nevima trata, por conta do Cliente, dados das pessoas que o visitam (por exemplo, os registos técnicos de acesso). Nesse papel, a lei chama-lhe subcontratante, e esse tratamento rege-se pelo Acordo de Tratamento de Dados da Parte V.</li>
-      <li>O funcionamento dos formulários do website está descrito na Parte II.</li>
+      <li>O Cliente garante que tem os direitos sobre os Materiais que entrega (textos, imagens, logótipos) e responde perante terceiros pelo seu uso.</li>
+      <li>O Cliente é responsável pela licitude dos conteúdos do website e da sua atividade.</li>
+      <li>O conteúdo das páginas legais do website (política de privacidade, política de cookies, termos e outras) é da responsabilidade do Cliente, que o deve produzir ou mandar produzir. A nevima coloca-as no website. A nevima não presta aconselhamento jurídico.</li>
+      <li>Durante o projeto, o Cliente responde às perguntas e aprovações da nevima no prazo de <strong>5 dias úteis</strong>. Passado esse prazo, o Prazo Acordado prolonga-se pelo tempo do atraso (cláusula 8.4).</li>
+      <li>O Cliente obtém as autorizações das pessoas fotografadas ou filmadas (cláusula 10.5) e envia os documentos pedidos no registo de um domínio .pt (cláusula 13.4).</li>
+      <li>O Cliente não usa, publica nem altera os trabalhos antes do pagamento integral, salvo o previsto na cláusula 17.2.</li>
+      <li>O Cliente cumpre ainda as restantes obrigações previstas neste contrato.</li>
     </ol>
   </div>
 
   <div class="clause">
     <span class="mono">Cláusula 19</span>
+    <h3>Dados pessoais</h3>
+    <ol class="items">
+      <li>Cada parte usa os dados pessoais da outra (nomes, contactos, NIF, moradas) apenas para cumprir este contrato, como manda o RGPD. A forma como a nevima trata esses dados está na sua Política de Privacidade.</li>
+      <li>Enquanto aloja o website, a nevima trata, por conta do Cliente, dados das pessoas que o visitam (por exemplo, os registos técnicos de acesso). Nesse papel, a lei chama-lhe subcontratante, e esse tratamento rege-se pelo Acordo de Tratamento de Dados da Parte IV.</li>
+      <li>O funcionamento dos formulários do website está descrito na cláusula 11.3.</li>
+    </ol>
+  </div>
+
+  <div class="clause">
+    <span class="mono">Cláusula 20</span>
     <h3>Confidencialidade</h3>
     <ol class="items">
       <li>As partes mantêm confidencial a informação não pública que recebam uma da outra, durante o contrato e nos 3 anos seguintes. Excetua-se o que a cláusula 16 permite mostrar.</li>
@@ -668,27 +716,28 @@
   </div>
 
   <div class="clause">
-    <span class="mono">Cláusula 20<span class="tag">Ajustável</span></span>
+    <span class="mono">Cláusula 21<span class="tag">Ajustável</span></span>
     <h3>Cancelamento pelo Cliente</h3>
+    <p class="adj-note">Esta cláusula é ajustável: o que for acordado de diferente com o Cliente fica escrito nas Condições específicas (cláusula 5.2).</p>
     <ol class="items">
       <li>O Cliente pode cancelar o projeto a todo o tempo, por escrito.</li>
       <li>O que acontece ao sinal depende do tipo de Cliente:
         <ul class="sub">
           <li><strong>Clientes profissionais:</strong> a nevima fica sempre com o sinal (25%), mesmo que o trabalho ainda não tenha começado. Se o valor proporcional do n.º 3 for superior ao sinal, o Cliente paga a diferença no prazo de 8 dias. Ou seja, paga o maior destes dois valores.</li>
-          <li><strong>Particulares:</strong> nos primeiros 14 dias aplica-se o Anexo da Parte IV. Depois desse prazo, aplica-se a regra dos Clientes profissionais, na medida em que a lei o permita.</li>
+          <li><strong>Particulares:</strong> nos primeiros 14 dias aplica-se o Anexo da Parte III. Depois desse prazo, aplica-se a regra dos Clientes profissionais, na medida em que a lei o permita.</li>
         </ul>
       </li>
       <li>O valor proporcional calcula-se sempre sobre o <strong>preço total</strong> do projeto, na proporção dos dias úteis de trabalho já decorridos face ao Prazo Acordado na Proposta:
         <div class="formula">valor proporcional = preço total × (dias úteis de trabalho decorridos até ao cancelamento ÷ Prazo Acordado)</div>
         Exemplo: num Prazo Acordado de 10 dias úteis, um cancelamento ao 4.º dia de trabalho corresponde a 40% do preço total.
       </li>
-      <li>Os trabalhos pagos por inteiro e as despesas já feitas por conta do Cliente (por exemplo, deslocações) não são devolvidos.</li>
-      <li>Os direitos sobre o trabalho feito até ao cancelamento seguem a cláusula 15: passam para o Cliente quando o valor devido estiver pago.</li>
+      <li>Os trabalhos pagos por inteiro e as despesas já feitas por conta do Cliente (por exemplo, deslocações ou o registo do domínio) não são devolvidos.</li>
+      <li>Os direitos sobre o trabalho feito até ao cancelamento seguem a cláusula 17: passam para o Cliente quando o valor devido estiver pago.</li>
     </ol>
   </div>
 
   <div class="clause">
-    <span class="mono">Cláusula 21</span>
+    <span class="mono">Cláusula 22</span>
     <h3>Responsabilidade</h3>
     <ol class="items">
       <li>A responsabilidade da nevima por danos resultantes deste contrato limita-se ao valor pago pelo Cliente nos 12 meses anteriores ao facto que lhes deu origem. Por exemplo: se o Cliente pagou 1.500 € à nevima nesses 12 meses, a indemnização máxima é de 1.500 €, mesmo que o prejuízo alegado seja maior.</li>
@@ -698,17 +747,17 @@
   </div>
 
   <div class="clause">
-    <span class="mono">Cláusula 22</span>
+    <span class="mono">Cláusula 23</span>
     <h3>Duração e cessação</h3>
     <ol class="items">
-      <li>O contrato vigora até à conclusão dos serviços pontuais. Os serviços continuados (alojamento, SEO e GEO mensais) seguem as regras próprias das cláusulas 11 e 12.</li>
-      <li>Qualquer das partes pode resolver o contrato se a outra incumprir uma obrigação essencial e não o corrigir em 15 dias depois de avisada por escrito.</li>
+      <li>O contrato vigora até à conclusão dos serviços pontuais. Os serviços continuados (alojamento, SEO e GEO mensais) seguem as regras próprias das cláusulas 12, 14 e 15.</li>
+      <li>Qualquer das partes pode resolver o contrato se a outra incumprir uma obrigação essencial e não o corrigir em 15 dias depois de avisada por escrito. Nos atrasos de pagamento, aplica-se a cláusula 7.</li>
       <li>A nevima pode suspender ou terminar o alojamento de um website usado para fins ilícitos.</li>
     </ol>
   </div>
 
   <div class="clause">
-    <span class="mono">Cláusula 23</span>
+    <span class="mono">Cláusula 24</span>
     <h3>Comunicações</h3>
     <ol class="items">
       <li>Comunicações pontuais, como marcar chamadas ou esclarecer dúvidas rápidas, podem ser feitas por telefone, a pedido de qualquer das partes.</li>
@@ -716,110 +765,21 @@
     </ol>
   </div>
 
-  <div class="clause">
-    <span class="mono">Cláusula 24</span>
+  <div class="clause whole">
+    <span class="mono">Cláusula 25</span>
     <h3>Lei aplicável e foro</h3>
     <ol class="items">
       <li>Este contrato rege-se pela lei portuguesa.</li>
-      <li>Para os litígios com Clientes profissionais é competente o tribunal da comarca do Porto. Para os litígios com Particulares aplicam-se as regras legais de competência e a informação sobre resolução alternativa de litígios do Anexo da Parte IV.</li>
+      <li>Para os litígios com Clientes profissionais é competente o tribunal da comarca do Porto. Para os litígios com Particulares aplicam-se as regras legais de competência e a informação sobre resolução alternativa de litígios do Anexo da Parte III.</li>
     </ol>
   </div>
 </section>
+
 
 <!-- ============================================================= PART II -->
 <section class="part">
   <header class="part-head">
     <span class="mono">Parte II</span>
-    <h2>Descrição dos serviços</h2>
-  </header>
-  <p class="part-intro">O que cada serviço inclui e não inclui. Os preços de cada projeto estão na Proposta; as regras comuns a todos os serviços estão nas Condições Gerais.</p>
-
-  <div class="clause">
-    <span class="mono">Serviço</span>
-    <h3>Web design</h3>
-    <div class="svc"><span class="mono">Inclui</span><ul class="sub">
-      <li>O design e a construção do website, com o número de páginas da Proposta.</li>
-      <li>Os textos, escritos ou revistos a partir da informação dada pelo Cliente, e as imagens otimizadas para a web.</li>
-      <li>A versão em português.</li>
-      <li>As práticas básicas de SEO, aplicadas antes do Lançamento.</li>
-      <li>A Chamada de Acompanhamento, gratuita, e a Chamada de Validação.</li>
-      <li>A ligação do website ao domínio do Cliente.</li>
-      <li>O alojamento gratuito: 1 ano a partir do Lançamento, renovado depois automaticamente por períodos de 6 meses (cláusula 11).</li>
-      <li>A colocação das páginas legais que o Cliente fornecer.</li>
-    </ul></div>
-    <div class="svc"><span class="mono">Formulários</span><div><span class="pending">O número de formulários indicado na Proposta. As mensagens são enviadas diretamente para o email do Cliente, e a nevima não as guarda nem as lê.</span></div></div>
-    <div class="svc"><span class="mono">Línguas adicionais</span><div>
-      Além do português: uma língua por 35 €, duas por 55 €, três por 80 €. Inclui uma reunião de revisão dedicada às línguas adicionais, para corrigir o que for preciso. A tradução segue a cláusula 14.
-    </div></div>
-    <div class="svc"><span class="mono">Não inclui</span><ul class="sub">
-      <li>O registo e a renovação do domínio, pagos pelo Cliente (cláusula 10).</li>
-      <li>O conteúdo das páginas legais (cláusula 17.3).</li>
-      <li>As alterações maiores, orçamentadas à parte (cláusula 9).</li>
-      <li>O SEO e o GEO mensais, a identidade visual e a sessão fotográfica, que são serviços próprios.</li>
-    </ul></div>
-    <div class="svc"><span class="mono">Prazo</span><div>O Prazo Acordado da Proposta. Como referência: 4 a 7 dias úteis para uma landing page, 8 a 11 para 4 a 6 páginas, 12 a 16 para 7 a 10 páginas.</div></div>
-  </div>
-
-  <div class="clause">
-    <span class="mono">Serviço</span>
-    <h3>Identidade visual</h3>
-    <div class="svc"><span class="mono">Inclui</span><ul class="sub">
-      <li>O logótipo.</li>
-      <li>O símbolo, quando se aplique.</li>
-    </ul></div>
-    <div class="svc"><span class="mono">Não inclui</span><ul class="sub">
-      <li>O registo do logótipo como marca (cláusula 15.5).</li>
-      <li>Outras aplicações da marca, salvo se constarem da Proposta.</li>
-    </ul></div>
-    <div class="svc"><span class="mono">Prazo</span><div>É feita antes do website, que é construído com ela (cláusula 8.6).</div></div>
-    <div class="svc"><span class="mono">Revisões</span><div><span class="pending">Número de rondas de revisão incluídas: a definir.</span></div></div>
-  </div>
-
-  <div class="clause">
-    <span class="mono">Serviço</span>
-    <h3>Sessão fotográfica</h3>
-    <div class="svc"><span class="mono">Inclui</span><ul class="sub">
-      <li>Uma sessão de fotografia, ou de fotografia e vídeo, à escolha do Cliente, em Portugal continental.</li>
-      <li>As deslocações até 30 km de Arcozelo (cláusula 13.2).</li>
-      <li>As fotografias usadas no website.</li>
-    </ul></div>
-    <div class="svc"><span class="mono">Não inclui</span><ul class="sub">
-      <li>As deslocações acima de 30 km, cobradas ao quilómetro.</li>
-      <li>Sessões fora de Portugal continental, orçamentadas à parte.</li>
-      <li>As autorizações das pessoas fotografadas ou filmadas, que cabem ao Cliente.</li>
-    </ul></div>
-    <div class="svc"><span class="mono">Prazo</span><div>A data de entrega das fotografias é indicada pela nevima depois da sessão (cláusula 8.6).</div></div>
-  </div>
-
-  <div class="clause">
-    <span class="mono">Serviço<span class="tag pend">Decisão pendente</span></span>
-    <h3>SEO</h3>
-    <div class="svc"><span class="mono">Inclui</span><ul class="sub">
-      <li><span class="pending">O trabalho contínuo para melhorar a posição do website nas pesquisas do seu público, com alcance local ou nacional, conforme a Proposta.</span></li>
-    </ul></div>
-    <div class="svc"><span class="mono">Condições</span><ul class="sub">
-      <li><span class="pending">O primeiro mês é pago na assinatura, e os seguintes no início de cada mês. Sem período mínimo; cancela-se com 30 dias de aviso (cláusula 12).</span></li>
-      <li><span class="pending">Não há garantia de posições nem de tráfego (cláusula 12.3).</span></li>
-    </ul></div>
-  </div>
-
-  <div class="clause">
-    <span class="mono">Serviço<span class="tag pend">Decisão pendente</span></span>
-    <h3>GEO</h3>
-    <div class="svc"><span class="mono">Inclui</span><ul class="sub">
-      <li><span class="pending">O trabalho contínuo para aumentar a probabilidade de o negócio aparecer nas recomendações e respostas de ferramentas de inteligência artificial, com alcance local ou nacional, conforme a Proposta.</span></li>
-    </ul></div>
-    <div class="svc"><span class="mono">Condições</span><ul class="sub">
-      <li><span class="pending">O primeiro mês é pago na assinatura, e os seguintes no início de cada mês. Sem período mínimo; cancela-se com 30 dias de aviso (cláusula 12).</span></li>
-      <li><span class="pending">Não há garantia de menções (cláusula 12.3).</span></li>
-    </ul></div>
-  </div>
-</section>
-
-<!-- ============================================================ PART III -->
-<section class="part">
-  <header class="part-head">
-    <span class="mono">Parte III</span>
     <h2>Proposta / Ordem de Serviço</h2>
   </header>
 
@@ -844,7 +804,7 @@
       <span class="mono" style="display:block;margin-bottom:1.4mm">Tipo de cliente</span>
       <span class="box"></span>Profissional (contrata para a sua atividade)
       &nbsp;&nbsp;&nbsp;
-      <span class="box"></span>Particular (aplica-se o Anexo da Parte IV)
+      <span class="box"></span>Particular (aplica-se o Anexo da Parte III)
     </div>
   </div>
 
@@ -862,6 +822,7 @@
         <tr class="part-of"><td></td><td>Deslocação</td><td class="what">Acima de 30 km: <span class="blank s"></span> km × <span class="blank s"></span> €/km</td><td class="amount"><span class="blank"></span> €</td></tr>
         <tr><td class="tick"><span class="box"></span></td><td>Prazo urgente</td><td class="what">+40% no website e nos seus extras</td><td class="amount"><span class="blank"></span> €</td></tr>
         <tr><td class="tick"><span class="box"></span></td><td>Crédito no rodapé</td><td class="what">−5% no preço do website (cláusula 16.2)</td><td class="amount">− <span class="blank"></span> €</td></tr>
+        <tr><td class="tick"><span class="box"></span></td><td><span class="pending">Registo de domínio</span></td><td class="what">Custo do domínio, cobrado à parte (cláusula 13.2)</td><td class="amount"><span class="blank"></span> €</td></tr>
         <tr class="total"><td></td><td>Total do projeto</td><td></td><td class="amount"><span class="blank"></span> €</td></tr>
         <tr><td class="tick"><span class="box"></span></td><td>SEO mensal</td><td class="what">Primeiro mês, na assinatura: <span class="blank s"></span> €; depois</td><td class="amount"><span class="blank"></span> €/mês</td></tr>
         <tr><td class="tick"><span class="box"></span></td><td>GEO mensal</td><td class="what">Primeiro mês, na assinatura: <span class="blank s"></span> €; depois</td><td class="amount"><span class="blank"></span> €/mês</td></tr>
@@ -886,12 +847,12 @@
   <div class="form-block">
     <span class="mono">Secção 04</span>
     <h3>Prazos</h3>
-    <p>A nevima e <span class="blank l"></span> acordaram um prazo de <span class="blank s"></span> <strong>dias úteis</strong>, contados a partir da receção de todos os Materiais e do sinal. Este prazo é a base do cálculo do valor proporcional em caso de cancelamento ou de livre resolução (cláusula 20 e Anexo da Parte IV).</p>
+    <p>A nevima e <span class="blank l"></span> acordaram um prazo de <span class="blank s"></span> <strong>dias úteis</strong>, contados a partir da receção de todos os Materiais e do sinal. Este prazo é a base do cálculo do valor proporcional em caso de cancelamento ou de livre resolução (cláusula 21 e Anexo da Parte III).</p>
     <p>Os Materiais são entregues até 8 dias depois de a nevima receber esta Proposta assinada, salvo outro prazo nas Condições específicas (cláusula 8.2).</p>
     <p>Se urgente, data de conclusão acordada: <span class="blank"></span></p>
   </div>
 
-  <div class="form-block">
+  <div class="form-block whole">
     <span class="mono">Secção 05</span>
     <h3>Materiais a entregar pelo Cliente</h3>
     <div class="choice"><span class="box"></span>Textos de cada página</div>
@@ -907,10 +868,10 @@
     <span class="mono">Secção 06</span>
     <h3>Domínio, alojamento e portfólio</h3>
     <div class="opt"><span class="mono">Domínio</span><div>
-      <div><span class="box"></span>O Cliente já tem: <span class="blank l"></span></div>
-      <div><span class="box"></span><span class="pending">A registar pela nevima na conta do Cliente (cláusula 10.2):</span> <span class="blank"></span></div>
+      <div><span class="box"></span>O Cliente já tem, sem custo: <span class="blank l"></span></div>
+      <div><span class="box"></span><span class="pending">A registar pela nevima em nome do Cliente, com o custo cobrado à parte (cláusula 13.2):</span> <span class="blank"></span></div>
     </div></div>
-    <div class="opt"><span class="mono">Alojamento</span><div>Gratuito: 1 ano a partir do Lançamento, renovado depois automaticamente por períodos de 6 meses (cláusula 11).</div></div>
+    <div class="opt"><span class="mono">Alojamento</span><div>Gratuito: 1 ano a partir do Lançamento, renovado depois automaticamente por períodos de 6 meses (cláusula 12).</div></div>
     <div class="opt"><span class="mono">Portfólio</span><div>
       <div><span class="box"></span>O Cliente autoriza que o projeto seja mostrado pela nevima</div>
       <div><span class="box"></span>Não autoriza</div>
@@ -921,7 +882,7 @@
   <div class="form-block">
     <span class="mono">Secção 07</span>
     <h3>Condições específicas</h3>
-    <p class="note" style="margin:0 0 2mm">Só valem os ajustes às cláusulas marcadas como Ajustável, com o número da cláusula (cláusula 4.4).</p>
+    <p class="note" style="margin:0 0 2mm">Só valem os ajustes às cláusulas marcadas como Ajustável, com o número da cláusula (cláusula 5.2).</p>
     <table>
       <thead><tr><th style="width:24mm">Cláusula</th><th>O que fica acordado</th></tr></thead>
       <tbody>
@@ -936,7 +897,7 @@
   <div class="form-block">
     <span class="mono">Secção 08</span>
     <h3>Aceitação</h3>
-    <p>Ao assinar, o Cliente aceita esta Proposta, as Condições Gerais da Parte I, a Descrição dos serviços da Parte II e o Acordo de Tratamento de Dados da Parte V, que declara ter recebido e lido.</p>
+    <p>Ao assinar, o Cliente aceita esta Proposta, as Condições Gerais da Parte I e o Acordo de Tratamento de Dados da Parte IV, que declara ter recebido e lido.</p>
     <div class="sign">
       <div><div class="line"></div><div class="who">O Cliente</div><span class="mono">Data</span></div>
       <div><div class="line"></div><div class="who">António Maria das Neves Sepúlveda de Sá Policarpo</div><span class="mono">Data</span></div>
@@ -945,10 +906,10 @@
   </div>
 </section>
 
-<!-- ============================================================= PART IV -->
+<!-- ============================================================ PART III -->
 <section class="part">
   <header class="part-head">
-    <span class="mono">Parte IV</span>
+    <span class="mono">Parte III</span>
     <h2>Anexo para clientes particulares</h2>
   </header>
   <p class="part-intro">Este anexo aplica-se apenas quando o Cliente contrata para uso não profissional. Resume a informação que a lei obriga a dar antes da assinatura (Decreto-Lei n.º 24/2014) e completa as Condições Gerais.</p>
@@ -959,7 +920,7 @@
     <ol class="items">
       <li>O Cliente pode desistir do contrato no prazo de <strong>14 dias</strong> a contar da assinatura da Proposta, sem indicar o motivo e sem custos, salvo o previsto no n.º 3.</li>
       <li>Para desistir, basta enviar uma declaração clara para ola@nevima.studio, ou usar o formulário da secção D. Chega que a declaração seja enviada dentro do prazo.</li>
-      <li>Se o Cliente pediu que o trabalho começasse durante esses 14 dias (secção B) e depois desistir, paga o valor proporcional ao trabalho feito, calculado sobre o preço total como na cláusula 20.3. Se não fez esse pedido, não paga nada.</li>
+      <li>Se o Cliente pediu que o trabalho começasse durante esses 14 dias (secção B) e depois desistir, paga o valor proporcional ao trabalho feito, calculado sobre o preço total como na cláusula 21.3. Se não fez esse pedido, não paga nada.</li>
       <li>A nevima devolve tudo o que o Cliente pagou além desse valor no prazo de 14 dias a contar da desistência, pelo mesmo meio de pagamento.</li>
       <li>Se o serviço estiver totalmente prestado dentro dos 14 dias, e o Cliente o tiver pedido e reconhecido como na secção B, o direito de desistência deixa de existir.</li>
     </ol>
@@ -1005,10 +966,10 @@
   </div>
 </section>
 
-<!-- ============================================================== PART V -->
+<!-- ============================================================= PART IV -->
 <section class="part">
   <header class="part-head">
-    <span class="mono">Parte V</span>
+    <span class="mono">Parte IV</span>
     <h2>Acordo de Tratamento de Dados</h2>
   </header>
   <p class="part-intro">Este acordo cumpre o artigo 28.º do RGPD. Aplica-se enquanto a nevima alojar o website do Cliente e é igual para todos os Clientes.</p>
