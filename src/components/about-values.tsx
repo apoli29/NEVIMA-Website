@@ -62,12 +62,12 @@ const VALUES = [
   {
     id: "ease",
     name: "Making it easy",
-    text: "We want to bring peace of mind, not complications, to the clients who trust us. That’s why we break with the market norm of charging for every little thing, such as a monthly hosting fee.",
+    text: "We want our clients to be free of every logistical worry, from registering the domain and getting the website hosted to registering the trademark, where it applies. We follow the process closely, support you throughout and, wherever we legally and practically can, take it on ourselves.",
   },
   {
     id: "current",
     name: "Committed to the cutting edge",
-    text: "We make a point of keeping up with the market’s practices and tools, so that our service always offers innovative, distinctive solutions.",
+    text: "We always want to be ahead: the most innovative, using the best and most cutting-edge practices and tools. We\u2019re constantly adapting our workflow for exactly that reason, so we can offer a service with a level of innovation well above the norm.",
   },
 ] as const;
 

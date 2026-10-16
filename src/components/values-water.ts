@@ -100,7 +100,7 @@ const JOIN_S = 1.25;
 /** The room the joined piece leaves round the value's words, in the
     words' own ems, across and up and down (the user asked for more). The
     page's callout reads it too, to start at the piece's edge. */
-export const PIECE_PAD = { x: 1.5, y: 1.6 };
+export const PIECE_PAD = { x: 2.1, y: 2.2 };
 const WORDS_IN_S = 0.38;
 /** The joined piece: how much its outline still wanders and how much of
     its highlight it keeps, as shares of the loose drops'. */
