@@ -281,6 +281,18 @@ export function foldProcess() {
   return fold?.() ?? null;
 }
 
+let seek: ((id?: string) => boolean) | null = null;
+
+/** Brings How we work on screen, the row slid so that the step named by
+    `id` (a step's id, e.g. "strategy") stands in the middle of the screen,
+    and has that step blink three times; with no id, the section's start.
+    Asked for from other pages (the about page's FAQ links to
+    /#process-strategy, see home.tsx). False while the section is not
+    measured yet. */
+export function showProcess(id?: string) {
+  return seek?.(id) ?? false;
+}
+
 export function Process({ ready }: { ready: boolean }) {
   const reduce = useReducedMotion() ?? false;
   const section = useRef<HTMLElement>(null);
@@ -378,6 +390,41 @@ export function Process({ ready }: { ready: boolean }) {
       fold = null;
     };
   }, [reduce, held]);
+
+  // Found from elsewhere (see showProcess): the page is put where the
+  // row's slide has the step in the middle of the screen.
+  const layoutNow = useRef(layout);
+  layoutNow.current = layout;
+  useEffect(() => {
+    seek = (id) => {
+      const el = section.current;
+      const t = track.current;
+      const v = viewport.current;
+      const at = layoutNow.current;
+      if (!el || !t || !v || (id && at.stops.length === 0)) return false;
+      const top = el.getBoundingClientRect().top + window.scrollY;
+      let p = 0;
+      const card = id ? document.getElementById(`step-${id}`)?.closest<HTMLElement>("[data-step]") : null;
+      if (card && at.travel > 0) {
+        const i = [...t.querySelectorAll<HTMLElement>("[data-step]")].indexOf(card);
+        const lead = parseFloat(getComputedStyle(v).paddingLeft) || 0;
+        const room = v.clientWidth - lead;
+        p = Math.min(Math.max((at.stops[i]! - (room - card.offsetWidth) / 2) / at.travel, 0), 1);
+      }
+      jumpTo(top + p * Math.max(0, el.offsetHeight - window.innerHeight));
+      if (card) {
+        card.removeAttribute("data-flash");
+        // Read once so the blink starts again if it was already running.
+        void card.offsetWidth;
+        window.setTimeout(() => card.setAttribute("data-flash", ""), 350);
+        window.setTimeout(() => card.removeAttribute("data-flash"), 350 + 2600);
+      }
+      return true;
+    };
+    return () => {
+      seek = null;
+    };
+  }, []);
 
   // Which stops the rail's fill has reached.
   const [reached, setReached] = useState(1);

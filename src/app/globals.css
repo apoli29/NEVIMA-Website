@@ -2116,6 +2116,43 @@
   }
   .abt-answer[data-lit="true"],
   .abt-answer .svc-line-lit { -webkit-text-stroke-width: 0.012em; }
+  /* What an answer carries beyond its words comes in as they finish
+     lighting: a run of steps, points, a way on. */
+  .faq-more { animation: faq-more 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both; }
+  @keyframes faq-more {
+    from { opacity: 0; transform: translateY(8px); }
+  }
+  .faq-flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem 0.5rem;
+    color: var(--color-ink);
+  }
+  .faq-flow li { display: inline-flex; align-items: center; gap: 0.5rem; }
+  .faq-flow li + li::before { content: "\2192"; color: var(--color-ash); }
+  .faq-flow span {
+    border: 1px solid rgb(0 0 0 / 0.2);
+    border-radius: 999px;
+    padding: 0.28em 0.8em 0.32em;
+    font-size: 0.9em;
+    white-space: nowrap;
+  }
+  .faq-list { display: grid; gap: 0.6rem; color: var(--color-ink); }
+  .faq-list li { position: relative; padding-left: 1.3em; }
+  .faq-list li::before {
+    content: "";
+    position: absolute;
+    left: 0.15em;
+    top: 0.62em;
+    width: 0.38em;
+    height: 0.38em;
+    border-radius: 999px;
+    background: var(--color-ink);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .faq-more { animation: none; }
+  }
 
   /* ---- the values ---- */
 
@@ -2284,6 +2321,23 @@
   }
   /* Longer words get a wider column, not fewer words. */
   .prc-stage.prc-wide { --prc-w: clamp(19rem, 31vw, 29rem); }
+  /* A step sent for from elsewhere (the FAQ's "See it in How we work"):
+     it blinks three times, a soft grey wash and a hairline frame, so the
+     eye lands on it. */
+  .prc-stage::after {
+    content: "";
+    position: absolute;
+    inset: 0 0.5rem 0 0;
+    pointer-events: none;
+    border: 1px solid var(--color-ink);
+    background: rgb(0 0 0 / 0.05);
+    opacity: 0;
+  }
+  .prc-stage[data-flash]::after { animation: prc-flash 0.8s ease-in-out 3; }
+  @keyframes prc-flash {
+    0%, 100% { opacity: 0; }
+    45%, 60% { opacity: 1; }
+  }
   .prc-steps > .prc-stage:first-child { border-left-color: transparent; }
   .prc-stop {
     position: absolute;
