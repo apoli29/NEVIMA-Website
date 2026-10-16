@@ -26,7 +26,7 @@ import { Illuminated } from "./services";
 /* Soft hyphens in the long words: justified in a narrow column, the
    lines can break inside them rather than open gaps around them. */
 const STATEMENT =
-  "Nevima is a studio of two young friends who go way back and share a fas\u00adci\u00adna\u00adtion with com\u00admu\u00adni\u00adca\u00adtion and web de\u00advel\u00adop\u00adment. We didn\u2019t set out to be one more studio doing more of the same, but to bring a com\u00adplete\u00adly dif\u00adfer\u00adent proposition.";
+  "Nevima is a studio of two young, long-time friends who share a fas\u00adci\u00adna\u00adtion with com\u00admu\u00adni\u00adca\u00adtion and web de\u00advel\u00adop\u00adment. We didn\u2019t start out to be just another studio doing more of the same, but to offer a com\u00adplete\u00adly dif\u00adfer\u00adent approach.";
 
 /* The pillar, up to and including the colon it turns on. */
 const PILLAR =
