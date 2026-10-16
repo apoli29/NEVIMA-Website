@@ -682,13 +682,12 @@ export function Illuminated({
   // line inside "cost-benefit", and a word read back whole would put all of
   // it on the line its first half fell on, pushing that line past its edge.
   // A glued piece is followed by the rest of its word, not by a space.
+  // Soft hyphens (justified copy) are break points too, for the same
+  // reason; one left at a line's end is drawn as the hyphen it became.
   const pieces = (value: string) =>
     value.split(" ").flatMap((word) => {
-      const parts = word.split("-");
-      return parts.map((part, i) => {
-        const glued = i < parts.length - 1;
-        return { piece: glued ? `${part}-` : part, glued };
-      });
+      const parts = word.split(/(?<=[-\u00ad])/);
+      return parts.map((part, i) => ({ piece: part, glued: i < parts.length - 1 }));
     });
   const leadPieces = lead ? pieces(lead) : [];
   const markPieces = mark ? pieces(mark) : [];
@@ -714,9 +713,9 @@ export function Illuminated({
     });
     setLines(
       found.map((line) => ({
-        lead: line.lead.trimEnd(),
-        body: line.body.trimEnd(),
-        mark: line.mark.trimEnd(),
+        lead: line.lead.trimEnd().replace(/\u00ad$/, "-"),
+        body: line.body.trimEnd().replace(/\u00ad$/, "-"),
+        mark: line.mark.trimEnd().replace(/\u00ad$/, "-"),
       })),
     );
     // Measured once per mount: the card remounts this for every opening.
