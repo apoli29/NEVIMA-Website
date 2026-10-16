@@ -12,7 +12,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { SlideIn } from "./enter";
 import { useInkAlign } from "./ink-align";
 import { useSeen } from "./use-seen";
-import { PIECE_PAD, useValuesWater, type ValuesControl } from "./values-water";
+import { PIECE_PAD, padX, useValuesWater, type ValuesControl } from "./values-water";
 
 /* ==================================================================
    Values
@@ -62,12 +62,12 @@ const VALUES = [
   {
     id: "ease",
     name: "Making it easy",
-    text: "We want our clients to be free of every logistical worry, from registering the domain and getting the website hosted to registering the trademark, where it applies. We follow the process closely, support you throughout and, wherever we legally and practically can, take it on ourselves.",
+    text: "We want our clients to be free of every logistical worry, from registering the domain and getting the website hosted to registering the trademark (if applicable). We follow the process closely, support you throughout and, wherever we legally and practically can, do it ourselves.",
   },
   {
     id: "current",
     name: "Committed to the cutting edge",
-    text: "We always want to be ahead: the most innovative, using the best and most cutting-edge practices and tools. We\u2019re constantly adapting our workflow for exactly that reason, so we can offer a service with a level of innovation well above the norm.",
+    text: "We\u2019re whole\u00adheart\u00adedly com\u00admit\u00adted to being as in\u00adno\u00adva\u00adtive as possible, in the tools we use and in our practices and processes.",
   },
 ] as const;
 
@@ -255,7 +255,7 @@ export function AboutValues() {
 
         {/* Room above the drops for the callouts, and enough height
             either way for the piece the four become. */}
-        <div ref={field} className="relative flex items-center pt-24 pb-10 md:pt-28 md:pb-12">
+        <div ref={field} className="relative flex items-center pt-40 pb-10 md:pt-40 md:pb-12">
           <ul
             aria-label="Values: choose one to read it"
             data-chosen={chosen === null ? undefined : ""}
@@ -500,10 +500,10 @@ function Callout({
         // out with (see measure() in values-water.ts).
         const fs = parseFloat(getComputedStyle(el).fontSize) || 16;
         const b = {
-          left: r.left - PIECE_PAD.x * fs,
-          right: r.right + PIECE_PAD.x * fs,
+          left: r.left - padX() * fs,
+          right: r.right + padX() * fs,
           top: r.top - PIECE_PAD.y * fs,
-          width: r.width + 2 * PIECE_PAD.x * fs,
+          width: r.width + 2 * padX() * fs,
         };
         const left = b.left - box.left;
         const right = b.right - box.left;
@@ -565,7 +565,7 @@ function Callout({
   return (
     <motion.svg
       aria-hidden="true"
-      className="abt-callout pointer-events-none absolute inset-0 z-10 size-full overflow-visible"
+      className="abt-callout pointer-events-none absolute inset-0 z-30 size-full overflow-visible"
       initial={{ opacity: 1 }}
       exit={{ opacity: 0, transition: { duration: 0.18 } }}
     >
