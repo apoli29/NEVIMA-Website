@@ -8,13 +8,28 @@
    pricing.ts, which only the API routes import.
    ================================================================== */
 
+/** SEO comes two ways (user, 2026-10-17): a one-off deep-dive of a few
+    days, whose effect is strong at first and fades over the months, and
+    a monthly SEO & GEO service that keeps renewing that work. */
 export const SERVICES = [
   { id: "web", label: "Web design" },
   { id: "photo", label: "Photo & video" },
-  { id: "seo", label: "SEO" },
-  { id: "geo", label: "GEO" },
+  { id: "seo", label: "SEO deep-dive" },
+  { id: "monthly", label: "Monthly SEO & GEO" },
 ] as const;
 export type ServiceId = (typeof SERVICES)[number]["id"];
+
+/** What the business does. It tells us about the project; it never
+    changes the price by itself (what a sector needs is asked as features). */
+export const SECTORS = [
+  { id: "health", label: "Health & aesthetics" },
+  { id: "realestate", label: "Real estate" },
+  { id: "hospitality", label: "Restaurants & hospitality" },
+  { id: "retail", label: "Shop / retail" },
+  { id: "professional", label: "Professional services" },
+  { id: "other", label: "Other" },
+] as const;
+export type SectorId = (typeof SECTORS)[number]["id"];
 
 export const COUNTRIES = [
   { id: "PT", label: "Portugal" },
@@ -49,6 +64,33 @@ export const FORMS = [
 ] as const;
 export type FormsId = (typeof FORMS)[number]["id"];
 
+/** Two design levels for now (user, 2026-10-17), 25% apart. */
+export const DESIGN = [
+  { id: "essential", label: "Essential+", note: "Clean, well-built design with simple, elegant motion" },
+  { id: "advanced", label: "Advanced", note: "Richer layouts and animation, designed around your brand" },
+] as const;
+export type DesignId = (typeof DESIGN)[number]["id"];
+
+/** How much of the website's text the client already has: writing what
+    is missing is priced as a range, by the site's size. */
+export const TEXTS = [
+  { id: "all", label: "Yes, all of it" },
+  { id: "some", label: "Some" },
+  { id: "none", label: "None yet" },
+] as const;
+export type TextsId = (typeof TEXTS)[number]["id"];
+
+/** Features beyond pages and forms. Not priced online yet: each one
+    chosen is listed "on request" and quoted in the proposal. */
+export const FEATURES = [
+  { id: "booking", label: "Online booking" },
+  { id: "catalogue", label: "Listings or catalogue you update" },
+  { id: "blog", label: "Blog or news" },
+  { id: "shop", label: "Online shop" },
+  { id: "account", label: "Client area" },
+] as const;
+export type FeatureId = (typeof FEATURES)[number]["id"];
+
 export const YES_NO = [
   { id: "yes", label: "Yes" },
   { id: "no", label: "No" },
@@ -80,14 +122,25 @@ export type ReachId = (typeof REACH)[number]["id"];
     group is present only when its service was chosen. */
 export type Answers = {
   services: ServiceId[];
+  sector: SectorId;
+  sectorOther?: string;
   country: CountryId;
   countryOther?: string;
   web?: {
     identity: YesNo;
+    design: DesignId;
     pages: PagesId;
     languages: LanguageId[];
     languagesOther?: string;
     forms: FormsId;
+    texts: TextsId;
+    /** Possibly none. */
+    features: FeatureId[];
+    /** Up to two websites whose look the client likes; empty when they
+        said they have none. */
+    references: string[];
+    /** Ticked "I don't have any" instead of giving references. */
+    noReferences?: boolean;
     domain: YesNo;
     urgent: YesNo;
   };
@@ -106,6 +159,10 @@ export type Answers = {
   };
 };
 
+/** A price as a range: the final proposal sets the exact figure inside
+    it (user, 2026-10-17). A fixed price has min equal to max. */
+export type Range = { min: number; max: number };
+
 /** What the server sends back for a set of answers. Amounts are whole
     euros. An item the table cannot price is listed under onRequest. */
 export type Estimate = {
@@ -113,16 +170,16 @@ export type Estimate = {
   lines: {
     id: ServiceId;
     label: string;
-    /** Paid up front (for SEO and GEO, the first month). */
-    amount: number;
-    /** Paid each month after the first (SEO and GEO). */
+    /** Paid up front (for the monthly service, the first month). */
+    amount: Range;
+    /** Paid each month after the first (the monthly service). */
     monthly?: number;
     /** Shown under the line: what it includes, what it assumes. */
     notes: string[];
   }[];
   onRequest: { id: string; label: string; reason: string }[];
   /** The sum paid up front, or null when nothing could be priced. */
-  total: number | null;
+  total: Range | null;
   /** The sum paid each month after the first, when there is any. */
   monthly: number | null;
   /** How long the website takes, when web design was chosen: working
@@ -169,6 +226,6 @@ export function groupsFor(services: readonly ServiceId[]) {
   return {
     web: services.includes("web"),
     photo: services.includes("photo"),
-    search: services.includes("seo") || services.includes("geo"),
+    search: services.includes("seo") || services.includes("monthly"),
   };
 }
