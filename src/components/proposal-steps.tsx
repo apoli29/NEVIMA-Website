@@ -4,6 +4,8 @@ import { useEffect, useId, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import {
   COUNTRIES,
+  DESIGN,
+  FEATURES,
   FORMS,
   LANGUAGES,
   MAX,
@@ -11,7 +13,9 @@ import {
   PHOTO_PLANS,
   REACH,
   REGIONS,
+  SECTORS,
   SERVICES,
+  TEXTS,
   TRANSLATION_NOTE,
   YES_NO,
   groupsFor,
@@ -19,14 +23,19 @@ import {
   type Answers,
   type Contact,
   type CountryId,
+  type DesignId,
   type Estimate,
+  type FeatureId,
   type FormsId,
   type LanguageId,
   type PagesId,
   type PhotoPlanId,
+  type Range,
   type ReachId,
   type RegionId,
+  type SectorId,
   type ServiceId,
+  type TextsId,
   type YesNo,
 } from "@/lib/proposal/questions";
 
@@ -45,13 +54,21 @@ export const STUDIO_EMAIL = "ola@nevima.pt";
 
 export type Draft = {
   services: ServiceId[];
+  sector: SectorId | "";
+  sectorOther: string;
   country: CountryId | "";
   countryOther: string;
   identity: YesNo | "";
+  design: DesignId | "";
   pages: PagesId | "";
   languages: LanguageId[];
   languagesOther: string;
   forms: FormsId | "";
+  texts: TextsId | "";
+  features: FeatureId[];
+  reference1: string;
+  reference2: string;
+  noReferences: boolean;
   domain: YesNo | "";
   urgent: YesNo | "";
   plan: PhotoPlanId | "";
@@ -66,13 +83,21 @@ export const EMPTY_DRAFT: Draft = {
   // Web design is always part of a project: the other services are only
   // offered together with a website (the user's rule, 2026-10-07).
   services: ["web"],
+  sector: "",
+  sectorOther: "",
   country: "",
   countryOther: "",
   identity: "",
+  design: "",
   pages: "",
   languages: [],
   languagesOther: "",
   forms: "",
+  texts: "",
+  features: [],
+  reference1: "",
+  reference2: "",
+  noReferences: false,
   domain: "",
   urgent: "",
   plan: "",
@@ -125,11 +150,8 @@ function titleFor(step: StepId, draft: Draft) {
       return "Web design";
     case "photo":
       return "Photo & video";
-    case "search": {
-      const seo = draft.services.includes("seo");
-      const geo = draft.services.includes("geo");
-      return seo && geo ? "SEO & GEO" : seo ? "SEO" : "GEO";
-    }
+    case "search":
+      return draft.services.includes("monthly") ? "SEO & GEO" : "SEO";
     case "estimate":
       return "Your estimate";
     case "contact":
@@ -145,10 +167,15 @@ export type Errors = Partial<Record<string, string>>;
 
 /* Small print under the questions that change the price (user). */
 const PHOTO_NOTE =
-  "Photo & video is only available in Portugal. Travel expenses are added to the price of the service.";
+  "Photo & video is only available in Portugal. Travel beyond 30 km of Arcozelo is added to the price of the service.";
 const DOMAIN_NOTE =
-  "We include a domain for businesses that don't have one yet. If you already have yours, its cost is taken off the final price.";
+  "If you don't have a domain yet, we register it for you and its cost is added to the price. If you already have one, there's nothing to pay.";
+const DESIGN_NOTE = "Advanced costs 25% more than Essential+ on the website's price.";
+const TEXTS_NOTE = "Writing the texts you don't have is added to the price, as a range set by your website's size.";
+const FEATURES_NOTE = "Each one is quoted in your final proposal.";
 const URGENT_NOTE = "An urgent deadline raises the price by 40%.";
+
+const NO_REFERENCES = [{ id: "none", label: "I don't have any" }] as const;
 
 const PICK_ONE = "Choose one to continue.";
 const PICK_ANY = "Choose at least one to continue.";
@@ -158,17 +185,24 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact): Errors 
   const web = draft.services.includes("web");
   if (step === "basics") {
     if (!draft.services.length) e.services = PICK_ANY;
+    if (!draft.sector) e.sector = PICK_ONE;
+    else if (draft.sector === "other" && !draft.sectorOther.trim()) e.sector = "Tell us what your business does.";
     if (!draft.country) e.country = PICK_ONE;
     else if (draft.country === "other" && !draft.countryOther.trim()) e.country = "Tell us which country.";
   }
   if (step === "web") {
     if (!draft.identity) e.identity = PICK_ONE;
+    if (!draft.design) e.design = PICK_ONE;
     if (!draft.pages) e.pages = PICK_ONE;
     if (!draft.languages.length) e.languages = PICK_ANY;
     else if (draft.languages.includes("other") && !draft.languagesOther.trim()) {
       e.languages = "Tell us which languages.";
     }
     if (!draft.forms) e.forms = PICK_ONE;
+    if (!draft.texts) e.texts = PICK_ONE;
+    if (!draft.noReferences && !draft.reference1.trim() && !draft.reference2.trim()) {
+      e.references = "Add a website, or tick that you don't have any.";
+    }
     if (!draft.domain) e.domain = PICK_ONE;
     if (!draft.urgent) e.urgent = PICK_ONE;
   }
@@ -194,18 +228,31 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact): Errors 
 /** The draft as the server reads it: only the groups that were asked. */
 export function toAnswers(draft: Draft): Answers {
   const groups = groupsFor(draft.services);
-  const answers: Answers = { services: draft.services, country: draft.country as CountryId };
+  const answers: Answers = {
+    services: draft.services,
+    sector: draft.sector as SectorId,
+    country: draft.country as CountryId,
+  };
+  if (draft.sector === "other") answers.sectorOther = draft.sectorOther.trim();
   if (draft.country === "other") answers.countryOther = draft.countryOther.trim();
   if (groups.web) {
+    const references = draft.noReferences
+      ? []
+      : [draft.reference1.trim(), draft.reference2.trim()].filter(Boolean);
     answers.web = {
       identity: draft.identity as YesNo,
+      design: draft.design as DesignId,
       pages: draft.pages as PagesId,
       languages: draft.languages,
       forms: draft.forms as FormsId,
+      texts: draft.texts as TextsId,
+      features: draft.features,
+      references,
       domain: draft.domain as YesNo,
       urgent: draft.urgent as YesNo,
     };
     if (draft.languages.includes("other")) answers.web.languagesOther = draft.languagesOther.trim();
+    if (!references.length) answers.web.noReferences = true;
   }
   if (groups.photo) {
     answers.photo = { plan: draft.plan as PhotoPlanId, town: draft.town.trim() };
@@ -231,14 +278,19 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
     `Company: ${contact.company}`,
     "",
     `Services: ${a.services.map((s) => labelOf(SERVICES, s)).join(", ")}`,
+    `Business: ${a.sectorOther ?? labelOf(SECTORS, a.sector)}`,
     `Country: ${a.countryOther ?? labelOf(COUNTRIES, a.country)}`,
   ];
   if (a.web) {
     lines.push(
       `Visual identity redesign: ${labelOf(YES_NO, a.web.identity)}`,
+      `Design level: ${labelOf(DESIGN, a.web.design)}`,
       `Pages: ${labelOf(PAGES, a.web.pages)}`,
       `Languages: ${a.web.languages.map((l) => (l === "other" ? a.web?.languagesOther : labelOf(LANGUAGES, l))).join(", ")}`,
       `Forms: ${labelOf(FORMS, a.web.forms)}`,
+      `Texts ready: ${labelOf(TEXTS, a.web.texts)}`,
+      `Features: ${a.web.features.length ? a.web.features.map((f) => labelOf(FEATURES, f)).join(", ") : "None"}`,
+      `Reference websites: ${a.web.references.length ? a.web.references.join(", ") : "None"}`,
       `Has a domain: ${labelOf(YES_NO, a.web.domain)}`,
       `Urgent deadline: ${labelOf(YES_NO, a.web.urgent)}`,
     );
@@ -257,10 +309,10 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
   if (estimate) {
     lines.push("", "Estimate shown:");
     for (const l of estimate.lines) {
-      lines.push(`${l.label}: ${money(l.amount)}${l.monthly !== undefined ? `, then ${money(l.monthly)}/month` : ""}`);
+      lines.push(`${l.label}: ${span(l.amount)}${l.monthly !== undefined ? `, then ${money(l.monthly)}/month` : ""}`);
     }
     for (const r of estimate.onRequest) lines.push(`${r.label}: on request (${r.reason})`);
-    if (estimate.total !== null) lines.push(`Total: ${money(estimate.total)}`);
+    if (estimate.total !== null) lines.push(`Total: ${span(estimate.total)}`);
     if (estimate.monthly !== null) lines.push(`Then monthly: ${money(estimate.monthly)}`);
   }
   if (contact.message.trim()) lines.push("", contact.message.trim());
@@ -269,6 +321,8 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
 
 const EUR = new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
 const money = (n: number) => EUR.format(n);
+/** A range as "€650 – €780", or one figure when it is fixed. */
+const span = (r: Range) => (r.min === r.max ? money(r.min) : `${money(r.min)} – ${money(r.max)}`);
 
 /* --- the controls ---------------------------------------------------- */
 
@@ -504,6 +558,24 @@ export function StepScreen({
               }
             />
           </Question>
+          <Question id="sector" label="What does your business do?" error={errors.sector}>
+            <Segmented
+              name="sector"
+              options={SECTORS}
+              value={draft.sector}
+              onChange={(sector) => setDraft({ sector })}
+              labelledBy="sector-q"
+            />
+            {draft.sector === "other" && (
+              <Field
+                id={`${uid}-sector`}
+                label="What does your business do?"
+                placeholder="e.g. Architecture studio"
+                value={draft.sectorOther}
+                onChange={(sectorOther) => setDraft({ sectorOther })}
+              />
+            )}
+          </Question>
           <Question id="country" label="Where is your business based?" error={errors.country}>
             <Segmented
               name="country"
@@ -539,6 +611,15 @@ export function StepScreen({
               value={draft.identity}
               onChange={(identity) => setDraft({ identity })}
               labelledBy="identity-q"
+            />
+          </Question>
+          <Question id="design" label="How far should the design go?*" error={errors.design} footnote={`*${DESIGN_NOTE}`}>
+            <Segmented
+              name="design"
+              options={DESIGN}
+              value={draft.design}
+              onChange={(design) => setDraft({ design })}
+              labelledBy="design-q"
             />
           </Question>
           <Question id="pages" label="How many pages?" error={errors.pages}>
@@ -580,6 +661,58 @@ export function StepScreen({
               value={draft.forms}
               onChange={(forms) => setDraft({ forms })}
               labelledBy="forms-q"
+            />
+          </Question>
+          <Question id="texts" label="Do you have any texts ready?*" error={errors.texts} footnote={`*${TEXTS_NOTE}`}>
+            <Segmented
+              name="texts"
+              options={TEXTS}
+              value={draft.texts}
+              onChange={(texts) => setDraft({ texts })}
+              labelledBy="texts-q"
+            />
+          </Question>
+          <Question
+            id="features"
+            label="Do you need any of these?*"
+            hint="Choose any, or none"
+            footnote={`*${FEATURES_NOTE}`}
+          >
+            <Multi
+              name="features"
+              options={FEATURES}
+              value={draft.features}
+              onChange={(features) => setDraft({ features })}
+            />
+          </Question>
+          <Question id="references" label="Websites whose look you like" hint="Up to two" error={errors.references}>
+            {!draft.noReferences && (
+              <>
+                <Field
+                  id={`${uid}-ref1`}
+                  label="First website you like"
+                  placeholder="website.com"
+                  value={draft.reference1}
+                  onChange={(reference1) => setDraft({ reference1 })}
+                  max={MAX.url}
+                  inputMode="url"
+                />
+                <Field
+                  id={`${uid}-ref2`}
+                  label="Second website you like"
+                  placeholder="website.com"
+                  value={draft.reference2}
+                  onChange={(reference2) => setDraft({ reference2 })}
+                  max={MAX.url}
+                  inputMode="url"
+                />
+              </>
+            )}
+            <Multi
+              name="noReferences"
+              options={NO_REFERENCES}
+              value={draft.noReferences ? ["none"] : []}
+              onChange={(v) => setDraft({ noReferences: v.length > 0 })}
             />
           </Question>
           <Question id="domain" label="Do you already have a domain?*" error={errors.domain} footnote={`*${DOMAIN_NOTE}`}>
@@ -742,7 +875,7 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
           </span>
           <span className="text-right">
             <span className="pf-line-value block">
-              {money(line.amount)}
+              {span(line.amount)}
             </span>
             {line.monthly !== undefined && (
               <span className="mono-label mt-1 block text-ash-2">
@@ -769,7 +902,7 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
           )}
         </span>
         <span className="text-right">
-          <span className="pf-line-value block">{estimate.total === null ? "On request" : money(estimate.total)}</span>
+          <span className="pf-line-value block">{estimate.total === null ? "On request" : span(estimate.total)}</span>
           {estimate.monthly !== null && (
             <span className="mono-label mt-1 block text-white/70">Then {money(estimate.monthly)}/mo</span>
           )}
@@ -789,7 +922,7 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
       )}
     </div>
       <motion.p variants={ROW} className="mono-label pf-foot-note">
-        An estimate from your answers. Your final proposal confirms every figure.
+        An estimate from your answers. Your final proposal sets the exact price within these ranges.
       </motion.p>
     </div>
   );

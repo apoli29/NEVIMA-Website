@@ -16,6 +16,7 @@ export type ByMarket = Record<Market, number>;
 
 /** First month, then each month after. */
 type Monthly = { first: number; monthly: number };
+type Size = "landing" | "4-6" | "7-10";
 type SearchTable = Record<
   "landing" | "4-6" | "7-10",
   Record<"local" | "national", Record<Market, Monthly>>
@@ -37,27 +38,41 @@ export const PRICING = {
       "4-6": [8, 11],
       "7-10": [12, 16],
     } as Record<"landing" | "4-6" | "7-10", [number, number]>,
-    /** What every website comes with, shown under its line. */
+    /** What every website comes with, shown under its line. Kept in
+        step with the contract (clauses 11 and 12). */
     includes:
-      "Includes copy and optimised images, hosting for as long as the site is live, and a free call once part of the website is built.",
+      "Includes optimised images, a review of the texts you send, free hosting for the first year (then renewed every 6 months) and a free call once part of the website is built.",
+
+    /** The estimate is a range (user, 2026-10-17): the website's price
+        from the table is its floor, and the ceiling is this much above. */
+    rangePercent: 20,
+    /** The Advanced design level costs this much more than Essential+
+        (user, 2026-10-17). The page prices above are Essential+. */
+    advancedPercent: 25,
 
     /** The visual identity redesign (logo and symbol). */
     identity: { pt: 180, "es-it": 205, us: 315 } satisfies ByMarket,
-    /** Portuguese is included everywhere; every other language is paid
-        (user: they are not native languages). */
-    english: { pt: 45, "es-it": 50, us: 80 } satisfies ByMarket,
-    /** Each language typed under "Other". */
-    otherLanguage: { pt: 20, "es-it": 25, us: 35 } satisfies ByMarket,
+    /** Portuguese is always the language included; the others are priced
+        together by how many there are, as the contract sets them (clause
+        11.4), the same in every country. More than three is quoted. */
+    languages: { 1: 35, 2: 55, 3: 80 } as Record<1 | 2 | 3, number>,
+    /** Writing the texts the client does not have, as a range by the
+        site's size (Portugal; other markets scaled by textsMarket).
+        PROVISIONAL: figures to be confirmed by the studio. */
+    texts: {
+      some: { landing: [40, 80], "4-6": [80, 150], "7-10": [120, 240] },
+      none: { landing: [80, 150], "4-6": [150, 300], "7-10": [240, 450] },
+    } as Record<"some" | "none", Record<Size, [number, number]>>,
+    textsMarket: { pt: 1, "es-it": 1.15, us: 1.75 } satisfies Record<Market, number>,
     forms: {
       "0": { pt: 0, "es-it": 0, us: 0 },
       "1": { pt: 30, "es-it": 35, us: 55 },
       "2": { pt: 55, "es-it": 65, us: 95 },
       "3": { pt: 75, "es-it": 85, us: 130 },
     } satisfies Record<string, ByMarket>,
-    /** An existing domain (with proof) takes off what the client paid for
-        it, €10 to €30 whatever the country. The estimate takes off the
-        middle of that (user: "metes a estimativa"). */
-    existingDomain: { estimate: 20, min: 10, max: 30 },
+    /** A client without a domain pays for the one we register for them
+        (contract, clause 13); one who has a domain pays nothing. */
+    newDomain: { min: 10, max: 30 },
     /** Added for an urgent deadline, on the website and its extras. The
         timeline is then agreed between both sides. */
     urgentPercent: 40,
@@ -65,11 +80,14 @@ export const PRICING = {
 
   /** Mainland Portugal only; anywhere else is quoted on request. */
   photo: { photos: 245, "photos-video": 370 },
-  /** Shown under the photo line. */
-  photoTravel:
-    "In some parts of the Porto area and in the rest of the country, travel costs are covered by your business.",
+  /** Shown under the photo line, as the contract sets it (clause 10.3). */
+  photoTravel: "Travel within 30 km of Arcozelo is included. Beyond that, it is charged per km, as set in your proposal.",
 
-  /** "More than 10" pages and an international reach are on request. */
+  /** "More than 10" pages and an international reach are on request.
+      The SEO deep-dive is priced at seo's "first" column; the monthly
+      SEO & GEO service at seo's and geo's monthly fees together.
+      PROVISIONAL mapping from the old SEO and GEO tables, to be
+      confirmed by the studio. */
   seo: {
     landing: {
       local: { pt: { first: 150, monthly: 60 }, "es-it": { first: 175, monthly: 70 }, us: { first: 265, monthly: 105 } },
