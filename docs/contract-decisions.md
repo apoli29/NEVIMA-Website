@@ -1,121 +1,120 @@
-# Contrato: decisões para a v1.1
+# Contrato de prestação de serviços: decisões
 
-Feedback dos sócios ao PDF anotado da v1 (`contratos/contrato-nevima-v1.pdf`), 2026-10-15. Aplicar tudo em `contratos/contrato-nevima.html` e gerar o PDF v1.1.
+O estado atual do contrato, as decisões dos sócios e o que ainda está em aberto. A fonte é `contratos/contrato-nevima.html`, impresso em PDF com o Edge sem interface (ver o histórico do git). Este ficheiro descreve a **v1.4** (2026-10-16), em `contratos/contrato-nevima-v1.4.pdf`, com 19 páginas.
 
-## Decidido
+Os trechos a laranja escuro (`.pending`) aguardam a decisão final dos sócios. As cláusulas marcadas **Ajustável** (6, 8, 10, 16 e 21) têm a etiqueta e uma frase no texto. Um ajuste só vale se ficar escrito nas Condições específicas da Proposta (cl. 5.2).
 
-### Parte I: Condições Gerais
-- **Cl. 3:** acrescentar a definição **Chamada de Acompanhamento**: a chamada gratuita a meio do projeto (a do site, "a free call once part of the website is built"). A cl. 8.6 passa a usar esse nome e a dizer que é gratuita.
-- **Cl. 4.1:** "A estimativa obtida no formulário do site da nevima é apenas indicativa. O preço e o âmbito vinculativos são os da Proposta, que a nevima envia em resposta ao formulário e que integra este contrato como Parte II."
-- **Cl. 4.2:** a validade da Proposta passa a **10 dias**. O rótulo "Válida até" da Proposta acompanha.
-- **Cl. 4.4:** sai "prevalece a Proposta". As cláusulas ajustáveis levam uma etiqueta mono **AJUSTÁVEL**: 6 (pagamento), 8 (prazos), 13 (sessão fotográfica), 16 (portfólio e crédito) e 20.3 (sinal no cancelamento). Um ajuste só vale se ficar escrito no espaço **"Condições específicas"**, no fim da Proposta, numa tabela *Cláusula / O que fica acordado*.
-- **Cl. 5.1:** os preços ficam na Proposta, não nas Condições Gerais.
-- **Cl. 5.4:** sai o desconto do domínio, porque o cliente paga sempre o domínio. Sai também a linha correspondente da Proposta.
-- **Cl. 5.5:** criar o anexo **"Descrição dos serviços"**, com uma secção por serviço (web design, identidade, fotografia, SEO, GEO, línguas): inclui / não inclui / prazos / revisões.
-- **Cl. 6.1:** pôr em destaque "o trabalho só começa depois de o sinal ser recebido e de os Materiais estarem completos".
-- **Cl. 6.2:** acrescentar uma nota: se o cliente não puder garantir o pagamento no prazo, avisa antes de assinar e o prazo combinado fica escrito nas Condições específicas.
-- **Cl. 9.4:** a escolha é do cliente:
-  - a) alterações antes do lançamento;
-  - b) lançar já, pagando normalmente, com as alterações orçamentadas aplicadas quando forem pagas.
+## Estrutura (v1.4)
+- **Parte I, Condições Gerais:**
+  1. Partes
+  2. Objeto
+  3. Definições
+  4. Estimativa, Proposta e preços
+  5. Formação do contrato
+  6. Pagamentos
+  7. Atrasos no pagamento
+  8. Envio de materiais e prazos
+  9. Identidade visual
+  10. Sessão fotográfica
+  11. Web design
+  12. Alojamento
+  13. Domínio
+  14. SEO
+  15. GEO
+  16. Portfólio e crédito
+  17. Propriedade intelectual
+  18. Obrigações do Cliente
+  19. Dados pessoais
+  20. Confidencialidade
+  21. Cancelamento
+  22. Responsabilidade
+  23. Duração e cessação
+  24. Comunicações
+  25. Lei aplicável
+- **Parte II:** Proposta / Ordem de Serviço.
+- **Parte III:** Anexo para clientes particulares.
+- **Parte IV:** Acordo de Tratamento de Dados.
 
-  As **alterações pequenas não têm prazo**: a nevima faz e depois avisa o cliente. As alterações maiores têm o prazo escrito no orçamento delas.
-- **Cl. 9.6:** 8 dias passa a **48 horas**.
-- **Cl. 10 (Domínio):** reescrever. O cliente é o titular e paga o registo e as renovações. Se o cliente não tiver domínio, a nevima trata da parte burocrática.
-- **Cl. 11:** manter a numeração 1, 2, 3, com alíneas a), b) só para listas.
-- **Cl. 11.3:** "Se uma das partes não renovar, a nevima apresenta ao Cliente as condições em vigor nessa altura para continuar a alojar o website, ou entrega-lhe, sem custo, o código e os ficheiros do website, para que o possa alojar onde quiser."
-- **Cl. 11.4:** dar credibilidade à Vercel, sem prometer disponibilidade contínua.
-- **Cl. 11.5:** usar o termo técnico (edge requests, transferência) e explicá-lo entre parênteses.
-- **Cl. 13.1:** a sessão inclui deslocações até 30 km de Arcozelo. Acima disso, cobra-se um valor por km, indicado na Proposta. A linha "Deslocação" da Proposta ganha os km e o €/km.
-- **Cl. 13.3:** se o cliente desmarcar com menos de 48 horas, paga 10% do preço da sessão mais as despesas de deslocação já feitas. A justificação (tempo reservado, preparação, trabalho recusado) entra no texto. A confirmar com o advogado no caso dos particulares.
-- **Cl. 13 / 15 / 17:**
-  - a 13.2 (autorizações das pessoas fotografadas) passa também para a cl. 17;
-  - a 13.3 fica na cl. 13;
-  - na cl. 17, remeter para a 15.2;
-  - a cl. 17 termina com "e as restantes obrigações previstas neste contrato".
-- **Cl. 14:** o português é sempre a língua incluída, nunca outra. A cl. 14 passa para a secção de web design do anexo, com as línguas adicionais a 35 € (uma), 55 € (duas) e 80 € (três) e uma reunião de revisão só para elas. Nas Condições Gerais fica só a regra da tradução por IA e da aprovação pelo cliente.
-- **Cl. 15.2:** uso antecipado: o cliente pede, e a nevima calcula a parte do preço total a pagar antes.
-- **Cl. 15.3:** dizer explicitamente que o logótipo, a identidade, os textos, as fotografias e o design próprio do cliente nunca são reutilizados.
-- **Cl. 16.2:** o crédito é o logótipo da nevima, discreto, no rodapé. Quem aceita tem −5%, decidido na assinatura (Proposta: "☐ Sim (−5%) ☐ Não").
-- **Cl. 17.4:** "em tempo útil" passa a **5 dias úteis**. Depois disso, o Prazo Acordado estende-se (cl. 8.2).
-- **Cl. 18.1:** explicar em linguagem simples.
-- **Cl. 18.2:** escrever como funciona:
-  - os formulários enviam as mensagens diretamente para o email do cliente;
-  - a nevima não as guarda nem as lê;
-  - o Acordo de Tratamento de Dados é um anexo fixo, igual para todos, e ainda está por redigir.
-- **Cl. 20.3:**
-  - corrigir para "compromete-se a devolver";
-  - **profissionais:** a nevima fica sempre com os 25%, mesmo que o trabalho não tenha começado; a partir daí, o valor é proporcional aos dias trabalhados (o maior dos dois);
-  - **particulares:** durante os 14 dias de livre resolução, segue a lei;
-  - escrever as duas regras logo no início da cláusula.
-- **Cl. 21.1:** manter, com um exemplo simples no texto.
-- **Cl. 23:** comunicações pontuais (marcar chamadas, dúvidas rápidas) podem ser por telefone, a pedido. Tudo o resto é por email.
+Cada serviço tem uma cláusula própria (9 a 15) com o que inclui, o que não inclui e as suas condições. A antiga "Descrição dos serviços" foi absorvida por essas cláusulas. Ordem dos serviços: a de execução, escolhida pelos sócios.
 
-### Parte II: Proposta
-- **N.º da Proposta:** `nomedaempresa-2026-01`.
-- O rótulo "Data" passa a "Data de emissão".
-- A Secção 02 passa a chamar-se "Serviços", com:
-  - uma caixa ☐ e um preço por serviço;
-  - o web design dividido em base, n.º de páginas, línguas adicionais e formulários;
-  - ajustes: deslocação, urgência +40% e crédito −5%;
-  - o total.
-- Nos Materiais, "Outros" passa a espaço em branco, sem linha.
-- Novos espaços: línguas adicionais, km e €/km da deslocação, crédito −5% e Condições específicas.
+## Decidido (por cláusula da v1.4)
+- **4:**
+  - a estimativa do formulário é indicativa; vale a Proposta, enviada em resposta ao formulário;
+  - a Proposta é válida por 10 dias; depois disso, a nevima pode rever os preços e os prazos, ou cancelar a Proposta;
+  - prazo urgente: +40%.
+- **6 (Pagamentos):**
+  - sinal de 25% na assinatura; o trabalho só começa com o sinal recebido e os Materiais completos (em destaque);
+  - pagamento final em **72 horas** a contar do envio da fatura;
+  - **nota:** quem não puder pagar nesse prazo avisa antes de assinar, e a nova data fica nas Condições específicas; se não avisar, aplica-se a cl. 7;
+  - fatura no dia da Chamada de Validação e recibo quando o pagamento chega (nunca fatura-recibo antes do pagamento);
+  - fora da zona euro, o comprovativo é enviado nas mesmas 72 horas.
+- **7 (Atrasos):**
+  - juros de mora;
+  - o site não é lançado;
+  - o Cliente não adquire direitos enquanto não pagar;
+  - 15 dias depois de avisado por escrito, a nevima escolhe entre a) exigir o valor em falta, com juros e custos, por injunção, ou b) resolver o contrato e exigir o **preço total** como indemnização, descontado o que recebeu;
+  - com Particulares, na medida em que a lei o permita.
+- **8 (Materiais e prazos):**
+  - 8 dias para entregar os Materiais, a contar da receção da Proposta assinada (outro prazo a pedido do Cliente, nas Condições específicas);
+  - se o prazo passar, o contrato perde efeito e a nevima retém o sinal na medida em que a lei o permita;
+  - "Prazos do contrato" foi fundida aqui.
+- **9 (Identidade visual):** a nevima acompanha o registo de marca **sem custo adicional**, mas não o faz por inteiro.
+- **10 (Sessão fotográfica):**
+  - deslocações incluídas até 30 km de Arcozelo; acima disso, €/km na Proposta;
+  - desmarcação com menos de 48 horas: **15%** do preço da sessão, mais as deslocações (a laranja: "a confirmar com parecer profissional").
+- **11 (Web design):**
+  - o português é sempre a língua incluída; línguas adicionais a 35 / 55 / 80 €, com reunião de revisão;
+  - a tradução por IA é revista pelo Cliente num documento formatado pela nevima;
+  - os ajustes da **Chamada de Acompanhamento** são **gratuitos**;
+  - **alterações pequenas:** até 15 minutos cada, **máximo de 4** gratuitas; a partir da 5.ª, orçamentadas; sem prazo fixo (a nevima faz e avisa);
+  - **Lançamento:** a) alterações antes de lançar, ou b) lançar já: o Cliente paga normalmente, o site vai para o ar e as alterações maiores são orçamentadas e publicadas quando pagas;
+  - em ambos os casos, o pagamento final vence nas 72 horas da cl. 6.2;
+  - **aceitação:** 72 horas depois da Chamada de Validação.
+- **12 (Alojamento):**
+  - gratuito; o primeiro período é de **1 ano** a partir do Lançamento, e depois renova-se automaticamente por **períodos de 6 meses**;
+  - não renovação com **2 meses** de aviso;
+  - na renovação, a nevima pode passar a cobrar um **valor simbólico** que só cobre custos, **até 60 €/ano**; se o Cliente recusar (ou não renovar), recebe o código sem custo;
+  - alojado no plano **Pro** da Vercel;
+  - **limite justo:** 100 mil CDN requests por mês; acima disso, **120 €/ano** entre 100 mil e 1 milhão, e **orçamento especializado** acima de 1 milhão (valores a laranja, para os sócios confirmarem que são justos);
+  - o site continua a dizer "for as long as your website is live": **o site não muda** por agora (pedido do utilizador).
+- **16:** o crédito é o logótipo da nevima no rodapé, com −5% no website.
+- **17 (Propriedade intelectual):**
+  - "integral" quer dizer todo o preço;
+  - para usar um trabalho antes, o Cliente paga antecipadamente o preço desse serviço;
+  - as ferramentas e componentes da nevima não dão direitos ao Cliente; os que ficam dentro do website só podem ser usados como parte dele.
+- **18.4:** 5 dias úteis para o Cliente responder a perguntas e aprovações durante o projeto.
+- **21 (Cancelamento):**
+  - profissionais: a nevima fica sempre com os 25% ou com o valor proporcional, o que for maior;
+  - Particulares: o anexo nos primeiros 14 dias.
+- **24:** contactos pontuais por telefone; tudo o resto por email.
+- **Proposta (Parte II):**
+  - n.º no formato `nomedaempresa-2026-01`;
+  - serviços com caixas e subpreços;
+  - linha de registo de domínio;
+  - Condições específicas.
 
-### Marcados a laranja escuro (decisão final pendente)
-Estes trechos ficam destacados a laranja escuro no HTML e no PDF, para os sócios saberem que ainda lhes falta a decisão final:
-- **Cl. 10 (Domínio):** registo através da partilha de conta do Hostinger.
-  - O cliente cria a conta dele.
-  - A nevima pede acesso ("Request access", opção de cliente), prepara a encomenda e o cliente paga com o cartão dele.
-  - A nevima gere o DNS.
-  - O cliente é o titular e as renovações são cobradas a ele.
-  - No `.pt`, o NIF e o nome têm de bater com o documento de identificação. O registo pode pedir um documento, com cerca de 2 dias para responder: isto fica como obrigação do cliente.
-- **Formulários (antiga cl. 18.2):** passam para a secção de web design do anexo "Descrição dos serviços". As mensagens vão diretamente para o email do cliente e a nevima não as guarda nem as lê.
-- **SEO e GEO:** a cl. 12 e as secções de SEO e GEO do anexo.
+## Por decidir (a laranja)
+- **Domínio (cl. 13):**
+  - a nevima regista o domínio por quem não o tem e cobra o custo à parte; quem já tem não paga, e a nevima liga o website se for exequível;
+  - falta definir **como** (a partilha de conta do Hostinger foi a recomendação).
+- **Formulários (cl. 11.3 e Parte IV, art. 2.4):** confirmar como funcionam.
+- **SEO e GEO (cl. 14, 15, 6.6):** conteúdo e cobrança. O GEO pode ser pontual ou mensal (ver a memória de questões de preço). A cl. 6.7 também está a laranja.
+- **Identidade visual (cl. 9.4):** quantas rondas de revisão estão incluídas.
+- **Alojamento (cl. 12.3 e 12.6):** se os 60 €, os 100 mil, os 120 € e o 1 milhão são justos.
+- **15% na desmarcação (cl. 10.6):** parecer profissional.
 
-### Materiais (cl. 8.3)
-- O cliente tem **8 dias**, a contar da receção do contrato assinado pela nevima, para entregar os Materiais completos.
-- O prazo pode ser outro se o cliente o pedir. Nesse caso fica escrito nas Condições específicas.
-- Até lá, o projeto fica parado e o Prazo Acordado não corre.
-- Se os 8 dias (ou o prazo pedido) passarem sem os Materiais completos, o contrato perde efeito, e a nevima retém o sinal na medida em que a lei o permita, tanto com profissionais como com particulares.
-- Sai a suspensão. Sai também o limite de 60 dias.
+## Por confirmar
+- Qual Arcozelo (o concelho), na cl. 10.3.
+- Se o web design inclui a escrita dos textos (cl. 11.1; o site diz "includes copy").
+- Diferenças entre o site e o contrato:
+  - o simulador desconta o domínio existente (10 a 30 €) e cobra 45 € pelo inglês e 20 € por outra língua, contra 35 / 55 / 80 € no contrato;
+  - a duração do alojamento.
+- **Atualizações de segurança (a explorar mais tarde):** se o alojamento gratuito inclui aplicar as correções de segurança do Next.js (por exemplo, as falhas de março de 2025 e o "React2Shell" de dezembro de 2025), e como fazê-lo em muitos sites (a mesma base em todos, Dependabot). Frase proposta: "O alojamento inclui manter o website no ar tal como foi entregue e aplicar as atualizações de segurança que a nevima considere necessárias. Não inclui alterações, funcionalidades novas nem atualizações de outra natureza, que seguem a cláusula 11."
+- NIF e morada de cada sócio; revisão pelo advogado.
 
-### Pagamento final (cl. 6.2)
-- Prazo: **72 horas** a contar do envio da fatura.
-- O contrato explica o processo:
-  1. a fatura é emitida no dia da Chamada de Validação e indica o prazo;
-  2. o recibo é emitido quando o pagamento chega.
-- Não usar fatura-recibo antes do pagamento.
-
-### Alojamento (cl. 11)
-- O alojamento é feito no plano **Pro** da Vercel (decidido 2026-10-16).
-- **Períodos (v1.3, 2026-10-16):** o alojamento é gratuito. O primeiro período é de **1 ano** a contar do Lançamento. Depois renova-se automaticamente por **períodos de 6 meses**. (A v1.1 dizia "enquanto o website estiver no ar" e a v1.2 dizia períodos de 2 anos; ambas ficaram para trás.)
-- **Não renovação:** é preciso avisar com **2 meses** de antecedência.
-  - A nevima só pode não renovar por motivos alheios à sua vontade (preços ou condições da Vercel, alteração da lei, etc.) e indica o motivo no aviso.
-  - Nesse caso, apresenta condições para continuar, que podem incluir um preço.
-  - Se o Cliente não as aceitar, ou se for ele a não renovar, recebe o código e os ficheiros sem custo.
-- **O site não foi alterado** (pedido do utilizador, 2026-10-16: só o contrato muda). O site continua a dizer "for as long as your website is live" em `services.ts`, `about-faq.tsx`, `comparison.tsx` e `pricing.ts`. Fica em aberto se e quando o site muda.
-- O limite de tráfego passa a **100 mil CDN requests por mês**, sem limite em GB. Fica a laranja até ser confirmado.
-- Contas da Vercel: com cerca de 100 visitas por site por mês, os 30 sites cabem no Pro (20 $/mês) sem custos extra.
-
-## Estado
-A v1.1 foi aplicada em 2026-10-16, e a v1.2 e a v1.3 (alojamento) no mesmo dia; o PDF atual é `contratos/contrato-nevima-v1.3.pdf`: `contratos/contrato-nevima-v1.1.pdf`, com 18 páginas e 5 partes. A Descrição dos serviços passou a Parte II, a Proposta a Parte III, o anexo para particulares a Parte IV e o Acordo de Tratamento de Dados a Parte V.
-
-## Por decidir (a laranja na v1.1)
-- **Domínio (cl. 10):** confirmar o processo da partilha de conta.
-- **Formulários:** confirmar como funcionam (secção de web design da Parte II e Parte V, art. 2.4).
-- **SEO e GEO:** cl. 12 e as respetivas secções da Parte II.
-- **Limites do alojamento (cl. 11.4):** 100 mil CDN requests por mês na v1.2, por confirmar. O valor da v1.1 (1 milhão de edge requests e 50 GB por site) está **mal dimensionado**.
-  - O plano Pro inclui o escalão Flat Rate CDN mais baixo: 1 milhão de CDN requests e 1 TB por mês para a **equipa inteira**, todos os sites somados. O escalão seguinte custa 20 $/mês e dá 10 milhões de requests e 50 TB.
-  - A Vercel já chama "CDN requests" ao que antes chamava "edge requests".
-  - Nova recomendação: um limite por site em CDN requests (cerca de 300 mil por mês), calibrado com o consumo real do nevima.studio no painel da Vercel. Retirar o limite em GB, que nunca é o limite que se atinge primeiro.
-  - Fonte: documentação Vercel (Pro plan, Flat Rate CDN), atualizada em 2026-09-14/15.
-- **Identidade visual:** quantas rondas de revisão estão incluídas.
-
-## Por confirmar (sem marca)
-- **Arcozelo (cl. 13.2):** indicar qual Arcozelo (concelho).
-- **Web design, "os textos":** o site diz "includes copy". Confirmar que a nevima escreve ou revê os textos.
-- **Site vs. contrato:**
-  - o simulador de estimativa ainda desconta o domínio existente (10 a 30 €);
-  - cobra 45 € pelo inglês e 20 € por cada outra língua, contra 35 / 55 / 80 € no contrato.
-- NIF e morada de cada sócio, revisão pelo advogado.
-- **Atualizações de segurança (a explorar mais tarde):** decidir se o alojamento gratuito inclui aplicar as correções de segurança do Next.js (ex.: as falhas de março de 2025 e "React2Shell", de dezembro de 2025), e como fazê-lo em muitos sites ao mesmo tempo: a mesma base em todos, Dependabot. Frase proposta para a cl. 11: "O alojamento inclui manter o website no ar tal como foi entregue e aplicar as atualizações de segurança que a nevima considere necessárias. Não inclui alterações, funcionalidades novas nem atualizações de outra natureza, que seguem a cláusula 9."
+## Contas da Vercel (2026-10-16)
+- **O que o Pro inclui:** 20 $/mês, com 20 $ de crédito, e o escalão Flat Rate CDN base: 1 milhão de CDN requests e 1 TB, **para a equipa inteira**. O escalão seguinte custa mais 20 $/mês (10 milhões de requests, 50 TB).
+- **Medido no site da nevima:** cerca de 21 pedidos e 0,4 a 0,8 MB numa primeira visita; cerca de 7 a 8 pedidos por página extra.
+- **Estimativa dos sócios:** cerca de 100 visitas por mês por site, o que dá 5 a 10 mil requests por site, robôs incluídos.
+- **Consequência:** 30 sites cabem no Pro (20 $/mês) sem custos extra; ~100 a 200 sites antes do limite incluído.
+- **Plano para crescer:** quando a conta se aproximar do limite, o segundo sócio abre uma segunda conta Pro e passa a publicar lá.
