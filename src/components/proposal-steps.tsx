@@ -319,7 +319,7 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
     if (estimate.total !== null) lines.push(`Total: ${span(estimate.total)}`);
     if (estimate.monthly !== null) lines.push(`Then monthly: ${money(estimate.monthly)}`);
   }
-  if (contact.message.trim()) lines.push("", contact.message.trim());
+  if (contact.message.trim()) lines.push("", "Tell us more:", contact.message.trim());
   return lines.join("\n");
 }
 
@@ -1001,19 +1001,26 @@ function ContactScreen({
             )}
           </motion.div>
         ))}
+        {/* Room for what the questions did not ask (user, 2026-10-17). It
+            never changes the estimate: it is read with the request. */}
         <motion.div variants={ROW}>
           <label className="prop-row">
-            <span className="mono-label prop-label">Message</span>
+            <span className="mono-label prop-label">Tell us more</span>
             <textarea
               name="message"
-              rows={3}
-              placeholder="Anything else we should know (optional)"
+              rows={4}
+              placeholder="Anything else we should know about your business or your project (optional)"
               value={contact.message}
               onChange={(e) => setContact({ message: e.target.value })}
               maxLength={MAX.message}
+              aria-describedby="message-note"
               className="prop-input prop-text"
             />
           </label>
+          <p id="message-note" className="pf-footnote pf-row-note">
+            What you write here isn&rsquo;t counted in your estimate: we only read it once you&rsquo;ve sent
+            your request.
+          </p>
         </motion.div>
         <motion.div variants={ROW} className="pf-consent-row">
           <label className="pf-consent">

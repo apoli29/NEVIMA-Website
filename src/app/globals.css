@@ -713,6 +713,9 @@
     color: var(--color-ash);
     max-width: 34em;
   }
+  /* Under a field of its own, in line with what is typed: past the
+     row's padding, its label column and the gap. */
+  .pf-row-note { padding: 0 0.75rem 0.85rem 6rem; max-width: none; }
 
   /* Any number: keys apart, each with a tick box. */
   .pf-multi { display: flex; flex-wrap: wrap; gap: 0.375rem; }
