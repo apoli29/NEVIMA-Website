@@ -283,8 +283,13 @@ function Panel({
   const rowsX = useTransform(t, ROWS_OUT, [0, -10]);
   const labelOut = useTransform(t, LABEL_OUT, plain ? [0, 0] : [1, 0]);
   const labelIn = useTransform(t, LABEL_IN, plain ? [1, 1] : [0, 1]);
-  const footOut = useTransform(t, FOOT_OUT, reduce ? [0, 0] : [1, 0]);
+  // From a call to action the row was never "Get your free proposal" on
+  // the index, so it does not carry that label into the form (user,
+  // 2026-10-17: it showed in the growing pane): it waits at the foot and
+  // comes in as "Continue".
+  const footOut = useTransform(t, FOOT_OUT, plain ? [0, 0] : [1, 0]);
   const footIn = useTransform(t, FOOT_IN, reduce ? [1, 1] : [0, 1]);
+  const footShown = useTransform(t, FOOT_IN, fromIndex || reduce ? [1, 1] : [0, 1]);
 
   /* The ask row is the index's first row, but the form's last: it sets
      off from right under the label and slides down to the foot. Its
@@ -302,7 +307,7 @@ function Panel({
     });
   }, []);
   const footY = useTransform([t, height], ([tv, hv]: number[]) => {
-    if (reduce) return 0;
+    if (reduce || !fromIndex) return 0;
     const span = (tv - FOOT_DROP[0]) / (FOOT_DROP[1] - FOOT_DROP[0]);
     const down = FOOT_DROP_EASE(Math.min(Math.max(span, 0), 1));
     const room = Math.max(hv - 2 * pad - chrome.around, 0);
@@ -662,7 +667,7 @@ function Panel({
           </div>
 
           {/* The row the index was opened from, which moves the form on. */}
-          <motion.div ref={footEl} className="relative z-10" style={{ y: footY }}>
+          <motion.div ref={footEl} className="relative z-10" style={{ y: footY, opacity: footShown }}>
             <span aria-hidden="true" className="absolute inset-x-0 top-0 z-10 block h-px bg-ink" />
             <div className="flex">
               <AnimatePresence initial={false}>
