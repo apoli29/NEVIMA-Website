@@ -46,6 +46,8 @@ export const PAGES = [
   { id: "4-6", label: "4–6" },
   { id: "7-10", label: "7–10" },
   { id: "10+", label: "More than 10" },
+  /** Estimated for 3 to 8 pages, with a wider range (user, 2026-10-17). */
+  { id: "unsure", label: "Not sure" },
 ] as const;
 export type PagesId = (typeof PAGES)[number]["id"];
 
