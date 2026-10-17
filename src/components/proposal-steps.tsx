@@ -922,7 +922,13 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
       )}
     </div>
       <motion.p variants={ROW} className="mono-label pf-foot-note">
-        An estimate from your answers. Your final proposal sets the exact price within these ranges.
+        An estimate from your answers
+      </motion.p>
+      {/* What the ranges promise (user, 2026-10-17). */}
+      <motion.p variants={ROW} className="pf-footnote mt-2 max-w-[38em]">
+        It assumes a project exactly as your answers describe it. If, after looking at your business, we suggest
+        something different, the price may end up outside these ranges, higher or lower, but only if you agree.
+        Otherwise, we keep to your choices and set the final price within them.
       </motion.p>
     </div>
   );
