@@ -1,6 +1,6 @@
 # Contrato de prestação de serviços: decisões
 
-O estado atual do contrato, as decisões dos sócios e o que ainda está em aberto. A fonte é `contratos/contrato-nevima.html`, impresso em PDF com o Edge sem interface (ver o histórico do git). Este ficheiro descreve a **v1.5** (2026-10-16), em `contratos/contrato-nevima-v1.5.pdf`. A v1.5 é a v1.4 com os pontos ajustáveis indicados em cada cláusula.
+O estado atual do contrato, as decisões dos sócios e o que ainda está em aberto. A fonte é `contratos/contrato-nevima.html`, impresso em PDF com o Edge sem interface (ver o histórico do git). Este ficheiro descreve a **v1.6** (2026-10-17), em `contratos/contrato-nevima-v1.6.pdf`. A v1.6 alinha o contrato com o formulário de proposta (PR #123, #125 e #126), sem os preços do formulário: a estimativa é um intervalo (cl. 4.1); o nível de design é Essential+ ou Advanced (cl. 11.1); a escrita dos textos em falta e as funcionalidades extra são orçamentadas na Proposta (cl. 11.2); o SEO intensivo é pontual (cl. 14) e o SEO e GEO mensal o mantém (cl. 15); e a Proposta tem as linhas correspondentes.
 
 Os trechos a laranja escuro (`.pending`) aguardam a decisão final dos sócios. As cláusulas ajustáveis têm a etiqueta **Ajustável** no título e uma frase que diz **quais os pontos** se podem ajustar (v1.5): **6.1** (sinal), **6.2** (prazo do pagamento final), **6.5** (meios de pagamento), **8.2** (prazo dos Materiais), **10.6** (desmarcação da sessão) e **21.2** (o sinal no cancelamento). A cl. 16 deixou de ser ajustável, porque as escolhas de portfólio e de crédito já se fazem na Proposta. Um ajuste só vale se ficar escrito nas Condições específicas, com a cláusula e o ponto (cl. 5.2).
 
@@ -19,8 +19,8 @@ Os trechos a laranja escuro (`.pending`) aguardam a decisão final dos sócios. 
   11. Web design
   12. Alojamento
   13. Domínio
-  14. SEO
-  15. GEO
+  14. SEO intensivo
+  15. SEO e GEO mensal
   16. Portfólio e crédito
   17. Propriedade intelectual
   18. Obrigações do Cliente
