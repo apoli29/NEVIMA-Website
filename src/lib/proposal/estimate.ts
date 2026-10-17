@@ -49,15 +49,16 @@ function web(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"]):
   if (extraLanguages > 3) return { reason: "More than three additional languages" };
 
   const design = a.design === "advanced" ? 1 + p.advancedPercent / 100 : 1;
-  const base =
-    p.pages[a.pages][market] * design +
+  const [fewest, most] = p.pages[a.pages][market];
+  const extras =
     (a.identity === "yes" ? p.identity[market] : 0) +
     (extraLanguages ? p.languages[extraLanguages as 1 | 2 | 3] : 0) +
     p.forms[a.forms][market];
 
-  // The table's price is the floor; the ceiling is rangePercent above.
-  let min = base;
-  let max = base * (1 + p.rangePercent / 100);
+  // The pages' range, and on its ceiling the margin for what the form
+  // does not ask.
+  let min = fewest * design + extras;
+  let max = (most * design + extras) * (1 + p.rangePercent / 100);
 
   // Writing the texts the client does not have, by the site's size.
   if (a.texts !== "all") {
