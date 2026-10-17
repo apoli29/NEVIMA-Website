@@ -27,11 +27,14 @@ export const MARKET = { PT: "pt", ES: "es-it", IT: "es-it", US: "us" } as const;
 export const PRICING = {
   web: {
     /** The site by its size. "More than 10" is always on request. */
+    /** Each size is a range, from its fewest pages to its most (user,
+        2026-10-17: Portugal 290; 420–540; 580–740). Spain and Italy, and
+        the USA, keep the ratio the old single prices had to Portugal's. */
     pages: {
-      landing: { pt: 390, "es-it": 450, us: 685 },
-      "4-6": { pt: 670, "es-it": 770, us: 1175 },
-      "7-10": { pt: 1090, "es-it": 1255, us: 1910 },
-    } satisfies Record<string, ByMarket>,
+      landing: { pt: [290, 290], "es-it": [335, 335], us: [510, 510] },
+      "4-6": { pt: [420, 540], "es-it": [485, 620], us: [735, 945] },
+      "7-10": { pt: [580, 740], "es-it": [670, 850], us: [1015, 1295] },
+    } satisfies Record<Size, Record<Market, [number, number]>>,
     /** How long the site takes, in working days, by size. */
     days: {
       landing: [4, 7],
@@ -43,8 +46,8 @@ export const PRICING = {
     includes:
       "Includes optimised images, a review of the texts you send, free hosting for the first year (then renewed every 6 months) and a free call once part of the website is built.",
 
-    /** The estimate is a range (user, 2026-10-17): the website's price
-        from the table is its floor, and the ceiling is this much above. */
+    /** On top of the pages' own range, the ceiling carries this margin
+        for what the form does not ask (my default, 2026-10-17). */
     rangePercent: 20,
     /** The Advanced design level costs this much more than Essential+
         (user, 2026-10-17). The page prices above are Essential+. */
