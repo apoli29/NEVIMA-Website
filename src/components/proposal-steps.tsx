@@ -926,9 +926,10 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
       </motion.p>
       {/* What the ranges promise (user, 2026-10-17). */}
       <motion.p variants={ROW} className="pf-footnote mt-2 max-w-[38em]">
-        It assumes a project exactly as your answers describe it. If, after looking at your business, we suggest
-        something different, the price may end up outside these ranges, higher or lower, but only if you agree.
-        Otherwise, we keep to your choices and set the final price within them.
+        It assumes a project exactly as your answers describe it. After looking at your business, we may suggest
+        some changes we think would be best for your project; in that case, the price may end up outside these
+        ranges, lower or higher. Either way, we always also send you an offer based on your own choices, priced
+        within these ranges.
       </motion.p>
     </div>
   );
