@@ -8,14 +8,14 @@
    pricing.ts, which only the API routes import.
    ================================================================== */
 
-/** SEO comes two ways (user, 2026-10-17): a one-off deep-dive of a few
-    days, whose effect is strong at first and fades over the months, and
-    a monthly SEO & GEO service that keeps renewing that work. */
+/** Visual identity and the photo shoot are offered as services of their
+    own, though only together with a website (user, 2026-10-17). */
 export const SERVICES = [
   { id: "web", label: "Web design" },
-  { id: "photo", label: "Photo & video" },
-  { id: "seo", label: "SEO deep-dive" },
-  { id: "monthly", label: "Monthly SEO & GEO" },
+  { id: "identity", label: "Visual identity" },
+  { id: "photo", label: "Photo shoot" },
+  { id: "seo", label: "SEO" },
+  { id: "geo", label: "GEO" },
 ] as const;
 export type ServiceId = (typeof SERVICES)[number]["id"];
 
@@ -71,25 +71,13 @@ export const DESIGN = [
 ] as const;
 export type DesignId = (typeof DESIGN)[number]["id"];
 
-/** How much of the website's text the client already has: writing what
-    is missing is priced as a range, by the site's size. */
+/** Whether the client already has the website's texts: writing them is
+    priced as a range, by the site's size (user, 2026-10-17: yes or no). */
 export const TEXTS = [
-  { id: "all", label: "Yes, all of it" },
-  { id: "some", label: "Some" },
-  { id: "none", label: "None yet" },
+  { id: "yes", label: "Yes" },
+  { id: "no", label: "No" },
 ] as const;
 export type TextsId = (typeof TEXTS)[number]["id"];
-
-/** Features beyond pages and forms. Not priced online yet: each one
-    chosen is listed "on request" and quoted in the proposal. */
-export const FEATURES = [
-  { id: "booking", label: "Online booking" },
-  { id: "catalogue", label: "Listings or catalogue you update" },
-  { id: "blog", label: "Blog or news" },
-  { id: "shop", label: "Online shop" },
-  { id: "account", label: "Client area" },
-] as const;
-export type FeatureId = (typeof FEATURES)[number]["id"];
 
 export const YES_NO = [
   { id: "yes", label: "Yes" },
@@ -111,6 +99,22 @@ export const REGIONS = [
 ] as const;
 export type RegionId = (typeof REGIONS)[number]["id"];
 
+/** SEO and GEO each come as a one-time set of practices, with a monthly
+    service on top if wanted (user, 2026-10-17). */
+export const SEARCH_PLANS = [
+  {
+    id: "once",
+    label: "One-time",
+    note: "A set of practices applied in one go: strongest in the short term, its effect fades over the medium to long term",
+  },
+  {
+    id: "monthly",
+    label: "One-time + monthly",
+    note: "Adds monthly work to keep those practices as effective as they can be",
+  },
+] as const;
+export type SearchPlanId = (typeof SEARCH_PLANS)[number]["id"];
+
 export const REACH = [
   { id: "local", label: "Local" },
   { id: "national", label: "National" },
@@ -127,15 +131,12 @@ export type Answers = {
   country: CountryId;
   countryOther?: string;
   web?: {
-    identity: YesNo;
     design: DesignId;
     pages: PagesId;
     languages: LanguageId[];
     languagesOther?: string;
     forms: FormsId;
     texts: TextsId;
-    /** Possibly none. */
-    features: FeatureId[];
     /** Up to two websites whose look the client likes; empty when they
         said they have none. */
     references: string[];
@@ -156,6 +157,9 @@ export type Answers = {
     /** Not asked when web design is chosen too: the web answer stands. */
     pages?: PagesId;
     reach: ReachId;
+    /** One for each of SEO and GEO that was chosen. */
+    seoPlan?: SearchPlanId;
+    geoPlan?: SearchPlanId;
   };
 };
 
@@ -170,9 +174,9 @@ export type Estimate = {
   lines: {
     id: ServiceId;
     label: string;
-    /** Paid up front (for the monthly service, the first month). */
+    /** Paid up front (for SEO and GEO, the one-time work). */
     amount: Range;
-    /** Paid each month after the first (the monthly service). */
+    /** Paid each month (SEO and GEO with the monthly service). */
     monthly?: number;
     /** Shown under the line: what it includes, what it assumes. */
     notes: string[];
@@ -226,6 +230,6 @@ export function groupsFor(services: readonly ServiceId[]) {
   return {
     web: services.includes("web"),
     photo: services.includes("photo"),
-    search: services.includes("seo") || services.includes("monthly"),
+    search: services.includes("seo") || services.includes("geo"),
   };
 }

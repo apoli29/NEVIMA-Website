@@ -1,7 +1,6 @@
 import "server-only";
 import { MARKET, PRICING, type Market, type Pricing } from "./pricing";
 import {
-  FEATURES,
   REGIONS,
   TRANSLATION_NOTE,
   countLanguages,
@@ -10,6 +9,7 @@ import {
   type Estimate,
   type PagesId,
   type Range,
+  type SearchPlanId,
   type ServiceId,
 } from "./questions";
 
@@ -21,15 +21,16 @@ import {
    Every amount is a range (user, 2026-10-17): two businesses with the
    same answers can still need different work, and the final proposal
    sets the exact figure inside the range. The website carries the
-   spread; the photo plans are fixed packages. The monthly SEO & GEO
-   line carries the first month up front and the monthly fee after it.
+   spread; the photo plans are fixed packages. SEO and GEO carry their
+   one-time work up front and, when chosen, the monthly fee after it.
    ================================================================== */
 
 const LABEL: Record<ServiceId, string> = {
   web: "Web design",
-  photo: "Photo & video",
-  seo: "SEO deep-dive",
-  monthly: "Monthly SEO & GEO",
+  identity: "Visual identity",
+  photo: "Photo shoot",
+  seo: "SEO",
+  geo: "GEO",
 };
 
 type Line = Estimate["lines"][number];
@@ -51,7 +52,6 @@ function web(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"]):
   const design = a.design === "advanced" ? 1 + p.advancedPercent / 100 : 1;
   const [fewest, most] = p.pages[a.pages][market];
   const extras =
-    (a.identity === "yes" ? p.identity[market] : 0) +
     (extraLanguages ? p.languages[extraLanguages as 1 | 2 | 3] : 0) +
     p.forms[a.forms][market];
 
@@ -61,15 +61,11 @@ function web(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"]):
   let max = (most * design + extras) * (1 + p.rangePercent / 100);
 
   // Writing the texts the client does not have, by the site's size.
-  if (a.texts !== "all") {
-    const [lo, hi] = p.texts[a.texts][a.pages];
+  if (a.texts === "no") {
+    const [lo, hi] = p.texts[a.pages];
     min += lo * p.textsMarket[market];
     max += hi * p.textsMarket[market];
-    notes.push(
-      a.texts === "none"
-        ? "Includes writing the website's texts from what you tell us about your business."
-        : "Includes writing the texts you don't have yet.",
-    );
+    notes.push("Includes writing the website's texts from what you tell us about your business.");
   }
 
   if (a.urgent === "yes") {
@@ -89,6 +85,13 @@ function web(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"]):
   return { line: { amount: { min: down10(min), max: up10(max) }, notes } };
 }
 
+/** The logo and, where it applies, the symbol: a fixed price, raised
+    with the website when the deadline is urgent. */
+function identity(urgent: boolean, market: Market, p: Pricing["web"]): Priced {
+  const amount = p.identity[market] * (urgent ? 1 + p.urgentPercent / 100 : 1);
+  return { line: { amount: fixed(Math.round(amount)), notes: ["Logo and, where it applies, symbol."] } };
+}
+
 function photo(a: NonNullable<Answers["photo"]>, country: Answers["country"], p: Pricing): Priced {
   if (country !== "PT") return { reason: "Shoot outside Portugal" };
   if (a.region && a.region !== "mainland") return { reason: `Shoot in ${labelOf(REGIONS, a.region)}` };
@@ -96,7 +99,8 @@ function photo(a: NonNullable<Answers["photo"]>, country: Answers["country"], p:
 }
 
 function search(
-  id: "seo" | "monthly",
+  id: "seo" | "geo",
+  plan: SearchPlanId,
   reach: NonNullable<Answers["search"]>["reach"],
   pages: PagesId | undefined,
   market: Market,
@@ -105,18 +109,13 @@ function search(
   if (pages === "10+") return { reason: "More than 10 pages" };
   if (reach === "international") return { reason: "International reach" };
   if (!pages) return { reason: "Quoted in your proposal" };
-  if (id === "seo") {
-    return {
-      line: {
-        amount: fixed(p.seo[pages][reach][market].first),
-        notes: ["A few days of in-depth SEO. Its effect is strongest in the first months."],
-      },
-    };
+  const { first, monthly } = p[id][pages][reach][market];
+  const notes = ["One-time: strongest in the short term, its effect fades over the medium to long term."];
+  if (plan === "monthly") {
+    notes.push("Plus the monthly service, which keeps the practices as effective as they can be.");
+    return { line: { amount: fixed(first), monthly, notes } };
   }
-  const monthly = p.seo[pages][reach][market].monthly + p.geo[pages][reach][market].monthly;
-  return {
-    line: { amount: fixed(monthly), monthly, notes: ["Keeps your SEO and GEO up to date, month after month."] },
-  };
+  return { line: { amount: fixed(first), notes } };
 }
 
 export function estimate(answers: Answers, pricing: Pricing = PRICING): Estimate {
@@ -145,17 +144,14 @@ export function estimate(answers: Answers, pricing: Pricing = PRICING): Estimate
   const { web: webAnswers, photo: photoAnswers, search: searchAnswers } = answers;
   for (const id of answers.services) {
     if (id === "web" && webAnswers) add("web", (m) => web(webAnswers, m, pricing.web));
+    if (id === "identity") add("identity", (m) => identity(webAnswers?.urgent === "yes", m, pricing.web));
     if (id === "photo" && photoAnswers) add("photo", () => photo(photoAnswers, answers.country, pricing));
-    if ((id === "seo" || id === "monthly") && searchAnswers) {
+    if ((id === "seo" || id === "geo") && searchAnswers) {
       // With web design chosen too, the site's size is the web answer.
       const pages = webAnswers?.pages ?? searchAnswers.pages;
-      add(id, (m) => search(id, searchAnswers.reach, pages, m, pricing));
+      const plan = (id === "seo" ? searchAnswers.seoPlan : searchAnswers.geoPlan) ?? "once";
+      add(id, (m) => search(id, plan, searchAnswers.reach, pages, m, pricing));
     }
-  }
-
-  // Each extra feature is quoted in the proposal, not priced here.
-  for (const f of webAnswers?.features ?? []) {
-    out.onRequest.push({ id: `feature-${f}`, label: labelOf(FEATURES, f), reason: "Quoted in your proposal" });
   }
 
   if (out.lines.length) {
