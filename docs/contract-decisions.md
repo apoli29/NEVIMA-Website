@@ -1,6 +1,6 @@
 # Contrato de prestação de serviços: decisões
 
-O estado atual do contrato, as decisões dos sócios e o que ainda está em aberto. A fonte é `contratos/contrato-nevima.html`, impresso em PDF com o Edge sem interface (ver o histórico do git). Este ficheiro descreve a **v1.6** (2026-10-17), em `contratos/contrato-nevima-v1.6.pdf`. A v1.6 alinha o contrato com o formulário de proposta (PR #123, #125 e #126), sem os preços do formulário: a estimativa é um intervalo (cl. 4.1); o nível de design é Essential+ ou Advanced (cl. 11.1); a escrita dos textos em falta e as funcionalidades extra são orçamentadas na Proposta (cl. 11.2); o SEO intensivo é pontual (cl. 14) e o SEO e GEO mensal o mantém (cl. 15); e a Proposta tem as linhas correspondentes.
+O estado atual do contrato, as decisões dos sócios e o que ainda está em aberto. A fonte é `contratos/contrato-nevima.html`, impresso em PDF com o Edge sem interface (ver o histórico do git). Este ficheiro descreve a **v1.7** (2026-10-17), em `contratos/contrato-nevima-v1.7.pdf`, alinhada com o formulário de proposta (PR #128 e #129), sem os preços do formulário. A estimativa é um intervalo (cl. 4.1). O nível de design é Essential+ ou Advanced (cl. 11.1). A escrita dos textos, quando o Cliente não os tem, é orçamentada na Proposta (cl. 11.2); já não há funcionalidades extra, porque a nevima não faz backend. O SEO (cl. 14) e o GEO (cl. 15) são cada um um conjunto de práticas aplicadas de uma só vez, com efeito maior a curto prazo, e podem ter um serviço mensal opcional que as mantém eficazes. A Proposta tem uma linha pontual e uma linha mensal para cada um.
 
 Os trechos a laranja escuro (`.pending`) aguardam a decisão final dos sócios. As cláusulas ajustáveis têm a etiqueta **Ajustável** no título e uma frase que diz **quais os pontos** se podem ajustar (v1.5): **6.1** (sinal), **6.2** (prazo do pagamento final), **6.5** (meios de pagamento), **8.2** (prazo dos Materiais), **10.6** (desmarcação da sessão) e **21.2** (o sinal no cancelamento). A cl. 16 deixou de ser ajustável, porque as escolhas de portfólio e de crédito já se fazem na Proposta. Um ajuste só vale se ficar escrito nas Condições específicas, com a cláusula e o ponto (cl. 5.2).
 
@@ -19,8 +19,8 @@ Os trechos a laranja escuro (`.pending`) aguardam a decisão final dos sócios. 
   11. Web design
   12. Alojamento
   13. Domínio
-  14. SEO intensivo
-  15. SEO e GEO mensal
+  14. SEO
+  15. GEO
   16. Portfólio e crédito
   17. Propriedade intelectual
   18. Obrigações do Cliente
