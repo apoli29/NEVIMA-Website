@@ -88,7 +88,7 @@ function web(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"]):
   if (a.pages === "unsure") notes.push("Estimated for 3 to 8 pages, so the range is wider than with a set number of pages.");
   const floor = down10(min);
   const ceiling = Math.min(up10(max), down10(floor * (1 + spread / 100)));
-  return { line: { amount: { min: floor, max: ceiling }, notes } };
+  return { line: { amount: { min: floor, max: ceiling }, notes, provisional: a.texts === "no" } };
 }
 
 /** The logo and, where it applies, the symbol: a fixed price, raised
@@ -120,9 +120,9 @@ function search(
   const notes = ["One-time: strongest in the short term, its effect fades over the medium to long term."];
   if (plan === "monthly") {
     notes.push("Plus the monthly service, which keeps the practices as effective as they can be.");
-    return { line: { amount: fixed(first), monthly, notes } };
+    return { line: { amount: fixed(first), monthly, notes, provisional: true } };
   }
-  return { line: { amount: fixed(first), notes } };
+  return { line: { amount: fixed(first), notes, provisional: true } };
 }
 
 export function estimate(answers: Answers, pricing: Pricing = PRICING): Estimate {

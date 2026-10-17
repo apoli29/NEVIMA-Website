@@ -834,7 +834,19 @@ export function StepScreen({
   );
 }
 
+/** Opened with ?revisao, the estimate underlines in orange the figures
+    that rest on prices the studio has not confirmed (user, 2026-10-17).
+    Visitors never see it. */
+function useReview() {
+  const [review, setReview] = useState(false);
+  useEffect(() => {
+    setReview(new URLSearchParams(window.location.search).has("revisao"));
+  }, []);
+  return review;
+}
+
 function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: () => void; web: boolean }) {
+  const review = useReview();
   if (state.status === "loading") {
     return (
       <motion.div variants={ROW} className="pf-rows" aria-busy="true">
@@ -874,7 +886,10 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
             ))}
           </span>
           <span className="text-right">
-            <span className="pf-line-value block">
+            <span
+              className={`pf-line-value block ${review && line.provisional ? "pf-provisional" : ""}`}
+              title={review && line.provisional ? "Provisional prices" : undefined}
+            >
               {span(line.amount)}
             </span>
             {line.monthly !== undefined && (
@@ -910,7 +925,10 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
       </motion.div>
       {web && (
         <motion.div variants={ROW} className="pf-line">
-          <span className="pf-line-name">Website ready in</span>
+          <span>
+            <span className="pf-line-name block">Website ready in</span>
+            <span className="mono-label mt-1 block text-ash-2">An estimate, confirmed in your proposal</span>
+          </span>
           <span className={`pf-line-value ${estimate.timeline?.kind === "days" ? "" : "pf-line-quiet"}`}>
             {estimate.timeline?.kind === "days"
               ? `${estimate.timeline.min}–${estimate.timeline.max} working days`

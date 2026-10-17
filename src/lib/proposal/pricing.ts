@@ -68,7 +68,7 @@ export const PRICING = {
     advancedPercent: 25,
 
     /** The visual identity redesign (logo and symbol). */
-    identity: { pt: 180, "es-it": 205, us: 315 } satisfies ByMarket,
+    identity: { pt: 110, "es-it": 125, us: 195 } satisfies ByMarket,
     /** Portuguese is always the language included; the others are priced
         together by how many there are, as the contract sets them (clause
         11.4), the same in every country. More than three is quoted. */
@@ -76,7 +76,7 @@ export const PRICING = {
     /** Writing the website's texts when the client has none, as a range
         by the site's size (Portugal; other markets scaled by textsMarket).
         PROVISIONAL: figures to be confirmed by the studio. */
-    texts: { landing: [80, 150], "4-6": [150, 300], "7-10": [240, 450], unsure: [120, 380] } as Record<
+    texts: { landing: [80, 150], "4-6": [150, 300], "7-10": [180, 340], unsure: [120, 320] } as Record<
       Size,
       [number, number]
     >,
@@ -102,8 +102,8 @@ export const PRICING = {
 
   /** "More than 10" pages and an international reach are on request.
       "first" is the one-time work, "monthly" the optional monthly
-      service on top of it. PROVISIONAL: the old first-month and monthly
-      figures, to be confirmed by the studio for this new reading. */
+      service on top of it. 7–10 pages sit 15% above 4–6. PROVISIONAL:
+      to be confirmed by the studio. */
   seo: {
     landing: {
       local: { pt: { first: 150, monthly: 60 }, "es-it": { first: 175, monthly: 70 }, us: { first: 265, monthly: 105 } },
@@ -114,8 +114,8 @@ export const PRICING = {
       national: { pt: { first: 300, monthly: 115 }, "es-it": { first: 345, monthly: 130 }, us: { first: 525, monthly: 200 } },
     },
     "7-10": {
-      local: { pt: { first: 300, monthly: 115 }, "es-it": { first: 345, monthly: 130 }, us: { first: 525, monthly: 200 } },
-      national: { pt: { first: 390, monthly: 150 }, "es-it": { first: 450, monthly: 175 }, us: { first: 685, monthly: 265 } },
+      local: { pt: { first: 265, monthly: 105 }, "es-it": { first: 305, monthly: 120 }, us: { first: 465, monthly: 185 } },
+      national: { pt: { first: 345, monthly: 130 }, "es-it": { first: 395, monthly: 150 }, us: { first: 605, monthly: 230 } },
     },
   } satisfies SearchTable,
 
@@ -129,8 +129,8 @@ export const PRICING = {
       national: { pt: { first: 380, monthly: 155 }, "es-it": { first: 435, monthly: 180 }, us: { first: 665, monthly: 270 } },
     },
     "7-10": {
-      local: { pt: { first: 380, monthly: 155 }, "es-it": { first: 435, monthly: 180 }, us: { first: 665, monthly: 270 } },
-      national: { pt: { first: 495, monthly: 200 }, "es-it": { first: 570, monthly: 230 }, us: { first: 865, monthly: 350 } },
+      local: { pt: { first: 335, monthly: 140 }, "es-it": { first: 385, monthly: 160 }, us: { first: 585, monthly: 240 } },
+      national: { pt: { first: 435, monthly: 180 }, "es-it": { first: 500, monthly: 205 }, us: { first: 765, monthly: 310 } },
     },
   } satisfies SearchTable,
 };

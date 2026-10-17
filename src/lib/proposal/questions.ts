@@ -182,6 +182,9 @@ export type Estimate = {
     monthly?: number;
     /** Shown under the line: what it includes, what it assumes. */
     notes: string[];
+    /** The figure rests on prices the studio has not confirmed yet:
+        underlined in orange when the form is opened with ?revisao. */
+    provisional?: boolean;
   }[];
   onRequest: { id: string; label: string; reason: string }[];
   /** The sum paid up front, or null when nothing could be priced. */
