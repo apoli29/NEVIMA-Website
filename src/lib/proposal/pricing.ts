@@ -50,6 +50,9 @@ export const PRICING = {
         for what the form does not ask (user, 2026-10-17: 10 points more
         than the first 20%). */
     rangePercent: 30,
+    /** However the ceiling is built, the range is never wider than this
+        share of its floor (user, 2026-10-17). */
+    maxSpreadPercent: 22.5,
     /** What that margin allows for, shown under the website's line. */
     marginNote:
       "The upper end allows for what a form can't foresee: how much content there is to organise, connecting tools you already use (booking, maps, social media), special design requests such as custom illustrations or complex animations, and moving content over from an existing site.",

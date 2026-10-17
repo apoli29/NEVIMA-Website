@@ -82,7 +82,11 @@ function web(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"]):
     notes.push(`Includes registering your domain, about €${p.newDomain.min}–${p.newDomain.max}.`);
   }
 
-  return { line: { amount: { min: down10(min), max: up10(max) }, notes } };
+  // The range is never wider than maxSpreadPercent of its floor (user,
+  // 2026-10-17), whatever the margin and the extras add up to.
+  const floor = down10(min);
+  const ceiling = Math.min(up10(max), down10(floor * (1 + p.maxSpreadPercent / 100)));
+  return { line: { amount: { min: floor, max: ceiling }, notes } };
 }
 
 /** The logo and, where it applies, the symbol: a fixed price, raised
