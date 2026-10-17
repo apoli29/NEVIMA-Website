@@ -84,8 +84,10 @@ function web(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"]):
 
   // The range is never wider than maxSpreadPercent of its floor (user,
   // 2026-10-17), whatever the margin and the extras add up to.
+  const spread = a.pages === "unsure" ? p.unsureSpreadPercent : p.maxSpreadPercent;
+  if (a.pages === "unsure") notes.push("Estimated for 3 to 8 pages, so the range is wider than with a set number of pages.");
   const floor = down10(min);
-  const ceiling = Math.min(up10(max), down10(floor * (1 + p.maxSpreadPercent / 100)));
+  const ceiling = Math.min(up10(max), down10(floor * (1 + spread / 100)));
   return { line: { amount: { min: floor, max: ceiling }, notes } };
 }
 
@@ -113,7 +115,8 @@ function search(
   if (pages === "10+") return { reason: "More than 10 pages" };
   if (reach === "international") return { reason: "International reach" };
   if (!pages) return { reason: "Quoted in your proposal" };
-  const { first, monthly } = p[id][pages][reach][market];
+  // Not sure about the pages: priced as a mid-sized site.
+  const { first, monthly } = p[id][pages === "unsure" ? "4-6" : pages][reach][market];
   const notes = ["One-time: strongest in the short term, its effect fades over the medium to long term."];
   if (plan === "monthly") {
     notes.push("Plus the monthly service, which keeps the practices as effective as they can be.");

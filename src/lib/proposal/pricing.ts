@@ -16,7 +16,7 @@ export type ByMarket = Record<Market, number>;
 
 /** First month, then each month after. */
 type Monthly = { first: number; monthly: number };
-type Size = "landing" | "4-6" | "7-10";
+type Size = "landing" | "4-6" | "7-10" | "unsure";
 type SearchTable = Record<
   "landing" | "4-6" | "7-10",
   Record<"local" | "national", Record<Market, Monthly>>
@@ -34,13 +34,17 @@ export const PRICING = {
       landing: { pt: [290, 290], "es-it": [335, 335], us: [510, 510] },
       "4-6": { pt: [420, 540], "es-it": [485, 620], us: [735, 945] },
       "7-10": { pt: [580, 740], "es-it": [670, 850], us: [1015, 1295] },
+      /** "Not sure": from 3 pages (one page below 4–6's floor, at 4–6's
+          price per page) to 8 (7–10's price per page). */
+      unsure: { pt: [360, 635], "es-it": [415, 730], us: [630, 1110] },
     } satisfies Record<Size, Record<Market, [number, number]>>,
     /** How long the site takes, in working days, by size. */
     days: {
       landing: [4, 7],
       "4-6": [8, 11],
       "7-10": [12, 16],
-    } as Record<"landing" | "4-6" | "7-10", [number, number]>,
+      unsure: [6, 14],
+    } as Record<Size, [number, number]>,
     /** What every website comes with, shown under its line. Kept in
         step with the contract (clauses 11 and 12). */
     includes:
@@ -53,6 +57,9 @@ export const PRICING = {
     /** However the ceiling is built, the range is never wider than this
         share of its floor (user, 2026-10-17). */
     maxSpreadPercent: 22.5,
+    /** The same cap when the client is not sure how many pages they need
+        (user, 2026-10-17). */
+    unsureSpreadPercent: 35,
     /** What that margin allows for, shown under the website's line. */
     marginNote:
       "The upper end allows for what a form can't foresee: how much content there is to organise, connecting tools you already use (booking, maps, social media), special design requests such as custom illustrations or complex animations, and moving content over from an existing site.",
@@ -69,7 +76,10 @@ export const PRICING = {
     /** Writing the website's texts when the client has none, as a range
         by the site's size (Portugal; other markets scaled by textsMarket).
         PROVISIONAL: figures to be confirmed by the studio. */
-    texts: { landing: [80, 150], "4-6": [150, 300], "7-10": [240, 450] } as Record<Size, [number, number]>,
+    texts: { landing: [80, 150], "4-6": [150, 300], "7-10": [240, 450], unsure: [120, 380] } as Record<
+      Size,
+      [number, number]
+    >,
     textsMarket: { pt: 1, "es-it": 1.15, us: 1.75 } satisfies Record<Market, number>,
     forms: {
       "0": { pt: 0, "es-it": 0, us: 0 },

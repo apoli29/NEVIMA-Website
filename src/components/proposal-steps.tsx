@@ -173,6 +173,7 @@ const PHOTO_NOTE =
   "The photo shoot is only available in Portugal. Travel beyond 30 km of Arcozelo is added to the price of the service.";
 const DOMAIN_NOTE =
   "If you don't have a domain yet, we register it for you and its cost is added to the price. If you already have one, there's nothing to pay.";
+const PAGES_NOTE = "Not sure? We estimate for 3 to 8 pages, so the range can be a little wider than with a set number.";
 const DESIGN_NOTE = "Advanced costs 25% more than Essential+ on the website's price.";
 const TEXTS_NOTE = "If you don't, writing them is added to the price, as a range set by your website's size.";
 const URGENT_NOTE = "An urgent deadline raises the price by 40%.";
@@ -612,7 +613,7 @@ export function StepScreen({
               labelledBy="design-q"
             />
           </Question>
-          <Question id="pages" label="How many pages?" error={errors.pages}>
+          <Question id="pages" label="How many pages?" error={errors.pages} footnote={PAGES_NOTE}>
             <Segmented
               name="pages"
               options={PAGES}
