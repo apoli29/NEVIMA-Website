@@ -7,6 +7,7 @@ import { AboutValues } from "./about-values";
 import { CoFounders } from "./cofounders";
 import { FloatingNav } from "./floating-nav";
 import { Footer } from "./footer";
+import { ProposalOverlay, ProposalProvider, useProposalController } from "./proposal-flow";
 import { WorkTogether } from "./work-together";
 import { useSmoothScroll } from "./smooth-scroll";
 
@@ -23,27 +24,35 @@ import { useSmoothScroll } from "./smooth-scroll";
    ================================================================== */
 
 export function About() {
-  useSmoothScroll(false);
+  // The free-proposal form opens here, out of the button pressed (the
+  // FAQ's, or the bar's), with the page held still behind it (user,
+  // 2026-10-17: not sent to the home page for it).
+  const proposal = useProposalController();
+  useSmoothScroll(proposal.present);
   return (
-    <>
-      <FloatingNav />
-      <main id="top" className="relative">
-        <AboutHero />
-        <section
-          id="founders"
-          aria-labelledby="cofounders-title"
-          className="relative bg-paper pt-(--section-gap)"
-        >
-          <div className="shell">
-            <CoFounders ready standalone />
-          </div>
-        </section>
-        <AboutMission />
-        <AboutValues />
-        <AboutFaq />
-      </main>
-      <WorkTogether />
-      <Footer />
-    </>
+    <ProposalProvider value={proposal}>
+      {/* Everything but the form, put out of reach while the form is out. */}
+      <div inert={proposal.present}>
+        <FloatingNav />
+        <main id="top" className="relative">
+          <AboutHero />
+          <section
+            id="founders"
+            aria-labelledby="cofounders-title"
+            className="relative bg-paper pt-(--section-gap)"
+          >
+            <div className="shell">
+              <CoFounders ready standalone />
+            </div>
+          </section>
+          <AboutMission />
+          <AboutValues />
+          <AboutFaq />
+        </main>
+        <WorkTogether />
+        <Footer />
+      </div>
+      <ProposalOverlay ctl={proposal} />
+    </ProposalProvider>
   );
 }

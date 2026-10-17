@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { SlideIn } from "./enter";
 import { PassLink } from "./floating-nav";
+import { useProposal } from "./proposal-flow";
 import { Chevron, Illuminated, LIGHT_DELAY_MS } from "./services";
 import { useSeen } from "./use-seen";
 
@@ -41,8 +42,9 @@ type Question = {
   flow?: readonly string[];
   /** Points, each with an optional lead in bold. */
   list?: readonly { lead?: string; text: string }[];
-  /** Where to go next: a page, or a place on the home page. */
-  link?: { label: string; href: string };
+  /** Where to go next: a page, a place on the home page, or the
+      free-proposal form, opened here out of the button. */
+  link?: { label: string; href: string } | { label: string; proposal: true };
 };
 
 const QUESTIONS: readonly Question[] = [
@@ -78,7 +80,7 @@ const QUESTIONS: readonly Question[] = [
     id: "cost",
     q: "How much does a website cost?",
     a: "It depends on your project: its size, its languages, its forms and any additional services you choose. That\u2019s why our free proposal form gives you an estimate straight away, and within a few hours we come back with the exact price, always explaining how we got there. Prices are set for Portugal, for Spain and Italy, and for the USA; for any other country, we quote on request.",
-    link: { label: "Get your free proposal", href: "/#proposal" },
+    link: { label: "Get your free proposal", proposal: true },
   },
   {
     id: "reply",
@@ -329,18 +331,15 @@ function Question({
                 )}
                 {item.link && (
                   <div className={item.flow || item.list ? "mt-7" : ""}>
-                    <PassLink
-                      href={item.link.href}
-                      label={
-                        <>
-                          {item.link.label}
-                          <span aria-hidden="true" className="ml-2.5 inline-block">
-                            &rarr;
-                          </span>
-                        </>
-                      }
-                      className="cta-drop inline-flex text-[0.9375rem] leading-none"
-                    />
+                    {"proposal" in item.link ? (
+                      <ProposalAsk label={item.link.label} />
+                    ) : (
+                      <PassLink
+                        href={item.link.href}
+                        label={<Arrowed>{item.link.label}</Arrowed>}
+                        className="cta-drop inline-flex text-[0.9375rem] leading-none"
+                      />
+                    )}
                   </div>
                 )}
               </div>
@@ -349,5 +348,58 @@ function Question({
         </div>
       </div>
     </motion.li>
+  );
+}
+
+function Arrowed({ children }: { children: ReactNode }) {
+  return (
+    <>
+      {children}
+      <span aria-hidden="true" className="ml-2.5 inline-block">
+        &rarr;
+      </span>
+    </>
+  );
+}
+
+/* "Get your free proposal": the form opens on this page, grown out of
+   this button, which keeps its place unseen while the form is out. With
+   no form on the page, it goes to the home page's. */
+function ProposalAsk({ label }: { label: string }) {
+  const proposal = useProposal();
+  const button = useRef<HTMLButtonElement>(null);
+  const [launched, setLaunched] = useState(false);
+  const present = proposal?.present ?? false;
+  useEffect(() => {
+    if (!present) setLaunched(false);
+  }, [present]);
+  const look = "cta-drop relative isolate inline-flex items-center justify-center text-[0.9375rem] leading-none whitespace-nowrap";
+  if (!proposal) {
+    return (
+      <a href="/#proposal" className={look}>
+        <span className="btn-neu-face">
+          <Arrowed>{label}</Arrowed>
+        </span>
+      </a>
+    );
+  }
+  return (
+    <button
+      ref={button}
+      type="button"
+      aria-haspopup="dialog"
+      aria-expanded={launched && proposal.open}
+      onClick={() => {
+        if (!button.current) return;
+        setLaunched(true);
+        proposal.show(button.current, button.current, false);
+      }}
+      className={look}
+      style={{ visibility: launched && present ? "hidden" : undefined }}
+    >
+      <span className="btn-neu-face">
+        <Arrowed>{label}</Arrowed>
+      </span>
+    </button>
   );
 }
