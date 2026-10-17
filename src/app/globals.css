@@ -783,6 +783,13 @@
   }
   .pf-line-value { font-feature-settings: "lnum" 1, "tnum" 1; text-align: right; white-space: nowrap; }
   .pf-line-quiet { color: var(--color-ash); }
+  /* Review mode (?revisao): figures on unconfirmed prices. */
+  .pf-provisional {
+    text-decoration: underline;
+    text-decoration-color: #b4430e;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
   /* The total is inked, as the row the index leads with is. */
   .pf-total { background: var(--color-ink); color: var(--color-paper); }
   .pf-total .pf-line-name,
