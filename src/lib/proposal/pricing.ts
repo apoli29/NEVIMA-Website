@@ -47,8 +47,12 @@ export const PRICING = {
       "Includes optimised images, a review of the texts you send, free hosting for the first year (then renewed every 6 months) and a free call once part of the website is built.",
 
     /** On top of the pages' own range, the ceiling carries this margin
-        for what the form does not ask (my default, 2026-10-17). */
-    rangePercent: 20,
+        for what the form does not ask (user, 2026-10-17: 10 points more
+        than the first 20%). */
+    rangePercent: 30,
+    /** What that margin allows for, shown under the website's line. */
+    marginNote:
+      "The upper end allows for what a form can't foresee: how much content there is to organise, connecting tools you already use (booking, maps, social media), special design requests such as custom illustrations or complex animations, and moving content over from an existing site.",
     /** The Advanced design level costs this much more than Essential+
         (user, 2026-10-17). The page prices above are Essential+. */
     advancedPercent: 25,

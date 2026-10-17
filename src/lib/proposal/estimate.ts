@@ -41,7 +41,7 @@ const up10 = (n: number) => Math.ceil(n / 10) * 10;
 
 function web(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"]): Priced {
   if (a.pages === "10+") return { reason: "More than 10 pages" };
-  const notes = [p.includes];
+  const notes = [p.includes, p.marginNote];
 
   // Portuguese is included; every other language counts, English too.
   const others = a.languages.includes("other") ? countLanguages(a.languagesOther ?? "") : 0;
