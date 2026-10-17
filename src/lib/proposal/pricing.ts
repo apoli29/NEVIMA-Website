@@ -63,13 +63,10 @@ export const PRICING = {
         together by how many there are, as the contract sets them (clause
         11.4), the same in every country. More than three is quoted. */
     languages: { 1: 35, 2: 55, 3: 80 } as Record<1 | 2 | 3, number>,
-    /** Writing the texts the client does not have, as a range by the
-        site's size (Portugal; other markets scaled by textsMarket).
+    /** Writing the website's texts when the client has none, as a range
+        by the site's size (Portugal; other markets scaled by textsMarket).
         PROVISIONAL: figures to be confirmed by the studio. */
-    texts: {
-      some: { landing: [40, 80], "4-6": [80, 150], "7-10": [120, 240] },
-      none: { landing: [80, 150], "4-6": [150, 300], "7-10": [240, 450] },
-    } as Record<"some" | "none", Record<Size, [number, number]>>,
+    texts: { landing: [80, 150], "4-6": [150, 300], "7-10": [240, 450] } as Record<Size, [number, number]>,
     textsMarket: { pt: 1, "es-it": 1.15, us: 1.75 } satisfies Record<Market, number>,
     forms: {
       "0": { pt: 0, "es-it": 0, us: 0 },
@@ -91,10 +88,9 @@ export const PRICING = {
   photoTravel: "Travel within 30 km of Arcozelo is included. Beyond that, it is charged per km, as set in your proposal.",
 
   /** "More than 10" pages and an international reach are on request.
-      The SEO deep-dive is priced at seo's "first" column; the monthly
-      SEO & GEO service at seo's and geo's monthly fees together.
-      PROVISIONAL mapping from the old SEO and GEO tables, to be
-      confirmed by the studio. */
+      "first" is the one-time work, "monthly" the optional monthly
+      service on top of it. PROVISIONAL: the old first-month and monthly
+      figures, to be confirmed by the studio for this new reading. */
   seo: {
     landing: {
       local: { pt: { first: 150, monthly: 60 }, "es-it": { first: 175, monthly: 70 }, us: { first: 265, monthly: 105 } },

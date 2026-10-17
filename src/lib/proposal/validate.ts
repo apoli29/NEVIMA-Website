@@ -2,7 +2,6 @@ import "server-only";
 import {
   COUNTRIES,
   DESIGN,
-  FEATURES,
   FORMS,
   LANGUAGES,
   MAX,
@@ -10,6 +9,7 @@ import {
   PHOTO_PLANS,
   REACH,
   REGIONS,
+  SEARCH_PLANS,
   SECTORS,
   SERVICES,
   TEXTS,
@@ -47,12 +47,6 @@ function many<T extends string>(list: readonly { id: T }[], v: unknown): T[] | n
   return list.map((item) => item.id).filter((id) => v.includes(id));
 }
 
-/** Like many(), but an empty list is a valid answer. */
-function some<T extends string>(list: readonly { id: T }[], v: unknown): T[] | null {
-  if (v === undefined || (Array.isArray(v) && v.length === 0)) return [];
-  return many(list, v);
-}
-
 /** Trimmed, with runs of whitespace closed up, or null when too long. */
 function text(v: unknown, max: number): string | null {
   if (v === undefined || v === null) return "";
@@ -88,16 +82,14 @@ export function readAnswers(raw: unknown): Result<Answers> {
 
   if (groups.web) {
     const w = isObject(raw.web) ? raw.web : {};
-    const identity = one(YES_NO, w.identity);
     const design = one(DESIGN, w.design);
     const pages = one(PAGES, w.pages);
     const languages = many(LANGUAGES, w.languages);
     const forms = one(FORMS, w.forms);
     const texts = one(TEXTS, w.texts);
-    const features = some(FEATURES, w.features);
     const domain = one(YES_NO, w.domain);
     const urgent = one(YES_NO, w.urgent);
-    if (!identity || !design || !pages || !languages || !forms || !texts || !features || !domain || !urgent) {
+    if (!design || !pages || !languages || !forms || !texts || !domain || !urgent) {
       return { ok: false, error: "web" };
     }
     // Up to two references, or none when the visitor said they have none.
@@ -110,7 +102,7 @@ export function readAnswers(raw: unknown): Result<Answers> {
       if (clean) references.push(clean);
     }
     if (!references.length && w.noReferences !== true) return { ok: false, error: "references" };
-    answers.web = { identity, design, pages, languages, forms, texts, features, references, domain, urgent };
+    answers.web = { design, pages, languages, forms, texts, references, domain, urgent };
     if (!references.length) answers.web.noReferences = true;
     if (languages.includes("other")) {
       const other = text(w.languagesOther, MAX.short);
@@ -137,6 +129,16 @@ export function readAnswers(raw: unknown): Result<Answers> {
     const reach = one(REACH, s.reach);
     if (!reach) return { ok: false, error: "search" };
     answers.search = { reach };
+    if (services.includes("seo")) {
+      const plan = one(SEARCH_PLANS, s.seoPlan);
+      if (!plan) return { ok: false, error: "seoPlan" };
+      answers.search.seoPlan = plan;
+    }
+    if (services.includes("geo")) {
+      const plan = one(SEARCH_PLANS, s.geoPlan);
+      if (!plan) return { ok: false, error: "geoPlan" };
+      answers.search.geoPlan = plan;
+    }
     // With web design chosen too, the site is the one being built: its
     // address is not asked and its size is the web answer.
     if (!groups.web) {

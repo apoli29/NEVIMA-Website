@@ -5,7 +5,6 @@ import { motion, useReducedMotion } from "motion/react";
 import {
   COUNTRIES,
   DESIGN,
-  FEATURES,
   FORMS,
   LANGUAGES,
   MAX,
@@ -13,6 +12,7 @@ import {
   PHOTO_PLANS,
   REACH,
   REGIONS,
+  SEARCH_PLANS,
   SECTORS,
   SERVICES,
   TEXTS,
@@ -25,7 +25,6 @@ import {
   type CountryId,
   type DesignId,
   type Estimate,
-  type FeatureId,
   type FormsId,
   type LanguageId,
   type PagesId,
@@ -33,6 +32,7 @@ import {
   type Range,
   type ReachId,
   type RegionId,
+  type SearchPlanId,
   type SectorId,
   type ServiceId,
   type TextsId,
@@ -58,14 +58,12 @@ export type Draft = {
   sectorOther: string;
   country: CountryId | "";
   countryOther: string;
-  identity: YesNo | "";
   design: DesignId | "";
   pages: PagesId | "";
   languages: LanguageId[];
   languagesOther: string;
   forms: FormsId | "";
   texts: TextsId | "";
-  features: FeatureId[];
   reference1: string;
   reference2: string;
   noReferences: boolean;
@@ -77,6 +75,8 @@ export type Draft = {
   site: string;
   searchPages: PagesId | "";
   reach: ReachId | "";
+  seoPlan: SearchPlanId | "";
+  geoPlan: SearchPlanId | "";
 };
 
 export const EMPTY_DRAFT: Draft = {
@@ -87,14 +87,12 @@ export const EMPTY_DRAFT: Draft = {
   sectorOther: "",
   country: "",
   countryOther: "",
-  identity: "",
   design: "",
   pages: "",
   languages: [],
   languagesOther: "",
   forms: "",
   texts: "",
-  features: [],
   reference1: "",
   reference2: "",
   noReferences: false,
@@ -106,6 +104,8 @@ export const EMPTY_DRAFT: Draft = {
   site: "",
   searchPages: "",
   reach: "",
+  seoPlan: "",
+  geoPlan: "",
 };
 
 export const EMPTY_CONTACT: Contact = {
@@ -149,9 +149,12 @@ function titleFor(step: StepId, draft: Draft) {
     case "web":
       return "Web design";
     case "photo":
-      return "Photo & video";
-    case "search":
-      return draft.services.includes("monthly") ? "SEO & GEO" : "SEO";
+      return "Photo shoot";
+    case "search": {
+      const seo = draft.services.includes("seo");
+      const geo = draft.services.includes("geo");
+      return seo && geo ? "SEO & GEO" : seo ? "SEO" : "GEO";
+    }
     case "estimate":
       return "Your estimate";
     case "contact":
@@ -167,12 +170,11 @@ export type Errors = Partial<Record<string, string>>;
 
 /* Small print under the questions that change the price (user). */
 const PHOTO_NOTE =
-  "Photo & video is only available in Portugal. Travel beyond 30 km of Arcozelo is added to the price of the service.";
+  "The photo shoot is only available in Portugal. Travel beyond 30 km of Arcozelo is added to the price of the service.";
 const DOMAIN_NOTE =
   "If you don't have a domain yet, we register it for you and its cost is added to the price. If you already have one, there's nothing to pay.";
 const DESIGN_NOTE = "Advanced costs 25% more than Essential+ on the website's price.";
-const TEXTS_NOTE = "Writing the texts you don't have is added to the price, as a range set by your website's size.";
-const FEATURES_NOTE = "Each one is quoted in your final proposal.";
+const TEXTS_NOTE = "If you don't, writing them is added to the price, as a range set by your website's size.";
 const URGENT_NOTE = "An urgent deadline raises the price by 40%.";
 
 const NO_REFERENCES = [{ id: "none", label: "I don't have any" }] as const;
@@ -191,7 +193,6 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact): Errors 
     else if (draft.country === "other" && !draft.countryOther.trim()) e.country = "Tell us which country.";
   }
   if (step === "web") {
-    if (!draft.identity) e.identity = PICK_ONE;
     if (!draft.design) e.design = PICK_ONE;
     if (!draft.pages) e.pages = PICK_ONE;
     if (!draft.languages.length) e.languages = PICK_ANY;
@@ -214,6 +215,8 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact): Errors 
   if (step === "search") {
     if (!web && !draft.searchPages) e.searchPages = PICK_ONE;
     if (!draft.reach) e.reach = PICK_ONE;
+    if (draft.services.includes("seo") && !draft.seoPlan) e.seoPlan = PICK_ONE;
+    if (draft.services.includes("geo") && !draft.geoPlan) e.geoPlan = PICK_ONE;
   }
   if (step === "contact") {
     if (!contact.name.trim()) e.name = "Enter your name.";
@@ -240,13 +243,11 @@ export function toAnswers(draft: Draft): Answers {
       ? []
       : [draft.reference1.trim(), draft.reference2.trim()].filter(Boolean);
     answers.web = {
-      identity: draft.identity as YesNo,
       design: draft.design as DesignId,
       pages: draft.pages as PagesId,
       languages: draft.languages,
       forms: draft.forms as FormsId,
       texts: draft.texts as TextsId,
-      features: draft.features,
       references,
       domain: draft.domain as YesNo,
       urgent: draft.urgent as YesNo,
@@ -260,6 +261,8 @@ export function toAnswers(draft: Draft): Answers {
   }
   if (groups.search) {
     answers.search = { reach: draft.reach as ReachId };
+    if (draft.services.includes("seo")) answers.search.seoPlan = draft.seoPlan as SearchPlanId;
+    if (draft.services.includes("geo")) answers.search.geoPlan = draft.geoPlan as SearchPlanId;
     if (!groups.web) {
       answers.search.pages = draft.searchPages as PagesId;
       if (draft.site.trim()) answers.search.site = draft.site.trim();
@@ -283,13 +286,11 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
   ];
   if (a.web) {
     lines.push(
-      `Visual identity redesign: ${labelOf(YES_NO, a.web.identity)}`,
       `Design level: ${labelOf(DESIGN, a.web.design)}`,
       `Pages: ${labelOf(PAGES, a.web.pages)}`,
       `Languages: ${a.web.languages.map((l) => (l === "other" ? a.web?.languagesOther : labelOf(LANGUAGES, l))).join(", ")}`,
       `Forms: ${labelOf(FORMS, a.web.forms)}`,
       `Texts ready: ${labelOf(TEXTS, a.web.texts)}`,
-      `Features: ${a.web.features.length ? a.web.features.map((f) => labelOf(FEATURES, f)).join(", ") : "None"}`,
       `Reference websites: ${a.web.references.length ? a.web.references.join(", ") : "None"}`,
       `Has a domain: ${labelOf(YES_NO, a.web.domain)}`,
       `Urgent deadline: ${labelOf(YES_NO, a.web.urgent)}`,
@@ -305,6 +306,8 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
     if (a.search.site) lines.push(`Website: ${a.search.site}`);
     if (a.search.pages) lines.push(`Site pages: ${labelOf(PAGES, a.search.pages)}`);
     lines.push(`Reach: ${labelOf(REACH, a.search.reach)}`);
+    if (a.search.seoPlan) lines.push(`SEO: ${labelOf(SEARCH_PLANS, a.search.seoPlan)}`);
+    if (a.search.geoPlan) lines.push(`GEO: ${labelOf(SEARCH_PLANS, a.search.geoPlan)}`);
   }
   if (estimate) {
     lines.push("", "Estimate shown:");
@@ -550,7 +553,7 @@ export function StepScreen({
           >
             <Multi
               name="services"
-              options={SERVICES.map((o) => (o.id === "photo" ? { ...o, label: "Photo & video*" } : o))}
+              options={SERVICES.map((o) => (o.id === "photo" ? { ...o, label: "Photo shoot*" } : o))}
               value={draft.services}
               locked={["web"]}
               onChange={(services) =>
@@ -600,20 +603,7 @@ export function StepScreen({
 
       {step === "web" && (
         <div className="pf-rows">
-          <Question
-            id="identity"
-            label="Would you also like a visual identity redesign (logo and symbol)?"
-            error={errors.identity}
-          >
-            <Segmented
-              name="identity"
-              options={YES_NO}
-              value={draft.identity}
-              onChange={(identity) => setDraft({ identity })}
-              labelledBy="identity-q"
-            />
-          </Question>
-          <Question id="design" label="How far should the design go?*" error={errors.design} footnote={`*${DESIGN_NOTE}`}>
+          <Question id="design" label="Design level*" error={errors.design} footnote={`*${DESIGN_NOTE}`}>
             <Segmented
               name="design"
               options={DESIGN}
@@ -670,19 +660,6 @@ export function StepScreen({
               value={draft.texts}
               onChange={(texts) => setDraft({ texts })}
               labelledBy="texts-q"
-            />
-          </Question>
-          <Question
-            id="features"
-            label="Do you need any of these?*"
-            hint="Choose any, or none"
-            footnote={`*${FEATURES_NOTE}`}
-          >
-            <Multi
-              name="features"
-              options={FEATURES}
-              value={draft.features}
-              onChange={(features) => setDraft({ features })}
             />
           </Question>
           <Question id="references" label="Websites whose look you like" hint="Up to two" error={errors.references}>
@@ -815,6 +792,28 @@ export function StepScreen({
               labelledBy="reach-q"
             />
           </Question>
+          {draft.services.includes("seo") && (
+            <Question id="seoPlan" label="How would you like your SEO?" error={errors.seoPlan}>
+              <Segmented
+                name="seoPlan"
+                options={SEARCH_PLANS}
+                value={draft.seoPlan}
+                onChange={(seoPlan) => setDraft({ seoPlan })}
+                labelledBy="seoPlan-q"
+              />
+            </Question>
+          )}
+          {draft.services.includes("geo") && (
+            <Question id="geoPlan" label="How would you like your GEO?" error={errors.geoPlan}>
+              <Segmented
+                name="geoPlan"
+                options={SEARCH_PLANS}
+                value={draft.geoPlan}
+                onChange={(geoPlan) => setDraft({ geoPlan })}
+                labelledBy="geoPlan-q"
+              />
+            </Question>
+          )}
         </div>
       )}
 
@@ -879,7 +878,7 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
             </span>
             {line.monthly !== undefined && (
               <span className="mono-label mt-1 block text-ash-2">
-                First month, then {money(line.monthly)}/mo
+                One-time, then {money(line.monthly)}/mo
               </span>
             )}
           </span>
