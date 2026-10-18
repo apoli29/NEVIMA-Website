@@ -166,25 +166,22 @@ export function WorkTogether() {
       <span aria-hidden="true" className="abt-grain absolute inset-0 -z-10" />
 
       <div className="shell grid grid-cols-1 items-center gap-x-10 gap-y-10 py-24 md:py-32 lg:grid-cols-12">
-        {/* Held at the top beside the form, which can run long. */}
-        <div className="lg:sticky lg:top-32 lg:col-span-5 lg:self-start">
+        {/* Held in the middle of the screen beside the form, which can
+            run long, as it sat before the form grew (user, 2026-10-18). */}
+        <div className="lg:sticky lg:top-0 lg:col-span-5 lg:flex lg:h-[100svh] lg:items-center lg:self-start">
           <h2
             id="work-together-title"
             className="display text-[clamp(2.75rem,6vw,5.75rem)] text-paper"
           >
-            <span className="wt-ask block">
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.span
-                  key={audience}
-                  className="block"
-                  initial={{ opacity: 0, y: reduce ? 0 : 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: reduce ? 0 : -10 }}
-                  transition={{ duration: reduce ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  {t(ASK[audience])}
-                </motion.span>
-              </AnimatePresence>
+            {/* Both questions are always laid out, one over the other, so
+                the line keeps the height of the longer (two lines where it
+                wraps) and the title under it never moves as they change. */}
+            <span className="wt-ask">
+              {AUDIENCES.map((a) => (
+                <span key={a} aria-hidden={a !== audience} data-on={a === audience ? "" : undefined} className="wt-ask-line">
+                  {t(ASK[a])}
+                </span>
+              ))}
             </span>
             <span className="block font-light">{t("Let’s work", "Vamos trabalhar")}</span>
             <span className="block font-medium">{t("together.", "juntos.")}</span>

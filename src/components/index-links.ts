@@ -6,12 +6,13 @@ import type { Copy } from "@/lib/i18n";
    proposal", which is not a link and is set apart there; it carries the
    green light now (the user took Pricing out and put it first). A row marked lead would be
    kept inked (see .idx-lead); none is. */
-export const SECTION_LINKS: { label: Copy; href: string; lead: boolean }[] = [
-  // Right under the ask (user, 2026-10-11).
+export const SECTION_LINKS: { label: Copy; href: string; lead: boolean; ask?: boolean }[] = [
+  // For development companies: the partners' form in "Let's work
+  // together" (user, 2026-10-18), second, and dressed as the first row
+  // (ask: inked, the green light, the gleam and the breath).
+  { label: { en: "Partner with us", pt: "Parcerias" }, href: "#partner", lead: false, ask: true },
+  // Right under the asks (user, 2026-10-11).
   { label: { en: "Our projects", pt: "Os nossos projetos" }, href: "/portfolio", lead: false },
   { label: { en: "About us", pt: "Sobre nós" }, href: "/about", lead: false },
   { label: { en: "Our services", pt: "Os nossos serviços" }, href: "#services", lead: false },
-  // For development companies: the partners' form in "Let's work
-  // together" (user, 2026-10-18).
-  { label: { en: "Partner with us", pt: "Parcerias" }, href: "#partner", lead: false },
 ];

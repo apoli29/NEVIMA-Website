@@ -370,6 +370,14 @@
   .idx-ask:focus-visible::before,
   .idx-ask:focus-visible::after { animation-play-state: paused; }
   .idx-ask:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 3px; }
+  /* The second ask (Partner with us, user 2026-10-18): the same dress,
+     on the other half of the clock, so the two never breathe together. */
+  .idx-ask-second::before { animation-delay: 3.4s; }
+  .idx-ask-second::after { animation-delay: 3.4s, 3.4s; }
+  /* A sliver of the page between the two inked rows, so they read as
+     two keys, not one block. */
+  .idx-ask-second::before,
+  .idx-ask-second::after { top: 3px; }
   @media (prefers-reduced-motion: reduce) {
     .idx-ask::before,
     .idx-ask::after { animation: none; }
@@ -3229,7 +3237,18 @@
     line-height: 1.15;
     letter-spacing: -0.01em;
     color: rgb(255 255 255 / 0.72);
-    min-height: 1.15em;
+    display: grid;
+  }
+  .wt-ask-line {
+    grid-area: 1 / 1;
+    align-self: end;
+    opacity: 0;
+    transform: translateY(0.3em);
+    transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .wt-ask-line[data-on] { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .wt-ask-line { transition: none; transform: none; }
   }
   /* The switch between the two forms. */
   .wt-tabs {
