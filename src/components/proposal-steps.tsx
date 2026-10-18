@@ -3,9 +3,12 @@
 import { useEffect, useId, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import {
+  COMPLEX,
   COUNTRIES,
+  COUNTS,
   DESIGN,
-  FORMS,
+  FEATURES,
+  OUT_OF_SCOPE,
   LANGUAGES,
   MAX,
   PAGES,
@@ -26,7 +29,8 @@ import {
   type CountryId,
   type DesignId,
   type Estimate,
-  type FormsId,
+  type CountId,
+  type FeatureId,
   type LanguageId,
   type PagesId,
   type PhotoPlanId,
@@ -65,7 +69,12 @@ export type Draft = {
   pages: PagesId | "";
   languages: LanguageId[];
   languagesOther: string;
-  forms: FormsId | "";
+  /** The second level of what the website does (see FEATURES). */
+  features: FeatureId[];
+  forms: CountId | "";
+  emails: CountId | "";
+  /** The third level: a project we do not take on for now. */
+  complex: boolean;
   texts: TextsId | "";
   reference1: string;
   reference2: string;
@@ -94,7 +103,10 @@ export const EMPTY_DRAFT: Draft = {
   pages: "",
   languages: [],
   languagesOther: "",
+  features: [],
   forms: "",
+  emails: "",
+  complex: false,
   texts: "",
   reference1: "",
   reference2: "",
@@ -125,6 +137,9 @@ export type StepId = "basics" | "web" | "photo" | "search" | "estimate" | "conta
 /** The screens this draft goes through, in order. */
 export function stepsFor(draft: Draft): StepId[] {
   const groups = groupsFor(draft.services);
+  // Needing the third level ends the form at the estimate's place, which
+  // says the project is beyond what we take on now.
+  if (groups.web && draft.complex) return ["basics", "web", "estimate"];
   return [
     "basics",
     ...(groups.web ? (["web"] as const) : []),
@@ -138,7 +153,7 @@ export function stepsFor(draft: Draft): StepId[] {
 
 /** What the button at the foot says on each screen. */
 export function actionFor(step: StepId, next: StepId | undefined, t: Translate) {
-  if (step === "estimate") return t("Request final proposal", "Pedir proposta final");
+  if (step === "estimate") return next ? t("Request final proposal", "Pedir proposta final") : t("Close", "Fechar");
   if (step === "contact") return t("Send request", "Enviar pedido");
   if (step === "sent") return t("Close", "Fechar");
   // The first screen always leads to a service's questions.
@@ -220,13 +235,16 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
     else if (draft.country === "other" && !draft.countryOther.trim()) e.country = t("Tell us which country.", "Diz-nos qual é o país.");
   }
   if (step === "web") {
+    // A project beyond what we take on needs nothing more answered.
+    if (draft.complex) return e;
+    if (draft.features.includes("forms") && !draft.forms) e.forms = PICK_ONE;
+    if (draft.features.includes("emails") && !draft.emails) e.emails = PICK_ONE;
     if (!draft.design) e.design = PICK_ONE;
     if (!draft.pages) e.pages = PICK_ONE;
     if (!draft.languages.length) e.languages = PICK_ANY;
     else if (draft.languages.includes("other") && !draft.languagesOther.trim()) {
       e.languages = t("Tell us which languages.", "Diz-nos quais são as línguas.");
     }
-    if (!draft.forms) e.forms = PICK_ONE;
     if (!draft.texts) e.texts = PICK_ONE;
     if (!draft.noReferences && !draft.reference1.trim() && !draft.reference2.trim()) {
       e.references = t("Add a website, or tick that you don't have any.", "Junta um website, ou assinala que não tens nenhum.");
@@ -275,13 +293,16 @@ export function toAnswers(draft: Draft): Answers {
       design: draft.design as DesignId,
       pages: draft.pages as PagesId,
       languages: draft.languages,
-      forms: draft.forms as FormsId,
+      features: draft.features,
       texts: draft.texts as TextsId,
       references,
       domain: draft.domain as YesNo,
       urgent: draft.urgent as YesNo,
     };
     if (draft.languages.includes("other")) answers.web.languagesOther = draft.languagesOther.trim();
+    if (draft.features.includes("forms") && draft.forms) answers.web.forms = draft.forms;
+    if (draft.features.includes("emails") && draft.emails) answers.web.emails = draft.emails;
+    if (draft.complex) answers.web.complex = true;
     if (!references.length) answers.web.noReferences = true;
   }
   if (groups.photo) {
@@ -322,7 +343,15 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
       `${t("Design level", "Nível de design")}: ${label(DESIGN, a.web.design)}`,
       `${t("Pages", "Páginas")}: ${label(PAGES, a.web.pages)}`,
       `${t("Languages", "Línguas")}: ${a.web.languages.map((l) => (l === "other" ? a.web?.languagesOther : label(LANGUAGES, l))).join(", ")}`,
-      `${t("Forms", "Formulários")}: ${label(FORMS, a.web.forms)}`,
+      `${t("What it does", "O que faz")}: ${[
+        t("presents the business", "apresenta o negócio"),
+        ...a.web.features.map((f) => {
+          const name = label(FEATURES, f).toLowerCase();
+          const count = f === "forms" ? a.web?.forms : f === "emails" ? a.web?.emails : undefined;
+          return count ? `${name} (${label(COUNTS, count)})` : name;
+        }),
+        ...(a.web.complex ? [t("complex systems (beyond what we take on now)", "sistemas complexos (fora do que fazemos agora)")] : []),
+      ].join(", ")}`,
       `${t("Texts ready", "Textos prontos")}: ${label(TEXTS, a.web.texts)}`,
       `${t("Reference websites", "Websites de referência")}: ${a.web.references.length ? a.web.references.join(", ") : t("None", "Nenhum")}`,
       `${t("Has a domain", "Já tem domínio")}: ${yes(a.web.domain)}`,
@@ -375,7 +404,7 @@ const spanIn = (lang: Lang) => (r: Range) => {
 
 /** One question: the question on the left, its answers on the right
     (stacked on a phone), between hairlines. */
-function Question({
+export function Question({
   id,
   label,
   hint,
@@ -419,7 +448,7 @@ function Question({
 }
 
 /** One pick from a few: joined keys, the chosen one inked. */
-function Segmented<T extends string>({
+export function Segmented<T extends string>({
   name,
   options,
   value,
@@ -494,7 +523,52 @@ function Multi<T extends string>({
   );
 }
 
-function Field({
+/** Any number from a few, each key with a line of its own under its
+    name, saying what it does. A key in `off` cannot be ticked yet. */
+export function Ticks<T extends string>({
+  name,
+  options,
+  value,
+  onChange,
+  off = [],
+}: {
+  name: string;
+  options: readonly { id: T; label: string; note?: string }[];
+  value: T[];
+  onChange: (v: T[]) => void;
+  off?: readonly T[];
+}) {
+  return (
+    <div className="pf-ticks">
+      {options.map((o) => (
+        <label key={o.id} className="pf-key pf-key-tall pf-tick-key" data-off={off.includes(o.id) ? "" : undefined}>
+          <input
+            type="checkbox"
+            name={name}
+            value={o.id}
+            checked={value.includes(o.id)}
+            disabled={off.includes(o.id)}
+            onChange={(e) =>
+              onChange(
+                e.target.checked
+                  ? options.map((x) => x.id).filter((id) => id === o.id || value.includes(id))
+                  : value.filter((v) => v !== o.id),
+              )
+            }
+            className="sr-only"
+          />
+          <span className="flex items-center gap-2.5">
+            <span aria-hidden="true" className="pf-tick" />
+            <span className="mono-label">{o.label}</span>
+          </span>
+          {o.note && <span className="pf-note">{o.note}</span>}
+        </label>
+      ))}
+    </div>
+  );
+}
+
+export function Field({
   id,
   label,
   value,
@@ -530,7 +604,7 @@ function Field({
 /* --- the rows' entrance ------------------------------------------------
    Each screen's rows come in top to bottom, as the index's do. */
 
-const ROW = {
+export const ROW = {
   hidden: { opacity: 0, y: 10 },
   shown: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const } },
 };
@@ -650,6 +724,90 @@ export function StepScreen({
 
       {step === "web" && (
         <div className="pf-rows">
+          {/* What the website has to do, in three levels, each adding to
+              the one before (user, 2026-10-18). Asked first: a project
+              that needs the third needs nothing else answered. */}
+          <Question
+            id="features"
+            label={t("What does your website need to do?", "O que precisa o teu website de fazer?")}
+            hint={t("Each level adds to the one before", "Cada nível soma-se ao anterior")}
+            group={false}
+          >
+            <div className="pf-levels">
+              <div className="pf-level">
+                <p className="pf-level-name">{t("Present your business", "Apresentar o teu negócio")}</p>
+                <p className="pf-footnote">
+                  {t(
+                    "The story behind it, the details that set you apart, the products or services you offer and how to reach you.",
+                    "A história por trás, os pormenores que te distinguem, os produtos ou serviços que ofereces e como te contactar.",
+                  )}
+                </p>
+                <span className="mono-label pf-level-tag">{t("Always included", "Sempre incluído")}</span>
+              </div>
+              <div className="pf-level" role="group" aria-labelledby={`${uid}-level2`}>
+                <p id={`${uid}-level2`} className="pf-level-name">
+                  {t("+ Receive information from your clients", "+ Receber informação dos teus clientes")}
+                </p>
+                <Ticks
+                  name="features"
+                  options={list(FEATURES)}
+                  value={draft.features}
+                  // Automatic emails are what the forms and the newsletter
+                  // send: without either, there is nothing to send them.
+                  off={draft.features.includes("forms") || draft.features.includes("newsletter") ? [] : ["emails"]}
+                  onChange={(features) => {
+                    const withEmails = features.includes("forms") || features.includes("newsletter");
+                    setDraft({ features: withEmails ? features : features.filter((f) => f !== "emails") });
+                  }}
+                />
+              </div>
+              <div className="pf-level" role="group" aria-labelledby={`${uid}-level3`}>
+                <p id={`${uid}-level3`} className="pf-level-name">
+                  {t("+ Complex systems behind the website", "+ Sistemas complexos por trás do website")}
+                </p>
+                <Ticks
+                  name="complex"
+                  options={list(COMPLEX)}
+                  value={draft.complex ? ["complex"] : []}
+                  onChange={(v) => setDraft({ complex: v.length > 0 })}
+                />
+                {draft.complex && (
+                  <p role="status" className="pf-out">
+                    {t(OUT_OF_SCOPE)}
+                  </p>
+                )}
+              </div>
+            </div>
+          </Question>
+          {!draft.complex && draft.features.includes("forms") && (
+            <Question id="forms" label={t("How many forms?", "Quantos formulários?")} error={errors.forms}>
+              <Segmented
+                name="forms"
+                options={list(COUNTS)}
+                value={draft.forms}
+                onChange={(forms) => setDraft({ forms })}
+                labelledBy="forms-q"
+              />
+            </Question>
+          )}
+          {!draft.complex && draft.features.includes("emails") && (
+            <Question
+              id="emails"
+              label={t("How many different automatic emails?", "Quantos emails automáticos diferentes?")}
+              hint={t("One for each form or sign-up that sends one", "Um por cada formulário ou inscrição que envie um")}
+              error={errors.emails}
+            >
+              <Segmented
+                name="emails"
+                options={list(COUNTS)}
+                value={draft.emails}
+                onChange={(emails) => setDraft({ emails })}
+                labelledBy="emails-q"
+              />
+            </Question>
+          )}
+          {!draft.complex && (
+          <>
           <Question id="design" label={t("Design level*", "Nível de design*")} error={errors.design} footnote={`*${t(DESIGN_NOTE)}`}>
             <Segmented
               name="design"
@@ -690,20 +848,6 @@ export function StepScreen({
                 onChange={(languagesOther) => setDraft({ languagesOther })}
               />
             )}
-          </Question>
-          <Question
-            id="forms"
-            label={t("How many forms?", "Quantos formulários?")}
-            hint={t("Contact, booking, quote", "Contacto, marcação, orçamento")}
-            error={errors.forms}
-          >
-            <Segmented
-              name="forms"
-              options={list(FORMS)}
-              value={draft.forms}
-              onChange={(forms) => setDraft({ forms })}
-              labelledBy="forms-q"
-            />
           </Question>
           <Question
             id="texts"
@@ -782,6 +926,8 @@ export function StepScreen({
               labelledBy="urgent-q"
             />
           </Question>
+          </>
+          )}
         </div>
       )}
 
@@ -970,6 +1116,20 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
   }
 
   const { estimate } = state;
+  // The third level: no figures, only the honest answer.
+  if (estimate.outOfScope) {
+    return (
+      <motion.div variants={ROW} aria-live="polite">
+        <p className="pf-lede">{t(OUT_OF_SCOPE)}</p>
+        <p className="pf-footnote mt-4">
+          {t(
+            "Ticked by mistake? Go back and untick it to see your estimate.",
+            "Assinalaste por engano? Volta atrás e retira a opção para veres a tua estimativa.",
+          )}
+        </p>
+      </motion.div>
+    );
+  }
   const someOnRequest = estimate.onRequest.length > 0;
   return (
     <div aria-live="polite">
@@ -1063,16 +1223,20 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
   );
 }
 
-function ContactScreen({
+export function ContactScreen({
   contact,
   setContact,
   errors,
   send,
+  partner = false,
 }: {
   contact: Contact;
   setContact: (patch: Partial<Contact>) => void;
   errors: Errors;
   send: SendState;
+  /** The partners' form (development companies): no estimate, and we
+      get in touch rather than send a proposal. */
+  partner?: boolean;
 }) {
   const t = useT();
   const rows = [
@@ -1097,10 +1261,15 @@ function ContactScreen({
   return (
     <>
       <motion.p variants={ROW} className="pf-lede">
-        {t(
-          "Leave your details and we’ll reply with a final proposal built on your answers.",
-          "Deixa os teus dados e respondemos com uma proposta final feita a partir das tuas respostas.",
-        )}
+        {partner
+          ? t(
+              "Leave your details and we’ll get in touch within a few hours to talk it through, then send you a fixed quote.",
+              "Deixem os vossos dados e entramos em contacto dentro de poucas horas para falarmos sobre o projeto. Depois, enviamos-vos um orçamento fixo.",
+            )
+          : t(
+              "Leave your details and we’ll reply with a final proposal built on your answers.",
+              "Deixa os teus dados e respondemos com uma proposta final feita a partir das tuas respostas.",
+            )}
       </motion.p>
       <div className="pf-contact">
         {rows.map((row) => (
@@ -1135,23 +1304,29 @@ function ContactScreen({
             <textarea
               name="message"
               rows={4}
-              placeholder={t(
-                "Anything else we should know about your business or your project (optional)",
-                "Mais alguma coisa que devamos saber sobre o teu negócio ou o teu projeto (opcional)",
-              )}
+              placeholder={
+                partner
+                  ? t("Anything else we should know about the project (optional)", "Mais alguma coisa que devamos saber sobre o projeto (opcional)")
+                  : t(
+                      "Anything else we should know about your business or your project (optional)",
+                      "Mais alguma coisa que devamos saber sobre o teu negócio ou o teu projeto (opcional)",
+                    )
+              }
               value={contact.message}
               onChange={(e) => setContact({ message: e.target.value })}
               maxLength={MAX.message}
-              aria-describedby="message-note"
+              aria-describedby={partner ? undefined : "message-note"}
               className="prop-input prop-text"
             />
           </label>
-          <p id="message-note" className="pf-footnote pf-row-note">
-            {t(
-              "What you write here isn’t counted in your estimate: we only read it once you’ve sent your request.",
-              "O que escreveres aqui não entra na tua estimativa: só o lemos depois de enviares o pedido.",
-            )}
-          </p>
+          {!partner && (
+            <p id="message-note" className="pf-footnote pf-row-note">
+              {t(
+                "What you write here isn’t counted in your estimate: we only read it once you’ve sent your request.",
+                "O que escreveres aqui não entra na tua estimativa: só o lemos depois de enviares o pedido.",
+              )}
+            </p>
+          )}
         </motion.div>
         <motion.div variants={ROW} className="pf-consent-row">
           <label className="pf-consent">
@@ -1165,10 +1340,15 @@ function ContactScreen({
             />
             <span aria-hidden="true" className="pf-tick" />
             <span>
-              {t(
-                "I agree to Nevima using these details to prepare and send my proposal, as set out in the ",
-                "Aceito que a Nevima use estes dados para preparar e enviar a minha proposta, como indicado na ",
-              )}
+              {partner
+                ? t(
+                    "I agree to Nevima using these details to get in touch about this project, as set out in the ",
+                    "Aceito que a Nevima use estes dados para entrar em contacto sobre este projeto, como indicado na ",
+                  )
+                : t(
+                    "I agree to Nevima using these details to prepare and send my proposal, as set out in the ",
+                    "Aceito que a Nevima use estes dados para preparar e enviar a minha proposta, como indicado na ",
+                  )}
               {/* A placeholder until the privacy policy page exists. */}
               <a href="#privacy-policy" className="underline underline-offset-2">
                 {t("privacy policy", "política de privacidade")}
@@ -1258,8 +1438,18 @@ export function useEstimate(active: boolean, draft: Draft, trap: () => string) {
   const [attempt, setAttempt] = useState(0);
   const key = JSON.stringify(toAnswers(draft));
 
+  const out = draft.services.includes("web") && draft.complex;
   useEffect(() => {
     if (!active) return;
+    // Beyond what we take on: nothing to price, and the rest of the web
+    // questions were never asked, so the server is not asked either.
+    if (out) {
+      setState({
+        status: "ready",
+        estimate: { currency: "EUR", lines: [], onRequest: [], total: null, monthly: null, timeline: null, outOfScope: true },
+      });
+      return;
+    }
     let cancelled = false;
     setState({ status: "loading" });
     fetch("/api/estimate", {
@@ -1302,7 +1492,7 @@ export function useEstimate(active: boolean, draft: Draft, trap: () => string) {
     };
     // The trap is read when the request goes, not watched.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, key, attempt, lang]);
+  }, [active, key, attempt, lang, out]);
 
   return { state, retry: () => setAttempt((n) => n + 1) };
 }

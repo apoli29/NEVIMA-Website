@@ -86,12 +86,19 @@ export const PRICING = {
       [number, number]
     >,
     textsMarket: { pt: 1, "es-it": 1.15, us: 1.75 } satisfies Record<Market, number>,
-    forms: {
-      "0": { pt: 0, "es-it": 0, us: 0 },
-      "1": { pt: 30, "es-it": 35, us: 55 },
-      "2": { pt: 55, "es-it": 65, us: 95 },
-      "3": { pt: 75, "es-it": 85, us: 130 },
-    } satisfies Record<string, ByMarket>,
+    /** The second level of what a website does (user, 2026-10-18), as
+        ranges for Portugal; other markets scaled by featuresMarket. */
+    features: {
+      /** By how many forms; more than three is on request. */
+      forms: { "1": [25, 40], "2": [45, 70], "3": [65, 95] } as Record<"1" | "2" | "3", [number, number]>,
+      newsletter: [30, 50] as [number, number],
+      /** The first automatic email, which sets up sending from the
+          client's domain, and each different one after it. */
+      emailFirst: [35, 50] as [number, number],
+      emailNext: [15, 25] as [number, number],
+      bookings: [25, 40] as [number, number],
+    },
+    featuresMarket: { pt: 1, "es-it": 1.15, us: 1.75 } satisfies Record<Market, number>,
     /** A client without a domain pays for the one we register for them
         (contract, clause 13); one who has a domain pays nothing. */
     newDomain: { min: 10, max: 30 },

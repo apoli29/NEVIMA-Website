@@ -23,6 +23,7 @@ import {
   type StepId,
 } from "./proposal-steps";
 import { useLang, useT } from "@/lib/use-lang";
+import { PartnerForm } from "./partner-form";
 
 /* ==================================================================
    Let's work together
@@ -54,6 +55,9 @@ const ERROR_OF: Partial<Record<keyof Draft, string>> = {
   region: "town",
 };
 
+type Audience = "business" | "partner";
+const AUDIENCES: Audience[] = ["business", "partner"];
+
 export function WorkTogether() {
   const reduce = useReducedMotion() ?? false;
   const t = useT();
@@ -64,12 +68,81 @@ export function WorkTogether() {
     return () => window.clearInterval(id);
   }, [reduce]);
 
+  /* Two forms, one for each kind of client (user, 2026-10-18): a
+     business owner's free proposal, and a development company's
+     partnership. Until someone takes part, they take turns every four
+     seconds, the question over the title naming whose it is, so it is
+     plain there are two. The first press anywhere in a form, or on the
+     switch over them, settles it; a hand resting over them only holds
+     the turn. Nothing ever changes under someone's answers. */
+  const [audience, setAudience] = useState<Audience>("business");
+  const [held, setHeld] = useState(false);
+  const [resting, setResting] = useState(false);
+  const [inView, setInView] = useState(false);
+  const [beat, setBeat] = useState(0);
+  const [swapped, setSwapped] = useState(false);
+  const section = useRef<HTMLElement>(null);
+  const turning = !reduce && !held && !resting && inView;
+
+  useEffect(() => {
+    const el = section.current;
+    if (!el) return;
+    const seen = new IntersectionObserver(([entry]) => setInView(!!entry?.isIntersecting), { threshold: 0.35 });
+    seen.observe(el);
+    return () => seen.disconnect();
+  }, []);
+  useEffect(() => {
+    if (!turning) return;
+    const id = window.setTimeout(() => {
+      setAudience((a) => (a === "business" ? "partner" : "business"));
+      setBeat((b) => b + 1);
+    }, HOLD_MS);
+    return () => window.clearTimeout(id);
+  }, [turning, beat]);
+
+  const choose = (a: Audience) => {
+    setHeld(true);
+    if (a !== audience) {
+      setAudience(a);
+      setSwapped(true);
+      window.setTimeout(() => setSwapped(false), 500);
+    }
+  };
+
+  // "Partner with us" elsewhere on the page (the index, How we work)
+  // brings the partners' form, settled.
+  useEffect(() => {
+    const ask = () => {
+      setAudience("partner");
+      setHeld(true);
+    };
+    if (window.location.hash === "#partner") ask();
+    const onClick = (event: MouseEvent) => {
+      const link = (event.target as Element | null)?.closest?.("a[href]");
+      if (link instanceof HTMLAnchorElement && new URL(link.href, window.location.href).hash === "#partner") ask();
+    };
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, []);
+
+  const ASK: Record<Audience, { en: string; pt: string }> = {
+    business: { en: "Are you a business owner?", pt: "Tens um negócio?" },
+    partner: { en: "Are you a development company?", pt: "São uma empresa de desenvolvimento?" },
+  };
+  const TAB: Record<Audience, { en: string; pt: string }> = {
+    business: { en: "For businesses", pt: "Para negócios" },
+    partner: { en: "For development companies", pt: "Para empresas de desenvolvimento" },
+  };
+
   return (
     <section
+      ref={section}
       id="work-together"
       aria-labelledby="work-together-title"
-      className="wt relative isolate overflow-hidden bg-ink text-paper"
+      className="wt relative isolate overflow-clip bg-ink text-paper"
     >
+      {/* Where "Partner with us" leads. */}
+      <span id="partner" aria-hidden="true" className="absolute top-0" />
       {PHOTOS.map((photo, i) => (
         <span
           key={photo.large}
@@ -93,17 +166,72 @@ export function WorkTogether() {
       <span aria-hidden="true" className="abt-grain absolute inset-0 -z-10" />
 
       <div className="shell grid grid-cols-1 items-center gap-x-10 gap-y-10 py-24 md:py-32 lg:grid-cols-12">
-        <div className="lg:col-span-5">
+        {/* Held at the top beside the form, which can run long. */}
+        <div className="lg:sticky lg:top-32 lg:col-span-5 lg:self-start">
           <h2
             id="work-together-title"
             className="display text-[clamp(2.75rem,6vw,5.75rem)] text-paper"
           >
+            <span className="wt-ask block">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={audience}
+                  className="block"
+                  initial={{ opacity: 0, y: reduce ? 0 : 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: reduce ? 0 : -10 }}
+                  transition={{ duration: reduce ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  {t(ASK[audience])}
+                </motion.span>
+              </AnimatePresence>
+            </span>
             <span className="block font-light">{t("Let’s work", "Vamos trabalhar")}</span>
             <span className="block font-medium">{t("together.", "juntos.")}</span>
           </h2>
         </div>
         <div className="lg:col-span-7">
-          <InlineProposal />
+          <div role="tablist" aria-label={t("Who is it for", "Para quem é")} className="wt-tabs">
+            {AUDIENCES.map((a) => (
+              <button
+                key={a}
+                type="button"
+                role="tab"
+                id={`wt-tab-${a}`}
+                aria-selected={audience === a}
+                aria-controls={`wt-panel-${a}`}
+                onClick={() => choose(a)}
+                className="wt-tab mono-label"
+              >
+                {t(TAB[a])}
+                {/* The four seconds left before the other form's turn. */}
+                {turning && audience === a && <span key={beat} aria-hidden="true" className="wt-tab-timer" />}
+              </button>
+            ))}
+          </div>
+          <div
+            className="wt-stack"
+            data-held={held ? "" : undefined}
+            onPointerDownCapture={() => setHeld(true)}
+            onFocusCapture={() => setHeld(true)}
+            onPointerEnter={(e) => e.pointerType === "mouse" && setResting(true)}
+            onPointerLeave={() => setResting(false)}
+          >
+            {AUDIENCES.map((a) => (
+              <div
+                key={a}
+                id={`wt-panel-${a}`}
+                role="tabpanel"
+                aria-labelledby={`wt-tab-${a}`}
+                data-active={audience === a ? "" : undefined}
+                data-swapped={audience === a && swapped ? "" : undefined}
+                inert={audience !== a}
+                className="wt-panel"
+              >
+                {a === "business" ? <InlineProposal /> : <PartnerForm />}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -260,6 +388,11 @@ function InlineProposal() {
     if (step === "estimate") {
       if (estimate.state.status === "error") estimate.retry();
       if (estimate.state.status !== "ready") return;
+      // Beyond what we take on: the form ends here, and starts again.
+      if (!nextStep) {
+        reset();
+        return;
+      }
     }
     if (step === "contact") {
       if (send.status !== "sending") void submit();
@@ -283,7 +416,9 @@ function InlineProposal() {
       ? t("Sending…", "A enviar…")
       : step === "sent"
         ? t("Start a new request", "Fazer um novo pedido")
-        : actionFor(step, nextStep, t);
+        : step === "estimate" && !nextStep
+          ? t("Start again", "Recomeçar")
+          : actionFor(step, nextStep, t);
   const canGoBack = index > 0 && step !== "sent";
   const progress = steps.length > 1 ? index / (steps.length - 1) : 0;
 
