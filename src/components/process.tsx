@@ -56,9 +56,10 @@ import { jumpTo } from "./smooth-scroll";
 type Who = "You" | "Us" | "You and us";
 
 const WHO: Record<Who, Copy> = {
-  You: { en: "You", pt: "Tu" },
-  Us: { en: "Us", pt: "Nós" },
-  "You and us": { en: "You and us", pt: "Tu e nós" },
+  // In Portuguese the client is named, never addressed (user, 2026-10-18).
+  You: { en: "You", pt: "Cliente" },
+  Us: { en: "Us", pt: "Nevima" },
+  "You and us": { en: "You and us", pt: "Cliente e Nevima" },
 };
 
 /** The services only done if the client asks for them. */
@@ -117,77 +118,77 @@ const PT_PHASES: Record<string, string> = {
 
 const PT_STEPS: Record<string, Pick<Step, "name" | "principle" | "text"> & { cta?: string }> = {
   estimate: {
-    name: "Pede uma estimativa de preço",
-    principle: "Primeiro, vês o preço.",
-    text: "Preenches um formulário curto, que calcula uma estimativa para o teu projeto a partir das tuas respostas.",
+    name: "Estimativa de preço",
+    principle: "Primeiro, apresentamos uma estimativa de preço.",
+    text: "Fornecemos um formulário que, quando preenchido, apresenta uma estimativa para o projeto, com base nas respostas fornecidas.",
   },
   analysis: {
     name: "Definimos o preço exato",
-    principle: "Enviamos-te o orçamento real.",
-    text: "Analisamos as tuas respostas e, em poucas horas, damos-te o preço exato do teu projeto, sempre com a justificação por trás dele.",
+    principle: "Enviamos o orçamento real.",
+    text: "Analisamos as respostas e, em poucas horas, enviamos o preço exato do projeto, sempre com a respetiva justificação.",
   },
   contract: {
     name: "O contrato",
     principle: "Tudo acordado por escrito.",
-    text: "Assim que respondes ao orçamento, enviamos-te o contrato, com todas as condições do trabalho definidas por escrito.",
+    text: "Assim que recebemos resposta ao orçamento, enviamos o contrato, com todas as condições do trabalho definidas por escrito.",
   },
   materials: {
-    name: "Os teus materiais",
-    principle: "O prazo começa contigo.",
-    text: "Com o contrato, pedimos-te tudo o que precisamos: as fotografias que já tens do teu negócio, o teu logótipo e símbolo, e o que mais o projeto exigir. O trabalho começa assim que tivermos tudo.",
+    name: "Os materiais",
+    principle: "O prazo começa com a entrega dos materiais.",
+    text: "Com o contrato, pedimos tudo aquilo de que precisamos: as fotografias já existentes do negócio, o logótipo e o símbolo, e o que mais o projeto exigir. O trabalho começa assim que tivermos tudo.",
   },
   photo: {
     name: "A sessão fotográfica",
-    principle: "Imagens só tuas.",
-    text: "Combinamos contigo uma data e, quando se aplique, uma taxa de deslocação. Consoante o andamento da sessão, damos-te uma data de entrega das fotografias e dos vídeos finais, e só começamos a construir o teu website quando estiverem prontos. São totalmente teus, por isso podes usá-los à vontade noutros projetos.",
+    principle: "Imagens próprias.",
+    text: "Combinamos uma data e, quando se aplique, uma taxa de deslocação. Consoante o andamento da sessão, indicamos uma data de entrega das fotografias e dos vídeos finais, e só começamos a construir o website quando estiverem prontos. Ficam inteiramente propriedade do cliente, que os pode usar livremente noutros projetos.",
   },
   identity: {
     name: "Começamos pela identidade",
     principle: "Primeiro, a identidade.",
-    text: "Acreditamos que um website só deve ser começado quando tudo aquilo de que precisa está pronto. Por isso, desenhamos primeiro o teu logótipo e símbolo, e construímos com eles na mão.",
-    cta: "Explorar Identidade Visual",
+    text: "Acreditamos que um website só deve ser começado quando tudo aquilo de que precisa está pronto. Por isso, desenhamos primeiro o logótipo e o símbolo, e construímos o website a partir deles.",
+    cta: "Saber mais sobre Identidade Visual",
   },
   trademark: {
-    name: "O registo da tua marca",
-    principle: "A tua marca, registada.",
-    text: "Com a tua identidade pronta, marcamos uma reunião, incluída no preço, para registarmos juntos a tua marca.",
+    name: "O registo da marca",
+    principle: "Uma marca registada.",
+    text: "Com a identidade pronta, marcamos uma reunião, incluída no preço, para registar a marca em conjunto com o cliente.",
   },
   strategy: {
     name: "Uma chamada de acompanhamento",
-    principle: "Primeiro a estrutura, depois falamos.",
-    text: "Quando parte do teu website estiver construída, marcamos uma chamada para te mostrarmos a direção que está a tomar. Ajustamos tudo o que a tua opinião pedir, para que o resultado fique ao teu gosto e o website final dificilmente precise de alterações.",
+    principle: "Primeiro a estrutura, depois a conversa.",
+    text: "Quando parte do website estiver construída, marcamos uma chamada para mostrar a direção que está a tomar. Ajustamos o que for necessário com base no feedback, para que o resultado vá ao encontro do gosto do cliente e o website final dificilmente precise de alterações.",
   },
   finish: {
     name: "Conclusão do website e SEO básico",
     principle: "Concluído, e pronto para ser encontrado.",
-    text: "Concluímos o website e aplicamos o SEO básico que vem com o nosso serviço de web design. Depois, marcamos uma chamada para te apresentarmos o resultado final, em que o aprovas ou pedes alterações. As alterações que nos levam só alguns minutos nunca são cobradas; para algo maior, recebes um orçamento antes de começarmos.",
+    text: "Concluímos o website e aplicamos o SEO básico que vem com o nosso serviço de web design. Depois, marcamos uma chamada para apresentar o resultado final e receber a aprovação ou os pedidos de alteração. As alterações que nos levam só alguns minutos nunca são cobradas; para algo maior, enviamos um orçamento antes de começar.",
   },
   hosting: {
     name: "Logística",
     principle: "Tratamos da logística.",
-    text: "Tratamos de tudo o que envolve o website, desde as páginas legais (política de privacidade, política de cookies e as restantes, cujo conteúdo a lei obriga o teu negócio a produzir; nós colocamo-las no website) até ao alojamento e à ligação do teu domínio.",
+    text: "Tratamos de tudo o que envolve o website, desde as páginas legais (política de privacidade, política de cookies e as restantes, cujo conteúdo a lei obriga o próprio negócio a produzir; nós colocamo-las no website) até ao alojamento e à ligação do domínio.",
   },
   seo: {
     name: "Aplicamos práticas de SEO",
     principle: "Primeiro aplicado, depois publicado.",
-    text: "Para trazer tráfego desde o primeiro dia, aplicamos o nosso trabalho pontual de SEO antes de o teu website ficar online. É ele que te leva pelos primeiros meses; para o tráfego não cair depois disso, recomendamos o nosso serviço mensal.",
-    cta: "Explorar SEO",
+    text: "Para trazer tráfego desde o primeiro dia, aplicamos o nosso trabalho pontual de SEO antes de o website ficar online. Este trabalho garante bons resultados nos primeiros meses; para que o tráfego não caia depois disso, recomendamos o nosso serviço mensal.",
+    cta: "Saber mais sobre SEO",
   },
   geo: {
     name: "Aplicamos práticas de GEO",
     principle: "Recomendado desde o primeiro dia.",
-    text: "Também é feito antes do lançamento, para que as ferramentas de IA tenham mais probabilidade de recomendar o teu negócio desde o dia em que fica online.",
-    cta: "Explorar GEO",
+    text: "Também é feito antes do lançamento, para que as ferramentas de IA tenham mais probabilidade de recomendar o negócio desde o dia em que fica online.",
+    cta: "Saber mais sobre GEO",
   },
   "launch-step": {
     name: "Lançamento",
-    principle: "Dás o teu aval, e fica online.",
-    text: "Pomos o teu website online, pronto para os teus clientes e para todos os que contam para o teu negócio.",
+    principle: "Com a aprovação final, fica online.",
+    text: "Colocamos o website online, pronto para os clientes do negócio e para todos os que contam para ele.",
   },
   "later-changes": {
-    name: "Continuamos cá depois do lançamento",
-    principle: "Cá estamos quando precisares.",
-    text: "Para o que precisares, continuamos totalmente disponíveis.",
+    name: "Apoio depois do lançamento",
+    principle: "Sempre que for preciso.",
+    text: "Continuamos totalmente disponíveis para o que for necessário.",
   },
 };
 
@@ -589,7 +590,7 @@ export function Process({ ready }: { ready: boolean }) {
               <p ref={subRef} className="text-[0.9375rem] leading-[1.45] text-balance text-ash">
                 {t(
                   "It all comes down to one idea: take out everything that doesn’t move your project forward, and keep you close to everything that does.",
-                  "Tudo se resume a uma ideia: tirar tudo o que não faz avançar o teu projeto, e manter-te perto de tudo o que o faz avançar.",
+                  "Tudo se resume a uma ideia: eliminar tudo o que não faz avançar o projeto e envolver o cliente em tudo o que o faz avançar.",
                 )}
               </p>
             </SlideIn>
@@ -602,7 +603,7 @@ export function Process({ ready }: { ready: boolean }) {
             <p id="prc-extras" className="mono-label text-ink">
               {t(
                 "Choose the services you want to see how we handle each one",
-                "Escolhe os serviços para veres como tratamos de cada um",
+                "Escolher os serviços adicionais para ver como tratamos de cada um",
               )}
             </p>
             <div role="group" aria-labelledby="prc-extras" className="flex flex-wrap gap-1.5">
@@ -676,12 +677,12 @@ export function Process({ ready }: { ready: boolean }) {
             ))}
             <li className="prc-end">
               <h3 className="display text-[clamp(1.5rem,2.1vw,2.125rem)] leading-[1.02] font-light text-ink">
-                {t("It all starts with your estimate.", "Tudo começa com a tua estimativa.")}
+                {t("It all starts with your estimate.", "Tudo começa com uma estimativa.")}
               </h3>
               <p className="mt-4 text-[clamp(0.9375rem,1vw,1rem)] leading-[1.5] text-justify hyphens-auto text-ash">
                 {t(
                   "Tell us what you need and see a price range straight away. Your proposal is free.",
-                  "Diz-nos o que precisas e vê logo um intervalo de preço. A tua proposta é gratuita.",
+                  "Basta indicar o que é necessário para ver de imediato um intervalo de preço. A proposta é gratuita.",
                 )}
               </p>
               <div className="mt-7">
@@ -740,7 +741,7 @@ function StepCard({ step, n, count, on }: { step: Step; n: number; count: number
         <span className="idx-title prc-eyebrow">
           {step.extra && (
             <>
-              <span className="prc-eyebrow-ask">{t("If you request", "Se pedires")}</span>
+              <span className="prc-eyebrow-ask">{t("If you request", "Se pedido")}</span>
               <span aria-hidden="true" className="prc-eyebrow-bar">
                 |
               </span>
@@ -824,7 +825,7 @@ function ProposalCta() {
       style={{ visibility: launched && present ? "hidden" : undefined }}
     >
       <span className="btn-neu-face">
-        <Label>{t("Get your free proposal", "Pede a tua proposta gratuita")}</Label>
+        <Label>{t("Get your free proposal", "Pedir proposta gratuita")}</Label>
       </span>
     </button>
   );

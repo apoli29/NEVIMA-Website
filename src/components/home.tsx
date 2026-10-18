@@ -557,7 +557,7 @@ function ScrollCue({ gone, reduce }: { gone: boolean; reduce: boolean }) {
   return (
     <motion.button
       type="button"
-      aria-label={t("Scroll to enter", "Desliza para entrar")}
+      aria-label={t("Scroll to enter", "Deslizar para entrar")}
       className="pointer-events-auto absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-1/2 -ml-6 grid size-12 cursor-pointer place-items-center text-white/70 transition-colors hover:text-white focus-visible:rounded-full focus-visible:outline focus-visible:outline-1 focus-visible:outline-white/60"
       initial={{ opacity: 0 }}
       animate={{ opacity: gone ? 0 : 1 }}

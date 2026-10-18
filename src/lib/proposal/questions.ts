@@ -85,7 +85,7 @@ export const DESIGN = [
     label: "Advanced",
     pt: "Avançado",
     note: "Richer layouts and animation, designed around your brand",
-    notePt: "Composições e animações mais ricas, desenhadas à volta da tua marca",
+    notePt: "Composições e animações mais ricas, desenhadas à volta da marca",
   },
 ] as const;
 export type DesignId = (typeof DESIGN)[number]["id"];
@@ -233,7 +233,7 @@ export type Estimate = {
     for or priced (user). */
 export const TRANSLATION_NOTE: Copy = {
   en: "Languages other than Portuguese and English are translated by an AI specialised in translation, with over 95% accuracy. We always send you a final document, so you can point out any sentence you'd like written differently.",
-  pt: "As línguas além do português e do inglês são traduzidas por uma IA especializada em tradução, com mais de 95% de precisão. Enviamos-te sempre um documento final, para poderes indicar qualquer frase que prefiras escrita de outra forma.",
+  pt: "As línguas além do português e do inglês são traduzidas por uma IA especializada em tradução, com mais de 95% de precisão. Enviamos sempre um documento final, onde é possível indicar qualquer frase que se prefira escrita de outra forma.",
 };
 
 /** How many languages were typed under "Other": "French, German and

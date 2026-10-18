@@ -177,71 +177,71 @@ const PT_QUESTIONS: Record<string, Words> = {
       "Formulário e estimativa",
       "Preço exato",
       "Contrato",
-      "Os teus materiais",
+      "Os materiais",
       "Produção",
       "Chamada de acompanhamento",
       "Aprovação final",
       "Lançamento",
     ],
-    link: "Vê cada passo em Como trabalhamos",
+    link: "Ver cada passo em Como trabalhamos",
   },
   why: {
     q: "Porque devo escolher os vossos serviços e não outros?",
     list: [
-      { lead: "Contacto direto:", text: "falas sempre com as duas pessoas que fazem de facto o trabalho." },
-      { lead: "Transparência:", text: "uma estimativa de preço logo de início, e a justificação de cada preço exato que te enviamos." },
-      { lead: "Sem custos escondidos:", text: "alojamento sem custos enquanto o teu website estiver online, e SEO básico sempre incluído." },
+      { lead: "Contacto direto:", text: "a conversa é sempre com as duas pessoas que fazem de facto o trabalho." },
+      { lead: "Transparência:", text: "uma estimativa de preço logo de início, e a justificação de cada preço exato que enviamos." },
+      { lead: "Sem custos escondidos:", text: "alojamento sem custos enquanto o website estiver online, e SEO básico sempre incluído." },
       { lead: "Rapidez:", text: "websites entregues a partir de 4 dias úteis, sem comprometer a qualidade." },
       { lead: "Vanguarda:", text: "as ferramentas e o know-how mais modernos, que dão melhores resultados a preços mais baixos." },
-      { lead: "Tranquilidade:", text: "tratamos da logística por ti, do domínio e do alojamento às páginas legais e ao registo da tua marca." },
+      { lead: "Tranquilidade:", text: "tratamos da logística, do domínio e do alojamento às páginas legais e ao registo da marca." },
     ],
   },
   cost: {
     q: "Quanto custa um website?",
-    a: "Depende do teu projeto: do tamanho, das línguas, dos formulários e dos serviços adicionais que escolheres. É por isso que o nosso formulário de proposta gratuita te dá logo uma estimativa e, em poucas horas, voltamos com o preço exato, explicando sempre como lá chegámos. Os preços estão definidos para Portugal, para Espanha e Itália, e para os EUA; para qualquer outro país, fazemos orçamento sob consulta.",
-    link: "Pede a tua proposta gratuita",
+    a: "Depende do projeto: do tamanho, das línguas, dos formulários e dos serviços adicionais escolhidos. É por isso que o nosso formulário de proposta gratuita apresenta logo uma estimativa e, em poucas horas, enviamos o preço exato, explicando sempre como lá chegámos. Os preços estão definidos para Portugal, para Espanha e Itália, e para os EUA; para qualquer outro país, fazemos orçamento sob consulta.",
+    link: "Pedir proposta gratuita",
   },
   reply: {
     q: "Quanto tempo demoram a responder depois de preencher o formulário?",
-    a: "Poucas horas. Analisamos as tuas respostas e enviamos-te o preço exato do teu projeto, com a justificação por trás dele.",
+    a: "Poucas horas. Analisamos as respostas e enviamos o preço exato do projeto, com a respetiva justificação.",
   },
   time: {
     q: "Quanto tempo demora um website?",
-    a: "Depende de cada projeto, e é por isso que, depois de preencheres o formulário, te damos sempre um prazo personalizado. Por norma, todo o processo, do início à apresentação final, não passa dos 18 a 20 dias úteis. Pode demorar mais se juntares outros serviços.",
+    a: "Depende de cada projeto, e é por isso que, depois de preenchido o formulário, indicamos sempre um prazo personalizado. Por norma, todo o processo, do início à apresentação final, não passa dos 18 a 20 dias úteis. Pode demorar mais com outros serviços incluídos.",
   },
   start: {
     q: "Quando começa o serviço, e quando termina?",
-    a: "Começamos assim que tivermos o contrato assinado e todos os teus materiais na mão. O projeto fica concluído quando aprovas o website final na nossa última chamada e ele fica online. Ainda assim, o nosso apoio não acaba aí: continuamos disponíveis para o que precisares.",
+    a: "Começamos assim que tivermos o contrato assinado e todos os materiais na mão. O projeto fica concluído quando o website final é aprovado na nossa última chamada e fica online. Ainda assim, o nosso apoio não acaba aí: continuamos disponíveis para o que for necessário.",
   },
   logistics: {
     q: "De que é que tenho de tratar a nível logístico, e o que faz a Nevima por mim?",
     list: [
       {
-        lead: "Tu:",
-        text: "os teus materiais (as fotografias que já tens do teu negócio, o teu logótipo e símbolo) e o conteúdo das tuas páginas legais, que por lei tem de ser produzido pelo teu próprio negócio.",
+        lead: "Cliente:",
+        text: "os materiais (as fotografias já existentes do negócio, o logótipo e o símbolo) e o conteúdo das páginas legais, que por lei tem de ser produzido pelo próprio negócio.",
       },
       {
-        lead: "Nós:",
-        text: "tudo o resto. Ou seja, registar o teu domínio (ou ligar o que já tens), alojar o teu website, colocar nele as páginas legais e, se se aplicar, registar contigo a tua marca.",
+        lead: "Nevima:",
+        text: "tudo o resto. Ou seja, registar o domínio (ou ligar um já existente), alojar o website, colocar nele as páginas legais e, se se aplicar, registar a marca em conjunto com o cliente.",
       },
     ],
   },
   hosting: {
     q: "O alojamento é mesmo gratuito?",
-    a: "Sim. Não te cobramos o alojamento: é gratuito enquanto o teu website estiver online connosco.",
+    a: "Sim. Não cobramos o alojamento: é gratuito enquanto o website estiver online connosco.",
   },
   monthly: {
     q: "Vou pagar uma mensalidade?",
-    a: "Pelo website, não: o alojamento é gratuito enquanto estiver online, e o SEO básico já está incluído. Os únicos serviços pagos ao mês são o SEO e o GEO, porque são trabalho contínuo, e só se os escolheres.",
+    a: "Pelo website, não: o alojamento é gratuito enquanto estiver online, e o SEO básico já está incluído. Os únicos serviços pagos ao mês são o SEO e o GEO, porque são trabalho contínuo, e só se forem escolhidos.",
   },
   domain: {
     q: "Preciso de ter um domínio próprio?",
-    a: "Sim, todos os websites precisam de um. Se o teu negócio ainda não tem, está incluído no nosso serviço; se já tens um, descontamos o seu custo no preço final.",
+    a: "Sim, todos os websites precisam de um. Se o negócio ainda não tem, está incluído no nosso serviço; se já existe, descontamos o seu custo no preço final.",
   },
   changes: {
     q: "Como funciona se eu quiser alterações?",
-    a: "As alterações que nos levam só alguns minutos nunca são cobradas. Para algo maior, combinamos sempre o preço contigo antes de começarmos. Melhor ainda, o nosso processo foi pensado para as evitar: quando parte do teu website estiver construída, marcamos uma chamada gratuita para te mostrarmos a direção que está a tomar, e ajustamos tudo o que a tua opinião pedir. O resultado? Um website feito ao teu gosto, que dificilmente vai precisar de alterações.",
-    link: "Vê como funciona em Como trabalhamos",
+    a: "As alterações que nos levam só alguns minutos nunca são cobradas. Para algo maior, o preço é sempre combinado antes de começarmos. Melhor ainda, o nosso processo foi pensado para as evitar: quando parte do website estiver construída, marcamos uma chamada gratuita para mostrar a direção que está a tomar, e ajustamos o que for necessário com base no feedback. O resultado? Um website feito à medida do gosto do cliente, que dificilmente vai precisar de alterações.",
+    link: "Ver como funciona em Como trabalhamos",
   },
   ai: {
     q: "Usam IA?",
@@ -249,23 +249,23 @@ const PT_QUESTIONS: Record<string, Words> = {
   },
   "ai-quality": {
     q: "Se usam IA, isso não baixa a qualidade do vosso serviço?",
-    a: "Não. A IA tira-nos das mãos o trabalho repetitivo, para que o nosso tempo vá para as decisões que realmente importam. Cada decisão de design e cada linha que fica online são nossas e revistas por um de nós, e tu vês o trabalho e dás a tua opinião antes de qualquer lançamento.",
+    a: "Não. A IA tira-nos das mãos o trabalho repetitivo, para que o nosso tempo vá para as decisões que realmente importam. Cada decisão de design e cada linha que fica online são nossas e revistas por um de nós, e o cliente vê o trabalho e dá a sua opinião antes de qualquer lançamento.",
   },
   "seo-geo": {
     q: "O que são o SEO e o GEO?",
-    a: "O SEO (Search Engine Optimization) é o que leva um website às posições mais altas que consegue alcançar nas pesquisas do seu público. Um website com um SEO mal trabalhado perde-se nas últimas páginas de resultados, enquanto um SEO personalizado chega às primeiras. O GEO (Generative Engine Optimization) faz o mesmo para a IA: cada vez mais pessoas recorrem a ela para encontrar negócios, e o GEO aumenta a probabilidade de o teu negócio aparecer nas suas recomendações e respostas. O SEO básico está incluído em todos os websites que fazemos.",
+    a: "O SEO (Search Engine Optimization) é o que coloca um website nas melhores posições possíveis das pesquisas feitas pelo seu público. Com um SEO mal trabalhado, um website fica perdido nas últimas páginas de resultados; com um SEO personalizado, chega às primeiras. O GEO (Generative Engine Optimization) faz o mesmo para a IA: cada vez mais pessoas recorrem a ela para encontrar negócios, e o GEO aumenta a probabilidade de um negócio aparecer nas suas recomendações e respostas. O SEO básico está incluído em todos os websites que fazemos.",
   },
   extras: {
     q: "Oferecem os serviços adicionais em separado?",
-    a: "Por norma, não: como todos os nossos serviços adicionais, são oferecidos em conjunto com um website feito por nós. Ainda assim, se tiveres uma necessidade específica, fala connosco e conta-nos.",
+    a: "Por norma, não: como todos os nossos serviços adicionais, são oferecidos em conjunto com um website feito por nós. Ainda assim, perante uma necessidade específica, estamos disponíveis para conversar.",
   },
   countries: {
     q: "Com que países trabalham?",
-    a: "Neste momento, as nossas prioridades são Portugal, Espanha, Itália e os EUA. Se o teu negócio está noutro país e tens interesse em trabalhar connosco, fala connosco.",
+    a: "Neste momento, as nossas prioridades são Portugal, Espanha, Itália e os EUA. Para negócios noutros países com interesse em trabalhar connosco, estamos disponíveis para conversar.",
   },
   languages: {
     q: "Em que línguas pode estar o meu website?",
-    a: "O português está sempre incluído; o inglês e qualquer outra língua acrescem ao preço. As línguas além do português e do inglês são traduzidas por uma IA especializada em tradução, com mais de 95% de precisão, e enviamos-te sempre o texto final para poderes indicar o que preferires escrito de outra forma.",
+    a: "O português está sempre incluído; o inglês e qualquer outra língua acrescem ao preço. As línguas além do português e do inglês são traduzidas por uma IA especializada em tradução, com mais de 95% de precisão, e enviamos sempre o texto final, onde é possível indicar o que se prefira escrito de outra forma.",
   },
 };
 
@@ -312,7 +312,7 @@ export function AboutFaq() {
               <p className="mt-5 max-w-[20rem] text-[0.9375rem] leading-[1.45] text-balance text-ash md:mt-6">
                 {t(
                   "Can’t find yours? Write to us and one of the two of us will answer, usually the same day.",
-                  "Não encontras a tua? Escreve-nos e um de nós os dois responde, normalmente no próprio dia.",
+                  "Outra pergunta? Basta escrever-nos: um de nós os dois responde, normalmente no próprio dia.",
                 )}
               </p>
               <div className="mt-7 md:mt-8">
@@ -320,7 +320,7 @@ export function AboutFaq() {
                   href={`mailto:${EMAIL}`}
                   label={
                     <>
-                      {t("Ask us", "Pergunta-nos")}
+                      {t("Ask us", "Perguntar")}
                       <span aria-hidden="true" className="ml-2.5 inline-block">
                         &rarr;
                       </span>

@@ -143,7 +143,7 @@ export function ProposalForm({
           <p className="prop-done">
             {t(
               "Your email app should be opening with everything filled in. If it doesn’t, write to us at",
-              "A tua app de email deve estar a abrir com tudo preenchido. Se não abrir, escreve-nos para",
+              "A app de email deve estar a abrir com tudo preenchido. Se não abrir, o contacto é",
             )}{" "}
             <a href={`mailto:${EMAIL}`} className="underline underline-offset-2">
               {EMAIL}
@@ -155,7 +155,7 @@ export function ProposalForm({
           </button>
         </motion.div>
       ) : (
-        <form id="proposal-form" onSubmit={submit} aria-label={t("Get your free proposal", "Pede a tua proposta gratuita")} className="border-b border-ink">
+        <form id="proposal-form" onSubmit={submit} aria-label={t("Get your free proposal", "Pedir proposta gratuita")} className="border-b border-ink">
           <motion.label variants={ROW} className="prop-row">
             <span className="mono-label prop-label">{t("Name", "Nome")}</span>
             <input
@@ -163,7 +163,7 @@ export function ProposalForm({
               name="name"
               required
               autoComplete="name"
-              placeholder={t("Your name", "O teu nome")}
+              placeholder={t("Your name", "Nome")}
               className="prop-input"
             />
           </motion.label>
@@ -175,15 +175,15 @@ export function ProposalForm({
               type="email"
               required
               autoComplete="email"
-              placeholder={t("you@business.com", "tu@onegocio.pt")}
+              placeholder={t("you@business.com", "nome@empresa.pt")}
               className="prop-input"
             />
           </motion.label>
 
           <motion.fieldset variants={ROW} className="prop-row prop-row-plain">
-            <legend className="sr-only">{t("What you need", "Do que precisas")}</legend>
+            <legend className="sr-only">{t("What you need", "Serviços pretendidos")}</legend>
             <span aria-hidden="true" className="mono-label prop-label">
-              {t("I need", "Preciso de")}
+              {t("I need", "Serviços")}
             </span>
             <span className="flex flex-wrap gap-1">
               {t(NEEDS).map((need) => (
@@ -205,7 +205,7 @@ export function ProposalForm({
             <textarea
               name="message"
               rows={2}
-              placeholder={t("Your business, and what the website should do", "O teu negócio, e o que o website deve fazer")}
+              placeholder={t("Your business, and what the website should do", "O negócio, e o que o website deve fazer")}
               className="prop-input prop-text"
             />
           </motion.label>
@@ -225,7 +225,7 @@ export function ProposalForm({
 
       {!sent && (
         <motion.p variants={ROW} className="mono-label mt-2.5 text-ash-2">
-          {t("Opens your email app, filled in", "Abre a tua app de email, já preenchida")}
+          {t("Opens your email app, filled in", "Abre a app de email, já preenchida")}
         </motion.p>
       )}
     </motion.div>

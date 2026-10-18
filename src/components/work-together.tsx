@@ -278,7 +278,7 @@ function InlineProposal() {
   };
 
   const action = offline
-    ? t("Open in your email app", "Abrir na tua app de email")
+    ? t("Open in your email app", "Abrir na app de email")
     : send.status === "sending"
       ? t("Sending…", "A enviar…")
       : step === "sent"
@@ -332,7 +332,7 @@ function InlineProposal() {
                 {offline ? (
                   <>
                     <h3 ref={title} tabIndex={-1} className="pf-title">
-                      {t("Send it by email", "Envia por email")}
+                      {t("Send it by email", "Enviar por email")}
                     </h3>
                     <OfflineNote />
                   </>

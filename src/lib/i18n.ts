@@ -8,9 +8,11 @@
 
    The Portuguese is not a translation word for word, nor one that
    changes what is said: the same reasoning and meaning, written the way
-   it would be said in Portugal, addressing the reader as "tu" (the
-   user's own "e mais dinheiro para ti"), with the spelling of the
-   current agreement, as in the studio's contract.
+   it would be said in Portugal, with the spelling of the current
+   agreement, as in the studio's contract. The reader is never addressed
+   as "tu", nor as "você" or "o senhor" (user, 2026-10-18): sentences are
+   recast as impersonal or from the studio's side, with "o cliente" where
+   a subject is needed and buttons in the infinitive.
    ================================================================== */
 
 export type Lang = "en" | "pt";
