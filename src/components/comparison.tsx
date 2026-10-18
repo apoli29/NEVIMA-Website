@@ -145,31 +145,31 @@ const ROWS: Row[] = [
 const PT_ROWS: Record<string, Omit<Row, "id">> = {
   hosting: {
     criterion: "Alojamento do website",
-    them: "Custos excessivos, por dois motivos: a dependência de plataformas como o Wix, entre outras, que podem cobrar mais de 100\u00a0\u20ac por ano; e a falta de transparência, que leva a preços muito acima do que o serviço custa de facto.",
+    them: "Custos excessivos, por dois motivos: a dependência de plataformas como o Wix, entre outras, que podem cobrar mais de 100\u00a0\u20ac por ano; e a falta de transparência, que leva a preços muito acima do custo real do serviço.",
     lead: "Totalmente gratuito,",
-    us: "enquanto o teu website estiver online connosco.",
+    us: "enquanto o website estiver online connosco.",
   },
   seo: {
     criterion: "Práticas de SEO",
     them: "Muitas agências cobram até pelas práticas de SEO mais básicas.",
     lead: "Incluídas:",
-    us: "o nosso serviço de web design inclui práticas básicas de SEO, para que o teu website não desapareça dos resultados dos motores de busca.",
+    us: "o nosso serviço de web design já contempla as práticas básicas de SEO, para que o website não desapareça dos resultados dos motores de busca.",
   },
   relationship: {
     criterion: "Atendimento e relação com o cliente",
-    them: "Distante. Às vezes, o cliente nunca chega a falar diretamente com os responsáveis pelo projeto. Resultado: o cliente não se sente ouvido e o serviço torna-se impessoal.",
+    them: "Distante. Por vezes, o cliente nem chega a falar diretamente com os responsáveis pelo projeto. Resultado: não se sente ouvido e o serviço torna-se impessoal.",
     lead: "Próximo e personalizado:",
-    us: "estás sempre em contacto direto connosco. O nosso processo mantém-te a par da evolução do projeto, e ajustamo-lo ao pormenor com base na tua opinião.",
+    us: "contacto direto e permanente connosco. O nosso processo mantém o cliente a par da evolução do projeto, que ajustamos ao pormenor com base no feedback recebido.",
   },
   knowledge: {
     criterion: "Conhecimento e ferramentas",
-    them: "Métodos ultrapassados: ferramentas caras mas obsoletas e processos envelhecidos.",
+    them: "Métodos ultrapassados: ferramentas caras mas obsoletas e processos antiquados.",
     lead: "Sempre um passo à frente:",
     us: "ferramentas de ponta, acompanhamento constante da evolução do mercado e conhecimento técnico sempre atualizado.",
   },
   costs: {
     criterion: "Custos e orçamento",
-    them: "Desproporcionadamente altos para a qualidade do resultado final. Os dois principais motivos: demasiadas pessoas envolvidas sem necessidade, e ferramentas demasiado caras e obsoletas.",
+    them: "Desproporcionadamente altos face à qualidade do resultado final. Os dois principais motivos: demasiadas pessoas envolvidas sem necessidade e ferramentas demasiado caras e obsoletas.",
     lead: "Altamente eficiente:",
     us: "trabalhamos com as ferramentas mais modernas e eficientes, que dão melhores resultados a preços mais baixos.",
   },
@@ -295,11 +295,11 @@ export function Comparison({ ready }: { ready: boolean }) {
             <span className="block font-light text-balance">
               {t(
                 "The perks of working with us instead of a big agency?",
-                "As vantagens de trabalhar connosco em vez de uma grande agência?",
+                "Que vantagens há em trabalhar connosco e não com uma grande agência?",
               )}
             </span>
             <span className="block font-medium">
-              <MarkedLine text={t("Here’s the honest comparison.", "Aqui fica a comparação honesta.")} />
+              <MarkedLine text={t("Here’s the honest comparison.", "Eis a comparação honesta.")} />
             </span>
           </h2>
         </SlideIn>

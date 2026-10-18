@@ -196,7 +196,7 @@ export function Services({ ready }: { ready: boolean }) {
             <p ref={subRef} className="text-[0.9375rem] leading-[1.45] text-balance text-ash">
               {t(
                 "Websites first. Every additional service is offered only together with a website we design.",
-                "Primeiro, os websites. Todos os serviços adicionais só são oferecidos em conjunto com um website feito por nós.",
+                "O website está sempre no centro: os serviços adicionais só estão disponíveis em conjunto com um website desenvolvido por nós.",
               )}
             </p>
           </SlideIn>
@@ -529,7 +529,7 @@ function Row({
               <div className="mt-7 md:mt-8">
                 <PassLink
                   href={href(servicePath(service.slug))}
-                  label={t(`Explore ${service.title}`, `Explorar ${service.title}`)}
+                  label={t(`Explore ${service.title}`, `Saber mais sobre ${service.title}`)}
                   className={`cta-drop inline-flex text-[1rem] leading-none ${main ? "cta-drop-light" : ""}`}
                 />
               </div>

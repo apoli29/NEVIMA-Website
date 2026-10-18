@@ -34,8 +34,8 @@ const STATEMENT: Copy<string[]> = {
     "Closing that gap is our whole job: two people, the right tools, and nothing standing between your work and the people it is for.",
   ],
   pt: [
-    "Aos bons negócios raramente falta qualidade. Falta-lhes uma presença que a mostre. As clínicas, agências e profissionais independentes com quem trabalhamos construíram algo verdadeiro, mas o seu website ainda apresenta uma versão mais pequena deles.",
-    "Fechar essa distância é todo o nosso trabalho: duas pessoas, as ferramentas certas, e nada entre o teu trabalho e as pessoas a quem ele se destina.",
+    "Aos bons negócios raramente falta qualidade. Falta-lhes uma presença que a mostre. As clínicas, agências e profissionais independentes com quem trabalhamos construíram algo sólido, mas o website continua a mostrar uma versão menor do que realmente são.",
+    "O nosso trabalho é encurtar essa distância: duas pessoas, as ferramentas certas e nada entre o trabalho de cada negócio e as pessoas a quem se destina.",
   ],
 };
 

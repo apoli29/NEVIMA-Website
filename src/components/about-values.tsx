@@ -81,15 +81,15 @@ const PT_VALUES: Record<(typeof VALUES)[number]["id"], { name: string; text: str
   },
   open: {
     name: "Transparência",
-    text: "Para nós, é inegociável que os nossos clientes conheçam a forma como trabalhamos e a forma como atribuímos valor ao nosso trabalho. É por isso que explicamos todo o nosso processo e procuramos dar-te, logo à partida, uma estimativa de orçamento.",
+    text: "Para nós, é absolutamente indispensável que os nossos clientes conheçam a forma como trabalhamos e como atribuímos valor ao nosso trabalho. É por isso que explicamos todo o nosso processo e procuramos apresentar, logo à partida, uma estimativa de orçamento.",
   },
   ease: {
     name: "Facilitar",
-    text: "Queremos que os nossos clientes fiquem livres de qualquer preocupação logística, do registo do domínio e do alojamento do website ao registo da marca (se aplicável). Acompanhamos o processo de perto, apoiamos-te do início ao fim e, sempre que a lei e a prática o permitem, tratamos nós disso.",
+    text: "Queremos que os nossos clientes fiquem livres de qualquer preocupação logística, do registo do domínio e do alojamento do website ao registo da marca (se aplicável). Acompanhamos o processo de perto, prestamos apoio do início ao fim e, sempre que a lei e a prática o permitem, tratamos nós disso.",
   },
   current: {
     name: "Compromisso com o vanguardismo",
-    text: "Estamos totalmente com\u00adpro\u00adme\u00adti\u00addos em ser o mais i\u00adno\u00adva\u00addo\u00adres possível, nas ferramentas que usamos e nas nossas práticas e processos. Adaptamos cons\u00adtan\u00adte\u00admen\u00adte a nossa forma de trabalhar precisamente para oferecer um serviço com um nível de inovação muito acima da norma.",
+    text: "Estamos inteiramente em\u00adpe\u00adnha\u00addos em ser o mais i\u00adno\u00adva\u00addo\u00adres possível, nas ferramentas que usamos e nas nossas práticas e processos. Adaptamos cons\u00adtan\u00adte\u00admen\u00adte a nossa forma de trabalhar precisamente para oferecer um serviço com um nível de inovação muito acima da norma.",
   },
 };
 
@@ -274,7 +274,7 @@ export function AboutValues() {
             <p ref={subRef} className="abt-val-sub text-[0.9375rem] leading-[1.45] text-ash">
               {t(
                 "Pick one to see what it means. None of them works alone, so they never stay apart for long.",
-                "Escolhe um para veres o que significa. Nenhum funciona sozinho, por isso nunca ficam separados por muito tempo.",
+                "Basta escolher um para conhecer o seu significado. Nenhum funciona sozinho, por isso nunca ficam separados por muito tempo.",
               )}
             </p>
           </SlideIn>
@@ -284,7 +284,7 @@ export function AboutValues() {
             either way for the piece the four become. */}
         <div ref={field} className="relative flex items-center pt-40 pb-10 md:pt-40 md:pb-12">
           <ul
-            aria-label={t("Values: choose one to read it", "Valores: escolhe um para o leres")}
+            aria-label={t("Values: choose one to read it", "Valores: escolher um para o ler")}
             data-chosen={chosen === null ? undefined : ""}
             className="abt-val-list grid w-full grid-cols-2 gap-y-16 md:grid-cols-4"
           >
@@ -347,7 +347,7 @@ export function AboutValues() {
               <span className="abt-val-name display block">{value.name}</span>
               <span className="abt-val-text block">{value.text}</span>
               <span className="sr-only">
-                {t(". Press to see all four values again.", ". Carrega para voltares a ver os quatro valores.")}
+                {t(". Press to see all four values again.", ". Carregar para voltar a ver os quatro valores.")}
               </span>
             </button>
           </div>
@@ -365,11 +365,11 @@ export function AboutValues() {
               label={
                 aim.kind === "piece"
                   ? tap
-                    ? t("Tap to close", "Toca para fechar")
-                    : t("Click to close", "Clica para fechar")
+                    ? t("Tap to close", "Tocar para fechar")
+                    : t("Click to close", "Clicar para fechar")
                   : tap
-                    ? t("Tap here", "Toca aqui")
-                    : t("Click here", "Clica aqui")
+                    ? t("Tap here", "Tocar aqui")
+                    : t("Click here", "Clicar aqui")
               }
               section={section}
               slots={control.current.slots}

@@ -520,7 +520,7 @@ function Panel({
   };
 
   const action = offline
-    ? say("Open in your email app", "Abrir na tua app de email")
+    ? say("Open in your email app", "Abrir na app de email")
     : send.status === "sending"
       ? say("Sending…", "A enviar…")
       : actionFor(step, nextStep, say);
@@ -550,7 +550,7 @@ function Panel({
       >
         <motion.div aria-hidden="true" className="pf-pane" style={{ opacity: pane }} />
 
-        <form ref={formEl} noValidate onSubmit={onSubmit} aria-label={say("Get your free proposal", "Pede a tua proposta gratuita")} className="flex h-full min-h-0 flex-col">
+        <form ref={formEl} noValidate onSubmit={onSubmit} aria-label={say("Get your free proposal", "Pedir proposta gratuita")} className="flex h-full min-h-0 flex-col">
           {/* The index's label, which becomes the form's. */}
           <p className="mono-label mb-2.5 flex items-center justify-between text-ash-2">
             <span className="grid">
@@ -643,7 +643,7 @@ function Panel({
                     {offline ? (
                       <>
                         <h2 ref={title} tabIndex={-1} className="pf-title">
-                          {say("Send it by email", "Envia por email")}
+                          {say("Send it by email", "Enviar por email")}
                         </h2>
                         <OfflineNote />
                       </>
@@ -713,7 +713,7 @@ function Panel({
                     style={{ opacity: footOut }}
                   >
                     <span className="live-dot live-dot-loud" />
-                    {say("Get your free proposal", "Pede a tua proposta gratuita")}
+                    {say("Get your free proposal", "Pedir proposta gratuita")}
                   </motion.span>
                   <motion.span className="idx-name [grid-area:1/1] truncate" style={{ opacity: footIn }}>
                     {action}

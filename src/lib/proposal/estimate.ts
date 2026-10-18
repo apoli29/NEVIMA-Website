@@ -70,7 +70,7 @@ function web(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"], 
     notes.push(
       t(
         "Includes writing the website's texts from what you tell us about your business.",
-        "Inclui a escrita dos textos do website a partir do que nos contares sobre o teu negócio.",
+        "Inclui a escrita dos textos do website a partir da informação dada sobre o negócio.",
       ),
     );
   }
@@ -89,7 +89,7 @@ function web(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"], 
     notes.push(
       t(
         `Includes registering your domain, about €${p.newDomain.min}–${p.newDomain.max}.`,
-        `Inclui o registo do teu domínio, cerca de ${p.newDomain.min}–${p.newDomain.max} €.`,
+        `Inclui o registo do domínio, cerca de ${p.newDomain.min}–${p.newDomain.max} €.`,
       ),
     );
   }
@@ -138,13 +138,13 @@ function features(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["we
   };
   const has = (id: (typeof a.features)[number]) => a.features.includes(id);
   if (has("forms") && a.forms) {
-    if (a.forms === "more") out.notes.push(t("More than 3 forms: quoted in your proposal.", "Mais de 3 formulários: orçamentados na tua proposta."));
+    if (a.forms === "more") out.notes.push(t("More than 3 forms: quoted in your proposal.", "Mais de 3 formulários: orçamentados na proposta."));
     else add(p.features.forms[a.forms], t(a.forms === "1" ? "1 form" : `${a.forms} forms`, a.forms === "1" ? "1 formulário" : `${a.forms} formulários`));
   }
   if (has("newsletter")) add(p.features.newsletter, t("a newsletter sign-up", "uma inscrição na newsletter"));
   if (has("emails") && a.emails) {
     if (a.emails === "more") {
-      out.notes.push(t("More than 3 automatic emails: quoted in your proposal.", "Mais de 3 emails automáticos: orçamentados na tua proposta."));
+      out.notes.push(t("More than 3 automatic emails: quoted in your proposal.", "Mais de 3 emails automáticos: orçamentados na proposta."));
     } else {
       const n = Number(a.emails);
       const [fl, fh] = p.features.emailFirst;
@@ -188,7 +188,7 @@ function search(
 ): Priced {
   if (pages === "10+") return { reason: t("More than 10 pages", "Mais de 10 páginas") };
   if (reach === "international") return { reason: t("International reach", "Alcance internacional") };
-  if (!pages) return { reason: t("Quoted in your proposal", "Orçamentado na tua proposta") };
+  if (!pages) return { reason: t("Quoted in your proposal", "Orçamentado na proposta") };
   // Not sure about the pages: priced as a mid-sized site.
   const { first, monthly } = p[id][pages === "unsure" ? "4-6" : pages][reach][market];
   const notes = [

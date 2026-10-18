@@ -32,7 +32,7 @@ import { useProposal } from "./proposal-flow";
 // Each one finishes the sentence, so each one ends it.
 const ENDINGS: Copy<string[]> = {
   en: ["matter.", "create trust.", "bring clients.", "grab attention."],
-  pt: ["contam.", "inspiram confiança.", "trazem clientes.", "captam atenção."],
+  pt: ["contam.", "inspiram confiança.", "trazem clientes.", "captam a atenção."],
 };
 const OPENING: Copy = { en: "We build websites that", pt: "Criamos websites que" };
 
@@ -92,7 +92,7 @@ export function StatementScreen({
             {/* In Portuguese the first sentence is longer than the room
                 beside the headline, so it is set on two lines rather than
                 sent under the headline. */}
-            {t(["Your brand is a story worth telling."], ["A tua marca é uma história", "que merece ser contada."]).map(
+            {t(["Your brand is a story worth telling."], ["Cada marca é uma história", "que merece ser contada."]).map(
               (line) => (
                 <span key={line} className="block">
                   {line}
@@ -317,7 +317,7 @@ export function WallRule({
    and carried to the middle of the screen, turning into the free-proposal
    form on the way (see proposal-flow.tsx); closed, it is carried back.
    While it is out, its place here is held, unseen. */
-const ASK: Copy = { en: "Get your free proposal", pt: "Pede a tua proposta gratuita" };
+const ASK: Copy = { en: "Get your free proposal", pt: "Pedir proposta gratuita" };
 
 /** When each part of the index comes in, in seconds after the screen has
     settled (the rule over the readouts is drawn from 0.2). */

@@ -165,7 +165,7 @@ export function actionFor(step: StepId, next: StepId | undefined, t: Translate) 
 function titleFor(step: StepId, draft: Draft, t: Translate) {
   switch (step) {
     case "basics":
-      return t("Your business", "O teu negócio");
+      return t("Your business", "O negócio");
     case "web":
       return "Web design";
     case "photo":
@@ -176,9 +176,9 @@ function titleFor(step: StepId, draft: Draft, t: Translate) {
       return seo && geo ? t("SEO & GEO", "SEO e GEO") : seo ? "SEO" : "GEO";
     }
     case "estimate":
-      return t("Your estimate", "A tua estimativa");
+      return t("Your estimate", "Estimativa");
     case "contact":
-      return t("Your final proposal", "A tua proposta final");
+      return t("Your final proposal", "Proposta final");
     case "sent":
       return t("Request sent", "Pedido enviado");
   }
@@ -195,11 +195,11 @@ const PHOTO_NOTE: Copy = {
 };
 const DOMAIN_NOTE: Copy = {
   en: "If you don't have a domain yet, we register it for you and its cost is added to the price. If you already have one, there's nothing to pay.",
-  pt: "Se ainda não tens domínio, registamo-lo por ti e o custo acresce ao preço. Se já tens um, não pagas nada.",
+  pt: "Sem domínio, tratamos do registo e o custo acresce ao preço. Com um domínio já existente, não há nada a pagar.",
 };
 const PAGES_NOTE: Copy = {
   en: "Not sure? We estimate for 3 to 8 pages, so the range can be a little wider than with a set number.",
-  pt: "Não sabes? Estimamos para 3 a 8 páginas, por isso o intervalo pode ser um pouco mais largo do que com um número definido.",
+  pt: "Sem um número definido, estimamos para 3 a 8 páginas, por isso o intervalo pode ser um pouco mais largo.",
 };
 const DESIGN_NOTE: Copy = {
   en: "Advanced costs 25% more than Essential+ on the website's price.",
@@ -207,7 +207,7 @@ const DESIGN_NOTE: Copy = {
 };
 const TEXTS_NOTE: Copy = {
   en: "If you don't, writing them is added to the price, as a range set by your website's size.",
-  pt: "Se não tiveres, a escrita dos textos acresce ao preço, num intervalo definido pelo tamanho do teu website.",
+  pt: "Caso não existam, a escrita dos textos acresce ao preço, num intervalo definido pelo tamanho do website.",
 };
 const URGENT_NOTE: Copy = {
   en: "An urgent deadline raises the price by 40%.",
@@ -221,18 +221,18 @@ const NO_REFERENCES: Copy<readonly { id: "none"; label: string }[]> = {
 
 export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: Lang): Errors {
   const t = translator(lang);
-  const PICK_ONE = t("Choose one to continue.", "Escolhe uma opção para continuar.");
-  const PICK_ANY = t("Choose at least one to continue.", "Escolhe pelo menos uma opção para continuar.");
+  const PICK_ONE = t("Choose one to continue.", "Escolher uma opção para continuar.");
+  const PICK_ANY = t("Choose at least one to continue.", "Escolher pelo menos uma opção para continuar.");
   const e: Errors = {};
   const web = draft.services.includes("web");
   if (step === "basics") {
     if (!draft.services.length) e.services = PICK_ANY;
     if (!draft.sector) e.sector = PICK_ONE;
     else if (draft.sector === "other" && !draft.sectorOther.trim()) {
-      e.sector = t("Tell us what your business does.", "Diz-nos o que faz o teu negócio.");
+      e.sector = t("Tell us what your business does.", "Falta indicar a área do negócio.");
     }
     if (!draft.country) e.country = PICK_ONE;
-    else if (draft.country === "other" && !draft.countryOther.trim()) e.country = t("Tell us which country.", "Diz-nos qual é o país.");
+    else if (draft.country === "other" && !draft.countryOther.trim()) e.country = t("Tell us which country.", "Falta indicar o país.");
   }
   if (step === "web") {
     // A project beyond what we take on needs nothing more answered.
@@ -243,19 +243,19 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
     if (!draft.pages) e.pages = PICK_ONE;
     if (!draft.languages.length) e.languages = PICK_ANY;
     else if (draft.languages.includes("other") && !draft.languagesOther.trim()) {
-      e.languages = t("Tell us which languages.", "Diz-nos quais são as línguas.");
+      e.languages = t("Tell us which languages.", "Falta indicar as línguas.");
     }
     if (!draft.texts) e.texts = PICK_ONE;
     if (!draft.noReferences && !draft.reference1.trim() && !draft.reference2.trim()) {
-      e.references = t("Add a website, or tick that you don't have any.", "Junta um website, ou assinala que não tens nenhum.");
+      e.references = t("Add a website, or tick that you don't have any.", "Falta indicar um website, ou assinalar que não há nenhum.");
     }
     if (!draft.domain) e.domain = PICK_ONE;
     if (!draft.urgent) e.urgent = PICK_ONE;
   }
   if (step === "photo") {
     if (!draft.plan) e.plan = PICK_ONE;
-    if (draft.country === "PT" && !draft.region) e.town = t("Choose where in Portugal.", "Escolhe onde, em Portugal.");
-    else if (!draft.town.trim()) e.town = t("Tell us the town or city.", "Diz-nos a localidade.");
+    if (draft.country === "PT" && !draft.region) e.town = t("Choose where in Portugal.", "Falta escolher a zona de Portugal.");
+    else if (!draft.town.trim()) e.town = t("Tell us the town or city.", "Falta indicar a localidade.");
   }
   if (step === "search") {
     if (!web && !draft.searchPages) e.searchPages = PICK_ONE;
@@ -264,13 +264,13 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
     if (draft.services.includes("geo") && !draft.geoPlan) e.geoPlan = PICK_ONE;
   }
   if (step === "contact") {
-    if (!contact.name.trim()) e.name = t("Enter your name.", "Escreve o teu nome.");
+    if (!contact.name.trim()) e.name = t("Enter your name.", "Falta indicar o nome.");
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contact.email.trim())) {
-      e.email = t("Enter an email address we can reply to.", "Escreve um email para onde possamos responder.");
+      e.email = t("Enter an email address we can reply to.", "Falta um email válido para a resposta.");
     }
-    if (!/^[+()\d][\d\s().-]{5,24}$/.test(contact.phone.trim())) e.phone = t("Enter a phone number.", "Escreve um número de telefone.");
-    if (!contact.company.trim()) e.company = t("Enter your company's name.", "Escreve o nome da tua empresa.");
-    if (!contact.consent) e.consent = t("Tick the box so we can use your details.", "Assinala a caixa para podermos usar os teus dados.");
+    if (!/^[+()\d][\d\s().-]{5,24}$/.test(contact.phone.trim())) e.phone = t("Enter a phone number.", "Falta um número de telefone válido.");
+    if (!contact.company.trim()) e.company = t("Enter your company's name.", "Falta indicar o nome da empresa.");
+    if (!contact.consent) e.consent = t("Tick the box so we can use your details.", "É necessário assinalar a caixa para podermos usar os dados.");
   }
   return e;
 }
@@ -383,7 +383,7 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
     if (estimate.total !== null) lines.push(`Total: ${span(estimate.total)}`);
     if (estimate.monthly !== null) lines.push(`${t("Then monthly", "Depois, por mês")}: ${money(estimate.monthly)}`);
   }
-  if (contact.message.trim()) lines.push("", t("Tell us more:", "Conta-nos mais:"), contact.message.trim());
+  if (contact.message.trim()) lines.push("", t("Tell us more:", "Informações adicionais:"), contact.message.trim());
   return lines.join("\n");
 }
 
@@ -667,7 +667,7 @@ export function StepScreen({
         <div className="pf-rows">
           <Question
             id="services"
-            label={t("Which of our services are you interested in?", "Que serviços te interessam?")}
+            label={t("Which of our services are you interested in?", "Quais os serviços pretendidos?")}
             hint={t("Web design is always included", "O web design está sempre incluído")}
             error={errors.services}
             footnote={`*${t(PHOTO_NOTE)}`}
@@ -682,7 +682,7 @@ export function StepScreen({
               }
             />
           </Question>
-          <Question id="sector" label={t("What does your business do?", "O que faz o teu negócio?")} error={errors.sector}>
+          <Question id="sector" label={t("What does your business do?", "Qual é a área do negócio?")} error={errors.sector}>
             <Segmented
               name="sector"
               options={list(SECTORS)}
@@ -693,14 +693,14 @@ export function StepScreen({
             {draft.sector === "other" && (
               <Field
                 id={`${uid}-sector`}
-                label={t("What does your business do?", "O que faz o teu negócio?")}
+                label={t("What does your business do?", "Qual é a área do negócio?")}
                 placeholder={t("e.g. Architecture studio", "ex.: Atelier de arquitetura")}
                 value={draft.sectorOther}
                 onChange={(sectorOther) => setDraft({ sectorOther })}
               />
             )}
           </Question>
-          <Question id="country" label={t("Where is your business based?", "Onde fica o teu negócio?")} error={errors.country}>
+          <Question id="country" label={t("Where is your business based?", "Onde está sediado o negócio?")} error={errors.country}>
             <Segmented
               name="country"
               options={list(COUNTRIES)}
@@ -729,24 +729,24 @@ export function StepScreen({
               that needs the third needs nothing else answered. */}
           <Question
             id="features"
-            label={t("What does your website need to do?", "O que precisa o teu website de fazer?")}
+            label={t("What does your website need to do?", "O que deve o website fazer?")}
             hint={t("Each level adds to the one before", "Cada nível soma-se ao anterior")}
             group={false}
           >
             <div className="pf-levels">
               <div className="pf-level">
-                <p className="pf-level-name">{t("Present your business", "Apresentar o teu negócio")}</p>
+                <p className="pf-level-name">{t("Present your business", "Apresentar o negócio")}</p>
                 <p className="pf-footnote">
                   {t(
                     "The story behind it, the details that set you apart, the products or services you offer and how to reach you.",
-                    "A história por trás, os pormenores que te distinguem, os produtos ou serviços que ofereces e como te contactar.",
+                    "A história por trás do negócio, os pormenores que o distinguem, os produtos ou serviços que oferece e os contactos.",
                   )}
                 </p>
                 <span className="mono-label pf-level-tag">{t("Always included", "Sempre incluído")}</span>
               </div>
               <div className="pf-level" role="group" aria-labelledby={`${uid}-level2`}>
                 <p id={`${uid}-level2`} className="pf-level-name">
-                  {t("+ Receive information from your clients", "+ Receber informação dos teus clientes")}
+                  {t("+ Receive information from your clients", "+ Receber informação dos clientes")}
                 </p>
                 <Ticks
                   name="features"
@@ -829,7 +829,7 @@ export function StepScreen({
           <Question
             id="languages"
             label={t("In which languages?", "Em que línguas?")}
-            hint={t("Choose any", "Escolhe as que quiseres")}
+            hint={t("Choose any", "Uma ou mais")}
             error={errors.languages}
             footnote={`*${t(TRANSLATION_NOTE)}`}
           >
@@ -851,7 +851,7 @@ export function StepScreen({
           </Question>
           <Question
             id="texts"
-            label={t("Do you have any texts ready?*", "Já tens os textos prontos?*")}
+            label={t("Do you have any texts ready?*", "Os textos já estão prontos?*")}
             error={errors.texts}
             footnote={`*${t(TEXTS_NOTE)}`}
           >
@@ -900,7 +900,7 @@ export function StepScreen({
           </Question>
           <Question
             id="domain"
-            label={t("Do you already have a domain?*", "Já tens domínio?*")}
+            label={t("Do you already have a domain?*", "Já existe domínio?*")}
             error={errors.domain}
             footnote={`*${t(DOMAIN_NOTE)}`}
           >
@@ -933,7 +933,7 @@ export function StepScreen({
 
       {step === "photo" && (
         <div className="pf-rows">
-          <Question id="plan" label={t("Which plan would you like?", "Que plano preferes?")} error={errors.plan}>
+          <Question id="plan" label={t("Which plan would you like?", "Qual é o plano pretendido?")} error={errors.plan}>
             <Segmented
               name="plan"
               options={list(PHOTO_PLANS)}
@@ -944,7 +944,7 @@ export function StepScreen({
           </Question>
           <Question
             id="town"
-            label={t("Where is your business located?", "Onde fica o teu negócio?")}
+            label={t("Where is your business located?", "Onde fica o negócio?")}
             hint={
               draft.country === "PT"
                 ? undefined
@@ -954,7 +954,7 @@ export function StepScreen({
               draft.country === "PT"
                 ? t(
                     "In some parts of the Porto area and in the rest of the country, travel costs are covered by your business.",
-                    "Em algumas zonas da área do Porto e no resto do país, as despesas de deslocação ficam a cargo do teu negócio.",
+                    "Em algumas zonas da área do Porto e no resto do país, as despesas de deslocação ficam a cargo do cliente.",
                   )
                 : undefined
             }
@@ -986,14 +986,14 @@ export function StepScreen({
           {!web && (
             <Question
               id="site"
-              label={t("What's your website address?", "Qual é o endereço do teu website?")}
+              label={t("What's your website address?", "Qual é o endereço do website?")}
               hint={t("Optional", "Opcional")}
               group={false}
             >
               <Field
                 id="site-field"
-                label={t("What's your website address?", "Qual é o endereço do teu website?")}
-                placeholder={t("yourbusiness.com", "onegocio.pt")}
+                label={t("What's your website address?", "Qual é o endereço do website?")}
+                placeholder={t("yourbusiness.com", "empresa.pt")}
                 value={draft.site}
                 onChange={(site) => setDraft({ site })}
                 max={MAX.url}
@@ -1017,7 +1017,7 @@ export function StepScreen({
               />
             </Question>
           )}
-          <Question id="reach" label={t("How far does your business reach?", "Até onde chega o teu negócio?")} error={errors.reach}>
+          <Question id="reach" label={t("How far does your business reach?", "Qual é o alcance do negócio?")} error={errors.reach}>
             <Segmented
               name="reach"
               options={list(REACH)}
@@ -1027,7 +1027,7 @@ export function StepScreen({
             />
           </Question>
           {draft.services.includes("seo") && (
-            <Question id="seoPlan" label={t("How would you like your SEO?", "Como queres o teu SEO?")} error={errors.seoPlan}>
+            <Question id="seoPlan" label={t("How would you like your SEO?", "Que modalidade de SEO?")} error={errors.seoPlan}>
               <Segmented
                 name="seoPlan"
                 options={list(SEARCH_PLANS)}
@@ -1038,7 +1038,7 @@ export function StepScreen({
             </Question>
           )}
           {draft.services.includes("geo") && (
-            <Question id="geoPlan" label={t("How would you like your GEO?", "Como queres o teu GEO?")} error={errors.geoPlan}>
+            <Question id="geoPlan" label={t("How would you like your GEO?", "Que modalidade de GEO?")} error={errors.geoPlan}>
               <Segmented
                 name="geoPlan"
                 options={list(SEARCH_PLANS)}
@@ -1065,7 +1065,7 @@ export function StepScreen({
               <span className="whitespace-nowrap">{contact.email.trim()}</span>.
             </>,
             <>
-              Obrigado, {contact.name.trim().split(" ")[0]}. Vamos enviar a tua proposta final para{" "}
+              Obrigado, {contact.name.trim().split(" ")[0]}. A proposta final vai ser enviada para{" "}
               <span className="whitespace-nowrap">{contact.email.trim()}</span>.
             </>,
           )}
@@ -1096,7 +1096,7 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
     return (
       <motion.div variants={ROW} className="pf-rows" aria-busy="true">
         <p className="pf-line pf-loading">
-          <span className="mono-label text-ash-2">{t("Working out your estimate", "A calcular a tua estimativa")}</span>
+          <span className="mono-label text-ash-2">{t("Working out your estimate", "A calcular a estimativa")}</span>
           <span aria-hidden="true" className="pf-loading-bar" />
         </p>
       </motion.div>
@@ -1124,7 +1124,7 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
         <p className="pf-footnote mt-4">
           {t(
             "Ticked by mistake? Go back and untick it to see your estimate.",
-            "Assinalaste por engano? Volta atrás e retira a opção para veres a tua estimativa.",
+            "Foi assinalado por engano? Basta voltar atrás e retirar a opção para ver a estimativa.",
           )}
         </p>
       </motion.div>
@@ -1193,7 +1193,7 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
           <span>
             <span className="pf-line-name block">{t("Website ready in", "Website pronto em")}</span>
             <span className="mono-label mt-1 block text-ash-2">
-              {t("An estimate, confirmed in your proposal", "Uma estimativa, confirmada na tua proposta")}
+              {t("An estimate, confirmed in your proposal", "Uma estimativa, confirmada na proposta")}
             </span>
           </span>
           <span className={`pf-line-value ${estimate.timeline?.kind === "days" ? "" : "pf-line-quiet"}`}>
@@ -1204,19 +1204,19 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
                 )
               : estimate.timeline?.kind === "agreed"
                 ? t("Agreed between us", "Combinado entre nós")
-                : t("Set in your proposal", "Definido na tua proposta")}
+                : t("Set in your proposal", "Definido na proposta")}
           </span>
         </motion.div>
       )}
     </div>
       <motion.p variants={ROW} className="mono-label pf-foot-note">
-        {t("An estimate from your answers", "Uma estimativa a partir das tuas respostas")}
+        {t("An estimate from your answers", "Uma estimativa a partir das respostas")}
       </motion.p>
       {/* What the ranges promise (user, 2026-10-17). */}
       <motion.p variants={ROW} className="pf-footnote mt-2 max-w-[38em]">
         {t(
           "It assumes a project exactly as your answers describe it. After looking at your business, we may suggest some changes we think would be best for your project; in that case, the price may end up outside these ranges, lower or higher. Either way, we always also send you an offer based on your own choices, priced within these ranges.",
-          "Parte de um projeto exatamente como as tuas respostas o descrevem. Depois de conhecermos o teu negócio, podemos sugerir algumas alterações que achamos melhores para o teu projeto; nesse caso, o preço pode ficar fora destes intervalos, para baixo ou para cima. Seja como for, enviamos-te sempre também uma proposta com base nas tuas escolhas, com o preço dentro destes intervalos.",
+          "Parte de um projeto exatamente como as respostas o descrevem. Depois de conhecermos o negócio, podemos sugerir algumas alterações que consideramos melhores para o projeto; nesse caso, o preço pode ficar fora destes intervalos, para baixo ou para cima. Seja como for, enviamos sempre também uma proposta com base nas escolhas feitas, com o preço dentro destes intervalos.",
         )}
       </motion.p>
     </div>
@@ -1240,13 +1240,13 @@ export function ContactScreen({
 }) {
   const t = useT();
   const rows = [
-    { key: "name", label: t("Name", "Nome"), type: "text", autoComplete: "name", placeholder: t("Your name", "O teu nome") },
+    { key: "name", label: t("Name", "Nome"), type: "text", autoComplete: "name", placeholder: t("Your name", "Nome") },
     {
       key: "email",
       label: "Email",
       type: "email",
       autoComplete: "email",
-      placeholder: t("you@business.com", "tu@onegocio.pt"),
+      placeholder: t("you@business.com", "nome@empresa.pt"),
     },
     { key: "phone", label: t("Phone", "Telefone"), type: "tel", autoComplete: "tel", placeholder: "+351 900 000 000" },
     {
@@ -1254,7 +1254,7 @@ export function ContactScreen({
       label: t("Company", "Empresa"),
       type: "text",
       autoComplete: "organization",
-      placeholder: t("Your business", "O teu negócio"),
+      placeholder: t("Your business", "Nome da empresa"),
     },
   ] as const;
 
@@ -1264,11 +1264,11 @@ export function ContactScreen({
         {partner
           ? t(
               "Leave your details and we’ll get in touch within a few hours to talk it through, then send you a fixed quote.",
-              "Deixem os vossos dados e entramos em contacto dentro de poucas horas para falarmos sobre o projeto. Depois, enviamos-vos um orçamento fixo.",
+              "Com estes dados, entramos em contacto dentro de poucas horas para conversar sobre o projeto e, depois, enviamos um orçamento fixo.",
             )
           : t(
               "Leave your details and we’ll reply with a final proposal built on your answers.",
-              "Deixa os teus dados e respondemos com uma proposta final feita a partir das tuas respostas.",
+              "Com estes dados, respondemos com uma proposta final feita a partir das respostas dadas.",
             )}
       </motion.p>
       <div className="pf-contact">
@@ -1300,16 +1300,16 @@ export function ContactScreen({
             never changes the estimate: it is read with the request. */}
         <motion.div variants={ROW}>
           <label className="prop-row">
-            <span className="mono-label prop-label">{t("Tell us more", "Conta-nos mais")}</span>
+            <span className="mono-label prop-label">{t("Tell us more", "Mais detalhes")}</span>
             <textarea
               name="message"
               rows={4}
               placeholder={
                 partner
-                  ? t("Anything else we should know about the project (optional)", "Mais alguma coisa que devamos saber sobre o projeto (opcional)")
+                  ? t("Anything else we should know about the project (optional)", "Qualquer outra informação útil sobre o projeto (opcional)")
                   : t(
                       "Anything else we should know about your business or your project (optional)",
-                      "Mais alguma coisa que devamos saber sobre o teu negócio ou o teu projeto (opcional)",
+                      "Qualquer outra informação útil sobre o negócio ou o projeto (opcional)",
                     )
               }
               value={contact.message}
@@ -1323,7 +1323,7 @@ export function ContactScreen({
             <p id="message-note" className="pf-footnote pf-row-note">
               {t(
                 "What you write here isn’t counted in your estimate: we only read it once you’ve sent your request.",
-                "O que escreveres aqui não entra na tua estimativa: só o lemos depois de enviares o pedido.",
+                "O que for escrito aqui não entra na estimativa: só o lemos depois de o pedido ser enviado.",
               )}
             </p>
           )}
@@ -1382,11 +1382,11 @@ export function OfflineNote() {
       <p className="pf-lede">
         {t(
           "Requests can’t be sent from the site yet. Send yours by email instead: it opens with your answers and details already written in.",
-          "Ainda não é possível enviar pedidos a partir do site. Envia o teu por email: abre já com as tuas respostas e os teus dados escritos.",
+          "Ainda não é possível enviar pedidos a partir do site. O pedido pode seguir por email: a mensagem abre já com as respostas e os dados preenchidos.",
         )}
       </p>
       <p className="mono-label pf-foot-note">
-        {t("Or write to us at", "Ou escreve-nos para")}{" "}
+        {t("Or write to us at", "Ou por email para")}{" "}
         <a href={`mailto:${STUDIO_EMAIL}`} className="underline underline-offset-2">
           {STUDIO_EMAIL}
         </a>
@@ -1401,24 +1401,24 @@ export function sendError(status: number | "network", t: Translate) {
   if (status === 429) {
     return t(
       "Too many requests from this connection. Try again in a few minutes.",
-      "Demasiados pedidos a partir desta ligação. Tenta de novo daqui a uns minutos.",
+      "Demasiados pedidos a partir desta ligação. É possível tentar de novo daqui a uns minutos.",
     );
   }
   if (status === 422) {
     return t(
       "Some details weren't accepted. Check them and send again.",
-      "Alguns dados não foram aceites. Revê-os e envia de novo.",
+      "Alguns dados não foram aceites. É necessário revê-los e enviar de novo.",
     );
   }
   if (status === "network") {
     return t(
       "We couldn't reach the server. Check your connection and try again.",
-      "Não conseguimos chegar ao servidor. Verifica a tua ligação e tenta de novo.",
+      "Não foi possível chegar ao servidor. Convém verificar a ligação e tentar de novo.",
     );
   }
   return t(
     `Your request didn't go through. Try again, or write to ${STUDIO_EMAIL}.`,
-    `O teu pedido não seguiu. Tenta de novo, ou escreve-nos para ${STUDIO_EMAIL}.`,
+    `O pedido não seguiu. É possível tentar de novo, ou escrever-nos para ${STUDIO_EMAIL}.`,
   );
 }
 
@@ -1466,13 +1466,13 @@ export function useEstimate(active: boolean, draft: Draft, trap: () => string) {
             status: "error",
             message: t(
               "Too many estimates from this connection. Try again in a few minutes.",
-              "Demasiadas estimativas a partir desta ligação. Tenta de novo daqui a uns minutos.",
+              "Demasiadas estimativas a partir desta ligação. É possível tentar de novo daqui a uns minutos.",
             ),
           });
         } else {
           setState({
             status: "error",
-            message: t("We couldn't work out your estimate.", "Não conseguimos calcular a tua estimativa."),
+            message: t("We couldn't work out your estimate.", "Não foi possível calcular a estimativa."),
           });
         }
       })
@@ -1482,7 +1482,7 @@ export function useEstimate(active: boolean, draft: Draft, trap: () => string) {
             status: "error",
             message: t(
               "We couldn't reach the server. Check your connection.",
-              "Não conseguimos chegar ao servidor. Verifica a tua ligação.",
+              "Não foi possível chegar ao servidor. Convém verificar a ligação.",
             ),
           });
         }

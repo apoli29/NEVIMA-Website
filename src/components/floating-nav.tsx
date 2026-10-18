@@ -85,7 +85,7 @@ function AskLabel() {
     <span className="btn-neu-face">
       {/* In full from lg; below it the bar has no room for it beside
           the links, so it says the short of it. */}
-      <span className="max-lg:hidden">{t("Get your free proposal", "Pede a tua proposta gratuita")}</span>
+      <span className="max-lg:hidden">{t("Get your free proposal", "Pedir proposta gratuita")}</span>
       <span className="lg:hidden">{t("Free proposal", "Proposta gratuita")}</span>
       <span aria-hidden="true" className="ml-2.5 inline-block">
         &rarr;

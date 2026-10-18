@@ -102,18 +102,18 @@ export function ServicePage({ slug, lang }: { slug: string; lang: Lang }) {
               href="mailto:ola@nevima.pt"
               className="btn-neu rounded-[8px] px-5 py-3 text-[0.9375rem] leading-none"
             >
-              <span className="btn-neu-face">{t("Get in touch", "Fala connosco")}</span>
+              <span className="btn-neu-face">{t("Get in touch", "Contactar")}</span>
             </a>
             <Link
               href={href("/")}
               className="rounded-[8px] px-5 py-3 text-[0.9375rem] leading-none text-ash transition-colors duration-300 hover:text-ink"
             >
-              {t("Back to nevima", "Voltar à nevima")}
+              {t("Back to nevima", "Voltar à página inicial")}
             </Link>
           </div>
 
           <nav aria-label={t("Other services", "Outros serviços")} className="mt-20 border-t border-hair pt-8 md:mt-28">
-            <p className="text-[0.875rem] leading-snug text-ash">{t("The rest of what we do", "O resto do que fazemos")}</p>
+            <p className="text-[0.875rem] leading-snug text-ash">{t("The rest of what we do", "Mais serviços")}</p>
             <ul className="mt-5 flex flex-wrap gap-x-8 gap-y-3">
               {others.map((other) => (
                 <li key={other.slug}>

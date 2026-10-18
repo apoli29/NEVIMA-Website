@@ -159,7 +159,7 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
   };
 
   const check = (): Errors => {
-    const pick = t("Choose one to continue.", "Escolham uma opção para continuar.");
+    const pick = t("Choose one to continue.", "Escolher uma opção para continuar.");
     const e: Errors = {};
     if (step === "project") {
       if (!draft.project) e.project = pick;
@@ -286,7 +286,7 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
   };
 
   const action = offline
-    ? t("Open in your email app", "Abrir na vossa app de email")
+    ? t("Open in your email app", "Abrir na app de email")
     : send.status === "sending"
       ? t("Sending…", "A enviar…")
       : step === "sent"
@@ -326,7 +326,7 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
                 {offline ? (
                   <>
                     <h3 ref={title} tabIndex={-1} className="pf-title">
-                      {t("Send it by email", "Enviem por email")}
+                      {t("Send it by email", "Enviar por email")}
                     </h3>
                     <OfflineNote />
                   </>
@@ -338,9 +338,9 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
                   >
                     <motion.h3 variants={ROW} ref={title} tabIndex={-1} className="pf-title">
                       {step === "project"
-                        ? t("Your project", "O vosso projeto")
+                        ? t("Your project", "O projeto")
                         : step === "contact"
-                          ? t("Your details", "Os vossos dados")
+                          ? t("Your details", "Dados de contacto")
                           : t("Request sent", "Pedido enviado")}
                     </motion.h3>
 
@@ -350,7 +350,7 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
                           {t(PARTNER_INTRO)}
                         </motion.p>
                         <div className="pf-rows">
-                          <Question id="project" label={t("What are you building?", "O que estão a construir?")} error={errors.project}>
+                          <Question id="project" label={t("What are you building?", "Que tipo de projeto é?")} error={errors.project}>
                             <Segmented
                               name="project"
                               options={list(PROJECT_TYPES)}
@@ -372,7 +372,7 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
                             id="inspiration"
                             label={t(
                               "Do you have a design or brand guidelines we should take as inspiration?",
-                              "Têm um design ou um guia de marca que devamos usar como inspiração?",
+                              "Existe um design ou um guia de marca a usar como inspiração?",
                             )}
                             error={errors.inspiration}
                           >
@@ -411,7 +411,7 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
                           </Question>
                           {!notFit && (
                             <>
-                              <Question id="start" label={t("When would you like to start?", "Quando gostariam de começar?")} error={errors.start}>
+                              <Question id="start" label={t("When would you like to start?", "Data de início pretendida?")} error={errors.start}>
                                 <Segmented
                                   name="start"
                                   options={list(STARTS)}
@@ -420,7 +420,7 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
                                   labelledBy="start-q"
                                 />
                               </Question>
-                              <Question id="delivery" label={t("When do you need it delivered?", "Para quando precisam da entrega?")} error={errors.delivery}>
+                              <Question id="delivery" label={t("When do you need it delivered?", "Prazo de entrega pretendido?")} error={errors.delivery}>
                                 <Segmented
                                   name="delivery"
                                   options={list(DELIVERIES)}
@@ -429,7 +429,7 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
                                   labelledBy="delivery-q"
                                 />
                               </Question>
-                              <Question id="model" label={t("How would we work together?", "Como trabalharíamos juntos?")} error={errors.model}>
+                              <Question id="model" label={t("How would we work together?", "Que modelo de colaboração?")} error={errors.model}>
                                 <Segmented
                                   name="model"
                                   options={list(MODELS)}
@@ -454,7 +454,7 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
                               <Question
                                 id="nda"
                                 label={t("Confidentiality", "Confidencialidade")}
-                                hint={t("We're happy to sign an NDA", "Assinamos um NDA sem problema")}
+                                hint={t("We're happy to sign an NDA", "Assinamos um NDA, se necessário")}
                                 group={false}
                               >
                                 <Ticks
@@ -478,7 +478,7 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
                       <motion.p variants={ROW} className="pf-lede">
                         {t(
                           `Thank you, ${contact.name.trim().split(" ")[0]}. We'll get in touch within a few hours to talk it through, then send you a fixed quote.`,
-                          `Obrigado, ${contact.name.trim().split(" ")[0]}. Entramos em contacto dentro de poucas horas para falarmos sobre o projeto e depois enviamos-vos um orçamento fixo.`,
+                          `Obrigado, ${contact.name.trim().split(" ")[0]}. Entraremos em contacto dentro de poucas horas para conversar sobre o projeto e, depois, enviaremos um orçamento fixo.`,
                         )}
                       </motion.p>
                     )}

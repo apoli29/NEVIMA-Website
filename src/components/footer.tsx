@@ -105,7 +105,7 @@ export function Footer() {
             the words always stand on black. */}
         <div className="relative z-10 grid gap-12 md:grid-cols-[1.5fr_1fr_1fr] md:gap-10">
           <div data-calm>
-            <h2 className="ftr-label">{t("Get in touch", "Fala connosco")}</h2>
+            <h2 className="ftr-label">{t("Get in touch", "Contacto")}</h2>
             <div className="mt-4 flex flex-wrap items-baseline gap-x-5 gap-y-2">
               <a href={`mailto:${EMAIL}`} className="ftr-link ftr-mail">
                 {EMAIL}
