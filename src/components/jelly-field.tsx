@@ -98,7 +98,7 @@ const DROP_SIZE = 0.83;
     as a multiple of its radius (no drop is ever seen past 1.9 of it, see
     EXTENT), and a margin on top, in CSS pixels. */
 const CLEAR_REACH = 2;
-const CLEAR_MARGIN = 22;
+const CLEAR_MARGIN = 36;
 /** A drop is seen a little past its own reach: the glass is warped up to
     23px as it moves (see drops() in the shader) and bent by the water a
     few pixels more. On a phone, where the drops are small, that is enough
@@ -118,6 +118,29 @@ const NAV_GAP = 20;
 const SMALL = 600;
 const SMALL_GROW = 1.1;
 const SMALL_SPREAD = 1.2;
+/** Two drops that come close pull together (see drops() in the shader),
+    the big ones from further off: the field round each reaches this
+    share of its radius past its body. Drops are spread, and roam, with
+    these reaches kept apart, so two never run into one (with more drops
+    on the screen the gaps are narrower, and the user saw them fuse). */
+const PULL = 0.5;
+/** At most this many small drops are set in the gaps the spread leaves,
+    each only where it keeps at least this share of the usual gap between
+    two drops round it (see layoutDrops). */
+const FILLS = 6;
+const FILL_GAP = 0.45;
+/** Nowhere are two drops laid closer than this share of the middle-sized
+    drop's body, edge to edge past their pull: where the screen has no
+    room for them all at that, it has fewer. */
+const GAP_MIN = 0.45;
+/** A big drop (a third bigger than the middle-sized one, or more) keeps
+    this many times the two bodies between its centre and another big
+    one's: on a screen whose open water is a single band (a laptop), the
+    big ones would otherwise line up side by side in it, and the user
+    wanted big beside small. One that cannot keep it is left out, and a
+    smaller drop takes its place. */
+const BIG = 1.3;
+const BIG_APART = 1.8;
 /** The drops perched over the index, at most (the user: one or two more
     in the empty room above it, every other drop left where it is). */
 const PERCHED = 2;
@@ -159,7 +182,9 @@ const DROPS = (() => {
   return Array.from({ length: 24 }, () => ({
     px: range(55, 125),
     py: range(55, 125),
-    r: range(0.035, 0.085) * DROP_SIZE,
+    // Most of them small and a few big (the user: more variety in their
+    // sizes), from a little under the old smallest to the old biggest.
+    r: (0.024 + r() ** 1.6 * 0.061) * DROP_SIZE,
     aspect: range(1.1, 1.8),
     spin: range(0.03, 0.08) * (r() < 0.5 ? -1 : 1),
     lobes: [0, 1].map(() => ({
@@ -633,6 +658,8 @@ export function JellyField({
 
     /** The drop's body, in CSS pixels, at its full size. */
     const body = (i: number) => DROPS[i].r * dropSide() * EXTENT[i];
+    /** How far a drop's pull on its neighbours reaches (see PULL). */
+    const pull = (i: number) => body(i) + PULL * DROPS[i].r * dropSide();
     /** The box a drop's centre must stay in to be whole on the screen. */
     const within = (i: number, extra = 0) => {
       const e = flooded ? -body(i) * OVERHANG : body(i) + EDGE_MARGIN + extra;
@@ -711,6 +738,148 @@ export function JellyField({
     const toBox = (b: Box, x: number, y: number) =>
       Math.hypot(Math.max(b.left - x, 0, x - b.right), Math.max(b.top - y, 0, y - b.bottom));
 
+    /* The drops spread with their sizes mixed (the user: the big ones
+       all together in the open water and the small ones crowded into the
+       narrow bands between the words and the bar; wanted mixed through
+       the screen, big beside small). Laid biggest first, each where the
+       water is widest, the big ones took the wide open water and left the
+       small ones the narrow bands. So the places come first and the sizes
+       after: as many places as there are drops are spread through the
+       open water as evenly as can be, as if every drop were of the middle
+       size; then the drops are given them, biggest first, each the place
+       furthest from the drops already given one, of those where it still
+       keeps its own distance from the words and the edges. The big ones
+       end up as far apart as the screen allows, and the smaller ones in
+       the room between them. */
+    const mixSizes = (
+      order: number[],
+      top: number,
+      step: number,
+      next: { x: number; y: number }[],
+      placed: number[],
+    ) => {
+      /** The narrowest gap round a drop of body r centred at (x, y), to
+          the edges, the words and the points given, edge to edge; below
+          zero, not allowed (too near the words or off the screen). */
+      const room = (i: number, r: number, c: number, x: number, y: number, pts: { x: number; y: number; r: number }[]) => {
+        const edge = Math.min(x - r, w - x - r, y - r - top, h - y - r) - EDGE_MARGIN;
+        if (edge < 0 || inWords(i, x, y, c, false)) return -Infinity;
+        let gap = edge * 1.6;
+        for (const b of wordsFor(i)) gap = Math.min(gap, toBox(b, x, y) - r);
+        for (const p of pts) gap = Math.min(gap, Math.hypot(x - p.x, y - p.y) - pull(i) - p.r);
+        return gap;
+      };
+
+      // The places, every one laid as if for the drop of the middle size.
+      const mid = order[Math.floor(order.length / 2)];
+      const r = body(mid);
+      const c = clearance(mid);
+      const least = r * GAP_MIN;
+      const again = laidFor === `${w}x${h}`;
+      const spots: { x: number; y: number; r: number }[] = [];
+      for (let k = 0; k < order.length; k++) {
+        let best: { x: number; y: number } | null = null;
+        let bestGap = -Infinity;
+        for (let y = top; y <= h; y += step) {
+          for (let x = 0; x <= w; x += step) {
+            const gap = room(mid, r, c, x, y, spots);
+            if (gap > bestGap) {
+              bestGap = gap;
+              best = { x, y };
+            }
+          }
+        }
+        // No more places once the gaps would be too narrow (a smaller
+        // screen has fewer drops).
+        if (!best || bestGap < least) break;
+        spots.push({ ...best, r: pull(mid) });
+      }
+      // Evened out, as the drops are below.
+      for (let pass = 0, reach = step * 4; pass < 60 && reach >= 1; pass++) {
+        let moved = false;
+        spots.forEach((p, k) => {
+          const others = spots.filter((_, j) => j !== k);
+          let here = room(mid, r, c, p.x, p.y, others);
+          for (let a = 0; a < 8; a++) {
+            const x = p.x + Math.cos((a / 8) * Math.PI * 2) * reach;
+            const y = p.y + Math.sin((a / 8) * Math.PI * 2) * reach;
+            const gap = room(mid, r, c, x, y, others);
+            if (gap > here + 0.25) {
+              here = gap;
+              p.x = x;
+              p.y = y;
+              moved = true;
+            }
+          }
+        });
+        if (!moved) reach /= 2;
+      }
+
+      // Then the drops, biggest first, each to the free place furthest
+      // from those already down, where it keeps clear of the words and
+      // the edges at its own size. The first goes where there is most
+      // room.
+      const free = new Set(spots.map((_, k) => k));
+      const isBig = (i: number) => body(i) >= r * BIG;
+      for (const i of order) {
+        const ri = body(i);
+        const tooNearBig = (x: number, y: number) =>
+          isBig(i) && placed.some((j) => isBig(j) && Math.hypot(x - next[j].x, y - next[j].y) < (ri + body(j)) * BIG_APART);
+        const down = placed.map((j) => ({ ...next[j], r: pull(j) }));
+        let best = -1;
+        let bestScore = -Infinity;
+        for (const k of free) {
+          const { x, y } = spots[k];
+          const open = room(i, ri, clearance(i), x, y, []);
+          if (open < 0 || tooNearBig(x, y)) continue;
+          let far = open;
+          if (down.length) {
+            far = Infinity;
+            for (const p of down) far = Math.min(far, Math.hypot(x - p.x, y - p.y) - pull(i) - p.r);
+          }
+          // Laid out again on the same screen (the fonts arriving), a drop
+          // keeps to the place nearest the one it had, rather than trading
+          // places with another across the screen.
+          const was = again ? bases[i] : undefined;
+          if (was) far = -Math.hypot(x - was.x, y - was.y);
+          if (far > bestScore) {
+            bestScore = far;
+            best = k;
+          }
+        }
+        if (best >= 0) {
+          free.delete(best);
+          next[i] = { x: spots[best].x, y: spots[best].y };
+          placed.push(i);
+          continue;
+        }
+        // A big one with no place far enough from the other big ones is
+        // left out: a smaller drop takes the place.
+        if (isBig(i)) continue;
+        // Too big for any of the places: it takes the widest water left
+        // anywhere, if there is any, and the place nearest it is let go.
+        let at: { x: number; y: number } | null = null;
+        let most = least;
+        for (let y = top; y <= h; y += step) {
+          for (let x = 0; x <= w; x += step) {
+            const open = room(i, ri, clearance(i), x, y, down);
+            if (open > most) {
+              most = open;
+              at = { x, y };
+            }
+          }
+        }
+        if (!at) continue;
+        let nearest = -1;
+        for (const k of free) {
+          if (nearest < 0 || Math.hypot(spots[k].x - at.x, spots[k].y - at.y) < Math.hypot(spots[nearest].x - at.x, spots[nearest].y - at.y)) nearest = k;
+        }
+        if (nearest >= 0) free.delete(nearest);
+        next[i] = at;
+        placed.push(i);
+      }
+    };
+
     const layoutDrops = () => {
       // Nothing to lay out on until the field has been given its size.
       if (!w || !h) return;
@@ -738,7 +907,7 @@ export function JellyField({
         let gap = edge * 1.6;
         for (const b of wordsFor(i)) gap = Math.min(gap, toBox(b, x, y) - r);
         for (const j of others) {
-          gap = Math.min(gap, Math.hypot(x - at[j].x, y - at[j].y) - r - body(j));
+          gap = Math.min(gap, Math.hypot(x - at[j].x, y - at[j].y) - pull(i) - pull(j));
         }
         return gap;
       };
@@ -750,13 +919,26 @@ export function JellyField({
       // and so on in turn.
       const band = splitAt.current ? quiet[0] : undefined;
       let turn = 0;
-      for (const i of order) {
+      // On the open water the sizes are mixed (see mixSizes); flooded or
+      // shared out between two bands, each goes where it finds most room.
+      // The big ones kept apart here too (see BIG_APART).
+      const midBody = body(order[Math.floor(order.length / 2)]);
+      const isBig = (i: number) => body(i) >= midBody * BIG;
+      if (!flooded && !band) mixSizes(order, top, step, next, placed);
+      else for (const i of order) {
         let best: { x: number; y: number } | null = null;
         let bestGap = -Infinity;
         const above = band ? turn++ % 2 === 1 : null;
         for (let y = top; y <= h; y += step) {
           if (band && (above ? y >= band.top : y <= band.bottom)) continue;
           for (let x = 0; x <= w; x += step) {
+            if (
+              !flooded &&
+              isBig(i) &&
+              placed.some((j) => isBig(j) && Math.hypot(x - next[j].x, y - next[j].y) < (body(i) + body(j)) * BIG_APART)
+            ) {
+              continue;
+            }
             let gap = openAt(i, x, y, placed, next);
             // In a narrow band most spots are as open as each other (the
             // band, not the other drops, sets the gap), and the first of
@@ -800,6 +982,42 @@ export function JellyField({
           }
         }
         if (!moved) reach /= 2;
+      }
+
+      /* Then the gaps the spread leaves, where only a small drop fits
+         (between the headline and the index, under the subtitle, in the
+         corners: the user marked them), each take one, the smallest of
+         the drops not yet down first, wherever there is still room for
+         one with a fair share of water round it. Laid last, they move
+         none of the others. */
+      if (!flooded && !band && placed.length > 1) {
+        const gaps = placed
+          .map((i) => {
+            let g = Infinity;
+            for (const j of placed) {
+              if (j !== i) g = Math.min(g, Math.hypot(next[i].x - next[j].x, next[i].y - next[j].y) - pull(i) - pull(j));
+            }
+            return g;
+          })
+          .sort((a, b) => a - b);
+        const fair = gaps[Math.floor(gaps.length / 2)] * FILL_GAP;
+        const spare = Array.from({ length: DROPS.length - n }, (_, k) => n + k).sort((a, b) => body(a) - body(b));
+        for (const i of spare.slice(0, FILLS)) {
+          let best: { x: number; y: number } | null = null;
+          let bestGap = -Infinity;
+          for (let y = top; y <= h; y += step) {
+            for (let x = 0; x <= w; x += step) {
+              const gap = openAt(i, x, y, placed, next);
+              if (gap > bestGap) {
+                bestGap = gap;
+                best = { x, y };
+              }
+            }
+          }
+          if (!best || bestGap < Math.max(fair, body(order[Math.floor(order.length / 2)]) * GAP_MIN)) break;
+          next[i] = best;
+          placed.push(i);
+        }
       }
 
       // Each drop roams a fair way round its base, not pinned to it.
@@ -899,7 +1117,7 @@ export function JellyField({
         );
         for (const j of active) {
           if (j === i) continue;
-          const gap = Math.hypot(b.x - next[j].x, b.y - next[j].y) - keep - body(j);
+          const gap = Math.hypot(b.x - next[j].x, b.y - next[j].y) - pull(i) - pull(j);
           r = Math.min(r, gap / 2 / Math.SQRT2);
         }
         // A perched drop roams no nearer the index, or any other words,
@@ -922,7 +1140,8 @@ export function JellyField({
       const fresh = screen !== laidFor;
       laidFor = screen;
       bases = next;
-      if (reduce || fresh) {
+      // Nor is there anything to glide while no drop has come down yet.
+      if (reduce || fresh || !struck.size) {
         shown = next.map((b) => (b ? { ...b } : b));
         return;
       }
@@ -962,7 +1181,7 @@ export function JellyField({
       const small = Math.min(w, h) < SMALL;
       const asked = manyAt.current;
       if (asked) return Math.min(small ? asked.small : asked.large, DROPS.length - PERCHED);
-      return small && floodAt.current <= 1 ? 6 : 11;
+      return small && floodAt.current <= 1 ? 6 : 16;
     };
     const placeDrops = (now: number) => {
       const side = dropSide();
