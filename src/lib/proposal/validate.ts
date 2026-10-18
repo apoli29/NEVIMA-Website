@@ -224,6 +224,11 @@ export function readPartner(raw: unknown): Result<PartnerAnswers> {
     credit,
     nda: raw.nda === true,
   };
+  if (screens === "20+") {
+    const estimate = text(raw.screensEstimate, MAX.short);
+    if (!estimate) return { ok: false, error: "screensEstimate" };
+    answers.screensEstimate = estimate;
+  }
   if (inspiration === "yes") {
     const link = text(raw.inspirationLink, MAX.url);
     if (link === null) return { ok: false, error: "inspirationLink" };

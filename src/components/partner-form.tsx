@@ -57,11 +57,16 @@ import { MAX } from "@/lib/proposal/questions";
    at once, and its button starts it again.
    ================================================================== */
 
-type Step = "project" | "contact" | "sent";
+/** A screen at a time, as the free proposal (user, 2026-10-18: it was
+    one long screen): the project, whether we fit and when, how we would
+    work, then the details. */
+type Step = "project" | "fit" | "terms" | "contact" | "sent";
+const STEPS: Step[] = ["project", "fit", "terms", "contact", "sent"];
 
 type PartnerDraft = {
   project: ProjectTypeId | "";
   screens: ScreensId | "";
+  screensEstimate: string;
   inspiration: PartnerYesNo | "";
   inspirationLink: string;
   compatible: PartnerYesNo | "";
@@ -75,6 +80,7 @@ type PartnerDraft = {
 const EMPTY: PartnerDraft = {
   project: "",
   screens: "",
+  screensEstimate: "",
   inspiration: "",
   inspirationLink: "",
   compatible: "",
@@ -127,7 +133,9 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
     setDraftState((d) => ({ ...d, ...patch }));
     setErrors((e) => {
       const next = { ...e };
-      for (const key of Object.keys(patch)) delete next[key === "inspirationLink" ? "inspiration" : key];
+      for (const key of Object.keys(patch)) {
+        delete next[key === "inspirationLink" ? "inspiration" : key === "screensEstimate" ? "screens" : key];
+      }
       return next;
     });
   };
@@ -164,10 +172,17 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
     if (step === "project") {
       if (!draft.project) e.project = pick;
       if (!draft.screens) e.screens = pick;
+      else if (draft.screens === "20+" && !draft.screensEstimate.trim()) {
+        e.screens = t("Tell us roughly how many.", "Falta indicar quantos, aproximadamente.");
+      }
       if (!draft.inspiration) e.inspiration = pick;
+    }
+    if (step === "fit") {
       if (!draft.compatible) e.compatible = pick;
       if (!draft.start) e.start = pick;
       if (!draft.delivery) e.delivery = pick;
+    }
+    if (step === "terms") {
       if (!draft.model) e.model = pick;
       if (!draft.credit) e.credit = pick;
     }
@@ -178,6 +193,7 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
   const answers = (): PartnerAnswers => ({
     project: draft.project as ProjectTypeId,
     screens: draft.screens as ScreensId,
+    ...(draft.screens === "20+" ? { screensEstimate: draft.screensEstimate.trim() } : {}),
     inspiration: draft.inspiration as PartnerYesNo,
     ...(draft.inspiration === "yes" && draft.inspirationLink.trim() ? { inspirationLink: draft.inspirationLink.trim() } : {}),
     compatible: "yes",
@@ -226,7 +242,7 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
       `${t("Company", "Empresa")}: ${contact.company}`,
       "",
       `${t("Project", "Projeto")}: ${label(PROJECT_TYPES, draft.project)}`,
-      `${t("Screens or pages", "Ecrãs ou páginas")}: ${label(SCREENS, draft.screens)}`,
+      `${t("Screens or pages", "Ecrãs ou páginas")}: ${label(SCREENS, draft.screens)}${draft.screens === "20+" && draft.screensEstimate.trim() ? ` (${draft.screensEstimate.trim()})` : ""}`,
       `${t("Design or brand guidelines", "Design ou guia de marca")}: ${label(PARTNER_YES_NO, draft.inspiration)}${draft.inspirationLink.trim() ? ` (${draft.inspirationLink.trim()})` : ""}`,
       `${t("Stack compatible", "Tecnologia compatível")}: ${label(PARTNER_YES_NO, draft.compatible)}`,
       `${t("Start", "Início")}: ${label(STARTS, draft.start)}`,
@@ -235,7 +251,7 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
       `${t("In our portfolio", "No nosso portefólio")}: ${label(CREDITS, draft.credit)}`,
       `NDA: ${draft.nda ? t("Needed", "Necessário") : t("Not needed", "Não necessário")}`,
     ];
-    if (contact.message.trim()) lines.push("", t("Tell us more:", "Contem-nos mais:"), contact.message.trim());
+    if (contact.message.trim()) lines.push("", t("Additional notes:", "Notas adicionais:"), contact.message.trim());
     const subject = t(
       `Partnership request from ${contact.company.trim() || contact.name.trim() || "the website"}`,
       `Pedido de parceria de ${contact.company.trim() || contact.name.trim() || "um visitante do website"}`,
@@ -246,7 +262,7 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     touch();
-    if (step === "sent" || (step === "project" && notFit)) {
+    if (step === "sent" || (step === "fit" && notFit)) {
       reset();
       return;
     }
@@ -268,9 +284,9 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
       });
       return;
     }
-    if (step === "project") {
+    if (step !== "contact") {
       setErrors({});
-      setStep("contact");
+      setStep(STEPS[STEPS.indexOf(step) + 1]!);
       return;
     }
     if (send.status !== "sending") void submit();
@@ -282,7 +298,8 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
       return;
     }
     setErrors({});
-    setStep("project");
+    const i = STEPS.indexOf(step);
+    if (i > 0) setStep(STEPS[i - 1]!);
   };
 
   const action = offline
@@ -291,12 +308,12 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
       ? t("Sending…", "A enviar…")
       : step === "sent"
         ? t("Start a new request", "Fazer um novo pedido")
-        : step === "project"
-          ? notFit
+        : step === "contact"
+          ? t("Send request", "Enviar pedido")
+          : step === "fit" && notFit
             ? t("Start again", "Recomeçar")
-            : t("Continue", "Continuar")
-          : t("Send request", "Enviar pedido");
-  const progress = step === "project" ? 0.04 : step === "contact" ? 0.5 : 1;
+            : t("Continue", "Continuar");
+  const progress = Math.max(STEPS.indexOf(step) / (STEPS.length - 1), 0.04);
 
   return (
     <div ref={box} className="wt-form relative isolate text-ink">
@@ -339,9 +356,13 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
                     <motion.h3 variants={ROW} ref={title} tabIndex={-1} className="pf-title">
                       {step === "project"
                         ? t("Your project", "O projeto")
-                        : step === "contact"
-                          ? t("Your details", "Dados de contacto")
-                          : t("Request sent", "Pedido enviado")}
+                        : step === "fit"
+                          ? t("Technology and timing", "Tecnologia e prazos")
+                          : step === "terms"
+                            ? t("How we'd work", "Modelo de colaboração")
+                            : step === "contact"
+                              ? t("Your details", "Dados de contacto")
+                              : t("Request sent", "Pedido enviado")}
                     </motion.h3>
 
                     {step === "project" && (
@@ -367,6 +388,15 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
                               onChange={(screens) => setDraft({ screens })}
                               labelledBy="screens-q"
                             />
+                            {draft.screens === "20+" && (
+                              <Field
+                                id={`${uid}-screens`}
+                                label={t("Roughly how many?", "Quantos, aproximadamente?")}
+                                placeholder={t("Roughly how many? e.g. 35", "Quantos, aproximadamente? ex.: 35")}
+                                value={draft.screensEstimate}
+                                onChange={(screensEstimate) => setDraft({ screensEstimate })}
+                              />
+                            )}
                           </Question>
                           <Question
                             id="inspiration"
@@ -395,6 +425,13 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
                               />
                             )}
                           </Question>
+                        </div>
+                      </>
+                    )}
+
+                    {step === "fit" && (
+                      <>
+                        <div className="pf-rows">
                           <Question id="compatible" label={t(STACK_QUESTION)} error={errors.compatible}>
                             <Segmented
                               name="compatible"
@@ -429,6 +466,16 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
                                   labelledBy="delivery-q"
                                 />
                               </Question>
+                            </>
+                          )}
+                        </div>
+                      </>
+                    )}
+
+                    {step === "terms" && (
+                      <>
+                        <div className="pf-rows">
+                            <>
                               <Question id="model" label={t("How would we work together?", "Que modelo de colaboração?")} error={errors.model}>
                                 <Segmented
                                   name="model"
@@ -465,7 +512,6 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
                                 />
                               </Question>
                             </>
-                          )}
                         </div>
                       </>
                     )}
@@ -494,7 +540,7 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
         <div className="relative z-10">
           <span aria-hidden="true" className="absolute inset-x-0 top-0 z-10 block h-px bg-ink" />
           <div className="flex">
-            {step === "contact" && (
+            {step !== "project" && step !== "sent" && (
               <button type="button" onClick={back} className="idx-link pf-back shrink-0">
                 <span aria-hidden="true" className="idx-arrow">
                   <Arrow back />

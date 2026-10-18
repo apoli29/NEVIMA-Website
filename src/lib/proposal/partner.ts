@@ -23,26 +23,30 @@ export const PROJECT_TYPES = [
 ] as const;
 export type ProjectTypeId = (typeof PROJECT_TYPES)[number]["id"];
 
+/** How many screens or pages (user, 2026-10-18). Past twenty, a field
+    asks roughly how many. */
 export const SCREENS = [
-  { id: "1-5", label: "1–5", pt: "1–5" },
-  { id: "6-15", label: "6–15", pt: "6–15" },
-  { id: "16-30", label: "16–30", pt: "16–30" },
-  { id: "30+", label: "More than 30", pt: "Mais de 30" },
+  { id: "1-10", label: "1–10", pt: "1–10" },
+  { id: "11-20", label: "11–20", pt: "11–20" },
+  { id: "20+", label: "More than 20", pt: "Mais de 20" },
 ] as const;
 export type ScreensId = (typeof SCREENS)[number]["id"];
 
+/** How soon the work would start (user, 2026-10-18). */
 export const STARTS = [
-  { id: "asap", label: "As soon as possible", pt: "O mais depressa possível" },
-  { id: "month", label: "Within a month", pt: "Dentro de um mês" },
-  { id: "later", label: "Later", pt: "Mais tarde" },
+  { id: "week", label: "Less than a week", pt: "Menos de uma semana" },
+  { id: "1-2w", label: "1–2 weeks", pt: "1–2 semanas" },
+  { id: "3-4w", label: "3–4 weeks", pt: "3–4 semanas" },
+  { id: "month+", label: "More than a month", pt: "Mais de 1 mês" },
 ] as const;
 export type StartId = (typeof STARTS)[number]["id"];
 
+/** How long until it is delivered (user, 2026-10-18). */
 export const DELIVERIES = [
-  { id: "1m", label: "Within a month", pt: "Dentro de um mês" },
-  { id: "1-3m", label: "1–3 months", pt: "1–3 meses" },
-  { id: "3m+", label: "More than 3 months", pt: "Mais de 3 meses" },
-  { id: "flexible", label: "Flexible", pt: "Flexível" },
+  { id: "2w", label: "Less than 2 weeks", pt: "Menos de 2 semanas" },
+  { id: "2-4w", label: "2–4 weeks", pt: "2–4 semanas" },
+  { id: "1-2m", label: "1–2 months", pt: "1–2 meses" },
+  { id: "2m+", label: "More than 2 months", pt: "Mais de 2 meses" },
 ] as const;
 export type DeliveryId = (typeof DELIVERIES)[number]["id"];
 
@@ -85,6 +89,8 @@ export const NOT_COMPATIBLE: Copy = {
 export type PartnerAnswers = {
   project: ProjectTypeId;
   screens: ScreensId;
+  /** Past twenty: roughly how many, in the partner's words. */
+  screensEstimate?: string;
   inspiration: PartnerYesNo;
   /** A link to the design or brand guidelines, when there are any. */
   inspirationLink?: string;

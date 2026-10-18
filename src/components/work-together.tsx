@@ -166,9 +166,9 @@ export function WorkTogether() {
       <span aria-hidden="true" className="abt-grain absolute inset-0 -z-10" />
 
       <div className="shell grid grid-cols-1 items-center gap-x-10 gap-y-10 py-24 md:py-32 lg:grid-cols-12">
-        {/* Held in the middle of the screen beside the form, which can
-            run long, as it sat before the form grew (user, 2026-10-18). */}
-        <div className="lg:sticky lg:top-0 lg:col-span-5 lg:flex lg:h-[100svh] lg:items-center lg:self-start">
+        {/* Beside the form, in the middle of its height, scrolling with
+            the page, as it always sat (user, 2026-10-18). */}
+        <div className="lg:col-span-5">
           <h2
             id="work-together-title"
             className="display text-[clamp(2.75rem,6vw,5.75rem)] text-paper"

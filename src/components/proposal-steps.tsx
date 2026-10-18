@@ -1300,13 +1300,18 @@ export function ContactScreen({
             never changes the estimate: it is read with the request. */}
         <motion.div variants={ROW}>
           <label className="prop-row">
-            <span className="mono-label prop-label">{t("Tell us more", "Mais detalhes")}</span>
+            <span className="mono-label prop-label">
+              {partner ? t("Additional notes", "Notas adicionais") : t("Tell us more", "Mais detalhes")}
+            </span>
             <textarea
               name="message"
               rows={4}
               placeholder={
                 partner
-                  ? t("Anything else we should know about the project (optional)", "Qualquer outra informação útil sobre o projeto (opcional)")
+                  ? t(
+                      "For example, specific start or delivery dates, or anything else important (optional)",
+                      "Por exemplo, datas específicas de início ou de entrega, ou outras informações importantes (opcional)",
+                    )
                   : t(
                       "Anything else we should know about your business or your project (optional)",
                       "Qualquer outra informação útil sobre o negócio ou o projeto (opcional)",
