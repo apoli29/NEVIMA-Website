@@ -151,6 +151,9 @@ export function Home() {
   const reduce = useReducedMotion() ?? false;
   const progress = useMotionValue(0);
   const [phase, setPhase] = useState<Phase>("waiting");
+  // The opening was skipped (see below): the drops are simply there, like
+  // everything else on the screen, rather than landing late on their own.
+  const [skipped, setSkipped] = useState(false);
   // The free-proposal form, carried out of the index (see proposal-flow.tsx).
   // While it is out, the page behind is held still and out of reach.
   const proposal = useProposalController();
@@ -270,6 +273,7 @@ export function Home() {
     progress.set(1);
     phaseRef.current = "open";
     setPhase("open");
+    setSkipped(true);
     // Once, as the page is drawn.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -452,6 +456,7 @@ export function Home() {
             <JellyField
               arrive={phase !== "waiting"}
               arriveDelay={(FIELD_IN[0] * RUN_MS) / 1000}
+              present={skipped}
               covered={covered}
             />
           </motion.div>

@@ -376,6 +376,7 @@ export function JellyField({
   className,
   arrive,
   arriveDelay = 0,
+  present = false,
   covered = false,
   flood = 1,
   split = false,
@@ -410,6 +411,11 @@ export function JellyField({
   arrive?: boolean;
   /** Seconds between `arrive` turning true and the first drop landing. */
   arriveDelay?: number;
+  /** The drops are already down, with no landing: the page they are on
+      skipped its opening (brought back from inside the site, or out of
+      the portfolio) and everything else on it is simply there, so they
+      must be too (user, 2026-10-18). */
+  present?: boolean;
 }) {
   const reduce = useReducedMotion() ?? false;
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -422,6 +428,11 @@ export function JellyField({
     coveredRef.current = covered;
     wakeRef.current();
   }, [covered]);
+  const presentRef = useRef(present);
+  useEffect(() => {
+    presentRef.current = present;
+    wakeRef.current();
+  }, [present]);
   const entrance = arrive !== undefined;
   // When the first drop lands, on the performance clock; null until then.
   const setOff = useRef<number | null>(null);
@@ -1286,6 +1297,9 @@ export function JellyField({
     const onScreen = () => visible && !coveredRef.current;
 
     const tick = (t: number) => {
+      // The opening was skipped: every drop is down at once, without a
+      // ring, as if it had landed long ago.
+      if (!landed && presentRef.current) landed = true;
       // Under the curtain until the drops start to land, nothing here can
       // be seen, and the water would only be taking frames from the flight
       // above it. Held, not stopped, so it picks up on the first frame it
