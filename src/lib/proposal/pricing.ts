@@ -1,4 +1,5 @@
 import "server-only";
+import type { Copy } from "../i18n";
 
 /* ==================================================================
    The price table
@@ -47,8 +48,10 @@ export const PRICING = {
     } as Record<Size, [number, number]>,
     /** What every website comes with, shown under its line. Kept in
         step with the contract (clauses 11 and 12). */
-    includes:
-      "Includes optimised images, a review of the texts you send, free hosting for the first year (then renewed every 6 months) and a free call once part of the website is built.",
+    includes: {
+      en: "Includes optimised images, a review of the texts you send, free hosting for the first year (then renewed every 6 months) and a free call once part of the website is built.",
+      pt: "Inclui imagens otimizadas, a revisão dos textos que nos envias, alojamento gratuito no primeiro ano (depois renovado de 6 em 6 meses) e uma chamada gratuita quando parte do website já estiver construída.",
+    } satisfies Copy,
 
     /** On top of the pages' own range, the ceiling carries this margin
         for what the form does not ask (user, 2026-10-17: 10 points more
@@ -61,8 +64,10 @@ export const PRICING = {
         (user, 2026-10-17). */
     unsureSpreadPercent: 35,
     /** What that margin allows for, shown under the website's line. */
-    marginNote:
-      "The upper end allows for what a form can't foresee: how much content there is to organise, connecting tools you already use (booking, maps, social media), special design requests such as custom illustrations or complex animations, and moving content over from an existing site.",
+    marginNote: {
+      en: "The upper end allows for what a form can't foresee: how much content there is to organise, connecting tools you already use (booking, maps, social media), special design requests such as custom illustrations or complex animations, and moving content over from an existing site.",
+      pt: "O valor mais alto dá margem para o que um formulário não consegue prever: a quantidade de conteúdo a organizar, a ligação a ferramentas que já usas (marcações, mapas, redes sociais), pedidos especiais de design, como ilustrações personalizadas ou animações complexas, e a passagem de conteúdo de um site que já exista.",
+    } satisfies Copy,
     /** The Advanced design level costs this much more than Essential+
         (user, 2026-10-17). The page prices above are Essential+. */
     advancedPercent: 25,
@@ -98,7 +103,10 @@ export const PRICING = {
   /** Mainland Portugal only; anywhere else is quoted on request. */
   photo: { photos: 245, "photos-video": 370 },
   /** Shown under the photo line, as the contract sets it (clause 10.3). */
-  photoTravel: "Travel within 30 km of Arcozelo is included. Beyond that, it is charged per km, as set in your proposal.",
+  photoTravel: {
+    en: "Travel within 30 km of Arcozelo is included. Beyond that, it is charged per km, as set in your proposal.",
+    pt: "A deslocação até 30 km de Arcozelo está incluída. A partir daí, é cobrada ao km, como fica definido na tua proposta.",
+  } satisfies Copy,
 
   /** "More than 10" pages and an international reach are on request.
       "first" is the one-time work, "monthly" the optional monthly

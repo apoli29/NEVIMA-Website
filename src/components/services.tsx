@@ -9,7 +9,8 @@ import {
   useState,
 } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { SERVICES, servicePath, type Service } from "@/lib/services";
+import { SERVICES, servicePath, servicesIn, type Service } from "@/lib/services";
+import { useHref, useLang, useT } from "@/lib/use-lang";
 import { SlideIn } from "./enter";
 import { Rise, Rule, Uncover, useSeen } from "./exhibit";
 import { PassLink } from "./floating-nav";
@@ -80,6 +81,8 @@ export function Services({ ready }: { ready: boolean }) {
   const titleRef = useRef<HTMLDivElement>(null);
   const subRef = useRef<HTMLParagraphElement>(null);
   useInkAlign(titleRef, subRef);
+  const t = useT();
+  const services = servicesIn(useLang());
 
   useEffect(() => {
     if (open === null) return;
@@ -191,8 +194,10 @@ export function Services({ ready }: { ready: boolean }) {
             className="max-w-[17rem] shrink-0 lg:text-right"
           >
             <p ref={subRef} className="text-[0.9375rem] leading-[1.45] text-balance text-ash">
-              Websites first. Every additional service is offered only
-              together with a website we design.
+              {t(
+                "Websites first. Every additional service is offered only together with a website we design.",
+                "Primeiro, os websites. Todos os serviços adicionais só são oferecidos em conjunto com um website feito por nós.",
+              )}
             </p>
           </SlideIn>
         </div>
@@ -200,14 +205,20 @@ export function Services({ ready }: { ready: boolean }) {
         <div ref={listRef} className="relative mt-12 grid grid-cols-12 gap-x-4 md:mt-16">
           <Rule shown={seen} className="absolute inset-x-0 top-0 bg-ink" />
 
-          <Showcase index={shown} open={openIndex >= 0 && pointed === null} seen={seen} reduce={reduce} />
+          <Showcase
+            service={services[shown]}
+            index={shown}
+            open={openIndex >= 0 && pointed === null}
+            seen={seen}
+            reduce={reduce}
+          />
 
           <ol
             data-open={open ? "" : undefined}
             onPointerLeave={() => setPointed(null)}
             className="xs-list col-span-12 lg:col-span-7 lg:col-start-6"
           >
-            {SERVICES.map((service, i) => (
+            {services.map((service, i) => (
               <Row
                 key={service.slug}
                 service={service}
@@ -245,9 +256,11 @@ export function Services({ ready }: { ready: boolean }) {
    ================================================================== */
 
 function PortfolioCall() {
+  const t = useT();
+  const href = useHref();
   return (
-    <a href="/portfolio" className="svc-folio">
-      <span className="mono-label">See our work</span>
+    <a href={href("/portfolio")} className="svc-folio">
+      <span className="mono-label">{t("See our work", "Ver o nosso trabalho")}</span>
       <span aria-hidden="true" className="svc-folio-arrow">
         <svg viewBox="0 0 16 16" width="14" height="14" fill="none" className="block">
           <path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.25" />
@@ -265,18 +278,20 @@ function PortfolioCall() {
    settling as it comes, and the one under it is let go once it is
    covered. */
 function Showcase({
+  service,
   index,
   open,
   seen,
   reduce,
 }: {
+  service: Service;
   index: number;
   /** The service shown is the open one: run through its pictures. */
   open: boolean;
   seen: boolean;
   reduce: boolean;
 }) {
-  const service = SERVICES[index];
+  const t = useT();
   const [slide, setSlide] = useState(0);
 
   // Back to the first picture whenever the service changes; through the
@@ -336,7 +351,7 @@ function Showcase({
             <span>— {service.title}</span>
           </span>
           <span className="tabular-nums">
-            {count ? `${slide + 1} / ${count}` : "Photos to come"}
+            {count ? `${slide + 1} / ${count}` : t("Photos to come", "Fotografias em breve")}
           </span>
         </figcaption>
       </div>
@@ -378,6 +393,8 @@ function Row({
   // The light runs again every time the drawer is opened.
   const [opened, setOpened] = useState(0);
   const main = service.tier === "main";
+  const t = useT();
+  const href = useHref();
 
   return (
     <li
@@ -434,7 +451,7 @@ function Row({
           >
             {/* What kind of service it is, on the right. */}
             <span className={`mono-label max-sm:hidden ${main ? "xs-tag-main" : "idx-title"}`}>
-              {main ? "Main service" : "Additional service"}
+              {main ? t("Main service", "Serviço principal") : t("Additional service", "Serviço adicional")}
             </span>
             <Chevron open={open} turns={turns} reduce={reduce} />
           </motion.span>
@@ -511,8 +528,8 @@ function Row({
             {service.slug !== "web-design" && (
               <div className="mt-7 md:mt-8">
                 <PassLink
-                  href={servicePath(service.slug)}
-                  label={`Explore ${service.title}`}
+                  href={href(servicePath(service.slug))}
+                  label={t(`Explore ${service.title}`, `Explorar ${service.title}`)}
                   className={`cta-drop inline-flex text-[1rem] leading-none ${main ? "cta-drop-light" : ""}`}
                 />
               </div>

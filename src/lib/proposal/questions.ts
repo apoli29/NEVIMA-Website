@@ -6,98 +6,127 @@
    words shown to the visitor live here: no price is ever in this file,
    because it is bundled into the browser. The prices are in
    pricing.ts, which only the API routes import.
+
+   Every label has its Portuguese beside it (`pt`, and `notePt` for a
+   note); `inLang` gives a list in the page's language.
    ================================================================== */
+
+import type { Copy, Lang } from "../i18n";
 
 /** Visual identity and the photo shoot are offered as services of their
     own, though only together with a website (user, 2026-10-17). */
 export const SERVICES = [
-  { id: "web", label: "Web design" },
-  { id: "identity", label: "Visual identity" },
-  { id: "photo", label: "Photo shoot" },
-  { id: "seo", label: "SEO" },
-  { id: "geo", label: "GEO" },
+  { id: "web", label: "Web design", pt: "Web design" },
+  { id: "identity", label: "Visual identity", pt: "Identidade visual" },
+  { id: "photo", label: "Photo shoot", pt: "Sessão fotográfica" },
+  { id: "seo", label: "SEO", pt: "SEO" },
+  { id: "geo", label: "GEO", pt: "GEO" },
 ] as const;
 export type ServiceId = (typeof SERVICES)[number]["id"];
 
 /** What the business does. It tells us about the project; it never
     changes the price by itself (what a sector needs is asked as features). */
 export const SECTORS = [
-  { id: "health", label: "Health & aesthetics" },
-  { id: "realestate", label: "Real estate" },
-  { id: "hospitality", label: "Restaurants & hospitality" },
-  { id: "retail", label: "Shop / retail" },
-  { id: "professional", label: "Professional services" },
-  { id: "other", label: "Other" },
+  { id: "health", label: "Health & aesthetics", pt: "Saúde e estética" },
+  { id: "realestate", label: "Real estate", pt: "Imobiliário" },
+  { id: "hospitality", label: "Restaurants & hospitality", pt: "Restauração e hotelaria" },
+  { id: "retail", label: "Shop / retail", pt: "Loja / comércio" },
+  { id: "professional", label: "Professional services", pt: "Serviços profissionais" },
+  { id: "other", label: "Other", pt: "Outro" },
 ] as const;
 export type SectorId = (typeof SECTORS)[number]["id"];
 
 export const COUNTRIES = [
-  { id: "PT", label: "Portugal" },
-  { id: "ES", label: "Spain" },
-  { id: "IT", label: "Italy" },
-  { id: "US", label: "USA" },
-  { id: "other", label: "Other" },
+  { id: "PT", label: "Portugal", pt: "Portugal" },
+  { id: "ES", label: "Spain", pt: "Espanha" },
+  { id: "IT", label: "Italy", pt: "Itália" },
+  { id: "US", label: "USA", pt: "EUA" },
+  { id: "other", label: "Other", pt: "Outro" },
 ] as const;
 export type CountryId = (typeof COUNTRIES)[number]["id"];
 
 /** Website size. Web design stops at 10 pages; past that is quoted. */
 export const PAGES = [
-  { id: "landing", label: "Landing page" },
-  { id: "4-6", label: "4–6" },
-  { id: "7-10", label: "7–10" },
-  { id: "10+", label: "More than 10" },
+  { id: "landing", label: "Landing page", pt: "Landing page" },
+  { id: "4-6", label: "4–6", pt: "4–6" },
+  { id: "7-10", label: "7–10", pt: "7–10" },
+  { id: "10+", label: "More than 10", pt: "Mais de 10" },
   /** Estimated for 3 to 8 pages, with a wider range (user, 2026-10-17). */
-  { id: "unsure", label: "Not sure" },
+  { id: "unsure", label: "Not sure", pt: "Não sei" },
 ] as const;
 export type PagesId = (typeof PAGES)[number]["id"];
 
 export const LANGUAGES = [
-  { id: "pt", label: "Portuguese" },
-  { id: "en", label: "English" },
-  { id: "other", label: "Other" },
+  { id: "pt", label: "Portuguese", pt: "Português" },
+  { id: "en", label: "English", pt: "Inglês" },
+  { id: "other", label: "Other", pt: "Outras" },
 ] as const;
 export type LanguageId = (typeof LANGUAGES)[number]["id"];
 
 export const FORMS = [
-  { id: "0", label: "None" },
-  { id: "1", label: "1" },
-  { id: "2", label: "2" },
-  { id: "3", label: "3" },
+  { id: "0", label: "None", pt: "Nenhum" },
+  { id: "1", label: "1", pt: "1" },
+  { id: "2", label: "2", pt: "2" },
+  { id: "3", label: "3", pt: "3" },
 ] as const;
 export type FormsId = (typeof FORMS)[number]["id"];
 
 /** Two design levels for now (user, 2026-10-17), 25% apart. */
 export const DESIGN = [
-  { id: "essential", label: "Essential+", note: "Clean, well-built design with simple, elegant motion" },
-  { id: "advanced", label: "Advanced", note: "Richer layouts and animation, designed around your brand" },
+  {
+    id: "essential",
+    label: "Essential+",
+    pt: "Essencial+",
+    note: "Clean, well-built design with simple, elegant motion",
+    notePt: "Design limpo e bem construído, com movimento simples e elegante",
+  },
+  {
+    id: "advanced",
+    label: "Advanced",
+    pt: "Avançado",
+    note: "Richer layouts and animation, designed around your brand",
+    notePt: "Composições e animações mais ricas, desenhadas à volta da tua marca",
+  },
 ] as const;
 export type DesignId = (typeof DESIGN)[number]["id"];
 
 /** Whether the client already has the website's texts: writing them is
     priced as a range, by the site's size (user, 2026-10-17: yes or no). */
 export const TEXTS = [
-  { id: "yes", label: "Yes" },
-  { id: "no", label: "No" },
+  { id: "yes", label: "Yes", pt: "Sim" },
+  { id: "no", label: "No", pt: "Não" },
 ] as const;
 export type TextsId = (typeof TEXTS)[number]["id"];
 
 export const YES_NO = [
-  { id: "yes", label: "Yes" },
-  { id: "no", label: "No" },
+  { id: "yes", label: "Yes", pt: "Sim" },
+  { id: "no", label: "No", pt: "Não" },
 ] as const;
 export type YesNo = (typeof YES_NO)[number]["id"];
 
 export const PHOTO_PLANS = [
-  { id: "photos", label: "Photos only", note: "2.5-hour shoot, 20–25 edited photos" },
-  { id: "photos-video", label: "Photos & video", note: "4-hour shoot, 30–40 edited photos, video up to 1 min" },
+  {
+    id: "photos",
+    label: "Photos only",
+    pt: "Só fotografia",
+    note: "2.5-hour shoot, 20–25 edited photos",
+    notePt: "Sessão de 2h30, 20–25 fotografias editadas",
+  },
+  {
+    id: "photos-video",
+    label: "Photos & video",
+    pt: "Fotografia e vídeo",
+    note: "4-hour shoot, 30–40 edited photos, video up to 1 min",
+    notePt: "Sessão de 4 horas, 30–40 fotografias editadas, vídeo até 1 min",
+  },
 ] as const;
 export type PhotoPlanId = (typeof PHOTO_PLANS)[number]["id"];
 
 /** The shoot is only offered on the mainland; the islands are quoted. */
 export const REGIONS = [
-  { id: "mainland", label: "Mainland" },
-  { id: "madeira", label: "Madeira" },
-  { id: "azores", label: "Azores" },
+  { id: "mainland", label: "Mainland", pt: "Continente" },
+  { id: "madeira", label: "Madeira", pt: "Madeira" },
+  { id: "azores", label: "Azores", pt: "Açores" },
 ] as const;
 export type RegionId = (typeof REGIONS)[number]["id"];
 
@@ -107,20 +136,24 @@ export const SEARCH_PLANS = [
   {
     id: "once",
     label: "One-time",
+    pt: "Pontual",
     note: "A set of practices applied in one go: strongest in the short term, its effect fades over the medium to long term",
+    notePt: "Um conjunto de práticas aplicado de uma só vez: mais forte a curto prazo, o efeito vai-se perdendo a médio e longo prazo",
   },
   {
     id: "monthly",
     label: "One-time + monthly",
+    pt: "Pontual + mensal",
     note: "Adds monthly work to keep those practices as effective as they can be",
+    notePt: "Junta um trabalho mensal que mantém essas práticas o mais eficazes possível",
   },
 ] as const;
 export type SearchPlanId = (typeof SEARCH_PLANS)[number]["id"];
 
 export const REACH = [
-  { id: "local", label: "Local" },
-  { id: "national", label: "National" },
-  { id: "international", label: "International" },
+  { id: "local", label: "Local", pt: "Local" },
+  { id: "national", label: "National", pt: "Nacional" },
+  { id: "international", label: "International", pt: "Internacional" },
 ] as const;
 export type ReachId = (typeof REACH)[number]["id"];
 
@@ -198,8 +231,10 @@ export type Estimate = {
 
 /** Said wherever languages other than Portuguese and English are asked
     for or priced (user). */
-export const TRANSLATION_NOTE =
-  "Languages other than Portuguese and English are translated by an AI specialised in translation, with over 95% accuracy. We always send you a final document, so you can point out any sentence you'd like written differently.";
+export const TRANSLATION_NOTE: Copy = {
+  en: "Languages other than Portuguese and English are translated by an AI specialised in translation, with over 95% accuracy. We always send you a final document, so you can point out any sentence you'd like written differently.",
+  pt: "As línguas além do português e do inglês são traduzidas por uma IA especializada em tradução, com mais de 95% de precisão. Enviamos-te sempre um documento final, para poderes indicar qualquer frase que prefiras escrita de outra forma.",
+};
 
 /** How many languages were typed under "Other": "French, German and
     Dutch" is three. At least one, since "Other" was ticked. */
@@ -227,8 +262,22 @@ export const MAX = {
   message: 2000,
 } as const;
 
-export const labelOf = <T extends readonly { id: string; label: string }[]>(list: T, id: string) =>
-  list.find((item) => item.id === id)?.label ?? id;
+/** An answer as the list names it, in a language. */
+export const labelOf = <T extends readonly Option[]>(list: T, id: string, lang: Lang = "en") => {
+  const item = list.find((o) => o.id === id);
+  return item ? (lang === "pt" ? item.pt : item.label) : id;
+};
+
+type Option = { id: string; label: string; pt: string; note?: string; notePt?: string };
+
+/** A list with its labels and notes in a language, as the form shows it. */
+export function inLang<T extends Option>(list: readonly T[], lang: Lang) {
+  return list.map((o) => ({
+    id: o.id as T["id"],
+    label: lang === "pt" ? o.pt : o.label,
+    note: lang === "pt" ? o.notePt : o.note,
+  }));
+}
 
 /** Which service groups a set of chosen services asks about, in order. */
 export function groupsFor(services: readonly ServiceId[]) {

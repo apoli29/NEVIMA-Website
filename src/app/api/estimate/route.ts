@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   const answers = readAnswers(fields.answers);
   if (!answers.ok) return json({ error: "invalid", field: answers.error }, 422);
 
-  const result = estimate(answers.value);
+  const result = estimate(answers.value, undefined, fields.lang === "pt" ? "pt" : "en");
   await recordSimulation({ at: new Date().toISOString(), answers: answers.value, estimate: result });
   return json({ estimate: result });
 }

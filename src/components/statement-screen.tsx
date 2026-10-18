@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion, type MotionValue } from "motion/react";
+import type { Copy } from "@/lib/i18n";
+import { useHref, useT } from "@/lib/use-lang";
 import { useInkAlign } from "./ink-align";
 import { SECTION_LINKS } from "./index-links";
 import { ProposalForm } from "./proposal-form";
@@ -28,7 +30,11 @@ import { useProposal } from "./proposal-flow";
    ================================================================== */
 
 // Each one finishes the sentence, so each one ends it.
-const ENDINGS = ["matter.", "create trust.", "bring clients.", "grab attention."];
+const ENDINGS: Copy<string[]> = {
+  en: ["matter.", "create trust.", "bring clients.", "grab attention."],
+  pt: ["contam.", "inspiram confiança.", "trazem clientes.", "captam atenção."],
+};
+const OPENING: Copy = { en: "We build websites that", pt: "Criamos websites que" };
 
 
 /** Where the studio is, as the readout gives it. */
@@ -50,6 +56,7 @@ export function StatementScreen({
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subRef = useRef<HTMLHeadingElement>(null);
   useInkAlign(titleRef, subRef);
+  const t = useT();
   return (
     // Padded clear of the floating bar at the top.
     <div className="pointer-events-none absolute inset-0 z-10 pt-[7.25rem] pb-[clamp(1.25rem,3.5svh,2.75rem)] md:pt-[clamp(8.5rem,17svh,10rem)]">
@@ -63,15 +70,12 @@ export function StatementScreen({
             className="display h1 trim-cap pointer-events-auto w-fit max-w-full shrink-0 text-ink"
           >
             <span aria-hidden="true" className="block font-light">
-              We build websites that
+              {t(OPENING)}
             </span>
             <span className="block font-medium">
-              <RotatingEnding active={settled} />
+              <RotatingEnding active={settled} endings={t(ENDINGS)} />
             </span>
-            <span className="sr-only">
-              We build websites that matter. We build websites that create trust.
-              We build websites that bring clients. We build websites that grab attention.
-            </span>
+            <span className="sr-only">{t(ENDINGS).map((end) => `${t(OPENING)} ${end}`).join(" ")}</span>
           </h1>
           {/* One sentence to a line, set closer than running text, the
               second a little heavier: it is the promise. Hung from the top
@@ -85,8 +89,19 @@ export function StatementScreen({
             data-jelly-wide
             className="lede trim-cap pointer-events-auto ml-auto text-right text-[1.0625rem] font-normal leading-[1.3] text-ash md:text-[clamp(1.125rem,min(1.45vw,2.4svh),1.375rem)]"
           >
-            <span className="block">Your brand is a story worth telling.</span>
-            <span className="block font-medium">We make sure it doesn&rsquo;t go unnoticed.</span>
+            {/* In Portuguese the first sentence is longer than the room
+                beside the headline, so it is set on two lines rather than
+                sent under the headline. */}
+            {t(["Your brand is a story worth telling."], ["A tua marca é uma história", "que merece ser contada."]).map(
+              (line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ),
+            )}
+            <span className="block font-medium">
+              {t("We make sure it doesn’t go unnoticed.", "Nós garantimos que não passa despercebida.")}
+            </span>
           </h2>
         </div>
 
@@ -109,6 +124,7 @@ export function StatementScreen({
 /* ================================================================== */
 
 export function Readouts({ settled }: { settled: boolean }) {
+  const t = useT();
   return (
     <dl
       data-jelly-quiet
@@ -116,10 +132,10 @@ export function Readouts({ settled }: { settled: boolean }) {
       // above, and the place and the status are said shorter there.
       className="pointer-events-auto grid grid-cols-3 gap-x-4 md:grid-cols-12"
     >
-      <Readout label="Studio" className="max-md:hidden md:col-span-3">
+      <Readout label={t("Studio", "Estúdio")} className="max-md:hidden md:col-span-3">
         <Scramble text="Nevima™" active={settled} />
       </Readout>
-      <Readout label="Based in" className="md:col-span-5 md:col-start-4">
+      <Readout label={t("Based in", "Localização")} className="md:col-span-5 md:col-start-4">
         <span className="max-md:hidden">
           <Scramble text={PLACE} active={settled} delay={0.08} />
         </span>
@@ -131,17 +147,17 @@ export function Readouts({ settled }: { settled: boolean }) {
           <Scramble text={COORDS} active={settled} delay={0.16} />
         </span>
       </Readout>
-      <Readout label="Local time" className="md:col-span-2 md:col-start-9">
+      <Readout label={t("Local time", "Hora local")} className="md:col-span-2 md:col-start-9">
         <Clock />
       </Readout>
-      <Readout label="Status" className="text-right md:col-span-2 md:col-start-11">
+      <Readout label={t("Status", "Estado")} className="text-right md:col-span-2 md:col-start-11">
         <span className="inline-flex items-center gap-2">
           <span aria-hidden="true" className="live-dot" />
           <span className="max-md:hidden">
-            <Scramble text="Open for projects" active={settled} delay={0.24} />
+            <Scramble text={t("Open for projects", "Aberto a projetos")} active={settled} delay={0.24} />
           </span>
           <span className="md:hidden">
-            <Scramble text="Open" active={settled} delay={0.24} />
+            <Scramble text={t("Open", "Aberto")} active={settled} delay={0.24} />
           </span>
         </span>
       </Readout>
@@ -301,7 +317,7 @@ export function WallRule({
    and carried to the middle of the screen, turning into the free-proposal
    form on the way (see proposal-flow.tsx); closed, it is carried back.
    While it is out, its place here is held, unseen. */
-const ASK = "Get your free proposal";
+const ASK: Copy = { en: "Get your free proposal", pt: "Pede a tua proposta gratuita" };
 
 /** When each part of the index comes in, in seconds after the screen has
     settled (the rule over the readouts is drawn from 0.2). */
@@ -332,6 +348,8 @@ function SectionIndex({ settled }: { settled: boolean }) {
   const out = proposal?.present ?? false;
   const nav = useRef<HTMLElement>(null);
   const askButton = useRef<HTMLButtonElement>(null);
+  const t = useT();
+  const href = useHref();
 
   return (
     // The box keeps the room the old in-place form took above the index
@@ -351,7 +369,7 @@ function SectionIndex({ settled }: { settled: boolean }) {
       <nav
         ref={nav}
         data-jelly-perch
-        aria-label="Sections"
+        aria-label={t("Sections", "Secções")}
         className="col-start-1 row-start-1 self-end"
         style={{ visibility: out ? "hidden" : undefined }}
       >
@@ -368,7 +386,7 @@ function SectionIndex({ settled }: { settled: boolean }) {
             animate={{ clipPath: on ? "inset(0 0% 0 0)" : "inset(0 100% 0 0)" }}
             transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : ENTRY.label, ease: ENTRY.ease }}
           >
-            Index
+            {t("Index", "Índice")}
           </motion.span>
         </p>
         <ol className="relative">
@@ -387,14 +405,14 @@ function SectionIndex({ settled }: { settled: boolean }) {
                 >
                   {link ? (
                     <a
-                      href={link.href}
+                      href={href(link.href)}
                       className={`idx-link ${link.lead ? "idx-lead" : ""}`}
                       // To another page: its arrow goes on rather than down.
                       data-away={link.href.startsWith("#") ? undefined : ""}
                     >
                       <span className="idx-name flex items-center gap-2.5">
                         {link.lead && <span aria-hidden="true" className="live-dot" />}
-                        {link.label}
+                        {t(link.label)}
                       </span>
                       <span aria-hidden="true" className="idx-arrow">
                         <Arrow />
@@ -411,7 +429,7 @@ function SectionIndex({ settled }: { settled: boolean }) {
                     >
                       <span className="idx-name flex items-center gap-2.5">
                         <span aria-hidden="true" className="live-dot live-dot-loud" />
-                        {ASK}
+                        {t(ASK)}
                       </span>
                       <span aria-hidden="true" className="idx-arrow">
                         <Plus />
@@ -457,7 +475,7 @@ function Arrow() {
 /* The headline's last line                                             */
 /* ================================================================== */
 
-function RotatingEnding({ active }: { active: boolean }) {
+function RotatingEnding({ active, endings }: { active: boolean; endings: string[] }) {
   const reduce = useReducedMotion();
   const [i, setI] = useState(0);
 
@@ -466,11 +484,11 @@ function RotatingEnding({ active }: { active: boolean }) {
   useEffect(() => {
     if (!active) return;
     const id = window.setInterval(
-      () => setI((v) => (v + 1) % ENDINGS.length),
+      () => setI((v) => (v + 1) % endings.length),
       2800,
     );
     return () => window.clearInterval(id);
-  }, [active]);
+  }, [active, endings.length]);
 
   return (
     // The mask the line slides through reaches well below the line, so the
@@ -488,7 +506,7 @@ function RotatingEnding({ active }: { active: boolean }) {
           exit={reduce ? { opacity: 0 } : { y: "-100%", opacity: 0 }}
           transition={{ duration: reduce ? 0.4 : 0.72, ease: [0.16, 1, 0.3, 1] }}
         >
-          {ENDINGS[i]}
+          {endings[i % endings.length]}
         </motion.span>
       </AnimatePresence>
     </span>

@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useReducedMotion } from "motion/react";
+import { useLang, useT } from "@/lib/use-lang";
 import { ENTER_EASE } from "./enter";
 import { Illuminated } from "./services";
 import { useSeen } from "./use-seen";
@@ -39,7 +40,24 @@ const PIECES = [
   },
 ] as const;
 
+/* The studio's own Portuguese (docs/about-decisions.md, 2026-10-16), with
+   the spelling brought to the current agreement ("setor", "projetos"). */
+const PT: Record<(typeof PIECES)[number]["id"], { label: string; tense: string; text: string }> = {
+  mission: {
+    label: "Missão",
+    tense: "O que fazemos, hoje",
+    text: "Providenciar a pequenas e médias em\u00adpre\u00adsas de todo o mundo serviços de web de\u00advel\u00adop\u00adment de topo, e\u00adfi\u00adci\u00aden\u00adtes, com\u00adple\u00adtos e livres das bu\u00adro\u00adcra\u00adcias e com\u00adpli\u00adca\u00adções habituais do setor, através das tec\u00adno\u00adlo\u00adgias e do know-how mais van\u00adguar\u00addis\u00adtas disponíveis.",
+  },
+  vision: {
+    label: "Visão",
+    tense: "Para onde nos leva",
+    text: "Tornar a Nevima numa re\u00adfe\u00adrên\u00adcia em web de\u00advel\u00adop\u00adment, com ca\u00adpa\u00adci\u00addade para atender projetos de diferentes di\u00admen\u00adsões, através de um know-how em constante e\u00advo\u00adlu\u00adção e das melhores e mais a\u00advan\u00adça\u00addas tec\u00adno\u00adlo\u00adgias.",
+  },
+};
+
 export function AboutMission() {
+  const t = useT();
+  const lang = useLang();
   return (
     <section
       id="mission"
@@ -52,11 +70,11 @@ export function AboutMission() {
     >
       <div className="shell">
         <h2 id="mission-title" className="sr-only">
-          Mission and vision
+          {t("Mission and vision", "Missão e visão")}
         </h2>
         <div className="grid grid-cols-1 gap-y-16 md:gap-y-20 lg:grid-cols-12 lg:gap-x-4 lg:gap-y-0">
           {PIECES.map((piece, i) => (
-            <Piece key={piece.id} piece={piece} index={i} />
+            <Piece key={piece.id} piece={lang === "pt" ? { ...piece, ...PT[piece.id] } : piece} index={i} />
           ))}
         </div>
       </div>
@@ -68,7 +86,7 @@ function Piece({
   piece,
   index,
 }: {
-  piece: (typeof PIECES)[number];
+  piece: { id: string; label: string; tense: string; text: string; place: string };
   index: number;
 }) {
   const reduce = useReducedMotion() ?? false;

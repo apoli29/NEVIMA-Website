@@ -24,8 +24,12 @@ const BACK_GRACE = 900;
 const HARD_GRACE = 1600;
 
 import { goTo } from "@/components/page-wipe";
+import { basePath, langOf, localize } from "./i18n";
 
 export const PORTFOLIO_PATH = "/portfolio";
+
+/** Whether a path is the portfolio, in either language. */
+export const isPortfolio = (path: string) => basePath(path) === PORTFOLIO_PATH;
 
 export type Spot = {
   /** The page, path and query. */
@@ -66,9 +70,10 @@ export function keepSpot() {
     if they came straight to it. */
 export function leavePortfolio() {
   const spot = read<Spot>(SPOT_KEY);
-  if (!spot || spot.path.startsWith(PORTFOLIO_PATH)) {
-    goTo("/");
-    insist("/", BACK_GRACE);
+  if (!spot || isPortfolio(spot.path.split("?")[0])) {
+    const home = localize("/", langOf(window.location.pathname));
+    goTo(home);
+    insist(home, BACK_GRACE);
     return;
   }
   write(RESTORE_KEY, { path: spot.path, y: spot.y, at: Date.now() });
@@ -145,4 +150,37 @@ export function hasOpened() {
   } catch {
     return false;
   }
+}
+
+/* ==================================================================
+   Changing language
+
+   The foot's switch opens the same page in the other language (user,
+   2026-10-18). The visitor is kept where they were rather than sent to
+   the top: the page is put back as far from its foot as it was, since
+   the switch is in the foot and the two languages' pages are not quite
+   the same height. Noted as the link is followed, read by the keeper
+   once the page is there (return-keeper.tsx).
+   ================================================================== */
+
+const LANG_KEY = "nevima:lang-spot";
+
+type LangSpot = { path: string; fromEnd: number; at: number };
+
+export function keepLangSpot(path: string) {
+  write(LANG_KEY, {
+    path,
+    fromEnd: Math.round(document.documentElement.scrollHeight - window.scrollY),
+    at: Date.now(),
+  } satisfies LangSpot);
+}
+
+/** How far from the foot to put this page back, used up as it is read. */
+export function takeLangSpot(path: string): number | null {
+  const note = read<LangSpot>(LANG_KEY);
+  if (!note || note.path !== path || Date.now() - note.at > RESTORE_TTL) return null;
+  try {
+    sessionStorage.removeItem(LANG_KEY);
+  } catch {}
+  return note.fromEnd;
 }

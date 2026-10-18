@@ -6,7 +6,14 @@
    identity work; Estamento de Gerona is still being made. Every
    field the studio has not given yet is null, and the pages show it as
    TO_FILL, so nothing about a client is made up in the meantime.
+
+   What a project says in Portuguese is kept beside it (PT, by slug):
+   projectsIn() gives the list in a page's language. The services stay
+   named in English, as the report finds its chapters by them;
+   serviceLabel() gives each name in a language.
    ================================================================== */
+
+import type { Lang } from "./i18n";
 
 /** What the pages show where the studio has not filled a field in yet. */
 export const TO_FILL = "[a preencher]";
@@ -163,6 +170,40 @@ export const PROJECTS: Project[] = [
   },
 ];
 
+/** What each project says in Portuguese; everything else is shared. */
+const PT: Record<string, { summary: string; alt: string }> = {
+  bsmartish: {
+    summary:
+      "Um website e uma identidade visual feitos em conjunto, para que a marca se leia da mesma forma onde quer que seja encontrada. Rápido, claro em qualquer ecrã, e preparado para ser encontrado no Google e nas respostas da IA.",
+    alt: "Uma esfera de vidro e um prisma iluminados a vermelho sobre uma superfície escura",
+  },
+  "estamento-de-gerona": {
+    summary:
+      "Um website e a identidade por trás dele, desenhados como uma só peça. Uma estrutura calma e clara, que apresenta o projeto com confiança e tem espaço para crescer à medida que o conteúdo chega.",
+    alt: "Casas coloridas ao longo de um rio, em Girona",
+  },
+};
+
+/** The projects, in a language. */
+export const projectsIn = (lang: Lang): Project[] =>
+  lang === "pt"
+    ? PROJECTS.map((project) => {
+        const pt = PT[project.slug];
+        return pt ? { ...project, summary: pt.summary, photo: { ...project.photo, alt: pt.alt } } : project;
+      })
+    : PROJECTS;
+
+const SERVICE_PT: Record<string, string> = {
+  "Web design": "Web design",
+  "Visual identity": "Identidade visual",
+  SEO: "SEO",
+  GEO: "GEO",
+  "Photo shoot": "Sessão fotográfica",
+};
+
+/** A service as a project lists it, in a language. */
+export const serviceLabel = (name: string, lang: Lang) => (lang === "pt" ? (SERVICE_PT[name] ?? name) : name);
+
 export const workPath = (slug: string) => `/work/${slug}`;
 export const previewPath = (slug: string) => `/work/${slug}/preview`;
 
@@ -174,4 +215,9 @@ export const shown = (value: string | null) => value ?? TO_FILL;
 export const STATUS_LABEL: Record<Project["status"], string> = {
   live: "Live",
   "in-production": "In production",
+};
+
+export const STATUS_LABEL_PT: Record<Project["status"], string> = {
+  live: "Online",
+  "in-production": "Em produção",
 };

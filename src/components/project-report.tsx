@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { useAnimate, useReducedMotion } from "motion/react";
-import { TO_FILL, type Project } from "@/lib/work";
+import type { Lang, Translate } from "@/lib/i18n";
+import { useLang, useT } from "@/lib/use-lang";
+import { TO_FILL, serviceLabel, type Project } from "@/lib/work";
 
 /* ==================================================================
    The project report
@@ -34,7 +36,7 @@ function Fill({ value, className }: { value: string | null | undefined; classNam
   return <span className={`rp-fill ${className ?? ""}`}>{TO_FILL}</span>;
 }
 
-function Tags({ items, label = "Services" }: { items: readonly string[]; label?: string }) {
+function Tags({ items, label }: { items: readonly string[]; label: string }) {
   return (
     <ul className="fo-tags rp-tags" aria-label={label}>
       {items.map((item) => (
@@ -119,9 +121,11 @@ function ServiceChapter({
   left,
   right,
   children,
+  t,
 }: {
   name: string;
   main: boolean;
+  t: Translate;
   left: ReactNode;
   right: ReactNode;
   children?: ReactNode;
@@ -131,7 +135,7 @@ function ServiceChapter({
       <div className="rp-svc-head">
         <h3 className="rp-svc-name">{name}</h3>
         <span className={`mono-label ${main ? "rp-tag-main" : "idx-title"}`}>
-          {main ? "Main service" : "Additional service"}
+          {main ? t("Main service", "Serviço principal") : t("Additional service", "Serviço adicional")}
         </span>
       </div>
       <div className="rp-cols">
@@ -162,6 +166,10 @@ const BA_PEEK_MS = 700;
 
 function BeforeAfter({ before, after, name }: { before: string | null; after: string | null; name: string }) {
   const reduce = useReducedMotion() ?? false;
+  const t = useT();
+  const more = { before: t("Showing more of before", "A mostrar mais do antes"), after: t("Showing more of after", "A mostrar mais do depois") };
+  const words = useRef(more);
+  words.current = more;
   const card = useRef<HTMLDivElement>(null);
   const top = useRef<HTMLDivElement>(null);
   const line = useRef<HTMLSpanElement>(null);
@@ -186,7 +194,7 @@ function BeforeAfter({ before, after, name }: { before: string | null; after: st
       else card.current.removeAttribute("data-rest");
     }
     card.current?.setAttribute("aria-valuenow", String(Math.round(v)));
-    card.current?.setAttribute("aria-valuetext", v < 50 ? "Showing more of before" : "Showing more of after");
+    card.current?.setAttribute("aria-valuetext", v < 50 ? words.current.before : words.current.after);
   }, []);
 
   const run = useCallback(() => {
@@ -263,11 +271,11 @@ function BeforeAfter({ before, after, name }: { before: string | null; after: st
         className="rp-ba"
         role="slider"
         tabIndex={0}
-        aria-label={`${name}: before and after`}
+        aria-label={t(`${name}: before and after`, `${name}: antes e depois`)}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={100}
-        aria-valuetext="Showing more of after"
+        aria-valuetext={more.after}
         data-rest=""
         onPointerMove={(e) => follow(e.clientX)}
         onPointerDown={(e) => follow(e.clientX)}
@@ -305,25 +313,26 @@ function BeforeAfter({ before, after, name }: { before: string | null; after: st
             <path d="M5 1 1 6l4 5M19 1l4 5-4 5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </span>
-        <span className="mono-label rp-ba-tag rp-ba-tag-after" aria-hidden="true">After</span>
+        <span className="mono-label rp-ba-tag rp-ba-tag-after" aria-hidden="true">{t("After", "Depois")}</span>
         <span ref={beforeTag} className="mono-label rp-ba-tag rp-ba-tag-before" style={{ opacity: 0 }} aria-hidden="true">
-          Before
+          {t("Before", "Antes")}
         </span>
       </div>
-      <p className="rp-note">Move left to see how it was before.</p>
+      <p className="rp-note">{t("Move left to see how it was before.", "Move para a esquerda para veres como era antes.")}</p>
     </div>
   );
 }
 
-function chaptersFor(project: Project): Chapter[] {
+function chaptersFor(project: Project, t: Translate, lang: Lang): Chapter[] {
   const s = project.study;
+  const services = project.services.map((name) => serviceLabel(name, lang));
   const chapters: Chapter[] = [];
   const took = (title: string) => project.services.some((x) => x.toLowerCase() === title.toLowerCase());
   const live = project.status === "live" && project.url;
 
   chapters.push({
     id: "overview",
-    label: "Overview",
+    label: t("Overview", "Visão geral"),
     body: (
       <>
         <div className="rp-hero">
@@ -337,12 +346,17 @@ function chaptersFor(project: Project): Chapter[] {
           <div className="rp-cover-cta">
             {live ? (
               <a href={project.url!} target="_blank" rel="noopener" data-away="" className="idx-link idx-ask rp-go">
-                <GoInner />
+                <GoInner label={t("Go to website", "Ir para o website")} />
               </a>
             ) : (
               // Nowhere to go yet: at rest.
-              <span aria-disabled="true" title="The website is not online yet" className="idx-link idx-ask rp-go" data-rest="">
-                <GoInner />
+              <span
+                aria-disabled="true"
+                title={t("The website is not online yet", "O website ainda não está online")}
+                className="idx-link idx-ask rp-go"
+                data-rest=""
+              >
+                <GoInner label={t("Go to website", "Ir para o website")} />
               </span>
             )}
           </div>
@@ -350,7 +364,7 @@ function chaptersFor(project: Project): Chapter[] {
             <h2 id="rp-title" className="rp-cover-name">
               <span>{project.name}</span>
             </h2>
-            <Tags items={project.services} />
+            <Tags items={services} label={t("Services", "Serviços")} />
           </div>
           <p className="rp-lede rp-justify">{project.summary}</p>
         </div>
@@ -364,6 +378,7 @@ function chaptersFor(project: Project): Chapter[] {
     body: (
       <ServiceChapter
         name="Web Design"
+        t={t}
         main
         left={
           <p className="rp-text rp-justify">
@@ -373,9 +388,9 @@ function chaptersFor(project: Project): Chapter[] {
         right={
           <dl className="rp-specs">
             {[
-              ["Design level", project.designLevel],
-              ["Pages", project.pages],
-              ["Languages", s.languages],
+              [t("Design level", "Nível de design"), project.designLevel],
+              [t("Pages", "Páginas"), project.pages],
+              [t("Languages", "Línguas"), s.languages],
             ].map(([label, value]) => (
               <div key={label}>
                 <dt className="mono-label text-ash-2">{label}</dt>
@@ -393,13 +408,14 @@ function chaptersFor(project: Project): Chapter[] {
   if (took("Visual identity")) {
     chapters.push({
       id: "visual-identity",
-      label: "Visual Identity",
+      label: t("Visual Identity", "Identidade Visual"),
       body: (
         <ServiceChapter
-          name="Visual Identity"
+          name={t("Visual Identity", "Identidade Visual")}
+          t={t}
           main={false}
           left={<BeforeAfter before={s.identity.before} after={s.identity.after} name={project.name} />}
-          right={<Para title="The idea" value={s.identity.idea} />}
+          right={<Para title={t("The idea", "A ideia")} value={s.identity.idea} />}
         />
       ),
     });
@@ -412,21 +428,30 @@ function chaptersFor(project: Project): Chapter[] {
       body: (
         <ServiceChapter
           name="SEO"
+          t={t}
           main={false}
-          left={<Ticks title="What we put in place" items={s.seo.work} />}
+          left={<Ticks title={t("What we put in place", "O que pusemos em prática")} items={s.seo.work} />}
           right={
             <>
               <div>
-                <p className="mono-label text-ash-2">The searches it is set up for</p>
+                <p className="mono-label text-ash-2">
+                  {t("The searches it is set up for", "As pesquisas para que está preparado")}
+                </p>
                 <div className="rp-gap">
                   {s.seo.searches?.length ? (
-                    <Tags items={s.seo.searches} label="Searches" />
+                    <Tags items={s.seo.searches} label={t("Searches", "Pesquisas")} />
                   ) : (
                     <p className="rp-fill">{TO_FILL}</p>
                   )}
                 </div>
               </div>
-              <Readouts big items={[["Before", s.seo.before], ["After", s.seo.after]]} />
+              <Readouts
+                big
+                items={[
+                  [t("Before", "Antes"), s.seo.before],
+                  [t("After", "Depois"), s.seo.after],
+                ]}
+              />
             </>
           }
         />
@@ -441,9 +466,15 @@ function chaptersFor(project: Project): Chapter[] {
       body: (
         <ServiceChapter
           name="GEO"
+          t={t}
           main={false}
-          left={<Ticks title="What we put in place" items={s.geo.work} />}
-          right={<Para title="How it shows in AI answers now" value={s.geo.presence} />}
+          left={<Ticks title={t("What we put in place", "O que pusemos em prática")} items={s.geo.work} />}
+          right={
+            <Para
+              title={t("How it shows in AI answers now", "Como aparece agora nas respostas da IA")}
+              value={s.geo.presence}
+            />
+          }
         />
       ),
     });
@@ -452,13 +483,21 @@ function chaptersFor(project: Project): Chapter[] {
   if (took("Photo shoot")) {
     chapters.push({
       id: "photo-shoot",
-      label: "Photo Shoot",
+      label: t("Photo Shoot", "Sessão Fotográfica"),
       body: (
         <ServiceChapter
-          name="Photo Shoot"
+          name={t("Photo Shoot", "Sessão Fotográfica")}
+          t={t}
           main={false}
-          left={<Para title="What we photographed" value={s.shoot.subject} />}
-          right={<Readouts items={[["Photos", s.shoot.photos], ["Videos", s.shoot.videos]]} />}
+          left={<Para title={t("What we photographed", "O que fotografámos")} value={s.shoot.subject} />}
+          right={
+            <Readouts
+              items={[
+                [t("Photos", "Fotografias"), s.shoot.photos],
+                [t("Videos", "Vídeos"), s.shoot.videos],
+              ]}
+            />
+          }
         >
           <div className="rp-gallery" aria-hidden="true">
             {Array.from({ length: 6 }, (_, i) => (
@@ -496,8 +535,10 @@ export function ProjectReport({
   const leaving = useRef(false);
   const [ready, setReady] = useState(false);
   const [current, setCurrent] = useState("overview");
+  const t = useT();
+  const lang = useLang();
 
-  const chapters = chaptersFor(project);
+  const chapters = chaptersFor(project, t, lang);
   // The tile and the sheet, measured before the first paint, so the sheet
   // is drawn over the tile from its very first frame.
   useLayoutEffect(() => {
@@ -625,7 +666,7 @@ export function ProjectReport({
         <div className="rp-bar" style={flying ? { opacity: 0 } : undefined}>
           <button ref={close} type="button" onClick={shut} className="cta-drop cta-drop-light rp-bar-button">
             <span className="btn-neu-face">
-              Close
+              {t("Close", "Fechar")}
               <span aria-hidden="true">&times;</span>
             </span>
           </button>
@@ -647,7 +688,7 @@ export function ProjectReport({
             <div ref={content} style={flying ? { opacity: 0 } : undefined}>
               <header className="rp-head">
                 <div className="rp-head-row">
-                  <nav aria-label="Report chapters" className="rp-nav">
+                  <nav aria-label={t("Report chapters", "Capítulos do relatório")} className="rp-nav">
                     {chapters.map((chapter) => (
                       <button
                         key={chapter.id}
@@ -659,7 +700,9 @@ export function ProjectReport({
                       </button>
                     ))}
                   </nav>
-                  <span className="mono-label idx-title rp-head-label">Project report</span>
+                  <span className="mono-label idx-title rp-head-label">
+                    {t("Project report", "Relatório do projeto")}
+                  </span>
                 </div>
                 <span className="rp-progress" aria-hidden="true">
                   <span ref={progress} />
@@ -681,7 +724,7 @@ export function ProjectReport({
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/nevima-wordmark.svg" alt="" className="rp-mark" />
                 <button type="button" onClick={() => go(chapters[0].id)} className="rp-top-link">
-                  Back to the top
+                  {t("Back to the top", "Voltar ao topo")}
                 </button>
               </footer>
             </div>
@@ -694,12 +737,12 @@ export function ProjectReport({
 }
 
 /** "Go to website", set as the index's ask: the light, the words, the arrow. */
-function GoInner() {
+function GoInner({ label }: { label: string }) {
   return (
     <>
       <span className="idx-name flex items-center gap-2.5">
         <span aria-hidden="true" className="live-dot live-dot-loud" />
-        Go to website
+        {label}
       </span>
       <span aria-hidden="true" className="idx-arrow">
         <svg viewBox="0 0 16 16" width="16" height="16" fill="none" className="block">

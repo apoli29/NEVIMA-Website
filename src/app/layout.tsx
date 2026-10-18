@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Instrument_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import { CtaGlassFilters } from "@/components/cta-glass";
+import { HtmlLang, LANG_SCRIPT } from "@/components/html-lang";
 import { PageWipe } from "@/components/page-wipe";
 import { ReturnKeeper } from "@/components/return-keeper";
 import "./globals.css";
@@ -35,20 +36,23 @@ const mono = Geist_Mono({
   display: "swap",
 });
 
+/* The English site's title and description; the Portuguese pages carry
+   their own (src/app/pt/layout.tsx). */
 export const metadata: Metadata = {
   metadataBase: new URL("https://nevima.pt"),
   title: {
-    default: "nevima — websites e identidade visual",
+    default: "nevima — websites and visual identity",
     template: "%s · nevima",
   },
   description:
-    "Duas pessoas, ferramentas certas: websites e identidade visual ao nível de agências muito maiores, sem a burocracia que costuma vir com esse tamanho.",
+    "Two people, the right tools: websites and visual identity on a par with much bigger agencies, without the red tape that usually comes with their size.",
   openGraph: {
-    title: "nevima — menos estrutura, mais alcance",
+    title: "nevima — less structure, more reach",
     description:
-      "Estúdio de websites e identidade visual. Duas pessoas, zero intermediários, resultados de agência grande.",
+      "A website and visual identity studio. Two people, zero intermediaries, big-agency results.",
     type: "website",
-    locale: "pt_PT",
+    locale: "en_US",
+    alternateLocale: ["pt_PT"],
   },
 };
 
@@ -60,8 +64,14 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${title.variable} ${read.variable} ${mono.variable}`}>
+    // The language is set again on a /pt page before it is painted (see
+    // html-lang.tsx), so the server's "en" is expected to differ there.
+    <html lang="en" className={`${title.variable} ${read.variable} ${mono.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: LANG_SCRIPT }} />
+      </head>
       <body className="antialiased">
+        <HtmlLang />
         <CtaGlassFilters />
         <ReturnKeeper />
         <PageWipe />

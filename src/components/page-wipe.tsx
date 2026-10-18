@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { basePath } from "@/lib/i18n";
 
 /* ==================================================================
    Page cover
@@ -125,7 +126,7 @@ export function PageWipe() {
       // Into the portfolio, the way out of it played backwards (user,
       // 2026-10-13): the page falls to black, and the portfolio's photos
       // come up out of it, from small and out of focus.
-      if (url.pathname === "/portfolio") fadeThen("#000000", () => router.push(href), 0, 320);
+      if (basePath(url.pathname) === "/portfolio") fadeThen("#000000", () => router.push(href), 0, 320);
       else router.push(href);
     };
     // Fetched as the hand reaches the link, so the page is there by the

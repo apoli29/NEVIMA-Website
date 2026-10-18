@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { booted } from "@/lib/opened";
-import { PORTFOLIO_PATH, keepSpot, takeReturn } from "@/lib/return-spot";
+import { isPortfolio, keepSpot, takeLangSpot, takeReturn } from "@/lib/return-spot";
 
 /* ==================================================================
    Return keeper
@@ -11,6 +11,8 @@ import { PORTFOLIO_PATH, keepSpot, takeReturn } from "@/lib/return-spot";
    Mounted once, in the layout. It notes where a visitor stands as they
    follow any link into the portfolio, and puts a page back where it
    stood when the portfolio sends them back to it (see return-spot.ts).
+   A page opened in the other language from the foot is put back the
+   same way, as far from its end as the visitor was.
 
    The page is put back over a short while rather than once: its height
    settles as its fonts and images arrive, and the home page holds itself
@@ -37,20 +39,26 @@ export function ReturnKeeper() {
       const link = (event.target as Element | null)?.closest?.("a[href]");
       if (!(link instanceof HTMLAnchorElement)) return;
       const url = new URL(link.href, window.location.href);
-      if (url.origin !== window.location.origin || url.pathname !== PORTFOLIO_PATH) return;
-      if (window.location.pathname === PORTFOLIO_PATH) return;
+      if (url.origin !== window.location.origin || !isPortfolio(url.pathname)) return;
+      if (isPortfolio(window.location.pathname)) return;
       keepSpot();
     };
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);
   }, []);
 
+  // Put back from the portfolio at the same place, or into the other
+  // language as far from the foot as it was (see return-spot.ts).
   useEffect(() => {
-    const y = takeReturn(path);
-    if (y === null) return;
+    const back = takeReturn(path);
+    const fromEnd = back === null ? takeLangSpot(path) : null;
+    if (back === null && fromEnd === null) return;
+    const place = () =>
+      back ?? Math.max(0, document.documentElement.scrollHeight - (fromEnd ?? 0));
     const until = performance.now() + SETTLE_MS;
     let frame = 0;
     const hold = () => {
+      const y = place();
       if (Math.abs(window.scrollY - y) > 1) window.scrollTo(0, y);
       if (performance.now() < until) frame = requestAnimationFrame(hold);
     };

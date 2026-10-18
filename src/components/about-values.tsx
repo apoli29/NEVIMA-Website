@@ -9,6 +9,7 @@ import {
   type MouseEvent,
 } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { useLang, useT } from "@/lib/use-lang";
 import { SlideIn } from "./enter";
 import { useInkAlign } from "./ink-align";
 import { useSeen } from "./use-seen";
@@ -71,6 +72,27 @@ const VALUES = [
   },
 ] as const;
 
+/* The four in Portuguese, from the studio's own originals (see
+   docs/about-decisions.md), carried to the content the English has now. */
+const PT_VALUES: Record<(typeof VALUES)[number]["id"], { name: string; text: string }> = {
+  quality: {
+    name: "Eficiência com qualidade",
+    text: "Focamo-nos em tornar todos os nossos processos eficientes, sem nunca comprometer a qualidade que entregamos. O resultado? Websites de excelência, feitos num prazo reduzido e com uma relação qualidade-preço elevadíssima.",
+  },
+  open: {
+    name: "Transparência",
+    text: "Para nós, é inegociável que os nossos clientes conheçam a forma como trabalhamos e a forma como atribuímos valor ao nosso trabalho. É por isso que explicamos todo o nosso processo e procuramos dar-te, logo à partida, uma estimativa de orçamento.",
+  },
+  ease: {
+    name: "Facilitar",
+    text: "Queremos que os nossos clientes fiquem livres de qualquer preocupação logística, do registo do domínio e do alojamento do website ao registo da marca (se aplicável). Acompanhamos o processo de perto, apoiamos-te do início ao fim e, sempre que a lei e a prática o permitem, tratamos nós disso.",
+  },
+  current: {
+    name: "Compromisso com o vanguardismo",
+    text: "Estamos totalmente com\u00adpro\u00adme\u00adti\u00addos em ser o mais i\u00adno\u00adva\u00addo\u00adres possível, nas ferramentas que usamos e nas nossas práticas e processos. Adaptamos cons\u00adtan\u00adte\u00admen\u00adte a nossa forma de trabalhar precisamente para oferecer um serviço com um nível de inovação muito acima da norma.",
+  },
+};
+
 /** What the callout points at: a drop, or the piece the four made. */
 type Aim = { kind: "drop"; i: number } | { kind: "piece" } | null;
 
@@ -85,6 +107,9 @@ export function AboutValues() {
   const mergedRef = useRef<HTMLButtonElement>(null);
   useInkAlign(titleRef, subRef);
   const seen = useSeen(field, { threshold: 0.35 });
+  const t = useT();
+  const lang = useLang();
+  const values = lang === "pt" ? VALUES.map((v) => ({ ...v, ...PT_VALUES[v.id] })) : VALUES;
 
   // The value on show, from the moment it is chosen until the four are
   // back where they lay; and whether the words are fully in on the piece.
@@ -97,9 +122,9 @@ export function AboutValues() {
 
   // "Click" where there is a pointer that can hover, "Tap" where there is
   // not. Read once mounted: the server cannot know.
-  const [press, setPress] = useState("Click");
+  const [tap, setTap] = useState(false);
   useEffect(() => {
-    if (!window.matchMedia("(hover: hover)").matches) setPress("Tap");
+    if (!window.matchMedia("(hover: hover)").matches) setTap(true);
   }, []);
 
   // The callouts. While the four are apart they never stop: each drop
@@ -197,7 +222,7 @@ export function AboutValues() {
     return () => window.removeEventListener("keydown", onKey);
   }, [chosen, part]);
 
-  const value = VALUES[chosen ?? 0];
+  const value = values[chosen ?? 0];
   const on = seen || reduce;
   // Where each callout up on the water was drawn, so a new one can keep
   // clear of them (see Callout).
@@ -241,14 +266,16 @@ export function AboutValues() {
               id="values-title"
               className="display text-[clamp(2.25rem,4.2vw,4.25rem)] text-ink"
             >
-              <span className="block font-light">Four values.</span>
-              <span className="block font-medium">One way of working.</span>
+              <span className="block font-light">{t("Four values.", "Quatro valores.")}</span>
+              <span className="block font-medium">{t("One way of working.", "Uma forma de trabalhar.")}</span>
             </h2>
           </SlideIn>
           <SlideIn ready from="right" delay={0.12} className="w-full max-w-[20rem] shrink-0">
             <p ref={subRef} className="abt-val-sub text-[0.9375rem] leading-[1.45] text-ash">
-              Pick one to see what it means. None of them works alone, so
-              they never stay apart for long.
+              {t(
+                "Pick one to see what it means. None of them works alone, so they never stay apart for long.",
+                "Escolhe um para veres o que significa. Nenhum funciona sozinho, por isso nunca ficam separados por muito tempo.",
+              )}
             </p>
           </SlideIn>
         </div>
@@ -257,11 +284,11 @@ export function AboutValues() {
             either way for the piece the four become. */}
         <div ref={field} className="relative flex items-center pt-40 pb-10 md:pt-40 md:pb-12">
           <ul
-            aria-label="Values: choose one to read it"
+            aria-label={t("Values: choose one to read it", "Valores: escolhe um para o leres")}
             data-chosen={chosen === null ? undefined : ""}
             className="abt-val-list grid w-full grid-cols-2 gap-y-16 md:grid-cols-4"
           >
-            {VALUES.map((v, i) => (
+            {values.map((v, i) => (
               <motion.li
                 key={v.id}
                 className="flex justify-center"
@@ -319,7 +346,9 @@ export function AboutValues() {
             >
               <span className="abt-val-name display block">{value.name}</span>
               <span className="abt-val-text block">{value.text}</span>
-              <span className="sr-only">. Press to see all four values again.</span>
+              <span className="sr-only">
+                {t(". Press to see all four values again.", ". Carrega para voltares a ver os quatro valores.")}
+              </span>
             </button>
           </div>
         </div>
@@ -333,7 +362,15 @@ export function AboutValues() {
               id={key}
               placed={placed.current}
               aim={aim}
-              label={aim.kind === "piece" ? `${press} to close` : `${press} here`}
+              label={
+                aim.kind === "piece"
+                  ? tap
+                    ? t("Tap to close", "Toca para fechar")
+                    : t("Click to close", "Clica para fechar")
+                  : tap
+                    ? t("Tap here", "Toca aqui")
+                    : t("Click here", "Clica aqui")
+              }
               section={section}
               slots={control.current.slots}
               piece={mergedRef}

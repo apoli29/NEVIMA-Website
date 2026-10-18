@@ -2,6 +2,8 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "motion/react";
+import type { Copy, Lang } from "@/lib/i18n";
+import { useHref, useLang, useT } from "@/lib/use-lang";
 import { ENTER_EASE } from "./enter";
 import { Illuminated } from "./services";
 
@@ -25,16 +27,23 @@ import { Illuminated } from "./services";
 
 /* Soft hyphens in the long words: justified in a narrow column, the
    lines can break inside them rather than open gaps around them. */
-const STATEMENT =
-  "Nevima is a studio of two young, long-time friends who share a fas\u00adci\u00adna\u00adtion with com\u00admu\u00adni\u00adca\u00adtion and web de\u00advel\u00adop\u00adment. We didn\u2019t start out to be just another studio doing more of the same, but to offer a com\u00adplete\u00adly dif\u00adfer\u00adent approach.";
+const STATEMENT: Copy = {
+  en: "Nevima is a studio of two young, long-time friends who share a fas\u00adci\u00adna\u00adtion with com\u00admu\u00adni\u00adca\u00adtion and web de\u00advel\u00adop\u00adment. We didn\u2019t start out to be just another studio doing more of the same, but to offer a com\u00adplete\u00adly dif\u00adfer\u00adent approach.",
+  pt: "A Nevima é um estúdio de dois jo\u00advens a\u00admi\u00adgos de longa data, que partilham o fas\u00adcí\u00adnio pela co\u00admu\u00adni\u00adca\u00adção e pelo web de\u00advel\u00adop\u00adment. Não nas\u00adce\u00admos para ser só mais um estúdio a fazer mais do mesmo, mas para trazer uma abor\u00adda\u00adgem com\u00adple\u00adta\u00admen\u00adte di\u00adfe\u00adren\u00adte.",
+};
 
 /* The pillar, up to and including the colon it turns on. */
-const PILLAR =
-  "Our pillar is efficiency, because we deliver elite results without long turnaround times. The secret is simple:";
+const PILLAR: Copy = {
+  en: "Our pillar is efficiency, because we deliver elite results without long turnaround times. The secret is simple:",
+  pt: "O nosso pilar é a eficiência, porque entregamos resultados de excelência sem prazos longos. O segredo é simples:",
+};
 
 /* And what follows it, which is run through with a black marker. */
 // A non-breaking hyphen: "know-how" is never split across two lines.
-const PILLAR_MARK = "the know\u2011how we have and using the right tools.";
+const PILLAR_MARK: Copy = {
+  en: "the know\u2011how we have and using the right tools.",
+  pt: "o know\u2011how que temos e o uso das ferramentas certas.",
+};
 
 /** How far out of the shell each half of the statement starts, in pixels. */
 const ENTER_SHIFT = 56;
@@ -48,15 +57,25 @@ const FOUNDERS = [
 ] as const;
 
 /* The statement's words, and where it is given its two people and its
-   stroke. */
-const WORDS = STATEMENT.split(" ");
-const PORTRAITS_AFTER = WORDS.indexOf("two");
-/* "a completely different proposition." */
-const STROKE_FROM = WORDS.findIndex((w) => w.startsWith("com\u00adplete")) - 1;
+   stroke, in each language. */
+function statementIn(lang: Lang) {
+  const words = STATEMENT[lang].split(" ");
+  return {
+    words,
+    portraitsAfter: words.indexOf(lang === "pt" ? "dois" : "two"),
+    /* "a completely different approach.", "uma abordagem completamente
+       diferente." */
+    strokeFrom:
+      lang === "pt"
+        ? words.findIndex((w) => w.startsWith("abor\u00ad")) - 1
+        : words.findIndex((w) => w.startsWith("com\u00adplete")) - 1,
+  };
+}
 
 /* ================================================================== */
 
 export function Studio({ ready }: { ready: boolean }) {
+  const t = useT();
   return (
     <section
       id="studio"
@@ -72,7 +91,7 @@ export function Studio({ ready }: { ready: boolean }) {
     >
       <div className="shell">
         <h2 id="studio-title" className="sr-only">
-          About Nevima
+          {t("About Nevima", "Sobre a Nevima")}
         </h2>
 
         <div className="std-wrap">
@@ -89,6 +108,7 @@ export function Studio({ ready }: { ready: boolean }) {
 
 function Statement({ ready }: { ready: boolean }) {
   const reduce = useReducedMotion() ?? false;
+  const t = useT();
   const ref = useRef<HTMLDivElement>(null);
   const [seen, setSeen] = useState(false);
 
@@ -141,8 +161,8 @@ function Statement({ ready }: { ready: boolean }) {
           lit={lit}
           reduce={reduce}
           delayMs={PILLAR_LIGHT_MS}
-          text={PILLAR}
-          mark={PILLAR_MARK}
+          text={t(PILLAR)}
+          mark={t(PILLAR_MARK)}
           className="svc-copy std-ink std-pillar"
         />
       </motion.div>
@@ -156,6 +176,7 @@ function Statement({ ready }: { ready: boolean }) {
 function InkStatement({ reduce }: { reduce: boolean }) {
   const ref = useRef<HTMLParagraphElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 1.05", "end 1"] });
+  const { words: WORDS, portraitsAfter: PORTRAITS_AFTER, strokeFrom: STROKE_FROM } = statementIn(useLang());
   const n = WORDS.length;
   // Each word takes a little longer than its share, so the ink runs on
   // as a soft front rather than word by word in steps.
@@ -308,6 +329,8 @@ function Portraits({
   reduce: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const t = useT();
+  const href = useHref();
   const self = useRef<HTMLAnchorElement>(null);
   const shell = useRef<HTMLSpanElement>(null);
   const ink = useRef<HTMLSpanElement>(null);
@@ -630,7 +653,7 @@ function Portraits({
   return (
     <motion.a
       ref={self}
-      href="/about"
+      href={href("/about")}
       className="std-faces"
       data-open={open ? "" : undefined}
       onPointerEnter={(e) => {
@@ -643,7 +666,7 @@ function Portraits({
         if (open && by.current === "focus") hide();
       }}
       style={reduce ? undefined : { opacity, scale }}
-      aria-label="Find out more about us"
+      aria-label={t("Find out more about us", "Conhece-nos melhor")}
     >
       <span ref={shell} className="std-faces-in">
         {/* The capsule's black, drawn under the faces and the words, so it
@@ -654,7 +677,7 @@ function Portraits({
           <img src={FOUNDERS[0].photo} alt="" draggable={false} style={{ objectPosition: FOUNDERS[0].focus }} />
         </span>
         <span ref={say} aria-hidden="true" className="std-faces-say">
-          <span ref={words}>Find out more about us</span>
+          <span ref={words}>{t("Find out more about us", "Conhece\u2011nos melhor")}</span>
         </span>
         <span ref={far} className="std-face">
           {/* eslint-disable-next-line @next/next/no-img-element */}

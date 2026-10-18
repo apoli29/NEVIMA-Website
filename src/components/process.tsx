@@ -12,7 +12,9 @@ import {
   useTransform,
   type MotionValue,
 } from "motion/react";
+import type { Copy, Lang } from "@/lib/i18n";
 import { servicePath } from "@/lib/services";
+import { useHref, useLang, useT } from "@/lib/use-lang";
 import { SlideIn } from "./enter";
 import { PassLink } from "./floating-nav";
 import { useInkAlign } from "./ink-align";
@@ -53,13 +55,19 @@ import { jumpTo } from "./smooth-scroll";
 
 type Who = "You" | "Us" | "You and us";
 
+const WHO: Record<Who, Copy> = {
+  You: { en: "You", pt: "Tu" },
+  Us: { en: "Us", pt: "Nós" },
+  "You and us": { en: "You and us", pt: "Tu e nós" },
+};
+
 /** The services only done if the client asks for them. */
 type Extra = "photo" | "identity" | "seo" | "geo";
-const EXTRAS: { id: Extra; label: string }[] = [
-  { id: "photo", label: "Photo shoot" },
-  { id: "identity", label: "Visual identity" },
-  { id: "seo", label: "SEO" },
-  { id: "geo", label: "GEO" },
+const EXTRAS: { id: Extra; label: Copy }[] = [
+  { id: "photo", label: { en: "Photo shoot", pt: "Sessão fotográfica" } },
+  { id: "identity", label: { en: "Visual identity", pt: "Identidade visual" } },
+  { id: "seo", label: { en: "SEO", pt: "SEO" } },
+  { id: "geo", label: { en: "GEO", pt: "GEO" } },
 ];
 
 type Cta = { proposal: true } | { href: string; label: string };
@@ -93,6 +101,114 @@ const explore = (slug: string, title: string): Cta => ({
   href: servicePath(slug),
   label: `Explore ${title}`,
 });
+
+/* ==================================================================
+   The same steps in Portuguese, by id: each phase's name, and each
+   step's name, principle, text and call to action. Everything else
+   (order, who, extras, widths) is the English record's.
+   ================================================================== */
+
+const PT_PHASES: Record<string, string> = {
+  proposal: "Proposta e contrato",
+  production: "Produção",
+  launch: "Revisão e lançamento",
+  after: "Depois do lançamento",
+};
+
+const PT_STEPS: Record<string, Pick<Step, "name" | "principle" | "text"> & { cta?: string }> = {
+  estimate: {
+    name: "Pede uma estimativa de preço",
+    principle: "Primeiro, vês o preço.",
+    text: "Preenches um formulário curto, que calcula uma estimativa para o teu projeto a partir das tuas respostas.",
+  },
+  analysis: {
+    name: "Definimos o preço exato",
+    principle: "Enviamos-te o orçamento real.",
+    text: "Analisamos as tuas respostas e, em poucas horas, damos-te o preço exato do teu projeto, sempre com a justificação por trás dele.",
+  },
+  contract: {
+    name: "O contrato",
+    principle: "Tudo acordado por escrito.",
+    text: "Assim que respondes ao orçamento, enviamos-te o contrato, com todas as condições do trabalho definidas por escrito.",
+  },
+  materials: {
+    name: "Os teus materiais",
+    principle: "O prazo começa contigo.",
+    text: "Com o contrato, pedimos-te tudo o que precisamos: as fotografias que já tens do teu negócio, o teu logótipo e símbolo, e o que mais o projeto exigir. O trabalho começa assim que tivermos tudo.",
+  },
+  photo: {
+    name: "A sessão fotográfica",
+    principle: "Imagens só tuas.",
+    text: "Combinamos contigo uma data e, quando se aplique, uma taxa de deslocação. Consoante o andamento da sessão, damos-te uma data de entrega das fotografias e dos vídeos finais, e só começamos a construir o teu website quando estiverem prontos. São totalmente teus, por isso podes usá-los à vontade noutros projetos.",
+  },
+  identity: {
+    name: "Começamos pela identidade",
+    principle: "Primeiro, a identidade.",
+    text: "Acreditamos que um website só deve ser começado quando tudo aquilo de que precisa está pronto. Por isso, desenhamos primeiro o teu logótipo e símbolo, e construímos com eles na mão.",
+    cta: "Explorar Identidade Visual",
+  },
+  trademark: {
+    name: "O registo da tua marca",
+    principle: "A tua marca, registada.",
+    text: "Com a tua identidade pronta, marcamos uma reunião, incluída no preço, para registarmos juntos a tua marca.",
+  },
+  strategy: {
+    name: "Uma chamada de acompanhamento",
+    principle: "Primeiro a estrutura, depois falamos.",
+    text: "Quando parte do teu website estiver construída, marcamos uma chamada para te mostrarmos a direção que está a tomar. Ajustamos tudo o que a tua opinião pedir, para que o resultado fique ao teu gosto e o website final dificilmente precise de alterações.",
+  },
+  finish: {
+    name: "Conclusão do website e SEO básico",
+    principle: "Concluído, e pronto para ser encontrado.",
+    text: "Concluímos o website e aplicamos o SEO básico que vem com o nosso serviço de web design. Depois, marcamos uma chamada para te apresentarmos o resultado final, em que o aprovas ou pedes alterações. As alterações que nos levam só alguns minutos nunca são cobradas; para algo maior, recebes um orçamento antes de começarmos.",
+  },
+  hosting: {
+    name: "Logística",
+    principle: "Tratamos da logística.",
+    text: "Tratamos de tudo o que envolve o website, desde as páginas legais (política de privacidade, política de cookies e as restantes, cujo conteúdo a lei obriga o teu negócio a produzir; nós colocamo-las no website) até ao alojamento e à ligação do teu domínio.",
+  },
+  seo: {
+    name: "Aplicamos práticas de SEO",
+    principle: "Primeiro aplicado, depois publicado.",
+    text: "Para trazer tráfego desde o primeiro dia, aplicamos o nosso trabalho pontual de SEO antes de o teu website ficar online. É ele que te leva pelos primeiros meses; para o tráfego não cair depois disso, recomendamos o nosso serviço mensal.",
+    cta: "Explorar SEO",
+  },
+  geo: {
+    name: "Aplicamos práticas de GEO",
+    principle: "Recomendado desde o primeiro dia.",
+    text: "Também é feito antes do lançamento, para que as ferramentas de IA tenham mais probabilidade de recomendar o teu negócio desde o dia em que fica online.",
+    cta: "Explorar GEO",
+  },
+  "launch-step": {
+    name: "Lançamento",
+    principle: "Dás o teu aval, e fica online.",
+    text: "Pomos o teu website online, pronto para os teus clientes e para todos os que contam para o teu negócio.",
+  },
+  "later-changes": {
+    name: "Continuamos cá depois do lançamento",
+    principle: "Cá estamos quando precisares.",
+    text: "Para o que precisares, continuamos totalmente disponíveis.",
+  },
+};
+
+/** The phases in a language. */
+function phasesIn(lang: Lang): Phase[] {
+  if (lang === "en") return PHASES;
+  return PHASES.map((phase) => ({
+    ...phase,
+    name: PT_PHASES[phase.id] ?? phase.name,
+    steps: phase.steps.map((step) => {
+      const pt = PT_STEPS[step.id];
+      if (!pt) return step;
+      const { cta: label, ...words } = pt;
+      return {
+        ...step,
+        ...words,
+        cta: step.cta?.map((cta) => ("proposal" in cta || !label ? cta : { ...cta, label })),
+      };
+    }),
+  }));
+}
 
 const PHASES: Phase[] = [
   {
@@ -308,7 +424,8 @@ export function Process({ ready }: { ready: boolean }) {
   const [extras, setExtras] = useState<Extra[]>([]);
   const toggle = (id: Extra) =>
     setExtras((was) => (was.includes(id) ? was.filter((e) => e !== id) : [...was, id]));
-  const phases = PHASES.map((phase) => ({
+  const t = useT();
+  const phases = phasesIn(useLang()).map((phase) => ({
     ...phase,
     steps: phase.steps.filter((step) => !step.extra || extras.includes(step.extra)),
   }));
@@ -464,15 +581,16 @@ export function Process({ ready }: { ready: boolean }) {
                 id="process-title"
                 className="display text-[clamp(2rem,4.2vw,4.25rem)] text-ink"
               >
-                <span className="block font-light">How we work.</span>
-                <span className="block font-medium">The whole process, in detail.</span>
+                <span className="block font-light">{t("How we work.", "Como trabalhamos.")}</span>
+                <span className="block font-medium">{t("The whole process, in detail.", "Todo o processo, em detalhe.")}</span>
               </h2>
             </SlideIn>
             <SlideIn ready={ready} from="right" delay={0.12} className="max-w-[19rem] shrink-0 max-md:hidden lg:text-right">
               <p ref={subRef} className="text-[0.9375rem] leading-[1.45] text-balance text-ash">
-                It all comes down to one idea: take out everything that
-                doesn&rsquo;t move your project forward, and keep you close to
-                everything that does.
+                {t(
+                  "It all comes down to one idea: take out everything that doesn’t move your project forward, and keep you close to everything that does.",
+                  "Tudo se resume a uma ideia: tirar tudo o que não faz avançar o teu projeto, e manter-te perto de tudo o que o faz avançar.",
+                )}
               </p>
             </SlideIn>
           </div>
@@ -482,7 +600,10 @@ export function Process({ ready }: { ready: boolean }) {
         <div className="shell mt-[clamp(1rem,3svh,1.75rem)]">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5">
             <p id="prc-extras" className="mono-label text-ink">
-              Choose the services you want to see how we handle each one
+              {t(
+                "Choose the services you want to see how we handle each one",
+                "Escolhe os serviços para veres como tratamos de cada um",
+              )}
             </p>
             <div role="group" aria-labelledby="prc-extras" className="flex flex-wrap gap-1.5">
               {EXTRAS.map((extra) => (
@@ -496,7 +617,7 @@ export function Process({ ready }: { ready: boolean }) {
                   <span aria-hidden="true" className="prc-chip-mark">
                     {extras.includes(extra.id) ? "\u2212" : "+"}
                   </span>
-                  {extra.label}
+                  {t(extra.label)}
                 </button>
               ))}
             </div>
@@ -555,11 +676,13 @@ export function Process({ ready }: { ready: boolean }) {
             ))}
             <li className="prc-end">
               <h3 className="display text-[clamp(1.5rem,2.1vw,2.125rem)] leading-[1.02] font-light text-ink">
-                It all starts with your estimate.
+                {t("It all starts with your estimate.", "Tudo começa com a tua estimativa.")}
               </h3>
               <p className="mt-4 text-[clamp(0.9375rem,1vw,1rem)] leading-[1.5] text-justify hyphens-auto text-ash">
-                Tell us what you need and see a price range straight away. Your
-                proposal is free.
+                {t(
+                  "Tell us what you need and see a price range straight away. Your proposal is free.",
+                  "Diz-nos o que precisas e vê logo um intervalo de preço. A tua proposta é gratuita.",
+                )}
               </p>
               <div className="mt-7">
                 <ProposalCta />
@@ -603,6 +726,8 @@ function PhaseHead({
 }
 
 function StepCard({ step, n, count, on }: { step: Step; n: number; count: number; on: boolean }) {
+  const t = useT();
+  const href = useHref();
   return (
     <li
       data-step
@@ -615,7 +740,7 @@ function StepCard({ step, n, count, on }: { step: Step; n: number; count: number
         <span className="idx-title prc-eyebrow">
           {step.extra && (
             <>
-              <span className="prc-eyebrow-ask">If you request</span>
+              <span className="prc-eyebrow-ask">{t("If you request", "Se pedires")}</span>
               <span aria-hidden="true" className="prc-eyebrow-bar">
                 |
               </span>
@@ -623,9 +748,7 @@ function StepCard({ step, n, count, on }: { step: Step; n: number; count: number
           )}
           {step.name}
         </span>
-        <span className="sr-only">
-          , step {n + 1} of {count}
-        </span>
+        <span className="sr-only">{t(`, step ${n + 1} of ${count}`, `, passo ${n + 1} de ${count}`)}</span>
       </p>
       <h4
         id={`step-${step.id}`}
@@ -644,7 +767,7 @@ function StepCard({ step, n, count, on }: { step: Step; n: number; count: number
             ) : (
               <PassLink
                 key={cta.href}
-                href={cta.href}
+                href={href(cta.href)}
                 label={<Label>{cta.label}</Label>}
                 className="cta-drop inline-flex text-[0.875rem] leading-none"
               />
@@ -654,8 +777,8 @@ function StepCard({ step, n, count, on }: { step: Step; n: number; count: number
       )}
       <dl className={`${step.cta ? "" : "mt-auto"} grid grid-cols-2 gap-x-4 border-t border-ink/15 pt-3`}>
         <div>
-          <dt className="mono-label text-ash-2">Who</dt>
-          <dd className="mono-label mt-1 text-ink">{step.who}</dd>
+          <dt className="mono-label text-ash-2">{t("Who", "Quem")}</dt>
+          <dd className="mono-label mt-1 text-ink">{t(WHO[step.who])}</dd>
         </div>
       </dl>
     </li>
@@ -678,6 +801,7 @@ function Label({ children }: { children: ReactNode }) {
    out, and the form comes back to it on closing. */
 function ProposalCta() {
   const proposal = useProposal();
+  const t = useT();
   const button = useRef<HTMLButtonElement>(null);
   const [launched, setLaunched] = useState(false);
   const present = proposal?.present ?? false;
@@ -700,7 +824,7 @@ function ProposalCta() {
       style={{ visibility: launched && present ? "hidden" : undefined }}
     >
       <span className="btn-neu-face">
-        <Label>Get your free proposal</Label>
+        <Label>{t("Get your free proposal", "Pede a tua proposta gratuita")}</Label>
       </span>
     </button>
   );

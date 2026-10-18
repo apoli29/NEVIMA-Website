@@ -24,6 +24,7 @@ import { useSmoothScroll } from "./smooth-scroll";
 import { Studio } from "./studio";
 import { hasOpened, markOpened, returningTo } from "@/lib/return-spot";
 import { booted } from "@/lib/opened";
+import { useT } from "@/lib/use-lang";
 
 /* ==================================================================
    One gesture, one take.
@@ -265,7 +266,7 @@ export function Home() {
      anew), so they are put back where they were rather than at the start;
      they come out of the black of the exit, so nothing flashes. */
   useMeasureEffect(() => {
-    if (!(booted.done && hasOpened()) && !returningTo("/")) return;
+    if (!(booted.done && hasOpened()) && !returningTo(window.location.pathname)) return;
     progress.set(1);
     phaseRef.current = "open";
     setPhase("open");
@@ -552,10 +553,11 @@ export function Home() {
    opening can be reached from the keyboard; the click itself is read by the
    page's own listener, like any other click on the black. */
 function ScrollCue({ gone, reduce }: { gone: boolean; reduce: boolean }) {
+  const t = useT();
   return (
     <motion.button
       type="button"
-      aria-label="Scroll to enter"
+      aria-label={t("Scroll to enter", "Desliza para entrar")}
       className="pointer-events-auto absolute bottom-[max(2rem,env(safe-area-inset-bottom))] left-1/2 -ml-6 grid size-12 cursor-pointer place-items-center text-white/70 transition-colors hover:text-white focus-visible:rounded-full focus-visible:outline focus-visible:outline-1 focus-visible:outline-white/60"
       initial={{ opacity: 0 }}
       animate={{ opacity: gone ? 0 : 1 }}

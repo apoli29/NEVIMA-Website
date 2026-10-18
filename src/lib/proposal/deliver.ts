@@ -1,4 +1,5 @@
 import "server-only";
+import type { Lang } from "../i18n";
 import type { Answers, Contact, Estimate } from "./questions";
 
 /* ==================================================================
@@ -26,7 +27,8 @@ export type Simulation = {
   estimate: Estimate;
 };
 
-export type ProposalRequest = Simulation & { contact: Contact };
+/** With the language the visitor used the site in, to reply in it. */
+export type ProposalRequest = Simulation & { contact: Contact; lang: Lang };
 
 export async function recordSimulation(simulation: Simulation) {
   console.info("[nevima:simulation]", JSON.stringify(simulation));
@@ -37,7 +39,7 @@ export async function deliverRequest(request: ProposalRequest): Promise<boolean>
   // Logged without the contact details: the logs are not the inbox.
   console.info(
     "[nevima:request:undelivered]",
-    JSON.stringify({ at: request.at, answers: request.answers, estimate: request.estimate }),
+    JSON.stringify({ at: request.at, lang: request.lang, answers: request.answers, estimate: request.estimate }),
   );
   return false;
 }
