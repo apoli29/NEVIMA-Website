@@ -31,10 +31,12 @@ export async function POST(request: Request) {
   const contact = readContact(fields.contact);
   if (!contact.ok) return json({ error: "invalid", field: contact.error }, 422);
 
+  const lang = fields.lang === "pt" ? "pt" : "en";
   const delivered = await deliverRequest({
     at: new Date().toISOString(),
+    lang,
     answers: answers.value,
-    estimate: estimate(answers.value),
+    estimate: estimate(answers.value, undefined, lang),
     contact: contact.value,
   });
   if (!delivered) return json({ error: "not_configured" }, 503);

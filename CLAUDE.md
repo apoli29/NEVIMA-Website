@@ -6,10 +6,11 @@ The original brief is imported below. Parts of it were written before the build 
 
 ## Settled since the brief
 
-- Site copy is English (`lang="en"`). The metadata/OG text in `src/app/layout.tsx` is still Portuguese and untranslated.
+- The site is in English at its own addresses and in European Portuguese under `/pt` (user, 2026-10-18). The language comes from the address (`src/lib/i18n.ts`, `useT()` in `src/lib/use-lang.ts`); every piece of copy keeps its Portuguese beside its English. Any new or changed copy is written in both. The switch is in the footer's bottom row. Decisions and the glossary are in `docs/language-decisions.md`.
 - Titles are set in Satoshi (self-hosted in `fonts/Satoshi/`, via `--f-title`); mono labels in Geist Mono (`--font-mono`, `.mono-label`).
 - The default branch is `main`. Work on a branch and merge back through a pull request.
 - Always finish a round of changes by opening that pull request and merging it into `main` yourself, so Vercel deploys it: the user reviews the work on the deployed site, not on branch previews.
+- Links between pages go through `localize()` / `useHref()`, so a Portuguese page links to Portuguese pages.
 - The full history of homepage decisions, section by section, is in `docs/homepage-decisions.md`; the about page's is in `docs/about-decisions.md`; the web design page's, the work pages' and the portfolio's in `docs/web-design-decisions.md`. Read the part about a section before changing it.
 - The service contract (`contratos/contrato-nevima.html`, printed to PDF) has its decisions and open questions in `docs/contract-decisions.md`. Text marked dark orange (`.pending`) awaits the partners' final decision.
 - Every project report follows `docs/report-template.md` (structure, per-service pages, privacy rules). Change the template there and in `project-report.tsx` together.

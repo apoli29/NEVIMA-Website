@@ -16,7 +16,8 @@ import { ProjectReport } from "./project-report";
 import { ProposalOverlay, useProposalController } from "./proposal-flow";
 import { leavePortfolio } from "@/lib/return-spot";
 import { covered, fadeThen } from "./page-wipe";
-import { PROJECTS, shown, type Project } from "@/lib/work";
+import { projectsIn, serviceLabel, shown, type Project } from "@/lib/work";
+import { useLang, useT } from "@/lib/use-lang";
 
 /* ==================================================================
    The portfolio
@@ -63,6 +64,7 @@ export function Portfolio() {
   const proposal = useProposalController();
   const ask = useRef<HTMLButtonElement>(null);
   const away = open !== null || proposal.present;
+  const t = useT();
 
   // The foot's light holds still here too if the visitor asked it to there.
   const [still, setStill] = useState(false);
@@ -138,10 +140,10 @@ export function Portfolio() {
           <span ref={sign} aria-hidden="true" className="absolute bottom-0 left-0 size-0" />
         </div>
 
-        <h1 className="sr-only">Portfolio</h1>
+        <h1 className="sr-only">{t("Portfolio", "Portefólio")}</h1>
 
         <motion.nav
-          aria-label="Portfolio"
+          aria-label={t("Portfolio", "Portefólio")}
           className="fo-top"
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
@@ -160,7 +162,7 @@ export function Portfolio() {
                   <path d="M14 8H3M7 4 3 8l4 4" stroke="currentColor" strokeWidth="1.25" />
                 </svg>
               </span>
-              Exit portfolio
+              {t("Exit portfolio", "Sair do portefólio")}
             </span>
           </button>
           <button
@@ -172,7 +174,7 @@ export function Portfolio() {
             className="cta-drop cta-drop-light inline-flex text-[0.9375rem] leading-none"
             style={{ visibility: proposal.present ? "hidden" : undefined }}
           >
-            <span className="btn-neu-face">Let&rsquo;s work together</span>
+            <span className="btn-neu-face">{t("Let’s work together", "Vamos trabalhar juntos")}</span>
           </button>
         </motion.nav>
 
@@ -222,6 +224,7 @@ function Cloud({
 }) {
   const reduce = useReducedMotion() ?? false;
   const [active, setActive] = useState<number | null>(null);
+  const projects = projectsIn(useLang());
 
   // The hand, from -1 to 1 across the screen, sprung so the cloud trails it.
   const hx = useMotionValue(0);
@@ -265,7 +268,7 @@ function Cloud({
       data-still={frozen ? "" : undefined}
     >
       <motion.div className="fo-lean" style={{ rotateX: leanX, rotateY: leanY }}>
-        {PROJECTS.map((project, i) => (
+        {projects.map((project, i) => (
           <Piece
             key={project.slug}
             project={project}
@@ -306,6 +309,8 @@ function Piece({
   const x = useTransform(sx, (v) => v * REACH.x * depth);
   const y = useTransform(sy, (v) => v * REACH.y * depth);
   const note = `fo-about-${project.slug}`;
+  const t = useT();
+  const lang = useLang();
 
   return (
     <div className="fo-piece" data-i={i} data-on={on ? "" : undefined}>
@@ -315,7 +320,7 @@ function Piece({
           <motion.button
             type="button"
             aria-haspopup="dialog"
-            aria-label={`Open ${project.name}`}
+            aria-label={t(`Open ${project.name}`, `Abrir ${project.name}`)}
             aria-describedby={note}
             className="fo-tile"
             initial={{ opacity: 0, scale: 0.96, filter: "blur(10px)" }}
@@ -348,12 +353,12 @@ function Piece({
                   <span>{project.name}</span>
                 </span>
                 <span className="fo-frost-sector">
-                  <span className="fo-frost-key">Sector</span> {shown(project.sector)}
+                  <span className="fo-frost-key">{t("Sector", "Setor")}</span> {shown(project.sector)}
                 </span>
                 <span className="fo-frost-summary">{project.summary}</span>
                 <span className="fo-tags fo-frost-tags">
                   {project.services.map((service) => (
-                    <span key={service}>{service}</span>
+                    <span key={service}>{serviceLabel(service, lang)}</span>
                   ))}
                 </span>
               </span>

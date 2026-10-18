@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
+import type { Copy } from "@/lib/i18n";
+import { useT } from "@/lib/use-lang";
 
 /* ==================================================================
    Rewrite title
@@ -10,7 +12,8 @@ import { motion, useReducedMotion } from "motion/react";
    websites"; once it has been read, "only" is struck through, the
    struck word is taken out and the sentence closes up over the gap, and
    then the sentence opens again for "way more than" to come in, so what
-   stands is "We do way more than websites". It plays once.
+   stands is "We do way more than websites". It plays once. Portuguese
+   says the same with its words in their own order (see PARTS).
 
    The two words that change are clipped across only, so the tails of
    the letters still hang below the line, and they sit on the line by
@@ -33,7 +36,14 @@ const CLOSED_MS = 750;
 const OPEN_S = 0.75;
 const EASE = [0.65, 0, 0.35, 1] as const;
 
-const FINAL = "We do way more than websites";
+/* The sentence in its parts: what stays, the word struck out, what
+   stays between, the words that come in, and the last word. In
+   Portuguese, "Fazemos só websites" becomes "Fazemos muito mais do que
+   websites", the same move. */
+const PARTS: Copy<{ before: string; struck: string; between: string; added: string; last: string }> = {
+  en: { before: "We", struck: "only", between: "do", added: "way more than", last: "websites" },
+  pt: { before: "Fazemos", struck: "só", between: "", added: "muito mais do que", last: "websites" },
+};
 
 export function RewriteTitle({
   ready,
@@ -46,6 +56,8 @@ export function RewriteTitle({
 }) {
   const reduce = useReducedMotion() ?? false;
   const ref = useRef<HTMLHeadingElement>(null);
+  const words = useT()(PARTS);
+  const final = [words.before, words.between, words.added, words.last].filter(Boolean).join(" ");
   // 0 as it arrives, 1 struck, 2 taken out, 3 rewritten.
   const [step, setStep] = useState(0);
   const [seen, setSeen] = useState(false);
@@ -84,9 +96,9 @@ export function RewriteTitle({
 
   return (
     <h2 ref={ref} id={id} className={className}>
-      <span className="sr-only">{FINAL}</span>
+      <span className="sr-only">{final}</span>
       <span aria-hidden="true">
-        We{" "}
+        {words.before}{" "}
         <motion.span
           className={swap}
           initial={false}
@@ -96,7 +108,7 @@ export function RewriteTitle({
           {/* The space after the word is its own padding, so it goes out
               with the word and leaves one space, not two. */}
           <span className="relative inline-block pr-[0.26em]">
-            only
+            {words.struck}
             <motion.span
               className="absolute top-[0.52em] right-[0.26em] left-0 h-[0.06em] origin-left bg-current"
               initial={false}
@@ -105,7 +117,7 @@ export function RewriteTitle({
             />
           </span>
         </motion.span>
-        do{" "}
+        {words.between && <>{words.between} </>}
         <motion.span
           className={swap}
           initial={false}
@@ -116,10 +128,10 @@ export function RewriteTitle({
             opacity: { duration: OPEN_S * 0.6, delay: at >= 3 ? OPEN_S * 0.4 : 0 },
           }}
         >
-          <span className="inline-block pr-[0.26em] font-medium">way more than</span>
+          <span className="inline-block pr-[0.26em] font-medium">{words.added}</span>
         </motion.span>
         {/* What is true, in the titles' bold (user, 2026-10-13). */}
-        <span className="font-medium">websites</span>
+        <span className="font-medium">{words.last}</span>
       </span>
     </h2>
   );

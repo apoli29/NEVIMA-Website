@@ -1,6 +1,8 @@
 "use client";
 
 import { useReducedMotion } from "motion/react";
+import type { Copy } from "@/lib/i18n";
+import { useT } from "@/lib/use-lang";
 import { Illuminated } from "./services";
 import { useFontsReady } from "./use-seen";
 
@@ -26,10 +28,16 @@ import { useFontsReady } from "./use-seen";
    business is, the gap, what the gap costs) in the studio's own terms.
    ================================================================== */
 
-const STATEMENT = [
-  "Good businesses are rarely short of quality. They are short of a presence that shows it. The clinics, agencies and independent professionals we work with have built something real, yet their website still introduces a smaller version of them.",
-  "Closing that gap is our whole job: two people, the right tools, and nothing standing between your work and the people it is for.",
-];
+const STATEMENT: Copy<string[]> = {
+  en: [
+    "Good businesses are rarely short of quality. They are short of a presence that shows it. The clinics, agencies and independent professionals we work with have built something real, yet their website still introduces a smaller version of them.",
+    "Closing that gap is our whole job: two people, the right tools, and nothing standing between your work and the people it is for.",
+  ],
+  pt: [
+    "Aos bons negócios raramente falta qualidade. Falta-lhes uma presença que a mostre. As clínicas, agências e profissionais independentes com quem trabalhamos construíram algo verdadeiro, mas o seu website ainda apresenta uma versão mais pequena deles.",
+    "Fechar essa distância é todo o nosso trabalho: duas pessoas, as ferramentas certas, e nada entre o teu trabalho e as pessoas a quem ele se destina.",
+  ],
+};
 
 /** The light runs 2.5 times as fast as the service copy's (the user's
     ask): over each paragraph in this long, starting this long after the
@@ -47,6 +55,7 @@ const PHOTO = {
 export function AboutHero() {
   const reduce = useReducedMotion() ?? false;
   const fonts = useFontsReady();
+  const t = useT();
 
   return (
     <section
@@ -69,10 +78,10 @@ export function AboutHero() {
 
       <div className="shell flex w-full justify-center pt-28 pb-20 md:pt-32 md:pb-24">
         <h1 id="about-title" className="sr-only">
-          About Nevima
+          {t("About Nevima", "Sobre a Nevima")}
         </h1>
         <div className="abt-statement">
-          {STATEMENT.map((text, i) =>
+          {t(STATEMENT).map((text, i) =>
             fonts && !reduce ? (
               <Illuminated
                 key={i}

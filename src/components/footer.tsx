@@ -3,7 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { usePathname } from "next/navigation";
-import { SERVICES } from "@/lib/services";
+import { basePath, LANG_NAME, HTML_LANG, switchPath, type Lang } from "@/lib/i18n";
+import { keepLangSpot } from "@/lib/return-spot";
+import { servicesIn } from "@/lib/services";
+import { useHref, useLang, useT } from "@/lib/use-lang";
 import { NAV, homeSection } from "./floating-nav";
 import { LiquidLens } from "./liquid-lens";
 
@@ -34,6 +37,11 @@ export const STILL_KEY = "nevima:footer-still";
    The mark is set the full width of the shell and rises a little into
    place as the foot of the page comes up, so the last thing on the page
    arrives rather than sits.
+
+   The way to the other language is down here, with the foot's other
+   small controls (user, 2026-10-18: the bar or the foot, our choice).
+   The bar's contents are fixed (its three links and its one button),
+   and the foot is where a visitor looks for a site's housekeeping.
    ================================================================== */
 
 export function Footer() {
@@ -45,8 +53,12 @@ export function Footer() {
 
   // The menu points at sections of the home page, so anywhere else it has
   // to go there first.
-  const onHome = usePathname() === "/";
-  const section = (href: string) => homeSection(href, onHome);
+  const path = usePathname();
+  const onHome = basePath(path) === "/";
+  const href = useHref();
+  const lang = useLang();
+  const t = useT();
+  const section = (link: string) => href(homeSection(link, onHome));
 
   const [still, setStill] = useState(false);
   useEffect(() => {
@@ -93,7 +105,7 @@ export function Footer() {
             the words always stand on black. */}
         <div className="relative z-10 grid gap-12 md:grid-cols-[1.5fr_1fr_1fr] md:gap-10">
           <div data-calm>
-            <h2 className="ftr-label">Get in touch</h2>
+            <h2 className="ftr-label">{t("Get in touch", "Fala connosco")}</h2>
             <div className="mt-4 flex flex-wrap items-baseline gap-x-5 gap-y-2">
               <a href={`mailto:${EMAIL}`} className="ftr-link ftr-mail">
                 {EMAIL}
@@ -101,21 +113,25 @@ export function Footer() {
               <button
                 type="button"
                 onClick={copyAddress}
-                aria-label="Copy email address"
+                aria-label={t("Copy email address", "Copiar o endereço de email")}
                 className="ftr-link ftr-meta cursor-pointer"
               >
-                {copy === "done" ? "Copied" : copy === "failed" ? "Copy failed" : "Copy"}
+                {copy === "done"
+                  ? t("Copied", "Copiado")
+                  : copy === "failed"
+                    ? t("Copy failed", "Não foi possível copiar")
+                    : t("Copy", "Copiar")}
               </button>
               <span role="status" className="sr-only">
                 {copy === "done"
-                  ? "Email address copied"
+                  ? t("Email address copied", "Endereço de email copiado")
                   : copy === "failed"
-                    ? "The address could not be copied"
+                    ? t("The address could not be copied", "Não foi possível copiar o endereço")
                     : ""}
               </span>
             </div>
             <p className="mt-6 max-w-[30ch] text-[0.9375rem] leading-relaxed text-paper/60">
-              A two person web development studio
+              {t("A two person web development studio", "Um estúdio de web development a dois")}
             </p>
           </div>
 
@@ -127,7 +143,7 @@ export function Footer() {
               {NAV.map((item) => (
                 <li key={item.href}>
                   <a href={section(item.href)} className="ftr-link ftr-item">
-                    {item.label}
+                    {t(item.label)}
                   </a>
                 </li>
               ))}
@@ -136,15 +152,15 @@ export function Footer() {
 
           {/* Named apart from the Services section, so the two are not
               confused in a list of landmarks. */}
-          <nav aria-label="Service pages" data-calm>
-            <h2 className="ftr-label">Services</h2>
+          <nav aria-label={t("Service pages", "Páginas dos serviços")} data-calm>
+            <h2 className="ftr-label">{t("Services", "Serviços")}</h2>
             <ul className="mt-5 space-y-3">
-              {SERVICES.map((service) => (
+              {servicesIn(lang).map((service) => (
                 <li key={service.slug}>
                   {/* Each to its row in the services on the home page, opened
                       (user, 2026-10-12): the list there is the services'
                       one home. */}
-                  <a href={`/#open-${service.slug}`} className="ftr-link ftr-item">
+                  <a href={href(`/#open-${service.slug}`)} className="ftr-link ftr-item">
                     {service.title}
                   </a>
                 </li>
@@ -171,22 +187,56 @@ export function Footer() {
           <p data-calm className="ftr-meta" suppressHydrationWarning>
             &copy; {new Date().getFullYear()} nevima
           </p>
-          <div data-calm className="flex items-center gap-6">
+          <div data-calm className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <LanguageSwitch path={path} lang={lang} label={t("Language", "Idioma")} />
             {!reduce && (
               <button
                 type="button"
                 onClick={toggleStill}
                 className="ftr-link ftr-meta cursor-pointer"
               >
-                {still ? "Resume motion" : "Pause motion"}
+                {still ? t("Resume motion", "Retomar movimento") : t("Pause motion", "Parar movimento")}
               </button>
             )}
             <a href="#top" className="ftr-link ftr-meta">
-              Back to top
+              {t("Back to top", "Voltar ao topo")}
             </a>
           </div>
         </div>
       </div>
     </footer>
+  );
+}
+
+/* The two languages, each named in itself, the one on screen inked and
+   not a link. Followed, the other one opens the same page in it, with the
+   foot where it was, so the visitor carries on from the same place
+   rather than from the top (see keepLangSpot). */
+const LANGS: Lang[] = ["en", "pt"];
+
+function LanguageSwitch({ path, lang, label }: { path: string; lang: Lang; label: string }) {
+  return (
+    <nav aria-label={label} className="flex items-center gap-2 ftr-meta">
+      {LANGS.map((other, i) => (
+        <span key={other} className="flex items-center gap-2">
+          {i > 0 && <span aria-hidden="true">/</span>}
+          {other === lang ? (
+            <span lang={HTML_LANG[other]} aria-current="true" className="text-paper">
+              {LANG_NAME[other]}
+            </span>
+          ) : (
+            <a
+              href={switchPath(path, other)}
+              hrefLang={HTML_LANG[other]}
+              lang={HTML_LANG[other]}
+              onClick={() => keepLangSpot(switchPath(path, other))}
+              className="ftr-link ftr-meta"
+            >
+              {LANG_NAME[other]}
+            </a>
+          )}
+        </span>
+      ))}
+    </nav>
   );
 }

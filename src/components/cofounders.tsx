@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { useReducedMotion, motion } from "motion/react";
 import Image from "next/image";
+import { useLang, useT } from "@/lib/use-lang";
 import { Rise, Rule, Uncover, useSeen } from "./exhibit";
 import { SlideIn } from "./enter";
 import { useInkAlign } from "./ink-align";
@@ -82,6 +83,35 @@ const FOUNDERS: Founder[] = [
   },
 ];
 
+/* What each of them says in Portuguese; the rest is shared. */
+const PT: Record<Founder["id"], Pick<Founder, "role" | "study" | "bio" | "skills" | "links">> = {
+  ec: {
+    role: "Cofundador",
+    study: "Multimédia, ISLA",
+    bio: "O Emanuel (21) está a tirar a licenciatura em Multimédia no ISLA, uma rede histórica de instituições de ensino privado em Portugal que se destaca em áreas como a Gestão, as Finanças e as Tecnologias de Informação. Tem experiência como freelancer em sessões fotográficas profissionais, serviço que já prestou em casamentos, em grandes campanhas políticas regionais e não só.",
+    skills: [
+      "Estruturação e programação web",
+      "Interface e experiência do utilizador",
+      "Fotografia e vídeo",
+    ],
+    links: [
+      { label: "LinkedIn", href: "" },
+      { label: "Portefólio", href: "" },
+    ],
+  },
+  ap: {
+    role: "Cofundador",
+    study: "Comunicação Empresarial, ISCAP",
+    bio: "O António (20) é licenciado em Comunicação Empresarial pelo ISCAP, uma escola reconhecida como referência nas Ciências Empresariais. Como freelancer numa empresa do setor imobiliário, ficou responsável por planear e executar todo o seu ecossistema de comunicação, que incluía o website e as redes sociais.",
+    skills: [
+      "Comunicação estratégica",
+      "Identidade corporativa (brand storytelling)",
+      "SEO",
+    ],
+    links: [{ label: "LinkedIn", href: "" }],
+  },
+};
+
 /* ================================================================== */
 
 export function CoFounders({
@@ -97,6 +127,9 @@ export function CoFounders({
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subRef = useRef<HTMLParagraphElement>(null);
   useInkAlign(titleRef, subRef);
+  const t = useT();
+  const lang = useLang();
+  const founders = lang === "pt" ? FOUNDERS.map((f) => ({ ...f, ...PT[f.id] })) : FOUNDERS;
 
   return (
     <div
@@ -119,7 +152,7 @@ export function CoFounders({
           >
             {/* White on a black band, as the report's names are (user,
                 2026-10-13). */}
-            <span>Meet the co-founders</span>
+            <span>{t("Meet the co-founders", "Conhece os cofundadores")}</span>
           </Title>
         </SlideIn>
         <SlideIn
@@ -129,14 +162,16 @@ export function CoFounders({
           className="max-w-[17rem] shrink-0 lg:text-right"
         >
           <p ref={subRef} className="text-[0.9375rem] leading-[1.45] text-balance text-ash">
-            Two people. Zero intermediaries. The ones who design and build
-            your website are the ones you talk to.
+            {t(
+              "Two people. Zero intermediaries. The ones who design and build your website are the ones you talk to.",
+              "Duas pessoas. Zero intermediários. Quem desenha e constrói o teu website é quem fala contigo.",
+            )}
           </p>
         </SlideIn>
       </div>
 
       <div className="mt-12 md:mt-16">
-        {FOUNDERS.map((founder, i) => (
+        {founders.map((founder, i) => (
           <Plate key={founder.id} founder={founder} index={i} ready={ready} />
         ))}
       </div>
@@ -162,6 +197,7 @@ function Plate({
   ready: boolean;
 }) {
   const reduce = useReducedMotion() ?? false;
+  const t = useT();
   const [ref, seen] = useSeen<HTMLElement>(ready, "0px 0px -22% 0px");
   const on = seen || reduce;
   const fade = (delay: number) => ({
@@ -187,7 +223,7 @@ function Plate({
         <Uncover shown={seen} className="relative aspect-[4/5] bg-ink/5">
           <Image
             src={founder.photo}
-            alt={`Portrait of ${founder.first} ${founder.last}`}
+            alt={t(`Portrait of ${founder.first} ${founder.last}`, `Retrato de ${founder.first} ${founder.last}`)}
             fill
             sizes="(min-width: 1024px) 24vw, (min-width: 768px) 40vw, 75vw"
             quality={90}
@@ -232,7 +268,7 @@ function Plate({
             skills on its right by more than a gutter. */}
         <div className="col-span-12 lg:col-span-4 lg:pr-8 xl:pr-12">
           <motion.p {...fade(0.25)} className="mono-label text-ash-2">
-            Profile
+            {t("Profile", "Perfil")}
           </motion.p>
           <div className="mt-3">
             {seen && !reduce ? (
@@ -255,7 +291,7 @@ function Plate({
 
         <div className="col-span-12 sm:col-span-8 lg:col-span-2">
           <motion.p {...fade(0.35)} className="mono-label text-ash-2">
-            Key skills
+            {t("Key skills", "Principais competências")}
           </motion.p>
           <ul className="mt-3">
             {founder.skills.map((skill, i) => (
@@ -290,7 +326,7 @@ function Plate({
                 <span
                   key={link.label}
                   aria-disabled="true"
-                  title="Coming soon"
+                  title={t("Coming soon", "Em breve")}
                   className="cf-link mono-label"
                   data-rest=""
                 >

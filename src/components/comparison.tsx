@@ -2,6 +2,8 @@
 
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
+import type { Copy } from "@/lib/i18n";
+import { useLang, useT } from "@/lib/use-lang";
 import { SlideIn } from "./enter";
 import { LiquidEdge } from "./liquid-edge";
 import { Illuminated } from "./services";
@@ -83,7 +85,7 @@ const FIRST_LIGHT_MS = 180;
 /** The least time between two rows starting, in milliseconds. */
 const STAGGER_MS = 420;
 
-const THEM = "Traditional agencies";
+const THEM: Copy = { en: "Traditional agencies", pt: "Agências tradicionais" };
 
 type Row = {
   id: string;
@@ -139,10 +141,53 @@ const ROWS: Row[] = [
   },
 ];
 
+/* The same rows in Portuguese, by id. */
+const PT_ROWS: Record<string, Omit<Row, "id">> = {
+  hosting: {
+    criterion: "Alojamento do website",
+    them: "Custos excessivos, por dois motivos: a dependência de plataformas como o Wix, entre outras, que podem cobrar mais de 100\u00a0\u20ac por ano; e a falta de transparência, que leva a preços muito acima do que o serviço custa de facto.",
+    lead: "Totalmente gratuito,",
+    us: "enquanto o teu website estiver online connosco.",
+  },
+  seo: {
+    criterion: "Práticas de SEO",
+    them: "Muitas agências cobram até pelas práticas de SEO mais básicas.",
+    lead: "Incluídas:",
+    us: "o nosso serviço de web design inclui práticas básicas de SEO, para que o teu website não desapareça dos resultados dos motores de busca.",
+  },
+  relationship: {
+    criterion: "Atendimento e relação com o cliente",
+    them: "Distante. Às vezes, o cliente nunca chega a falar diretamente com os responsáveis pelo projeto. Resultado: o cliente não se sente ouvido e o serviço torna-se impessoal.",
+    lead: "Próximo e personalizado:",
+    us: "estás sempre em contacto direto connosco. O nosso processo mantém-te a par da evolução do projeto, e ajustamo-lo ao pormenor com base na tua opinião.",
+  },
+  knowledge: {
+    criterion: "Conhecimento e ferramentas",
+    them: "Métodos ultrapassados: ferramentas caras mas obsoletas e processos envelhecidos.",
+    lead: "Sempre um passo à frente:",
+    us: "ferramentas de ponta, acompanhamento constante da evolução do mercado e conhecimento técnico sempre atualizado.",
+  },
+  costs: {
+    criterion: "Custos e orçamento",
+    them: "Desproporcionadamente altos para a qualidade do resultado final. Os dois principais motivos: demasiadas pessoas envolvidas sem necessidade, e ferramentas demasiado caras e obsoletas.",
+    lead: "Altamente eficiente:",
+    us: "trabalhamos com as ferramentas mais modernas e eficientes, que dão melhores resultados a preços mais baixos.",
+  },
+  timelines: {
+    criterion: "Prazos e desenvolvimento",
+    them: "Processos lentos, arrastados por aprovações e por burocracia interna excessiva.",
+    lead: "Desenvolvimento mais rápido:",
+    us: "execução ágil, aliada ao uso inteligente e eficiente das melhores ferramentas.",
+  },
+};
+
 /* ================================================================== */
 
 export function Comparison({ ready }: { ready: boolean }) {
   const reduce = useReducedMotion() ?? false;
+  const t = useT();
+  const lang = useLang();
+  const rows = lang === "pt" ? ROWS.map((row) => ({ id: row.id, ...PT_ROWS[row.id]! })) : ROWS;
   const scroller = useRef<HTMLDivElement>(null);
   const answers = useRef<(HTMLTableCellElement | null)[]>([]);
   // When each answer's light starts, counted from the moment its row was
@@ -248,10 +293,13 @@ export function Comparison({ ready }: { ready: boolean }) {
             className="display text-[clamp(2.25rem,4.4vw,3.75rem)] leading-[0.98] text-paper"
           >
             <span className="block font-light text-balance">
-              The perks of working with us instead of a big agency?
+              {t(
+                "The perks of working with us instead of a big agency?",
+                "As vantagens de trabalhar connosco em vez de uma grande agência?",
+              )}
             </span>
             <span className="block font-medium">
-              <MarkedLine text="Here’s the honest comparison." />
+              <MarkedLine text={t("Here’s the honest comparison.", "Aqui fica a comparação honesta.")} />
             </span>
           </h2>
         </SlideIn>
@@ -264,7 +312,7 @@ export function Comparison({ ready }: { ready: boolean }) {
               ref={scroller}
               tabIndex={0}
               role="region"
-              aria-label="Comparison table"
+              aria-label={t("Comparison table", "Tabela de comparação")}
               className="cmp-scroll focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-paper/40"
             >
               <div className="cmp-grid relative">
@@ -272,7 +320,10 @@ export function Comparison({ ready }: { ready: boolean }) {
 
                 <table className="cmp-table relative">
                   <caption className="sr-only">
-                    Nevima compared with a traditional big agency
+                    {t(
+                      "Nevima compared with a traditional big agency",
+                      "A Nevima comparada com uma grande agência tradicional",
+                    )}
                   </caption>
                   <colgroup>
                     <col />
@@ -283,10 +334,10 @@ export function Comparison({ ready }: { ready: boolean }) {
                   <thead>
                     <tr>
                       <th scope="col" className="cmp-crit mono-label">
-                        Criterion
+                        {t("Criterion", "Critério")}
                       </th>
                       <th scope="col" className="mono-label">
-                        {THEM}
+                        {t(THEM)}
                       </th>
                       <th scope="col" className="cmp-us">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -300,7 +351,7 @@ export function Comparison({ ready }: { ready: boolean }) {
                   </thead>
 
                   <tbody>
-                    {ROWS.map((row, i) => (
+                    {rows.map((row, i) => (
                       <tr key={row.id}>
                         <th
                           scope="row"

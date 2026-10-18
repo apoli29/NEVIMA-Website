@@ -22,6 +22,7 @@ import {
   useTransform,
 } from "motion/react";
 import type { Contact } from "@/lib/proposal/questions";
+import { useLang, useT } from "@/lib/use-lang";
 import { SECTION_LINKS } from "./index-links";
 import {
   EMPTY_CONTACT,
@@ -31,6 +32,8 @@ import {
   StepScreen,
   actionFor,
   checkStep,
+  mailSubject,
+  sendError,
   stepsFor,
   summary,
   toAnswers,
@@ -249,6 +252,8 @@ function Panel({
 }) {
   const reduce = useReducedMotion() ?? false;
   const t = useMotionValue(0);
+  const lang = useLang();
+  const say = useT();
 
   /* --- the two ends of the run, in real pixels ------------------------ */
 
@@ -428,6 +433,7 @@ function Panel({
         body: JSON.stringify({
           answers: toAnswers(draft),
           contact,
+          lang,
           nickname: readTrap(),
           elapsedMs: Date.now() - openedAt.current,
         }),
@@ -437,21 +443,17 @@ function Panel({
         setStep("sent");
       } else if (res.status === 503) {
         setSend({ status: "offline" });
-      } else if (res.status === 429) {
-        setSend({ status: "error", message: "Too many requests from this connection. Try again in a few minutes." });
-      } else if (res.status === 422) {
-        setSend({ status: "error", message: "Some details weren't accepted. Check them and send again." });
       } else {
-        setSend({ status: "error", message: `Your request didn't go through. Try again, or write to ${STUDIO_EMAIL}.` });
+        setSend({ status: "error", message: sendError(res.status, say) });
       }
     } catch {
-      setSend({ status: "error", message: "We couldn't reach the server. Check your connection and try again." });
+      setSend({ status: "error", message: sendError("network", say) });
     }
   };
 
-  const mailto = `mailto:${STUDIO_EMAIL}?subject=${encodeURIComponent(
-    `Final proposal request from ${contact.name.trim() || "the website"}`,
-  )}&body=${encodeURIComponent(summary(draft, contact, estimate.state.status === "ready" ? estimate.state.estimate : null))}`;
+  const mailto = `mailto:${STUDIO_EMAIL}?subject=${encodeURIComponent(mailSubject(contact.name, say))}&body=${encodeURIComponent(
+    summary(draft, contact, estimate.state.status === "ready" ? estimate.state.estimate : null, lang),
+  )}`;
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -464,7 +466,7 @@ function Panel({
       window.location.href = mailto;
       return;
     }
-    const found = checkStep(step, draft, contact);
+    const found = checkStep(step, draft, contact, lang);
     const first = Object.keys(found)[0];
     if (first) {
       setErrors(found);
@@ -512,7 +514,11 @@ function Panel({
     requestAnimationFrame(() => title.current?.focus({ preventScroll: true }));
   };
 
-  const action = offline ? "Open in your email app" : send.status === "sending" ? "Sending…" : actionFor(step, nextStep);
+  const action = offline
+    ? say("Open in your email app", "Abrir na tua app de email")
+    : send.status === "sending"
+      ? say("Sending…", "A enviar…")
+      : actionFor(step, nextStep, say);
   const canGoBack = landed && index > 0 && step !== "sent";
   const progress = steps.length > 1 ? index / (steps.length - 1) : 0;
 
@@ -539,41 +545,41 @@ function Panel({
       >
         <motion.div aria-hidden="true" className="pf-pane" style={{ opacity: pane }} />
 
-        <form ref={formEl} noValidate onSubmit={onSubmit} aria-label="Get your free proposal" className="flex h-full min-h-0 flex-col">
+        <form ref={formEl} noValidate onSubmit={onSubmit} aria-label={say("Get your free proposal", "Pede a tua proposta gratuita")} className="flex h-full min-h-0 flex-col">
           {/* The index's label, which becomes the form's. */}
           <p className="mono-label mb-2.5 flex items-center justify-between text-ash-2">
             <span className="grid">
               <motion.span aria-hidden="true" className="idx-title [grid-area:1/1] justify-self-start" style={{ opacity: labelOut }}>
-                Index
+                {say("Index", "Índice")}
               </motion.span>
               <motion.span id="proposal-title" className="idx-title [grid-area:1/1] justify-self-start" style={{ opacity: labelIn }}>
-                Free proposal
+                {say("Free proposal", "Proposta gratuita")}
               </motion.span>
             </span>
             <motion.span className="flex items-center gap-4 md:gap-6" style={{ opacity: form }}>
               {step !== "sent" &&
                 (confirming ? (
-                  <span role="group" aria-label="Clear all answers?" className="flex items-center gap-2">
+                  <span role="group" aria-label={say("Clear all answers?", "Apagar todas as respostas?")} className="flex items-center gap-2">
                     <span className="text-ink">
-                      <span className="max-md:hidden">Clear all answers?</span>
-                      <span className="md:hidden">Clear all?</span>
+                      <span className="max-md:hidden">{say("Clear all answers?", "Apagar todas as respostas?")}</span>
+                      <span className="md:hidden">{say("Clear all?", "Apagar tudo?")}</span>
                     </span>
                     <button type="button" onClick={clearAll} className="prop-close pf-clear-yes">
-                      Yes
+                      {say("Yes", "Sim")}
                     </button>
                     <span aria-hidden="true">/</span>
                     <button type="button" onClick={() => setConfirming(false)} className="prop-close">
-                      No
+                      {say("No", "Não")}
                     </button>
                   </span>
                 ) : (
                   <button type="button" onClick={() => setConfirming(true)} className="prop-close">
-                    <span className="max-md:hidden">Clear answers</span>
-                    <span className="md:hidden">Clear</span>
+                    <span className="max-md:hidden">{say("Clear answers", "Apagar respostas")}</span>
+                    <span className="md:hidden">{say("Clear", "Apagar")}</span>
                   </button>
                 ))}
               <button type="button" onClick={hide} className="prop-close">
-                Close
+                {say("Close", "Fechar")}
                 <span aria-hidden="true" className="ml-1.5">
                   &times;
                 </span>
@@ -590,12 +596,12 @@ function Panel({
               style={{ top: Math.max(chrome.foot - 1, 0), opacity: rows, x: rowsX }}
             >
               {SECTION_LINKS.map((row) => (
-                <div key={row.label} className="relative">
+                <div key={row.href} className="relative">
                   <span className="absolute inset-x-0 top-0 z-10 block h-px bg-ink" />
                   <div className={`idx-link ${row.lead ? "idx-lead" : ""}`}>
                     <span className="idx-name flex items-center gap-2.5">
                       {row.lead && <span className="live-dot" />}
-                      {row.label}
+                      {say(row.label)}
                     </span>
                     <span className="idx-arrow">
                       <ArrowIcon />
@@ -631,7 +637,7 @@ function Panel({
                     {offline ? (
                       <>
                         <h2 ref={title} tabIndex={-1} className="pf-title">
-                          Send it by email
+                          {say("Send it by email", "Envia por email")}
                         </h2>
                         <OfflineNote />
                       </>
@@ -684,7 +690,7 @@ function Panel({
                       <span aria-hidden="true" className="idx-arrow">
                         <ArrowIcon back />
                       </span>
-                      <span className="idx-name">Back</span>
+                      <span className="idx-name">{say("Back", "Voltar")}</span>
                     </button>
                   </motion.div>
                 )}
@@ -701,7 +707,7 @@ function Panel({
                     style={{ opacity: footOut }}
                   >
                     <span className="live-dot live-dot-loud" />
-                    Get your free proposal
+                    {say("Get your free proposal", "Pede a tua proposta gratuita")}
                   </motion.span>
                   <motion.span className="idx-name [grid-area:1/1] truncate" style={{ opacity: footIn }}>
                     {action}

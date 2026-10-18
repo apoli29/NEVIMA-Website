@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { motion, useReducedMotion } from "motion/react";
+import { useT } from "@/lib/use-lang";
 
 /* ==================================================================
    The free-proposal form
@@ -30,10 +31,16 @@ import { motion, useReducedMotion } from "motion/react";
    so the form is hung on a pane of frosted glass, like a work behind
    museum glass: near opaque, the drop behind it only a soft shadow, the
    words always on a calm ground.
+
+   Never opened now: it only holds its room under the index (see
+   SectionIndex), in either language.
    ================================================================== */
 
 const EMAIL = "ola@nevima.pt";
-const NEEDS = ["Web Design", "Visual Identity", "SEO", "GEO"] as const;
+const NEEDS = {
+  en: ["Web Design", "Visual Identity", "SEO", "GEO"],
+  pt: ["Web Design", "Identidade Visual", "SEO", "GEO"],
+};
 
 const ROW = {
   hidden: { opacity: 0, y: 10 },
@@ -57,6 +64,7 @@ export function ProposalForm({
   onClose: () => void;
 }) {
   const reduce = useReducedMotion() ?? false;
+  const t = useT();
   const [needs, setNeeds] = useState<string[]>([]);
   const [sent, setSent] = useState(false);
   const first = useRef<HTMLInputElement>(null);
@@ -86,13 +94,13 @@ export function ProposalForm({
     const email = String(data.get("email") ?? "").trim();
     const message = String(data.get("message") ?? "").trim();
     const body = [
-      `Name: ${name}`,
+      `${t("Name", "Nome")}: ${name}`,
       `Email: ${email}`,
-      `I need: ${needs.length ? needs.join(", ") : "Not sure yet"}`,
+      `${t("I need", "Preciso de")}: ${needs.length ? needs.join(", ") : t("Not sure yet", "Ainda não sei")}`,
       "",
       message,
     ].join("\n");
-    const subject = `Free proposal request from ${name}`;
+    const subject = t(`Free proposal request from ${name}`, `Pedido de proposta gratuita de ${name}`);
     window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     setSent(true);
   };
@@ -121,9 +129,9 @@ export function ProposalForm({
     >
       <motion.div variants={PANE} aria-hidden="true" className="prop-pane" />
       <motion.p variants={ROW} className="mono-label mb-2.5 flex items-center justify-between text-ash-2">
-        <span className="idx-title">Free proposal</span>
+        <span className="idx-title">{t("Free proposal", "Proposta gratuita")}</span>
         <button type="button" onClick={onClose} className="prop-close">
-          Close
+          {t("Close", "Fechar")}
           <span aria-hidden="true" className="ml-1.5">
             &times;
           </span>
@@ -133,27 +141,29 @@ export function ProposalForm({
       {sent ? (
         <motion.div variants={ROW} className="border-y border-ink px-3 py-4">
           <p className="prop-done">
-            Your email app should be opening with everything filled in. If it
-            doesn&rsquo;t, write to us at{" "}
+            {t(
+              "Your email app should be opening with everything filled in. If it doesn’t, write to us at",
+              "A tua app de email deve estar a abrir com tudo preenchido. Se não abrir, escreve-nos para",
+            )}{" "}
             <a href={`mailto:${EMAIL}`} className="underline underline-offset-2">
               {EMAIL}
             </a>
             .
           </p>
           <button type="button" onClick={onClose} className="prop-close mt-4">
-            Back to the index
+            {t("Back to the index", "Voltar ao índice")}
           </button>
         </motion.div>
       ) : (
-        <form id="proposal-form" onSubmit={submit} aria-label="Get your free proposal" className="border-b border-ink">
+        <form id="proposal-form" onSubmit={submit} aria-label={t("Get your free proposal", "Pede a tua proposta gratuita")} className="border-b border-ink">
           <motion.label variants={ROW} className="prop-row">
-            <span className="mono-label prop-label">Name</span>
+            <span className="mono-label prop-label">{t("Name", "Nome")}</span>
             <input
               ref={first}
               name="name"
               required
               autoComplete="name"
-              placeholder="Your name"
+              placeholder={t("Your name", "O teu nome")}
               className="prop-input"
             />
           </motion.label>
@@ -165,18 +175,18 @@ export function ProposalForm({
               type="email"
               required
               autoComplete="email"
-              placeholder="you@business.com"
+              placeholder={t("you@business.com", "tu@onegocio.pt")}
               className="prop-input"
             />
           </motion.label>
 
           <motion.fieldset variants={ROW} className="prop-row prop-row-plain">
-            <legend className="sr-only">What you need</legend>
+            <legend className="sr-only">{t("What you need", "Do que precisas")}</legend>
             <span aria-hidden="true" className="mono-label prop-label">
-              I need
+              {t("I need", "Preciso de")}
             </span>
             <span className="flex flex-wrap gap-1">
-              {NEEDS.map((need) => (
+              {t(NEEDS).map((need) => (
                 <button
                   key={need}
                   type="button"
@@ -191,18 +201,18 @@ export function ProposalForm({
           </motion.fieldset>
 
           <motion.label variants={ROW} className="prop-row">
-            <span className="mono-label prop-label">About</span>
+            <span className="mono-label prop-label">{t("About", "Sobre")}</span>
             <textarea
               name="message"
               rows={2}
-              placeholder="Your business, and what the website should do"
+              placeholder={t("Your business, and what the website should do", "O teu negócio, e o que o website deve fazer")}
               className="prop-input prop-text"
             />
           </motion.label>
 
           <motion.div variants={ROW}>
             <button type="submit" className="idx-link idx-send w-full text-left">
-              <span className="idx-name">Send request</span>
+              <span className="idx-name">{t("Send request", "Enviar pedido")}</span>
               <span aria-hidden="true" className="idx-arrow">
                 <svg viewBox="0 0 16 16" width="16" height="16" fill="none" className="block">
                   <path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.25" />
@@ -215,7 +225,7 @@ export function ProposalForm({
 
       {!sent && (
         <motion.p variants={ROW} className="mono-label mt-2.5 text-ash-2">
-          Opens your email app, filled in
+          {t("Opens your email app, filled in", "Abre a tua app de email, já preenchida")}
         </motion.p>
       )}
     </motion.div>

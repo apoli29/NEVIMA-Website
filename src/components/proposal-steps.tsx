@@ -19,6 +19,7 @@ import {
   TRANSLATION_NOTE,
   YES_NO,
   groupsFor,
+  inLang,
   labelOf,
   type Answers,
   type Contact,
@@ -38,6 +39,8 @@ import {
   type TextsId,
   type YesNo,
 } from "@/lib/proposal/questions";
+import { translator, type Copy, type Lang, type Translate } from "@/lib/i18n";
+import { useLang, useT } from "@/lib/use-lang";
 
 /* ==================================================================
    The free proposal's questions, a screen at a time
@@ -134,33 +137,35 @@ export function stepsFor(draft: Draft): StepId[] {
 }
 
 /** What the button at the foot says on each screen. */
-export function actionFor(step: StepId, next: StepId | undefined) {
-  if (step === "estimate") return "Request final proposal";
-  if (step === "contact") return "Send request";
-  if (step === "sent") return "Close";
+export function actionFor(step: StepId, next: StepId | undefined, t: Translate) {
+  if (step === "estimate") return t("Request final proposal", "Pedir proposta final");
+  if (step === "contact") return t("Send request", "Enviar pedido");
+  if (step === "sent") return t("Close", "Fechar");
   // The first screen always leads to a service's questions.
-  return next === "estimate" && step !== "basics" ? "See my estimate" : "Continue";
+  return next === "estimate" && step !== "basics"
+    ? t("See my estimate", "Ver a minha estimativa")
+    : t("Continue", "Continuar");
 }
 
-function titleFor(step: StepId, draft: Draft) {
+function titleFor(step: StepId, draft: Draft, t: Translate) {
   switch (step) {
     case "basics":
-      return "Your business";
+      return t("Your business", "O teu negócio");
     case "web":
       return "Web design";
     case "photo":
-      return "Photo shoot";
+      return t("Photo shoot", "Sessão fotográfica");
     case "search": {
       const seo = draft.services.includes("seo");
       const geo = draft.services.includes("geo");
-      return seo && geo ? "SEO & GEO" : seo ? "SEO" : "GEO";
+      return seo && geo ? t("SEO & GEO", "SEO e GEO") : seo ? "SEO" : "GEO";
     }
     case "estimate":
-      return "Your estimate";
+      return t("Your estimate", "A tua estimativa");
     case "contact":
-      return "Your final proposal";
+      return t("Your final proposal", "A tua proposta final");
     case "sent":
-      return "Request sent";
+      return t("Request sent", "Pedido enviado");
   }
 }
 
@@ -169,49 +174,70 @@ function titleFor(step: StepId, draft: Draft) {
 export type Errors = Partial<Record<string, string>>;
 
 /* Small print under the questions that change the price (user). */
-const PHOTO_NOTE =
-  "The photo shoot is only available in Portugal. Travel beyond 30 km of Arcozelo is added to the price of the service.";
-const DOMAIN_NOTE =
-  "If you don't have a domain yet, we register it for you and its cost is added to the price. If you already have one, there's nothing to pay.";
-const PAGES_NOTE = "Not sure? We estimate for 3 to 8 pages, so the range can be a little wider than with a set number.";
-const DESIGN_NOTE = "Advanced costs 25% more than Essential+ on the website's price.";
-const TEXTS_NOTE = "If you don't, writing them is added to the price, as a range set by your website's size.";
-const URGENT_NOTE = "An urgent deadline raises the price by 40%.";
+const PHOTO_NOTE: Copy = {
+  en: "The photo shoot is only available in Portugal. Travel beyond 30 km of Arcozelo is added to the price of the service.",
+  pt: "A sessão fotográfica só está disponível em Portugal. A deslocação para lá dos 30 km de Arcozelo acresce ao preço do serviço.",
+};
+const DOMAIN_NOTE: Copy = {
+  en: "If you don't have a domain yet, we register it for you and its cost is added to the price. If you already have one, there's nothing to pay.",
+  pt: "Se ainda não tens domínio, registamo-lo por ti e o custo acresce ao preço. Se já tens um, não pagas nada.",
+};
+const PAGES_NOTE: Copy = {
+  en: "Not sure? We estimate for 3 to 8 pages, so the range can be a little wider than with a set number.",
+  pt: "Não sabes? Estimamos para 3 a 8 páginas, por isso o intervalo pode ser um pouco mais largo do que com um número definido.",
+};
+const DESIGN_NOTE: Copy = {
+  en: "Advanced costs 25% more than Essential+ on the website's price.",
+  pt: "O Avançado custa mais 25% do que o Essencial+ no preço do website.",
+};
+const TEXTS_NOTE: Copy = {
+  en: "If you don't, writing them is added to the price, as a range set by your website's size.",
+  pt: "Se não tiveres, a escrita dos textos acresce ao preço, num intervalo definido pelo tamanho do teu website.",
+};
+const URGENT_NOTE: Copy = {
+  en: "An urgent deadline raises the price by 40%.",
+  pt: "Um prazo urgente aumenta o preço em 40%.",
+};
 
-const NO_REFERENCES = [{ id: "none", label: "I don't have any" }] as const;
+const NO_REFERENCES: Copy<readonly { id: "none"; label: string }[]> = {
+  en: [{ id: "none", label: "I don't have any" }],
+  pt: [{ id: "none", label: "Não tenho" }],
+};
 
-const PICK_ONE = "Choose one to continue.";
-const PICK_ANY = "Choose at least one to continue.";
-
-export function checkStep(step: StepId, draft: Draft, contact: Contact): Errors {
+export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: Lang): Errors {
+  const t = translator(lang);
+  const PICK_ONE = t("Choose one to continue.", "Escolhe uma opção para continuar.");
+  const PICK_ANY = t("Choose at least one to continue.", "Escolhe pelo menos uma opção para continuar.");
   const e: Errors = {};
   const web = draft.services.includes("web");
   if (step === "basics") {
     if (!draft.services.length) e.services = PICK_ANY;
     if (!draft.sector) e.sector = PICK_ONE;
-    else if (draft.sector === "other" && !draft.sectorOther.trim()) e.sector = "Tell us what your business does.";
+    else if (draft.sector === "other" && !draft.sectorOther.trim()) {
+      e.sector = t("Tell us what your business does.", "Diz-nos o que faz o teu negócio.");
+    }
     if (!draft.country) e.country = PICK_ONE;
-    else if (draft.country === "other" && !draft.countryOther.trim()) e.country = "Tell us which country.";
+    else if (draft.country === "other" && !draft.countryOther.trim()) e.country = t("Tell us which country.", "Diz-nos qual é o país.");
   }
   if (step === "web") {
     if (!draft.design) e.design = PICK_ONE;
     if (!draft.pages) e.pages = PICK_ONE;
     if (!draft.languages.length) e.languages = PICK_ANY;
     else if (draft.languages.includes("other") && !draft.languagesOther.trim()) {
-      e.languages = "Tell us which languages.";
+      e.languages = t("Tell us which languages.", "Diz-nos quais são as línguas.");
     }
     if (!draft.forms) e.forms = PICK_ONE;
     if (!draft.texts) e.texts = PICK_ONE;
     if (!draft.noReferences && !draft.reference1.trim() && !draft.reference2.trim()) {
-      e.references = "Add a website, or tick that you don't have any.";
+      e.references = t("Add a website, or tick that you don't have any.", "Junta um website, ou assinala que não tens nenhum.");
     }
     if (!draft.domain) e.domain = PICK_ONE;
     if (!draft.urgent) e.urgent = PICK_ONE;
   }
   if (step === "photo") {
     if (!draft.plan) e.plan = PICK_ONE;
-    if (draft.country === "PT" && !draft.region) e.town = "Choose where in Portugal.";
-    else if (!draft.town.trim()) e.town = "Tell us the town or city.";
+    if (draft.country === "PT" && !draft.region) e.town = t("Choose where in Portugal.", "Escolhe onde, em Portugal.");
+    else if (!draft.town.trim()) e.town = t("Tell us the town or city.", "Diz-nos a localidade.");
   }
   if (step === "search") {
     if (!web && !draft.searchPages) e.searchPages = PICK_ONE;
@@ -220,11 +246,13 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact): Errors 
     if (draft.services.includes("geo") && !draft.geoPlan) e.geoPlan = PICK_ONE;
   }
   if (step === "contact") {
-    if (!contact.name.trim()) e.name = "Enter your name.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contact.email.trim())) e.email = "Enter an email address we can reply to.";
-    if (!/^[+()\d][\d\s().-]{5,24}$/.test(contact.phone.trim())) e.phone = "Enter a phone number.";
-    if (!contact.company.trim()) e.company = "Enter your company's name.";
-    if (!contact.consent) e.consent = "Tick the box so we can use your details.";
+    if (!contact.name.trim()) e.name = t("Enter your name.", "Escreve o teu nome.");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contact.email.trim())) {
+      e.email = t("Enter an email address we can reply to.", "Escreve um email para onde possamos responder.");
+    }
+    if (!/^[+()\d][\d\s().-]{5,24}$/.test(contact.phone.trim())) e.phone = t("Enter a phone number.", "Escreve um número de telefone.");
+    if (!contact.company.trim()) e.company = t("Enter your company's name.", "Escreve o nome da tua empresa.");
+    if (!contact.consent) e.consent = t("Tick the box so we can use your details.", "Assinala a caixa para podermos usar os teus dados.");
   }
   return e;
 }
@@ -272,61 +300,76 @@ export function toAnswers(draft: Draft): Answers {
   return answers;
 }
 
-/** Everything written, as plain text, for the email fallback. */
-export function summary(draft: Draft, contact: Contact, estimate: Estimate | null) {
+/** Everything written, as plain text, for the email fallback, in the
+    language the form was filled in. */
+export function summary(draft: Draft, contact: Contact, estimate: Estimate | null, lang: Lang) {
+  const t = translator(lang);
   const a = toAnswers(draft);
+  const label = <T extends Parameters<typeof labelOf>[0]>(list: T, id: string) => labelOf(list, id, lang);
+  const yes = (v: YesNo) => label(YES_NO, v);
   const lines = [
-    `Name: ${contact.name}`,
+    `${t("Name", "Nome")}: ${contact.name}`,
     `Email: ${contact.email}`,
-    `Phone: ${contact.phone}`,
-    `Company: ${contact.company}`,
+    `${t("Phone", "Telefone")}: ${contact.phone}`,
+    `${t("Company", "Empresa")}: ${contact.company}`,
     "",
-    `Services: ${a.services.map((s) => labelOf(SERVICES, s)).join(", ")}`,
-    `Business: ${a.sectorOther ?? labelOf(SECTORS, a.sector)}`,
-    `Country: ${a.countryOther ?? labelOf(COUNTRIES, a.country)}`,
+    `${t("Services", "Serviços")}: ${a.services.map((s) => label(SERVICES, s)).join(", ")}`,
+    `${t("Business", "Negócio")}: ${a.sectorOther ?? label(SECTORS, a.sector)}`,
+    `${t("Country", "País")}: ${a.countryOther ?? label(COUNTRIES, a.country)}`,
   ];
   if (a.web) {
     lines.push(
-      `Design level: ${labelOf(DESIGN, a.web.design)}`,
-      `Pages: ${labelOf(PAGES, a.web.pages)}`,
-      `Languages: ${a.web.languages.map((l) => (l === "other" ? a.web?.languagesOther : labelOf(LANGUAGES, l))).join(", ")}`,
-      `Forms: ${labelOf(FORMS, a.web.forms)}`,
-      `Texts ready: ${labelOf(TEXTS, a.web.texts)}`,
-      `Reference websites: ${a.web.references.length ? a.web.references.join(", ") : "None"}`,
-      `Has a domain: ${labelOf(YES_NO, a.web.domain)}`,
-      `Urgent deadline: ${labelOf(YES_NO, a.web.urgent)}`,
+      `${t("Design level", "Nível de design")}: ${label(DESIGN, a.web.design)}`,
+      `${t("Pages", "Páginas")}: ${label(PAGES, a.web.pages)}`,
+      `${t("Languages", "Línguas")}: ${a.web.languages.map((l) => (l === "other" ? a.web?.languagesOther : label(LANGUAGES, l))).join(", ")}`,
+      `${t("Forms", "Formulários")}: ${label(FORMS, a.web.forms)}`,
+      `${t("Texts ready", "Textos prontos")}: ${label(TEXTS, a.web.texts)}`,
+      `${t("Reference websites", "Websites de referência")}: ${a.web.references.length ? a.web.references.join(", ") : t("None", "Nenhum")}`,
+      `${t("Has a domain", "Já tem domínio")}: ${yes(a.web.domain)}`,
+      `${t("Urgent deadline", "Prazo urgente")}: ${yes(a.web.urgent)}`,
     );
   }
   if (a.photo) {
     lines.push(
-      `Photo plan: ${labelOf(PHOTO_PLANS, a.photo.plan)}`,
-      `Location: ${[a.photo.town, a.photo.region && labelOf(REGIONS, a.photo.region)].filter(Boolean).join(", ")}`,
+      `${t("Photo plan", "Plano de fotografia")}: ${label(PHOTO_PLANS, a.photo.plan)}`,
+      `${t("Location", "Localização")}: ${[a.photo.town, a.photo.region && label(REGIONS, a.photo.region)].filter(Boolean).join(", ")}`,
     );
   }
   if (a.search) {
     if (a.search.site) lines.push(`Website: ${a.search.site}`);
-    if (a.search.pages) lines.push(`Site pages: ${labelOf(PAGES, a.search.pages)}`);
-    lines.push(`Reach: ${labelOf(REACH, a.search.reach)}`);
-    if (a.search.seoPlan) lines.push(`SEO: ${labelOf(SEARCH_PLANS, a.search.seoPlan)}`);
-    if (a.search.geoPlan) lines.push(`GEO: ${labelOf(SEARCH_PLANS, a.search.geoPlan)}`);
+    if (a.search.pages) lines.push(`${t("Site pages", "Páginas do site")}: ${label(PAGES, a.search.pages)}`);
+    lines.push(`${t("Reach", "Alcance")}: ${label(REACH, a.search.reach)}`);
+    if (a.search.seoPlan) lines.push(`SEO: ${label(SEARCH_PLANS, a.search.seoPlan)}`);
+    if (a.search.geoPlan) lines.push(`GEO: ${label(SEARCH_PLANS, a.search.geoPlan)}`);
   }
   if (estimate) {
-    lines.push("", "Estimate shown:");
+    const money = moneyIn(lang);
+    const span = spanIn(lang);
+    lines.push("", t("Estimate shown:", "Estimativa apresentada:"));
     for (const l of estimate.lines) {
-      lines.push(`${l.label}: ${span(l.amount)}${l.monthly !== undefined ? `, then ${money(l.monthly)}/month` : ""}`);
+      const then = l.monthly !== undefined ? t(`, then ${money(l.monthly)}/month`, `, depois ${money(l.monthly)}/mês`) : "";
+      lines.push(`${l.label}: ${span(l.amount)}${then}`);
     }
-    for (const r of estimate.onRequest) lines.push(`${r.label}: on request (${r.reason})`);
+    for (const r of estimate.onRequest) lines.push(`${r.label}: ${t("on request", "sob consulta")} (${r.reason})`);
     if (estimate.total !== null) lines.push(`Total: ${span(estimate.total)}`);
-    if (estimate.monthly !== null) lines.push(`Then monthly: ${money(estimate.monthly)}`);
+    if (estimate.monthly !== null) lines.push(`${t("Then monthly", "Depois, por mês")}: ${money(estimate.monthly)}`);
   }
-  if (contact.message.trim()) lines.push("", "Tell us more:", contact.message.trim());
+  if (contact.message.trim()) lines.push("", t("Tell us more:", "Conta-nos mais:"), contact.message.trim());
   return lines.join("\n");
 }
 
-const EUR = new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
-const money = (n: number) => EUR.format(n);
+/** Euros as each language writes them: "€650" in English, "650 €" in
+    Portuguese. */
+const EUR: Record<Lang, Intl.NumberFormat> = {
+  en: new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }),
+  pt: new Intl.NumberFormat("pt-PT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }),
+};
+const moneyIn = (lang: Lang) => (n: number) => EUR[lang].format(n);
 /** A range as "€650 – €780", or one figure when it is fixed. */
-const span = (r: Range) => (r.min === r.max ? money(r.min) : `${money(r.min)} – ${money(r.max)}`);
+const spanIn = (lang: Lang) => (r: Range) => {
+  const money = moneyIn(lang);
+  return r.min === r.max ? money(r.min) : `${money(r.min)} – ${money(r.max)}`;
+};
 
 /* --- the controls ---------------------------------------------------- */
 
@@ -532,6 +575,9 @@ export function StepScreen({
   const reduce = useReducedMotion() ?? false;
   const uid = useId();
   const web = draft.services.includes("web");
+  const lang = useLang();
+  const t = useT();
+  const list = <T extends Parameters<typeof inLang>[0][number]>(l: readonly T[]) => inLang(l, lang);
 
   return (
     <motion.div
@@ -540,21 +586,21 @@ export function StepScreen({
       variants={{ hidden: {}, shown: { transition: { staggerChildren: reduce ? 0 : 0.05, delayChildren: 0.04 } } }}
     >
       <motion.h2 variants={ROW} ref={titleRef} tabIndex={-1} className="pf-title">
-        {titleFor(step, draft)}
+        {titleFor(step, draft, t)}
       </motion.h2>
 
       {step === "basics" && (
         <div className="pf-rows">
           <Question
             id="services"
-            label="Which of our services are you interested in?"
-            hint="Web design is always included"
+            label={t("Which of our services are you interested in?", "Que serviços te interessam?")}
+            hint={t("Web design is always included", "O web design está sempre incluído")}
             error={errors.services}
-            footnote={`*${PHOTO_NOTE}`}
+            footnote={`*${t(PHOTO_NOTE)}`}
           >
             <Multi
               name="services"
-              options={SERVICES.map((o) => (o.id === "photo" ? { ...o, label: "Photo shoot*" } : o))}
+              options={list(SERVICES).map((o) => (o.id === "photo" ? { ...o, label: `${o.label}*` } : o))}
               value={draft.services}
               locked={["web"]}
               onChange={(services) =>
@@ -562,10 +608,10 @@ export function StepScreen({
               }
             />
           </Question>
-          <Question id="sector" label="What does your business do?" error={errors.sector}>
+          <Question id="sector" label={t("What does your business do?", "O que faz o teu negócio?")} error={errors.sector}>
             <Segmented
               name="sector"
-              options={SECTORS}
+              options={list(SECTORS)}
               value={draft.sector}
               onChange={(sector) => setDraft({ sector })}
               labelledBy="sector-q"
@@ -573,17 +619,17 @@ export function StepScreen({
             {draft.sector === "other" && (
               <Field
                 id={`${uid}-sector`}
-                label="What does your business do?"
-                placeholder="e.g. Architecture studio"
+                label={t("What does your business do?", "O que faz o teu negócio?")}
+                placeholder={t("e.g. Architecture studio", "ex.: Atelier de arquitetura")}
                 value={draft.sectorOther}
                 onChange={(sectorOther) => setDraft({ sectorOther })}
               />
             )}
           </Question>
-          <Question id="country" label="Where is your business based?" error={errors.country}>
+          <Question id="country" label={t("Where is your business based?", "Onde fica o teu negócio?")} error={errors.country}>
             <Segmented
               name="country"
-              options={COUNTRIES}
+              options={list(COUNTRIES)}
               value={draft.country}
               onChange={(country) => setDraft({ country })}
               labelledBy="country-q"
@@ -591,8 +637,8 @@ export function StepScreen({
             {draft.country === "other" && (
               <Field
                 id={`${uid}-country`}
-                label="Which country?"
-                placeholder="Which country?"
+                label={t("Which country?", "Que país?")}
+                placeholder={t("Which country?", "Que país?")}
                 value={draft.countryOther}
                 onChange={(countryOther) => setDraft({ countryOther })}
                 autoComplete="country-name"
@@ -604,19 +650,19 @@ export function StepScreen({
 
       {step === "web" && (
         <div className="pf-rows">
-          <Question id="design" label="Design level*" error={errors.design} footnote={`*${DESIGN_NOTE}`}>
+          <Question id="design" label={t("Design level*", "Nível de design*")} error={errors.design} footnote={`*${t(DESIGN_NOTE)}`}>
             <Segmented
               name="design"
-              options={DESIGN}
+              options={list(DESIGN)}
               value={draft.design}
               onChange={(design) => setDraft({ design })}
               labelledBy="design-q"
             />
           </Question>
-          <Question id="pages" label="How many pages?" error={errors.pages} footnote={PAGES_NOTE}>
+          <Question id="pages" label={t("How many pages?", "Quantas páginas?")} error={errors.pages} footnote={t(PAGES_NOTE)}>
             <Segmented
               name="pages"
-              options={PAGES}
+              options={list(PAGES)}
               value={draft.pages}
               onChange={(pages) => setDraft({ pages })}
               labelledBy="pages-q"
@@ -624,51 +670,66 @@ export function StepScreen({
           </Question>
           <Question
             id="languages"
-            label="In which languages?"
-            hint="Choose any"
+            label={t("In which languages?", "Em que línguas?")}
+            hint={t("Choose any", "Escolhe as que quiseres")}
             error={errors.languages}
-            footnote={`*${TRANSLATION_NOTE}`}
+            footnote={`*${t(TRANSLATION_NOTE)}`}
           >
             <Multi
               name="languages"
-              options={LANGUAGES.map((l) => (l.id === "other" ? { ...l, label: "Other*" } : l))}
+              options={list(LANGUAGES).map((l) => (l.id === "other" ? { ...l, label: `${l.label}*` } : l))}
               value={draft.languages}
               onChange={(languages) => setDraft({ languages })}
             />
             {draft.languages.includes("other") && (
               <Field
                 id={`${uid}-languages`}
-                label="Which languages?"
-                placeholder="Which? e.g. French, German"
+                label={t("Which languages?", "Que línguas?")}
+                placeholder={t("Which? e.g. French, German", "Quais? ex.: francês, alemão")}
                 value={draft.languagesOther}
                 onChange={(languagesOther) => setDraft({ languagesOther })}
               />
             )}
           </Question>
-          <Question id="forms" label="How many forms?" hint="Contact, booking, quote" error={errors.forms}>
+          <Question
+            id="forms"
+            label={t("How many forms?", "Quantos formulários?")}
+            hint={t("Contact, booking, quote", "Contacto, marcação, orçamento")}
+            error={errors.forms}
+          >
             <Segmented
               name="forms"
-              options={FORMS}
+              options={list(FORMS)}
               value={draft.forms}
               onChange={(forms) => setDraft({ forms })}
               labelledBy="forms-q"
             />
           </Question>
-          <Question id="texts" label="Do you have any texts ready?*" error={errors.texts} footnote={`*${TEXTS_NOTE}`}>
+          <Question
+            id="texts"
+            label={t("Do you have any texts ready?*", "Já tens os textos prontos?*")}
+            error={errors.texts}
+            footnote={`*${t(TEXTS_NOTE)}`}
+          >
             <Segmented
               name="texts"
-              options={TEXTS}
+              options={list(TEXTS)}
               value={draft.texts}
               onChange={(texts) => setDraft({ texts })}
               labelledBy="texts-q"
             />
           </Question>
-          <Question id="references" label="Websites whose look you like" hint="Up to two" error={errors.references}>
+          <Question
+            id="references"
+            label={t("Websites whose look you like", "Websites com um visual de que gostas")}
+            hint={t("Up to two", "Até dois")}
+            error={errors.references}
+          >
             {!draft.noReferences && (
               <>
                 <Field
                   id={`${uid}-ref1`}
-                  label="First website you like"
+                  label={t("First website you like", "Primeiro website de que gostas")}
                   placeholder="website.com"
                   value={draft.reference1}
                   onChange={(reference1) => setDraft({ reference1 })}
@@ -677,7 +738,7 @@ export function StepScreen({
                 />
                 <Field
                   id={`${uid}-ref2`}
-                  label="Second website you like"
+                  label={t("Second website you like", "Segundo website de que gostas")}
                   placeholder="website.com"
                   value={draft.reference2}
                   onChange={(reference2) => setDraft({ reference2 })}
@@ -688,24 +749,34 @@ export function StepScreen({
             )}
             <Multi
               name="noReferences"
-              options={NO_REFERENCES}
+              options={t(NO_REFERENCES)}
               value={draft.noReferences ? ["none"] : []}
               onChange={(v) => setDraft({ noReferences: v.length > 0 })}
             />
           </Question>
-          <Question id="domain" label="Do you already have a domain?*" error={errors.domain} footnote={`*${DOMAIN_NOTE}`}>
+          <Question
+            id="domain"
+            label={t("Do you already have a domain?*", "Já tens domínio?*")}
+            error={errors.domain}
+            footnote={`*${t(DOMAIN_NOTE)}`}
+          >
             <Segmented
               name="domain"
-              options={YES_NO}
+              options={list(YES_NO)}
               value={draft.domain}
               onChange={(domain) => setDraft({ domain })}
               labelledBy="domain-q"
             />
           </Question>
-          <Question id="urgent" label="Is the deadline urgent?*" error={errors.urgent} footnote={`*${URGENT_NOTE}`}>
+          <Question
+            id="urgent"
+            label={t("Is the deadline urgent?*", "O prazo é urgente?*")}
+            error={errors.urgent}
+            footnote={`*${t(URGENT_NOTE)}`}
+          >
             <Segmented
               name="urgent"
-              options={YES_NO}
+              options={list(YES_NO)}
               value={draft.urgent}
               onChange={(urgent) => setDraft({ urgent })}
               labelledBy="urgent-q"
@@ -716,10 +787,10 @@ export function StepScreen({
 
       {step === "photo" && (
         <div className="pf-rows">
-          <Question id="plan" label="Which plan would you like?" error={errors.plan}>
+          <Question id="plan" label={t("Which plan would you like?", "Que plano preferes?")} error={errors.plan}>
             <Segmented
               name="plan"
-              options={PHOTO_PLANS}
+              options={list(PHOTO_PLANS)}
               value={draft.plan}
               onChange={(plan) => setDraft({ plan })}
               labelledBy="plan-q"
@@ -727,11 +798,18 @@ export function StepScreen({
           </Question>
           <Question
             id="town"
-            label="Where is your business located?"
-            hint={draft.country === "PT" ? undefined : "Outside Portugal, the shoot is quoted on request"}
+            label={t("Where is your business located?", "Onde fica o teu negócio?")}
+            hint={
+              draft.country === "PT"
+                ? undefined
+                : t("Outside Portugal, the shoot is quoted on request", "Fora de Portugal, a sessão é orçamentada sob consulta")
+            }
             footnote={
               draft.country === "PT"
-                ? "In some parts of the Porto area and in the rest of the country, travel costs are covered by your business."
+                ? t(
+                    "In some parts of the Porto area and in the rest of the country, travel costs are covered by your business.",
+                    "Em algumas zonas da área do Porto e no resto do país, as despesas de deslocação ficam a cargo do teu negócio.",
+                  )
                 : undefined
             }
             error={errors.town}
@@ -739,7 +817,7 @@ export function StepScreen({
             {draft.country === "PT" && (
               <Segmented
                 name="region"
-                options={REGIONS}
+                options={list(REGIONS)}
                 value={draft.region}
                 onChange={(region) => setDraft({ region })}
                 labelledBy="town-q"
@@ -747,8 +825,8 @@ export function StepScreen({
             )}
             <Field
               id={`${uid}-town`}
-              label="Town or city"
-              placeholder="Town or city"
+              label={t("Town or city", "Localidade")}
+              placeholder={t("Town or city", "Localidade")}
               value={draft.town}
               onChange={(town) => setDraft({ town })}
               autoComplete="address-level2"
@@ -760,11 +838,16 @@ export function StepScreen({
       {step === "search" && (
         <div className="pf-rows">
           {!web && (
-            <Question id="site" label="What's your website address?" hint="Optional" group={false}>
+            <Question
+              id="site"
+              label={t("What's your website address?", "Qual é o endereço do teu website?")}
+              hint={t("Optional", "Opcional")}
+              group={false}
+            >
               <Field
                 id="site-field"
-                label="What's your website address?"
-                placeholder="yourbusiness.com"
+                label={t("What's your website address?", "Qual é o endereço do teu website?")}
+                placeholder={t("yourbusiness.com", "onegocio.pt")}
                 value={draft.site}
                 onChange={(site) => setDraft({ site })}
                 max={MAX.url}
@@ -774,30 +857,34 @@ export function StepScreen({
             </Question>
           )}
           {!web && (
-            <Question id="searchPages" label="How many pages does the site have?" error={errors.searchPages}>
+            <Question
+              id="searchPages"
+              label={t("How many pages does the site have?", "Quantas páginas tem o site?")}
+              error={errors.searchPages}
+            >
               <Segmented
                 name="searchPages"
-                options={PAGES}
+                options={list(PAGES)}
                 value={draft.searchPages}
                 onChange={(searchPages) => setDraft({ searchPages })}
                 labelledBy="searchPages-q"
               />
             </Question>
           )}
-          <Question id="reach" label="How far does your business reach?" error={errors.reach}>
+          <Question id="reach" label={t("How far does your business reach?", "Até onde chega o teu negócio?")} error={errors.reach}>
             <Segmented
               name="reach"
-              options={REACH}
+              options={list(REACH)}
               value={draft.reach}
               onChange={(reach) => setDraft({ reach })}
               labelledBy="reach-q"
             />
           </Question>
           {draft.services.includes("seo") && (
-            <Question id="seoPlan" label="How would you like your SEO?" error={errors.seoPlan}>
+            <Question id="seoPlan" label={t("How would you like your SEO?", "Como queres o teu SEO?")} error={errors.seoPlan}>
               <Segmented
                 name="seoPlan"
-                options={SEARCH_PLANS}
+                options={list(SEARCH_PLANS)}
                 value={draft.seoPlan}
                 onChange={(seoPlan) => setDraft({ seoPlan })}
                 labelledBy="seoPlan-q"
@@ -805,10 +892,10 @@ export function StepScreen({
             </Question>
           )}
           {draft.services.includes("geo") && (
-            <Question id="geoPlan" label="How would you like your GEO?" error={errors.geoPlan}>
+            <Question id="geoPlan" label={t("How would you like your GEO?", "Como queres o teu GEO?")} error={errors.geoPlan}>
               <Segmented
                 name="geoPlan"
-                options={SEARCH_PLANS}
+                options={list(SEARCH_PLANS)}
                 value={draft.geoPlan}
                 onChange={(geoPlan) => setDraft({ geoPlan })}
                 labelledBy="geoPlan-q"
@@ -826,8 +913,16 @@ export function StepScreen({
 
       {step === "sent" && (
         <motion.p variants={ROW} className="pf-lede">
-          Thank you, {contact.name.trim().split(" ")[0]}. We&rsquo;ll send your final proposal to{" "}
-          <span className="whitespace-nowrap">{contact.email.trim()}</span>.
+          {t(
+            <>
+              Thank you, {contact.name.trim().split(" ")[0]}. We&rsquo;ll send your final proposal to{" "}
+              <span className="whitespace-nowrap">{contact.email.trim()}</span>.
+            </>,
+            <>
+              Obrigado, {contact.name.trim().split(" ")[0]}. Vamos enviar a tua proposta final para{" "}
+              <span className="whitespace-nowrap">{contact.email.trim()}</span>.
+            </>,
+          )}
         </motion.p>
       )}
     </motion.div>
@@ -847,11 +942,15 @@ function useReview() {
 
 function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: () => void; web: boolean }) {
   const review = useReview();
+  const lang = useLang();
+  const t = useT();
+  const money = moneyIn(lang);
+  const span = spanIn(lang);
   if (state.status === "loading") {
     return (
       <motion.div variants={ROW} className="pf-rows" aria-busy="true">
         <p className="pf-line pf-loading">
-          <span className="mono-label text-ash-2">Working out your estimate</span>
+          <span className="mono-label text-ash-2">{t("Working out your estimate", "A calcular a tua estimativa")}</span>
           <span aria-hidden="true" className="pf-loading-bar" />
         </p>
       </motion.div>
@@ -863,7 +962,7 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
         <div className="pf-line">
           <p className="pf-line-name">{state.message}</p>
           <button type="button" onClick={retry} className="prop-close">
-            Try again
+            {t("Try again", "Tentar de novo")}
           </button>
         </div>
       </motion.div>
@@ -888,13 +987,13 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
           <span className="text-right">
             <span
               className={`pf-line-value block ${review && line.provisional ? "pf-provisional" : ""}`}
-              title={review && line.provisional ? "Provisional prices" : undefined}
+              title={review && line.provisional ? t("Provisional prices", "Preços provisórios") : undefined}
             >
               {span(line.amount)}
             </span>
             {line.monthly !== undefined && (
               <span className="mono-label mt-1 block text-ash-2">
-                One-time, then {money(line.monthly)}/mo
+                {t(`One-time, then ${money(line.monthly)}/mo`, `Pontual, depois ${money(line.monthly)}/mês`)}
               </span>
             )}
           </span>
@@ -906,48 +1005,59 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
             <span className="pf-line-name block">{item.label}</span>
             <span className="mono-label mt-1 block text-ash-2">{item.reason}</span>
           </span>
-          <span className="pf-line-value pf-line-quiet">On request</span>
+          <span className="pf-line-value pf-line-quiet">{t("On request", "Sob consulta")}</span>
         </motion.div>
       ))}
       <motion.div variants={ROW} className="pf-line pf-total">
         <span>
           <span className="pf-line-name block">Total</span>
           {someOnRequest && estimate.total !== null && (
-            <span className="mono-label mt-1 block text-white/70">Plus the items on request</span>
+            <span className="mono-label mt-1 block text-white/70">
+              {t("Plus the items on request", "Mais os itens sob consulta")}
+            </span>
           )}
         </span>
         <span className="text-right">
-          <span className="pf-line-value block">{estimate.total === null ? "On request" : span(estimate.total)}</span>
+          <span className="pf-line-value block">
+            {estimate.total === null ? t("On request", "Sob consulta") : span(estimate.total)}
+          </span>
           {estimate.monthly !== null && (
-            <span className="mono-label mt-1 block text-white/70">Then {money(estimate.monthly)}/mo</span>
+            <span className="mono-label mt-1 block text-white/70">
+              {t(`Then ${money(estimate.monthly)}/mo`, `Depois ${money(estimate.monthly)}/mês`)}
+            </span>
           )}
         </span>
       </motion.div>
       {web && (
         <motion.div variants={ROW} className="pf-line">
           <span>
-            <span className="pf-line-name block">Website ready in</span>
-            <span className="mono-label mt-1 block text-ash-2">An estimate, confirmed in your proposal</span>
+            <span className="pf-line-name block">{t("Website ready in", "Website pronto em")}</span>
+            <span className="mono-label mt-1 block text-ash-2">
+              {t("An estimate, confirmed in your proposal", "Uma estimativa, confirmada na tua proposta")}
+            </span>
           </span>
           <span className={`pf-line-value ${estimate.timeline?.kind === "days" ? "" : "pf-line-quiet"}`}>
             {estimate.timeline?.kind === "days"
-              ? `${estimate.timeline.min}–${estimate.timeline.max} working days`
+              ? t(
+                  `${estimate.timeline.min}–${estimate.timeline.max} working days`,
+                  `${estimate.timeline.min}–${estimate.timeline.max} dias úteis`,
+                )
               : estimate.timeline?.kind === "agreed"
-                ? "Agreed between us"
-                : "Set in your proposal"}
+                ? t("Agreed between us", "Combinado entre nós")
+                : t("Set in your proposal", "Definido na tua proposta")}
           </span>
         </motion.div>
       )}
     </div>
       <motion.p variants={ROW} className="mono-label pf-foot-note">
-        An estimate from your answers
+        {t("An estimate from your answers", "Uma estimativa a partir das tuas respostas")}
       </motion.p>
       {/* What the ranges promise (user, 2026-10-17). */}
       <motion.p variants={ROW} className="pf-footnote mt-2 max-w-[38em]">
-        It assumes a project exactly as your answers describe it. After looking at your business, we may suggest
-        some changes we think would be best for your project; in that case, the price may end up outside these
-        ranges, lower or higher. Either way, we always also send you an offer based on your own choices, priced
-        within these ranges.
+        {t(
+          "It assumes a project exactly as your answers describe it. After looking at your business, we may suggest some changes we think would be best for your project; in that case, the price may end up outside these ranges, lower or higher. Either way, we always also send you an offer based on your own choices, priced within these ranges.",
+          "Parte de um projeto exatamente como as tuas respostas o descrevem. Depois de conhecermos o teu negócio, podemos sugerir algumas alterações que achamos melhores para o teu projeto; nesse caso, o preço pode ficar fora destes intervalos, para baixo ou para cima. Seja como for, enviamos-te sempre também uma proposta com base nas tuas escolhas, com o preço dentro destes intervalos.",
+        )}
       </motion.p>
     </div>
   );
@@ -964,17 +1074,33 @@ function ContactScreen({
   errors: Errors;
   send: SendState;
 }) {
+  const t = useT();
   const rows = [
-    { key: "name", label: "Name", type: "text", autoComplete: "name", placeholder: "Your name" },
-    { key: "email", label: "Email", type: "email", autoComplete: "email", placeholder: "you@business.com" },
-    { key: "phone", label: "Phone", type: "tel", autoComplete: "tel", placeholder: "+351 900 000 000" },
-    { key: "company", label: "Company", type: "text", autoComplete: "organization", placeholder: "Your business" },
+    { key: "name", label: t("Name", "Nome"), type: "text", autoComplete: "name", placeholder: t("Your name", "O teu nome") },
+    {
+      key: "email",
+      label: "Email",
+      type: "email",
+      autoComplete: "email",
+      placeholder: t("you@business.com", "tu@onegocio.pt"),
+    },
+    { key: "phone", label: t("Phone", "Telefone"), type: "tel", autoComplete: "tel", placeholder: "+351 900 000 000" },
+    {
+      key: "company",
+      label: t("Company", "Empresa"),
+      type: "text",
+      autoComplete: "organization",
+      placeholder: t("Your business", "O teu negócio"),
+    },
   ] as const;
 
   return (
     <>
       <motion.p variants={ROW} className="pf-lede">
-        Leave your details and we&rsquo;ll reply with a final proposal built on your answers.
+        {t(
+          "Leave your details and we’ll reply with a final proposal built on your answers.",
+          "Deixa os teus dados e respondemos com uma proposta final feita a partir das tuas respostas.",
+        )}
       </motion.p>
       <div className="pf-contact">
         {rows.map((row) => (
@@ -1005,11 +1131,14 @@ function ContactScreen({
             never changes the estimate: it is read with the request. */}
         <motion.div variants={ROW}>
           <label className="prop-row">
-            <span className="mono-label prop-label">Tell us more</span>
+            <span className="mono-label prop-label">{t("Tell us more", "Conta-nos mais")}</span>
             <textarea
               name="message"
               rows={4}
-              placeholder="Anything else we should know about your business or your project (optional)"
+              placeholder={t(
+                "Anything else we should know about your business or your project (optional)",
+                "Mais alguma coisa que devamos saber sobre o teu negócio ou o teu projeto (opcional)",
+              )}
               value={contact.message}
               onChange={(e) => setContact({ message: e.target.value })}
               maxLength={MAX.message}
@@ -1018,8 +1147,10 @@ function ContactScreen({
             />
           </label>
           <p id="message-note" className="pf-footnote pf-row-note">
-            What you write here isn&rsquo;t counted in your estimate: we only read it once you&rsquo;ve sent
-            your request.
+            {t(
+              "What you write here isn’t counted in your estimate: we only read it once you’ve sent your request.",
+              "O que escreveres aqui não entra na tua estimativa: só o lemos depois de enviares o pedido.",
+            )}
           </p>
         </motion.div>
         <motion.div variants={ROW} className="pf-consent-row">
@@ -1034,10 +1165,13 @@ function ContactScreen({
             />
             <span aria-hidden="true" className="pf-tick" />
             <span>
-              I agree to Nevima using these details to prepare and send my proposal, as set out in the{" "}
+              {t(
+                "I agree to Nevima using these details to prepare and send my proposal, as set out in the ",
+                "Aceito que a Nevima use estes dados para preparar e enviar a minha proposta, como indicado na ",
+              )}
               {/* A placeholder until the privacy policy page exists. */}
               <a href="#privacy-policy" className="underline underline-offset-2">
-                privacy policy
+                {t("privacy policy", "política de privacidade")}
               </a>
               .
             </span>
@@ -1062,14 +1196,17 @@ function ContactScreen({
     the visitor's own email app, with everything already written in (the
     button at the foot opens it). */
 export function OfflineNote() {
+  const t = useT();
   return (
     <div role="status">
       <p className="pf-lede">
-        Requests can&rsquo;t be sent from the site yet. Send yours by email instead: it opens with your answers
-        and details already written in.
+        {t(
+          "Requests can’t be sent from the site yet. Send yours by email instead: it opens with your answers and details already written in.",
+          "Ainda não é possível enviar pedidos a partir do site. Envia o teu por email: abre já com as tuas respostas e os teus dados escritos.",
+        )}
       </p>
       <p className="mono-label pf-foot-note">
-        Or write to us at{" "}
+        {t("Or write to us at", "Ou escreve-nos para")}{" "}
         <a href={`mailto:${STUDIO_EMAIL}`} className="underline underline-offset-2">
           {STUDIO_EMAIL}
         </a>
@@ -1078,8 +1215,45 @@ export function OfflineNote() {
   );
 }
 
+/** What a request that did not go through tells the visitor: by the
+    server's answer, or "network" when the server was never reached. */
+export function sendError(status: number | "network", t: Translate) {
+  if (status === 429) {
+    return t(
+      "Too many requests from this connection. Try again in a few minutes.",
+      "Demasiados pedidos a partir desta ligação. Tenta de novo daqui a uns minutos.",
+    );
+  }
+  if (status === 422) {
+    return t(
+      "Some details weren't accepted. Check them and send again.",
+      "Alguns dados não foram aceites. Revê-os e envia de novo.",
+    );
+  }
+  if (status === "network") {
+    return t(
+      "We couldn't reach the server. Check your connection and try again.",
+      "Não conseguimos chegar ao servidor. Verifica a tua ligação e tenta de novo.",
+    );
+  }
+  return t(
+    `Your request didn't go through. Try again, or write to ${STUDIO_EMAIL}.`,
+    `O teu pedido não seguiu. Tenta de novo, ou escreve-nos para ${STUDIO_EMAIL}.`,
+  );
+}
+
+/** The subject of the email a request falls back to. */
+export function mailSubject(name: string, t: Translate) {
+  return t(
+    `Final proposal request from ${name.trim() || "the website"}`,
+    `Pedido de proposta final de ${name.trim() || "um visitante do website"}`,
+  );
+}
+
 /** The estimate for this draft, fetched when the estimate screen opens. */
 export function useEstimate(active: boolean, draft: Draft, trap: () => string) {
+  const lang = useLang();
+  const t = translator(lang);
   const [state, setState] = useState<EstimateState>({ status: "loading" });
   const [attempt, setAttempt] = useState(0);
   const key = JSON.stringify(toAnswers(draft));
@@ -1091,25 +1265,44 @@ export function useEstimate(active: boolean, draft: Draft, trap: () => string) {
     fetch("/api/estimate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ answers: JSON.parse(key), nickname: trap() }),
+      body: JSON.stringify({ answers: JSON.parse(key), lang, nickname: trap() }),
     })
       .then(async (res) => {
         const data = await res.json().catch(() => null);
         if (cancelled) return;
         if (res.ok && data?.estimate) setState({ status: "ready", estimate: data.estimate });
         else if (res.status === 429) {
-          setState({ status: "error", message: "Too many estimates from this connection. Try again in a few minutes." });
-        } else setState({ status: "error", message: "We couldn't work out your estimate." });
+          setState({
+            status: "error",
+            message: t(
+              "Too many estimates from this connection. Try again in a few minutes.",
+              "Demasiadas estimativas a partir desta ligação. Tenta de novo daqui a uns minutos.",
+            ),
+          });
+        } else {
+          setState({
+            status: "error",
+            message: t("We couldn't work out your estimate.", "Não conseguimos calcular a tua estimativa."),
+          });
+        }
       })
       .catch(() => {
-        if (!cancelled) setState({ status: "error", message: "We couldn't reach the server. Check your connection." });
+        if (!cancelled) {
+          setState({
+            status: "error",
+            message: t(
+              "We couldn't reach the server. Check your connection.",
+              "Não conseguimos chegar ao servidor. Verifica a tua ligação.",
+            ),
+          });
+        }
       });
     return () => {
       cancelled = true;
     };
     // The trap is read when the request goes, not watched.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, key, attempt]);
+  }, [active, key, attempt, lang]);
 
   return { state, retry: () => setAttempt((n) => n + 1) };
 }

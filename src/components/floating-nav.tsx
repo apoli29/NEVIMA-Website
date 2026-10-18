@@ -9,6 +9,8 @@ import {
   useScroll,
   type MotionValue,
 } from "motion/react";
+import { basePath, type Copy } from "@/lib/i18n";
+import { useHref, useT } from "@/lib/use-lang";
 import { useProposal } from "./proposal-flow";
 
 /* ==================================================================
@@ -21,10 +23,10 @@ import { useProposal } from "./proposal-flow";
    point at sections of the home page.
    ================================================================== */
 
-const NAV = [
-  { label: "Home", href: "#top" },
-  { label: "Portfolio", href: "/portfolio" },
-  { label: "About nevima", href: "/about" },
+const NAV: { label: Copy; href: string }[] = [
+  { label: { en: "Home", pt: "Início" }, href: "#top" },
+  { label: { en: "Portfolio", pt: "Portefólio" }, href: "/portfolio" },
+  { label: { en: "About nevima", pt: "Sobre a nevima" }, href: "/about" },
 ];
 
 /** A link to a section of the home page, from wherever the bar is: off the
@@ -78,12 +80,13 @@ function Pass({
 const ASK_CLASS = "cta-drop cta-drop-light inline-flex items-center justify-center whitespace-nowrap text-[0.9375rem] leading-none";
 
 function AskLabel() {
+  const t = useT();
   return (
     <span className="btn-neu-face">
       {/* In full from lg; below it the bar has no room for it beside
           the links, so it says the short of it. */}
-      <span className="max-lg:hidden">Get your free proposal</span>
-      <span className="lg:hidden">Free proposal</span>
+      <span className="max-lg:hidden">{t("Get your free proposal", "Pede a tua proposta gratuita")}</span>
+      <span className="lg:hidden">{t("Free proposal", "Proposta gratuita")}</span>
       <span aria-hidden="true" className="ml-2.5 inline-block">
         &rarr;
       </span>
@@ -93,6 +96,7 @@ function AskLabel() {
 
 function ProposalAsk() {
   const proposal = useProposal();
+  const href = useHref();
   const button = useRef<HTMLButtonElement>(null);
   const [launched, setLaunched] = useState(false);
   const present = proposal?.present ?? false;
@@ -102,7 +106,7 @@ function ProposalAsk() {
 
   if (!proposal) {
     return (
-      <a href="/#proposal" className={`relative isolate ${ASK_CLASS}`}>
+      <a href={href("/#proposal")} className={`relative isolate ${ASK_CLASS}`}>
         <AskLabel />
       </a>
     );
@@ -150,7 +154,9 @@ export function FloatingNav({
   markVisible?: boolean;
 }) {
   const reduce = useReducedMotion();
-  const onHome = usePathname() === "/";
+  const onHome = basePath(usePathname()) === "/";
+  const href = useHref();
+  const t = useT();
   const bar = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
 
@@ -184,8 +190,8 @@ export function FloatingNav({
         {/* Square-cornered, as everything set on the gallery wall is. */}
         <div ref={bar} className="pointer-events-auto -mx-3 flex items-center justify-between gap-4 bg-ink px-3 py-2.5 md:-mx-5 md:gap-8 md:px-5 md:py-[0.8125rem] xl:-mx-8 xl:px-8">
           <a
-            href={onHome ? "#top" : "/"}
-            aria-label="nevima, home"
+            href={onHome ? "#top" : href("/")}
+            aria-label={t("nevima, home", "nevima, início")}
             className="flex shrink-0 items-center"
           >
             {/* Held invisible until the opening mark has landed on it, then
@@ -206,20 +212,20 @@ export function FloatingNav({
               screen is ruled into columns; each carries its number, as the
               index there does. */}
           <motion.nav
-            aria-label="Primary"
+            aria-label={t("Primary", "Principal")}
             style={{ opacity: linksOpacity }}
             className="-my-2.5 flex items-stretch self-stretch md:-my-[0.8125rem]"
           >
             {NAV.map((item, i) => (
               <Pass
                 key={item.href}
-                href={homeSection(item.href, onHome)}
+                href={href(homeSection(item.href, onHome))}
                 label={
                   <>
                     <span className="mr-2 align-[0.12em] font-mono text-[0.625rem] tracking-[0.06em] text-paper/45 tabular-nums">
                       0{i + 1}
                     </span>
-                    <span className="nav-link-label">{item.label}</span>
+                    <span className="nav-link-label">{t(item.label)}</span>
                   </>
                 }
                 className="nav-link hidden border-l border-paper/15 px-4 text-[0.9375rem] text-paper sm:inline-flex lg:px-6"

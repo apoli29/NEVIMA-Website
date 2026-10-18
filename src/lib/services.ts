@@ -6,7 +6,12 @@
    The section on the home page and each service's own page are set
    from the same record, so a description is written once and the card
    and the page it links to can never drift apart.
+
+   The Portuguese is kept beside it, by slug (PT): servicesIn() gives the
+   list in a page's language.
    ================================================================== */
+
+import type { Lang } from "./i18n";
 
 export type Service = {
   slug: string;
@@ -102,7 +107,47 @@ export const SERVICES: Service[] = [
   },
 ];
 
+/** What each service says in Portuguese; everything else is shared. */
+const PT: Record<string, Pick<Service, "title" | "body" | "included">> = {
+  "web-design": {
+    title: "Web Design",
+    body: "O web design é o principal serviço da Nevima por uma razão: é onde alcançamos os nossos melhores resultados. Aos parceiros que confiam em nós, entregamos um website que reflete a essência do seu negócio e que capta a atenção de potenciais clientes e de qualquer outra parte interessada.",
+    included: {
+      title: "Também incluído",
+      items: [
+        "Alojamento gratuito, enquanto o teu website estiver online",
+        "SEO básico, sem o qual um website quase não aparece nas pesquisas",
+        "Uma chamada gratuita quando parte do website já estiver feita, para o afinarmos cedo ao teu gosto e reduzirmos ao mínimo as alterações no fim",
+      ],
+    },
+  },
+  "visual-identity": {
+    title: "Identidade Visual",
+    body: "Muitos negócios que precisam de um website novo têm também uma identidade de marca fraca, que transmite pouca credibilidade e profissionalismo aos seus clientes. Dificilmente um website de grande qualidade resolve isso sozinho, porque a primeira impressão de um cliente assenta sempre no núcleo de uma identidade: o logótipo e o símbolo. Oferecemos este serviço como complemento do nosso web design, para resolver esse problema e para estar à altura da qualidade dos nossos websites.",
+    included: {
+      title: "Incluído",
+      items: ["Logótipo", "Símbolo (se aplicável)"],
+    },
+  },
+  seo: {
+    title: "SEO",
+    body: "O Search Engine Optimization é o que leva um website às posições mais altas que consegue alcançar nas pesquisas do seu público. Um website com um SEO mal trabalhado perde-se nas últimas páginas de resultados, enquanto um SEO personalizado chega às primeiras.",
+  },
+  geo: {
+    title: "GEO",
+    body: "Cada vez mais pessoas recorrem à IA para encontrar negócios. O GEO aumenta a probabilidade de o teu negócio aparecer nas recomendações e nos resultados de pesquisa da IA.",
+  },
+  "photo-shoot": {
+    title: "Sessão Fotográfica",
+    body: "Um website mostra o seu melhor lado com imagens que são mesmo tuas. A Nevima fotografa o teu negócio, para que quem te encontra veja quem és de verdade, e não uma fotografia de banco de imagens. Só fotografia, ou fotografia e vídeo: tu escolhes. Como todos os nossos serviços adicionais, só é oferecido em conjunto com um website feito por nós, e o preço entra na tua estimativa.",
+  },
+};
+
+/** The services, in a language. */
+export const servicesIn = (lang: Lang): Service[] =>
+  lang === "pt" ? SERVICES.map((service) => ({ ...service, ...PT[service.slug] })) : SERVICES;
+
 export const servicePath = (slug: string) => `/services/${slug}`;
 
-export const findService = (slug: string) =>
-  SERVICES.find((service) => service.slug === slug);
+export const findService = (slug: string, lang: Lang = "en") =>
+  servicesIn(lang).find((service) => service.slug === slug);

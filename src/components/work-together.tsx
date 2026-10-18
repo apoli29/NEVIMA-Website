@@ -11,6 +11,8 @@ import {
   StepScreen,
   actionFor,
   checkStep,
+  mailSubject,
+  sendError,
   stepsFor,
   summary,
   toAnswers,
@@ -20,6 +22,7 @@ import {
   type SendState,
   type StepId,
 } from "./proposal-steps";
+import { useLang, useT } from "@/lib/use-lang";
 
 /* ==================================================================
    Let's work together
@@ -53,6 +56,7 @@ const ERROR_OF: Partial<Record<keyof Draft, string>> = {
 
 export function WorkTogether() {
   const reduce = useReducedMotion() ?? false;
+  const t = useT();
   const [shown, setShown] = useState(0);
   useEffect(() => {
     if (reduce) return;
@@ -94,8 +98,8 @@ export function WorkTogether() {
             id="work-together-title"
             className="display text-[clamp(2.75rem,6vw,5.75rem)] text-paper"
           >
-            <span className="block font-light">Let&rsquo;s work</span>
-            <span className="block font-medium">together.</span>
+            <span className="block font-light">{t("Let’s work", "Vamos trabalhar")}</span>
+            <span className="block font-medium">{t("together.", "juntos.")}</span>
           </h2>
         </div>
         <div className="lg:col-span-7">
@@ -110,6 +114,8 @@ export function WorkTogether() {
 
 function InlineProposal() {
   const reduce = useReducedMotion() ?? false;
+  const lang = useLang();
+  const t = useT();
   const [draft, setDraftState] = useState<Draft>(EMPTY_DRAFT);
   const [contact, setContactState] = useState<Contact>(EMPTY_CONTACT);
   const [step, setStep] = useState<StepId>("basics");
@@ -203,6 +209,7 @@ function InlineProposal() {
         body: JSON.stringify({
           answers: toAnswers(draft),
           contact,
+          lang,
           nickname: readTrap(),
           elapsedMs: Date.now() - openedAt.current,
         }),
@@ -212,21 +219,17 @@ function InlineProposal() {
         setStep("sent");
       } else if (res.status === 503) {
         setSend({ status: "offline" });
-      } else if (res.status === 429) {
-        setSend({ status: "error", message: "Too many requests from this connection. Try again in a few minutes." });
-      } else if (res.status === 422) {
-        setSend({ status: "error", message: "Some details weren't accepted. Check them and send again." });
       } else {
-        setSend({ status: "error", message: `Your request didn't go through. Try again, or write to ${STUDIO_EMAIL}.` });
+        setSend({ status: "error", message: sendError(res.status, t) });
       }
     } catch {
-      setSend({ status: "error", message: "We couldn't reach the server. Check your connection and try again." });
+      setSend({ status: "error", message: sendError("network", t) });
     }
   };
 
-  const mailto = `mailto:${STUDIO_EMAIL}?subject=${encodeURIComponent(
-    `Final proposal request from ${contact.name.trim() || "the website"}`,
-  )}&body=${encodeURIComponent(summary(draft, contact, estimate.state.status === "ready" ? estimate.state.estimate : null))}`;
+  const mailto = `mailto:${STUDIO_EMAIL}?subject=${encodeURIComponent(mailSubject(contact.name, t))}&body=${encodeURIComponent(
+    summary(draft, contact, estimate.state.status === "ready" ? estimate.state.estimate : null, lang),
+  )}`;
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -239,7 +242,7 @@ function InlineProposal() {
       window.location.href = mailto;
       return;
     }
-    const found = checkStep(step, draft, contact);
+    const found = checkStep(step, draft, contact, lang);
     const first = Object.keys(found)[0];
     if (first) {
       setErrors(found);
@@ -275,12 +278,12 @@ function InlineProposal() {
   };
 
   const action = offline
-    ? "Open in your email app"
+    ? t("Open in your email app", "Abrir na tua app de email")
     : send.status === "sending"
-      ? "Sending…"
+      ? t("Sending…", "A enviar…")
       : step === "sent"
-        ? "Start a new request"
-        : actionFor(step, nextStep);
+        ? t("Start a new request", "Fazer um novo pedido")
+        : actionFor(step, nextStep, t);
   const canGoBack = index > 0 && step !== "sent";
   const progress = steps.length > 1 ? index / (steps.length - 1) : 0;
 
@@ -290,23 +293,23 @@ function InlineProposal() {
       <form noValidate onSubmit={onSubmit} aria-labelledby="wt-form-title" className="flex h-full min-h-0 flex-col">
         <p className="mono-label mb-2.5 flex items-center justify-between text-ash-2">
           <span id="wt-form-title" className="idx-title">
-            Free proposal
+            {t("Free proposal", "Proposta gratuita")}
           </span>
           {step !== "sent" &&
             (confirming ? (
-              <span role="group" aria-label="Clear all answers?" className="flex items-center gap-2">
-                <span className="text-ink">Clear all answers?</span>
+              <span role="group" aria-label={t("Clear all answers?", "Apagar todas as respostas?")} className="flex items-center gap-2">
+                <span className="text-ink">{t("Clear all answers?", "Apagar todas as respostas?")}</span>
                 <button type="button" onClick={reset} className="prop-close pf-clear-yes">
-                  Yes
+                  {t("Yes", "Sim")}
                 </button>
                 <span aria-hidden="true">/</span>
                 <button type="button" onClick={() => setConfirming(false)} className="prop-close">
-                  No
+                  {t("No", "Não")}
                 </button>
               </span>
             ) : (
               <button type="button" onClick={() => setConfirming(true)} className="prop-close">
-                Clear answers
+                {t("Clear answers", "Apagar respostas")}
               </button>
             ))}
         </p>
@@ -329,7 +332,7 @@ function InlineProposal() {
                 {offline ? (
                   <>
                     <h3 ref={title} tabIndex={-1} className="pf-title">
-                      Send it by email
+                      {t("Send it by email", "Envia por email")}
                     </h3>
                     <OfflineNote />
                   </>
@@ -370,7 +373,7 @@ function InlineProposal() {
                 <span aria-hidden="true" className="idx-arrow">
                   <Arrow back />
                 </span>
-                <span className="idx-name">Back</span>
+                <span className="idx-name">{t("Back", "Voltar")}</span>
               </button>
             )}
             <button
