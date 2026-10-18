@@ -369,7 +369,6 @@ function SectionIndex({ settled }: { settled: boolean }) {
           the index, carried off (see proposal-flow.tsx). */}
       <nav
         ref={nav}
-        data-jelly-perch
         aria-label={t("Sections", "Secções")}
         className="col-start-1 row-start-1 self-end"
         style={{ visibility: out ? "hidden" : undefined }}
