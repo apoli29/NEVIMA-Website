@@ -1,8 +1,9 @@
 import "server-only";
 import {
   COUNTRIES,
+  COUNTS,
   DESIGN,
-  FORMS,
+  FEATURES,
   LANGUAGES,
   MAX,
   PAGES,
@@ -18,6 +19,16 @@ import {
   type Answers,
   type Contact,
 } from "./questions";
+import {
+  CREDITS,
+  DELIVERIES,
+  MODELS,
+  PARTNER_YES_NO,
+  PROJECT_TYPES,
+  SCREENS,
+  STARTS,
+  type PartnerAnswers,
+} from "./partner";
 
 /* ==================================================================
    Checking what the browser sent
@@ -85,13 +96,25 @@ export function readAnswers(raw: unknown): Result<Answers> {
     const design = one(DESIGN, w.design);
     const pages = one(PAGES, w.pages);
     const languages = many(LANGUAGES, w.languages);
-    const forms = one(FORMS, w.forms);
     const texts = one(TEXTS, w.texts);
     const domain = one(YES_NO, w.domain);
     const urgent = one(YES_NO, w.urgent);
-    if (!design || !pages || !languages || !forms || !texts || !domain || !urgent) {
+    if (!design || !pages || !languages || !texts || !domain || !urgent) {
       return { ok: false, error: "web" };
     }
+    // The second level: any of its items, none included. A count comes
+    // with forms and with automatic emails, which only go with forms or
+    // the newsletter.
+    const rawFeatures = w.features === undefined ? [] : w.features;
+    const features = Array.isArray(rawFeatures) && rawFeatures.length === 0 ? [] : many(FEATURES, rawFeatures);
+    if (!features) return { ok: false, error: "features" };
+    const forms = features.includes("forms") ? one(COUNTS, w.forms) : undefined;
+    if (forms === null) return { ok: false, error: "forms" };
+    if (features.includes("emails") && !features.includes("forms") && !features.includes("newsletter")) {
+      return { ok: false, error: "emails" };
+    }
+    const emails = features.includes("emails") ? one(COUNTS, w.emails) : undefined;
+    if (emails === null) return { ok: false, error: "emails" };
     // Up to two references, or none when the visitor said they have none.
     const refs = Array.isArray(w.references) ? w.references : [];
     if (refs.length > 2) return { ok: false, error: "references" };
@@ -102,7 +125,10 @@ export function readAnswers(raw: unknown): Result<Answers> {
       if (clean) references.push(clean);
     }
     if (!references.length && w.noReferences !== true) return { ok: false, error: "references" };
-    answers.web = { design, pages, languages, forms, texts, references, domain, urgent };
+    answers.web = { design, pages, languages, features, texts, references, domain, urgent };
+    if (forms) answers.web.forms = forms;
+    if (emails) answers.web.emails = emails;
+    if (w.complex === true) answers.web.complex = true;
     if (!references.length) answers.web.noReferences = true;
     if (languages.includes("other")) {
       const other = text(w.languagesOther, MAX.short);
@@ -170,4 +196,38 @@ export function readContact(raw: unknown): Result<Contact> {
   if (message === null || message.length > MAX.message) return { ok: false, error: "message" };
   if (raw.consent !== true) return { ok: false, error: "consent" };
   return { ok: true, value: { name, email, phone, company, message, consent: true } };
+}
+
+/** The partners' answers (development companies): every pick from its
+    list, and the stack confirmed as compatible. */
+export function readPartner(raw: unknown): Result<PartnerAnswers> {
+  if (!isObject(raw)) return { ok: false, error: "answers" };
+  const project = one(PROJECT_TYPES, raw.project);
+  const screens = one(SCREENS, raw.screens);
+  const inspiration = one(PARTNER_YES_NO, raw.inspiration);
+  const start = one(STARTS, raw.start);
+  const delivery = one(DELIVERIES, raw.delivery);
+  const model = one(MODELS, raw.model);
+  const credit = one(CREDITS, raw.credit);
+  if (!project || !screens || !inspiration || !start || !delivery || !model || !credit) {
+    return { ok: false, error: "answers" };
+  }
+  if (raw.compatible !== "yes") return { ok: false, error: "compatible" };
+  const answers: PartnerAnswers = {
+    project,
+    screens,
+    inspiration,
+    compatible: "yes",
+    start,
+    delivery,
+    model,
+    credit,
+    nda: raw.nda === true,
+  };
+  if (inspiration === "yes") {
+    const link = text(raw.inspirationLink, MAX.url);
+    if (link === null) return { ok: false, error: "inspirationLink" };
+    if (link) answers.inspirationLink = link;
+  }
+  return { ok: true, value: answers };
 }

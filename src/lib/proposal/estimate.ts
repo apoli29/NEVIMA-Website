@@ -55,9 +55,7 @@ function web(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"], 
 
   const design = a.design === "advanced" ? 1 + p.advancedPercent / 100 : 1;
   const [fewest, most] = p.pages[a.pages][market];
-  const extras =
-    (extraLanguages ? p.languages[extraLanguages as 1 | 2 | 3] : 0) +
-    p.forms[a.forms][market];
+  const extras = extraLanguages ? p.languages[extraLanguages as 1 | 2 | 3] : 0;
 
   // The pages' range, and on its ceiling the margin for what the form
   // does not ask.
@@ -109,7 +107,53 @@ function web(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"], 
   }
   const floor = down10(min);
   const ceiling = Math.min(up10(max), down10(floor * (1 + spread / 100)));
-  return { line: { amount: { min: floor, max: ceiling }, notes, provisional: a.texts === "no" } };
+
+  // What the website receives from its visitors (the second level), each
+  // item a range of its own, carried whole: added after the cap, raised
+  // with the rest on an urgent deadline.
+  const f = features(a, market, p, t);
+  const rush = a.urgent === "yes" ? 1 + p.urgentPercent / 100 : 1;
+  if (f.listed.length) {
+    notes.push(t(`Includes ${f.listed.join(", ")}.`, `Inclui ${f.listed.join(", ")}.`));
+  }
+  notes.push(...f.notes);
+  return {
+    line: {
+      amount: { min: down10(floor + f.min * rush), max: up10(ceiling + f.max * rush) },
+      notes,
+      provisional: a.texts === "no",
+    },
+  };
+}
+
+/** The second level's items, priced by the market: their range, how
+    they read in the line's note, and what is left for the proposal. */
+function features(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"], t: Translate) {
+  const k = p.featuresMarket[market];
+  const out = { min: 0, max: 0, listed: [] as string[], notes: [] as string[] };
+  const add = ([lo, hi]: [number, number], what: string) => {
+    out.min += lo * k;
+    out.max += hi * k;
+    out.listed.push(what);
+  };
+  const has = (id: (typeof a.features)[number]) => a.features.includes(id);
+  if (has("forms") && a.forms) {
+    if (a.forms === "more") out.notes.push(t("More than 3 forms: quoted in your proposal.", "Mais de 3 formulários: orçamentados na tua proposta."));
+    else add(p.features.forms[a.forms], t(a.forms === "1" ? "1 form" : `${a.forms} forms`, a.forms === "1" ? "1 formulário" : `${a.forms} formulários`));
+  }
+  if (has("newsletter")) add(p.features.newsletter, t("a newsletter sign-up", "uma inscrição na newsletter"));
+  if (has("emails") && a.emails) {
+    if (a.emails === "more") {
+      out.notes.push(t("More than 3 automatic emails: quoted in your proposal.", "Mais de 3 emails automáticos: orçamentados na tua proposta."));
+    } else {
+      const n = Number(a.emails);
+      const [fl, fh] = p.features.emailFirst;
+      const [nl, nh] = p.features.emailNext;
+      add([fl + nl * (n - 1), fh + nh * (n - 1)], t(n === 1 ? "1 automatic email" : `${n} automatic emails`, n === 1 ? "1 email automático" : `${n} emails automáticos`));
+    }
+  }
+  if (has("bookings")) add(p.features.bookings, t("bookings", "marcações"));
+  return out;
 }
 
 /** The logo and, where it applies, the symbol: a fixed price, raised
@@ -175,6 +219,14 @@ export function estimate(answers: Answers, pricing: Pricing = PRICING, lang: Lan
     monthly: null,
     timeline: null,
   };
+
+  // A project that needs the third level (an online shop, logins,
+  // payments, internal software) is not one we take on for now: nothing
+  // is priced, and the form says so.
+  if (answers.web?.complex) {
+    out.outOfScope = true;
+    return out;
+  }
 
   // Outside the countries priced online, everything is quoted.
   const market = answers.country === "other" ? null : MARKET[answers.country];
