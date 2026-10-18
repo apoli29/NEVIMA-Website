@@ -29,11 +29,9 @@ import { useReducedMotion } from "motion/react";
    slides along its edge, and never out past the edge of the screen.
 
    Two drops more are set down once the rest are, perched over the index
-   ([data-jelly-perch]), in the open water above it that its block leaves
-   empty. They keep clear of the index itself rather than of the whole
-   block (the form that block was kept tall for now opens in the middle
-   of the screen, see proposal-flow.tsx). Being laid last, they move none
-   of the others.
+   ([data-jelly-perch]), in the open water above it. They keep clear of
+   the index itself rather than of the whole block it stands in. Being
+   laid last, they move none of the others.
 
    The water covers the whole screen and never stops moving: a swell of
    eight waves runs across it from every side, just as much in every part

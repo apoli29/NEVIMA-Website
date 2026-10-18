@@ -6,7 +6,6 @@ import type { Copy } from "@/lib/i18n";
 import { useHref, useT } from "@/lib/use-lang";
 import { useInkAlign } from "./ink-align";
 import { SECTION_LINKS } from "./index-links";
-import { ProposalForm } from "./proposal-form";
 import { useProposal } from "./proposal-flow";
 
 /* ==================================================================
@@ -14,9 +13,11 @@ import { useProposal } from "./proposal-flow";
 
    The water is the piece on show (see jelly-field.tsx), and the screen
    is set round it the way a room is set round a work. The headline
-   hangs in the top left corner and the subtitle answers it from the top
-   right; the drops have the room between; the way on through the site
-   stands in the bottom right corner, pricing first and lit; and along
+   stands on the left, low on the wall, and the subtitle answers it from
+   the right, level with it: they hang two thirds of the way down the
+   open room between the bar and the index (the user's sketch). The drops
+   have the room round them; the way on through the site stands in the
+   bottom right corner, the ask first and lit; and along
    the foot run the readouts, as on a wall text or an instrument (who,
    where, what time it is there, whether the studio is taking work).
 
@@ -61,6 +62,9 @@ export function StatementScreen({
     // Padded clear of the floating bar at the top.
     <div className="pointer-events-none absolute inset-0 z-10 pt-[7.25rem] pb-[clamp(1.25rem,3.5svh,2.75rem)] md:pt-[clamp(8.5rem,17svh,10rem)]">
       <motion.div style={{ y: rise }} className="shell flex h-full flex-col">
+        {/* The open room is shared out two to one, above the words and
+            below them: they stand low, nearer the index than the bar. */}
+        <div aria-hidden="true" className="min-h-0 flex-[2]" />
         <div className="flex flex-wrap items-start justify-between gap-x-16 gap-y-4">
           {/* As wide as the headline's longest line and no wider, so the
               drops can come up to its right. */}
@@ -106,9 +110,10 @@ export function StatementScreen({
         </div>
 
 
-        {/* The room the work has, with the way on standing in its bottom
-            right corner. */}
-        <div className="grid min-h-0 flex-1 grid-cols-12 gap-x-4">
+        <div aria-hidden="true" className="min-h-6 flex-1" />
+
+        {/* The way on, standing in the bottom right corner. */}
+        <div className="grid grid-cols-12 gap-x-4">
           <SectionIndex settled={settled} />
         </div>
 
@@ -352,17 +357,13 @@ function SectionIndex({ settled }: { settled: boolean }) {
   const href = useHref();
 
   return (
-    // The box keeps the room the old in-place form took above the index
-    // (that form, never opened now, is what holds it): the drops were laid
-    // out round that room, one is perched in it, and nothing on the water
-    // is to move (the user: they must stay as they are).
+    // The box is the index's own: the room the old in-place form once
+    // held above it is open water now, since the words came down beside
+    // it (the user moved them, and the drops with them).
     <div
       data-jelly-quiet
-      className="pointer-events-auto col-span-12 grid self-end pt-6 pb-6 md:pb-8 lg:col-span-4 lg:col-start-9"
+      className="pointer-events-auto col-span-12 grid pb-6 md:pb-8 lg:col-span-4 lg:col-start-9"
     >
-      <div aria-hidden="true" className="invisible col-start-1 row-start-1 self-end">
-        <ProposalForm open={false} onClose={noop} />
-      </div>
       {/* The drops perch above the index itself (see jelly-field.tsx). While
           the proposal form is out, the index is hidden here: the form is
           the index, carried off (see proposal-flow.tsx). */}
@@ -453,8 +454,6 @@ function SectionIndex({ settled }: { settled: boolean }) {
     </div>
   );
 }
-
-const noop = () => {};
 
 function Plus() {
   return (
