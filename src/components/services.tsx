@@ -750,6 +750,16 @@ export function Illuminated({
 
   const per = lines ? durationMs / (1 + LIGHT_OVERLAP * (lines.length - 1)) : 0;
 
+  // The light's own end hands over to the plain text, but an animationend
+  // can be lost (a panel opened and closed quickly, the user saw the lit
+  // copy left standing over the words): once its time is up, it is
+  // handed over anyway.
+  useEffect(() => {
+    if (lit || !lines) return;
+    const id = window.setTimeout(() => setLit(true), delayMs + durationMs + 400);
+    return () => window.clearTimeout(id);
+  }, [lit, lines, delayMs, durationMs]);
+
   return (
     <p ref={ref} className={className} data-lit={lit}>
       {lit ? (

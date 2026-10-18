@@ -417,7 +417,10 @@ function Question({
             {item.a &&
               (open && !reduce ? (
                 <Illuminated
-                  key={opened}
+                  // Its own key, apart from the lines under it: sharing one
+                  // with them, old copies of the answer were left standing
+                  // (user, 2026-10-18).
+                  key={`answer-${opened}`}
                   text={item.a}
                   delayMs={LIGHT_DELAY_MS * 0.6}
                   reduce={reduce}
@@ -430,7 +433,7 @@ function Question({
               ))}
             {(item.flow || item.list || item.link) && (
               // Comes in once the words are lit, each time it is opened.
-              <div key={opened} className={`faq-more ${item.a ? "mt-5" : ""}`}>
+              <div key={`more-${opened}`} className={`faq-more ${item.a ? "mt-5" : ""}`}>
                 {item.flow && (
                   <ol className="faq-flow abt-answer">
                     {item.flow.map((step) => (

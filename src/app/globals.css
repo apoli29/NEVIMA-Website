@@ -115,9 +115,34 @@
     overscroll-behavior: none;
   }
 
+  /* Selected text keeps its weight: the site's heavier words are drawn
+     with a stroke (see .svc-copy), which keeps its own colour unless told,
+     so selected they lost their weight or gained it (user, 2026-10-18).
+     The stroke follows the selection's colour. */
   ::selection {
     background: var(--color-ink);
     color: var(--color-paper);
+    -webkit-text-stroke-color: var(--color-paper);
+  }
+  /* On black, the selection is turned round, so it can be seen; a light
+     pane inside a black section (the forms in "Let's work together")
+     turns it back. */
+  [class*="text-paper"] ::selection,
+  [class*="text-paper"]::selection,
+  .svc-copy:not(.std-ink) ::selection,
+  .svc-copy:not(.std-ink)::selection,
+  .cf-title > span::selection,
+  .idx-ask ::selection,
+  .idx-lead ::selection {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    -webkit-text-stroke-color: var(--color-ink);
+  }
+  [class*="text-ink"] ::selection,
+  [class*="text-ink"]::selection {
+    background: var(--color-ink);
+    color: var(--color-paper);
+    -webkit-text-stroke-color: var(--color-paper);
   }
 
   :focus-visible {
@@ -1430,6 +1455,8 @@
   .svc-line-lit {
     position: absolute;
     inset: -0.25em 0;
+    /* A copy for the eye only: selecting takes the words under it once. */
+    user-select: none;
     padding-block: 0.25em;
     -webkit-mask-image: linear-gradient(90deg, #000 0 45%, transparent 55% 100%);
     mask-image: linear-gradient(90deg, #000 0 45%, transparent 55% 100%);
@@ -3278,9 +3305,10 @@
     from { transform: scaleX(0); }
     to { transform: scaleX(1); }
   }
-  /* The two forms, one over the other while they take turns, so the
-     page never moves under them; once someone has chosen, the other
-     leaves the page and the chosen one keeps its own height. */
+  /* The two forms, always one over the other, so the page never moves
+     under them: the other used to leave the page at the first press, and
+     the jump took the text from under a hand selecting it (user,
+     2026-10-18). */
   .wt-stack { display: grid; }
   .wt-panel {
     grid-area: 1 / 1;
@@ -3295,7 +3323,6 @@
     transform: none;
     transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s;
   }
-  .wt-stack[data-held] .wt-panel:not([data-active]) { display: none; }
   .wt-panel[data-swapped] { animation: wt-swap 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
   @keyframes wt-swap {
     from { opacity: 0; transform: translateY(10px); }
