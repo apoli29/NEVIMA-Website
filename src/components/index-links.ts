@@ -11,4 +11,7 @@ export const SECTION_LINKS: { label: Copy; href: string; lead: boolean }[] = [
   { label: { en: "Our projects", pt: "Os nossos projetos" }, href: "/portfolio", lead: false },
   { label: { en: "About us", pt: "Sobre nós" }, href: "/about", lead: false },
   { label: { en: "Our services", pt: "Os nossos serviços" }, href: "#services", lead: false },
+  // For development companies: the partners' form in "Let's work
+  // together" (user, 2026-10-18).
+  { label: { en: "Partner with us", pt: "Parcerias" }, href: "#partner", lead: false },
 ];

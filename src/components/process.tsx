@@ -688,6 +688,12 @@ export function Process({ ready }: { ready: boolean }) {
               <div className="mt-7">
                 <ProposalCta />
               </div>
+              {/* For development companies: the partners' form at the
+                  foot of the page (user, 2026-10-18). */}
+              <a href="#partner" className="prc-partner mt-5 inline-flex items-center gap-2 self-start">
+                {t("Are you a development company? Partner with us", "Empresas de desenvolvimento: parcerias")}
+                <span aria-hidden="true">&rarr;</span>
+              </a>
             </li>
           </motion.ol>
         </div>

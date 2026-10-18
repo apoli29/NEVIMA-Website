@@ -484,6 +484,11 @@ function Panel({
     if (step === "estimate") {
       if (estimate.state.status === "error") estimate.retry();
       if (estimate.state.status !== "ready") return;
+      // Beyond what we take on: the form ends here.
+      if (!nextStep) {
+        hide();
+        return;
+      }
     }
     if (step === "contact") {
       if (send.status !== "sending") void submit();

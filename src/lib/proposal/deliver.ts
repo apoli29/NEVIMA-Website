@@ -1,5 +1,6 @@
 import "server-only";
 import type { Lang } from "../i18n";
+import type { PartnerAnswers } from "./partner";
 import type { Answers, Contact, Estimate } from "./questions";
 
 /* ==================================================================
@@ -40,6 +41,20 @@ export async function deliverRequest(request: ProposalRequest): Promise<boolean>
   console.info(
     "[nevima:request:undelivered]",
     JSON.stringify({ at: request.at, lang: request.lang, answers: request.answers, estimate: request.estimate }),
+  );
+  return false;
+}
+
+/** A development company asking to work with us on a front end. */
+export type PartnerRequest = { at: string; lang: Lang; answers: PartnerAnswers; contact: Contact };
+
+/** True once the request has reached the studio. Not connected yet,
+    as above: logged without the contact details, reported back as not
+    delivered so the form offers the visitor's email app. */
+export async function deliverPartner(request: PartnerRequest): Promise<boolean> {
+  console.info(
+    "[nevima:partner:undelivered]",
+    JSON.stringify({ at: request.at, lang: request.lang, answers: request.answers }),
   );
   return false;
 }

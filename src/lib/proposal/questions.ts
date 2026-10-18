@@ -63,13 +63,70 @@ export const LANGUAGES = [
 ] as const;
 export type LanguageId = (typeof LANGUAGES)[number]["id"];
 
-export const FORMS = [
-  { id: "0", label: "None", pt: "Nenhum" },
+/** What the website has to do, in three levels, each adding to the one
+    before (user, 2026-10-18). The first, presenting the business, is
+    every website and has no key. The second is ticked item by item and
+    priced; the third is one key, and a project that needs it is one the
+    studio does not take on for now. */
+export const FEATURES = [
+  {
+    id: "forms",
+    label: "Forms",
+    pt: "Formulários",
+    note: "Your clients fill in a form. You get their answers by email and reply yourself.",
+    notePt: "Os clientes do negócio preenchem um formulário. As respostas chegam por email e a resposta é dada diretamente pelo negócio.",
+  },
+  {
+    id: "newsletter",
+    label: "Newsletter sign-up",
+    pt: "Inscrição na newsletter",
+    note: "Your clients sign up with their email. You get each sign-up by email and follow up yourself.",
+    notePt: "Os clientes do negócio inscrevem-se com o email. Cada inscrição chega por email, para lhe ser dado seguimento diretamente.",
+  },
+  {
+    id: "emails",
+    label: "Automatic emails",
+    pt: "Emails automáticos",
+    note: "Rather not reply by hand? Each one gets an automatic email, designed in HTML.",
+    notePt: "Para não ter de responder manualmente: cada pessoa recebe um email automático, desenhado em HTML.",
+  },
+  {
+    id: "bookings",
+    label: "Bookings",
+    pt: "Marcações",
+    note: "Your clients book a time themselves, straight into your calendar.",
+    notePt: "Os clientes do negócio marcam diretamente uma hora no calendário.",
+  },
+] as const;
+export type FeatureId = (typeof FEATURES)[number]["id"];
+
+/** How many forms, or how many different automatic emails. More than
+    three is quoted in the proposal. */
+export const COUNTS = [
   { id: "1", label: "1", pt: "1" },
   { id: "2", label: "2", pt: "2" },
   { id: "3", label: "3", pt: "3" },
+  { id: "more", label: "More than 3", pt: "Mais de 3" },
 ] as const;
-export type FormsId = (typeof FORMS)[number]["id"];
+export type CountId = (typeof COUNTS)[number]["id"];
+
+/** The third level, as one key. */
+export const COMPLEX = [
+  {
+    id: "complex",
+    label: "We need one of these",
+    pt: "Precisamos de um destes",
+    note: "An online shop, a client area with login, payments built into the website, or a connection to your internal software (invoicing, CRM…).",
+    notePt: "Uma loja online, uma área de cliente com login, pagamentos integrados no website, ou uma ligação a software interno (faturação, CRM…).",
+  },
+] as const;
+
+/** Said as soon as the third level is ticked, and in place of the
+    estimate. */
+export const OUT_OF_SCOPE: Copy = {
+  en: "Projects like this are beyond what we take on right now. We'd rather tell you that honestly than deliver less than our best.",
+  pt: "Projetos assim estão, por agora, fora do que fazemos. Preferimos dizê-lo com honestidade a entregar menos do que o nosso melhor.",
+};
 
 /** Two design levels for now (user, 2026-10-17), 25% apart. */
 export const DESIGN = [
@@ -170,7 +227,16 @@ export type Answers = {
     pages: PagesId;
     languages: LanguageId[];
     languagesOther?: string;
-    forms: FormsId;
+    /** The second level's items, in the list's order (none is fine). */
+    features: FeatureId[];
+    /** With forms ticked. */
+    forms?: CountId;
+    /** With automatic emails ticked (only offered with forms or the
+        newsletter): how many different emails. */
+    emails?: CountId;
+    /** The third level: an online shop, logins, payments, internal
+        software. Such a project is not priced. */
+    complex?: true;
     texts: TextsId;
     /** Up to two websites whose look the client likes; empty when they
         said they have none. */
@@ -224,6 +290,9 @@ export type Estimate = {
   total: Range | null;
   /** The sum paid each month after the first, when there is any. */
   monthly: number | null;
+  /** The project needs the third level (complex systems): nothing is
+      priced, and the visitor is told it is beyond what we take on now. */
+  outOfScope?: true;
   /** How long the website takes, when web design was chosen: working
       days, or agreed between both sides on an urgent deadline. */
   timeline: { kind: "days"; min: number; max: number } | { kind: "agreed" } | null;
