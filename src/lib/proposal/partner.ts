@@ -67,19 +67,19 @@ export type PartnerYesNo = (typeof PARTNER_YES_NO)[number]["id"];
 /** What the form says before its first question. */
 export const PARTNER_INTRO: Copy = {
   en: "We take care of the front end only: everything on the back end, hosting and putting it online included, stays with you. Design is part of our service: we create it with an AI-led process, which lets us move fast and iterate on your feedback. If you already have a design, we can use it as inspiration, but we don't replicate existing designs one to one.",
-  pt: "Tratamos só do front end: tudo o que é back end, incluindo o alojamento e pôr o projeto online, fica do vosso lado. O design faz parte do nosso serviço: criamo-lo com um processo guiado por IA, que nos deixa avançar depressa e ajustar ao vosso feedback. Se já tiverem um design, podemos usá-lo como inspiração, mas não replicamos designs existentes à letra.",
+  pt: "Tratamos apenas do front end: todo o back end, incluindo o alojamento e a colocação do projeto online, fica a cargo do parceiro. O design faz parte do nosso serviço: criamo-lo com um processo guiado por IA, que nos permite avançar depressa e ajustar com base no feedback. Um design já existente pode servir de inspiração, mas não replicamos designs existentes à letra.",
 };
 
 /** Our stack, asked as one question: a partner it does not fit is not
     one we work with. */
 export const STACK_QUESTION: Copy = {
   en: "We build with Next.js (React), Tailwind CSS and Motion. Is this compatible with your back end and your hosting, so you can connect it to our front end and run it?",
-  pt: "Trabalhamos com Next.js (React), Tailwind CSS e Motion. Isto é compatível com o vosso back end e o vosso alojamento, para poderem ligá-lo ao nosso front end e pô-lo a funcionar?",
+  pt: "Trabalhamos com Next.js (React), Tailwind CSS e Motion. Esta tecnologia é compatível com o back end e o alojamento do projeto, de forma a ligá-los ao nosso front end e pô-lo a funcionar?",
 };
 
 export const NOT_COMPATIBLE: Copy = {
   en: "Then we're not the right fit for this project for now. Thank you for thinking of us.",
-  pt: "Então, por agora, não somos a escolha certa para este projeto. Obrigado por pensarem em nós.",
+  pt: "Nesse caso, por agora, não somos a escolha certa para este projeto. Obrigado pelo interesse na Nevima.",
 };
 
 export type PartnerAnswers = {

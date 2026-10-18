@@ -111,19 +111,19 @@ export const SERVICES: Service[] = [
 const PT: Record<string, Pick<Service, "title" | "body" | "included">> = {
   "web-design": {
     title: "Web Design",
-    body: "O web design é o principal serviço da Nevima por uma razão: é onde alcançamos os nossos melhores resultados. Aos parceiros que confiam em nós, entregamos um website que reflete a essência do seu negócio e que capta a atenção de potenciais clientes e de qualquer outra parte interessada.",
+    body: "O web design é o principal serviço da Nevima, e não é por acaso: é aqui que alcançamos os melhores resultados. A quem confia em nós, entregamos um website que reflete a essência do negócio e capta a atenção de potenciais clientes e de todas as outras partes interessadas.",
     included: {
       title: "Também incluído",
       items: [
-        "Alojamento gratuito, enquanto o teu website estiver online",
+        "Alojamento gratuito, enquanto o website estiver online",
         "SEO básico, sem o qual um website quase não aparece nas pesquisas",
-        "Uma chamada gratuita quando parte do website já estiver feita, para o afinarmos cedo ao teu gosto e reduzirmos ao mínimo as alterações no fim",
+        "Uma chamada gratuita quando parte do website já estiver construída, para o ajustar desde cedo ao gosto do cliente e reduzir ao mínimo as alterações finais",
       ],
     },
   },
   "visual-identity": {
     title: "Identidade Visual",
-    body: "Muitos negócios que precisam de um website novo têm também uma identidade de marca fraca, que transmite pouca credibilidade e profissionalismo aos seus clientes. Dificilmente um website de grande qualidade resolve isso sozinho, porque a primeira impressão de um cliente assenta sempre no núcleo de uma identidade: o logótipo e o símbolo. Oferecemos este serviço como complemento do nosso web design, para resolver esse problema e para estar à altura da qualidade dos nossos websites.",
+    body: "Muitos negócios que precisam de um website novo têm também uma identidade de marca fraca, que transmite pouca credibilidade e profissionalismo aos seus clientes. Dificilmente um website de grande qualidade resolve isso sozinho, porque a primeira impressão de um cliente assenta sempre no núcleo de uma identidade: o logótipo e o símbolo. Oferecemos este serviço como complemento do nosso web design, para resolver esse problema e garantir uma identidade à altura da qualidade dos nossos websites.",
     included: {
       title: "Incluído",
       items: ["Logótipo", "Símbolo (se aplicável)"],
@@ -131,15 +131,15 @@ const PT: Record<string, Pick<Service, "title" | "body" | "included">> = {
   },
   seo: {
     title: "SEO",
-    body: "O Search Engine Optimization é o que leva um website às posições mais altas que consegue alcançar nas pesquisas do seu público. Um website com um SEO mal trabalhado perde-se nas últimas páginas de resultados, enquanto um SEO personalizado chega às primeiras.",
+    body: "O SEO (Search Engine Optimization) é o que coloca um website nas melhores posições possíveis das pesquisas feitas pelo seu público. Com um SEO mal trabalhado, um website fica perdido nas últimas páginas de resultados; com um SEO personalizado, chega às primeiras.",
   },
   geo: {
     title: "GEO",
-    body: "Cada vez mais pessoas recorrem à IA para encontrar negócios. O GEO aumenta a probabilidade de o teu negócio aparecer nas recomendações e nos resultados de pesquisa da IA.",
+    body: "Cada vez mais pessoas recorrem à IA para encontrar negócios. O GEO aumenta a probabilidade de um negócio aparecer nas recomendações e nos resultados de pesquisa das ferramentas de IA.",
   },
   "photo-shoot": {
     title: "Sessão Fotográfica",
-    body: "Um website mostra o seu melhor lado com imagens que são mesmo tuas. A Nevima fotografa o teu negócio, para que quem te encontra veja quem és de verdade, e não uma fotografia de banco de imagens. Só fotografia, ou fotografia e vídeo: tu escolhes. Como todos os nossos serviços adicionais, só é oferecido em conjunto com um website feito por nós, e o preço entra na tua estimativa.",
+    body: "Um website mostra o que tem de melhor quando as imagens são verdadeiramente próprias. A Nevima fotografa o negócio, para que quem o encontra veja quem está realmente por trás dele, e não fotografias de banco de imagens. Só fotografia, ou fotografia e vídeo: a escolha é do cliente. Como todos os nossos serviços adicionais, só está disponível em conjunto com um website desenvolvido por nós, e o preço entra na estimativa.",
   },
 };
 

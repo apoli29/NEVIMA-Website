@@ -35,14 +35,14 @@ const STATEMENT: Copy = {
 /* The pillar, up to and including the colon it turns on. */
 const PILLAR: Copy = {
   en: "Our pillar is efficiency, because we deliver elite results without long turnaround times. The secret is simple:",
-  pt: "O nosso pilar é a eficiência, porque entregamos resultados de excelência sem prazos longos. O segredo é simples:",
+  pt: "O nosso pilar é a eficiência: entregamos resultados de excelência em prazos curtos. O segredo é simples:",
 };
 
 /* And what follows it, which is run through with a black marker. */
 // A non-breaking hyphen: "know-how" is never split across two lines.
 const PILLAR_MARK: Copy = {
   en: "the know\u2011how we have and using the right tools.",
-  pt: "o know\u2011how que temos e o uso das ferramentas certas.",
+  pt: "o nosso know\u2011how e o uso das ferramentas certas.",
 };
 
 /** How far out of the shell each half of the statement starts, in pixels. */
@@ -666,7 +666,7 @@ function Portraits({
         if (open && by.current === "focus") hide();
       }}
       style={reduce ? undefined : { opacity, scale }}
-      aria-label={t("Find out more about us", "Conhece-nos melhor")}
+      aria-label={t("Find out more about us", "Saber mais sobre nós")}
     >
       <span ref={shell} className="std-faces-in">
         {/* The capsule's black, drawn under the faces and the words, so it
@@ -677,7 +677,7 @@ function Portraits({
           <img src={FOUNDERS[0].photo} alt="" draggable={false} style={{ objectPosition: FOUNDERS[0].focus }} />
         </span>
         <span ref={say} aria-hidden="true" className="std-faces-say">
-          <span ref={words}>{t("Find out more about us", "Conhece\u2011nos melhor")}</span>
+          <span ref={words}>{t("Find out more about us", "Saber mais sobre nós")}</span>
         </span>
         <span ref={far} className="std-face">
           {/* eslint-disable-next-line @next/next/no-img-element */}

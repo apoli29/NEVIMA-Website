@@ -152,7 +152,7 @@ export function CoFounders({
           >
             {/* White on a black band, as the report's names are (user,
                 2026-10-13). */}
-            <span>{t("Meet the co-founders", "Conhece os cofundadores")}</span>
+            <span>{t("Meet the co-founders", "Os cofundadores")}</span>
           </Title>
         </SlideIn>
         <SlideIn
@@ -164,7 +164,7 @@ export function CoFounders({
           <p ref={subRef} className="text-[0.9375rem] leading-[1.45] text-balance text-ash">
             {t(
               "Two people. Zero intermediaries. The ones who design and build your website are the ones you talk to.",
-              "Duas pessoas. Zero intermediários. Quem desenha e constrói o teu website é quem fala contigo.",
+              "Duas pessoas. Zero intermediários. Quem desenha e constrói o website é quem fala com o cliente.",
             )}
           </p>
         </SlideIn>

@@ -174,12 +174,12 @@ export const PROJECTS: Project[] = [
 const PT: Record<string, { summary: string; alt: string }> = {
   bsmartish: {
     summary:
-      "Um website e uma identidade visual feitos em conjunto, para que a marca se leia da mesma forma onde quer que seja encontrada. Rápido, claro em qualquer ecrã, e preparado para ser encontrado no Google e nas respostas da IA.",
+      "Um website e uma identidade visual feitos em conjunto, para que a marca transmita a mesma imagem em todo o lado. Rápido, claro em qualquer ecrã, e preparado para ser encontrado no Google e nas respostas da IA.",
     alt: "Uma esfera de vidro e um prisma iluminados a vermelho sobre uma superfície escura",
   },
   "estamento-de-gerona": {
     summary:
-      "Um website e a identidade por trás dele, desenhados como uma só peça. Uma estrutura calma e clara, que apresenta o projeto com confiança e tem espaço para crescer à medida que o conteúdo chega.",
+      "Um website e a identidade por trás dele, desenhados como uma só peça. Uma estrutura calma e clara, que apresenta o projeto com confiança e tem espaço para crescer à medida que o conteúdo for surgindo.",
     alt: "Casas coloridas ao longo de um rio, em Girona",
   },
 };

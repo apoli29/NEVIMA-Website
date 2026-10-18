@@ -318,7 +318,7 @@ function BeforeAfter({ before, after, name }: { before: string | null; after: st
           {t("Before", "Antes")}
         </span>
       </div>
-      <p className="rp-note">{t("Move left to see how it was before.", "Move para a esquerda para veres como era antes.")}</p>
+      <p className="rp-note">{t("Move left to see how it was before.", "Deslizar para a esquerda para ver como era antes.")}</p>
     </div>
   );
 }

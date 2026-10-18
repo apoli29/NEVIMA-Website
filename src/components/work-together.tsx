@@ -126,8 +126,8 @@ export function WorkTogether() {
   }, []);
 
   const ASK: Record<Audience, { en: string; pt: string }> = {
-    business: { en: "Are you a business owner?", pt: "Tens um negócio?" },
-    partner: { en: "Are you a development company?", pt: "São uma empresa de desenvolvimento?" },
+    business: { en: "Are you a business owner?", pt: "Um negócio à procura de um website?" },
+    partner: { en: "Are you a development company?", pt: "Uma empresa de desenvolvimento?" },
   };
   const TAB: Record<Audience, { en: string; pt: string }> = {
     business: { en: "For businesses", pt: "Para negócios" },
@@ -411,7 +411,7 @@ function InlineProposal() {
   };
 
   const action = offline
-    ? t("Open in your email app", "Abrir na tua app de email")
+    ? t("Open in your email app", "Abrir na app de email")
     : send.status === "sending"
       ? t("Sending…", "A enviar…")
       : step === "sent"
@@ -467,7 +467,7 @@ function InlineProposal() {
                 {offline ? (
                   <>
                     <h3 ref={title} tabIndex={-1} className="pf-title">
-                      {t("Send it by email", "Envia por email")}
+                      {t("Send it by email", "Enviar por email")}
                     </h3>
                     <OfflineNote />
                   </>

@@ -74,28 +74,28 @@ export const FEATURES = [
     label: "Forms",
     pt: "Formulários",
     note: "Your clients fill in a form. You get their answers by email and reply yourself.",
-    notePt: "Os teus clientes preenchem um formulário. Recebes as respostas por email e respondes tu.",
+    notePt: "Os clientes do negócio preenchem um formulário. As respostas chegam por email e a resposta é dada diretamente pelo negócio.",
   },
   {
     id: "newsletter",
     label: "Newsletter sign-up",
     pt: "Inscrição na newsletter",
     note: "Your clients sign up with their email. You get each sign-up by email and follow up yourself.",
-    notePt: "Os teus clientes inscrevem-se com o email. Recebes cada inscrição por email e dás-lhe seguimento tu.",
+    notePt: "Os clientes do negócio inscrevem-se com o email. Cada inscrição chega por email, para lhe ser dado seguimento diretamente.",
   },
   {
     id: "emails",
     label: "Automatic emails",
     pt: "Emails automáticos",
     note: "Rather not reply by hand? Each one gets an automatic email, designed in HTML.",
-    notePt: "Preferes não responder à mão? Cada um recebe um email automático, desenhado em HTML.",
+    notePt: "Para não ter de responder manualmente: cada pessoa recebe um email automático, desenhado em HTML.",
   },
   {
     id: "bookings",
     label: "Bookings",
     pt: "Marcações",
     note: "Your clients book a time themselves, straight into your calendar.",
-    notePt: "Os teus clientes marcam eles próprios uma hora, diretamente no teu calendário.",
+    notePt: "Os clientes do negócio marcam diretamente uma hora no calendário.",
   },
 ] as const;
 export type FeatureId = (typeof FEATURES)[number]["id"];
@@ -117,7 +117,7 @@ export const COMPLEX = [
     label: "We need one of these",
     pt: "Precisamos de um destes",
     note: "An online shop, a client area with login, payments built into the website, or a connection to your internal software (invoicing, CRM…).",
-    notePt: "Uma loja online, uma área de cliente com login, pagamentos integrados no website, ou uma ligação ao teu software interno (faturação, CRM…).",
+    notePt: "Uma loja online, uma área de cliente com login, pagamentos integrados no website, ou uma ligação a software interno (faturação, CRM…).",
   },
 ] as const;
 
@@ -125,7 +125,7 @@ export const COMPLEX = [
     estimate. */
 export const OUT_OF_SCOPE: Copy = {
   en: "Projects like this are beyond what we take on right now. We'd rather tell you that honestly than deliver less than our best.",
-  pt: "Projetos assim estão, por agora, fora do que fazemos. Preferimos dizer-to com honestidade a entregar menos do que o nosso melhor.",
+  pt: "Projetos assim estão, por agora, fora do que fazemos. Preferimos dizê-lo com honestidade a entregar menos do que o nosso melhor.",
 };
 
 /** Two design levels for now (user, 2026-10-17), 25% apart. */
@@ -142,7 +142,7 @@ export const DESIGN = [
     label: "Advanced",
     pt: "Avançado",
     note: "Richer layouts and animation, designed around your brand",
-    notePt: "Composições e animações mais ricas, desenhadas à volta da tua marca",
+    notePt: "Composições e animações mais ricas, desenhadas à volta da marca",
   },
 ] as const;
 export type DesignId = (typeof DESIGN)[number]["id"];
@@ -302,7 +302,7 @@ export type Estimate = {
     for or priced (user). */
 export const TRANSLATION_NOTE: Copy = {
   en: "Languages other than Portuguese and English are translated by an AI specialised in translation, with over 95% accuracy. We always send you a final document, so you can point out any sentence you'd like written differently.",
-  pt: "As línguas além do português e do inglês são traduzidas por uma IA especializada em tradução, com mais de 95% de precisão. Enviamos-te sempre um documento final, para poderes indicar qualquer frase que prefiras escrita de outra forma.",
+  pt: "As línguas além do português e do inglês são traduzidas por uma IA especializada em tradução, com mais de 95% de precisão. Enviamos sempre um documento final, onde é possível indicar qualquer frase que se prefira escrita de outra forma.",
 };
 
 /** How many languages were typed under "Other": "French, German and
