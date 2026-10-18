@@ -603,8 +603,9 @@ function Panel({
               {SECTION_LINKS.map((row) => (
                 <div key={row.href} className="relative">
                   <span className="absolute inset-x-0 top-0 z-10 block h-px bg-ink" />
-                  <div className={`idx-link ${row.lead ? "idx-lead" : ""}`}>
+                  <div className={`idx-link ${row.lead ? "idx-lead" : ""} ${row.ask ? "idx-ask idx-ask-second" : ""}`}>
                     <span className="idx-name flex items-center gap-2.5">
+                      {row.ask && <span className="live-dot live-dot-loud" />}
                       {row.lead && <span className="live-dot" />}
                       {say(row.label)}
                     </span>

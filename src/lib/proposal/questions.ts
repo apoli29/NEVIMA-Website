@@ -87,8 +87,8 @@ export const FEATURES = [
     id: "emails",
     label: "Automatic emails",
     pt: "Emails automáticos",
-    note: "Rather not reply by hand? Each one gets an automatic email, designed in HTML.",
-    notePt: "Para não ter de responder manualmente: cada pessoa recebe um email automático, desenhado em HTML.",
+    note: "Automatic emails, ready to go out in reply to forms or newsletter sign-ups. Designed with a look of their own, in keeping with the website and the business.",
+    notePt: "Emails automáticos já preparados para enviar como resposta a formulários ou a newsletters. Produzidos com uma estética personalizada, coesa com o website e o negócio.",
   },
   {
     id: "bookings",
