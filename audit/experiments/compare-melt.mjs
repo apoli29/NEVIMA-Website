@@ -1,4 +1,5 @@
-// Pixel check of the compositor-melt prototype against the real drops:
+// Pixel check of the compositor-melt prototype against the real drops (or,
+// with REAL_URL and PROTO_URL, of two builds against each other):
 // the same page, the same moments of the drops' loops (every animation on
 // the page set to the same currentTime), cropped to the drops, diffed.
 //   AUDIT_TOOLS=... node audit/experiments/compare-melt.mjs <outdir>
@@ -19,12 +20,13 @@ for (const variant of ["real", "proto"]) {
   for (const [page_, vp] of [["/portfolio", { width: 1440, height: 900 }], ["/#process", { width: 1440, height: 900 }]]) {
     const ctx = await browser.newContext({ viewport: vp, deviceScaleFactor: 2 });
     await standInForUnsplash(ctx);
-    if (variant === "proto") {
+    const base = (variant === "real" ? process.env.REAL_URL : process.env.PROTO_URL) || BASE;
+    if (variant === "proto" && !process.env.PROTO_URL) {
       await ctx.addInitScript({ content: js });
       await ctx.addInitScript((c) => document.addEventListener("DOMContentLoaded", () => { const s = document.createElement("style"); s.textContent = c; document.head.appendChild(s); }), css);
     }
     const p = await ctx.newPage();
-    await p.goto(BASE + page_, { waitUntil: "networkidle" });
+    await p.goto(base + page_, { waitUntil: "networkidle" });
     await p.waitForTimeout(page_.includes("process") ? 5000 : 2500);
     const boxes = await p.evaluate(() => [...document.querySelectorAll(".cta-drop")].map((el) => el.getBoundingClientRect()).filter((r) => r.width && r.top >= 0 && r.bottom <= innerHeight && r.left >= 0 && r.right <= innerWidth).map((r) => ({ x: Math.max(0, r.left - 30), y: Math.max(0, r.top - 30), width: r.width + 60, height: r.height + 60 })));
     for (const t of TIMES) {
@@ -33,6 +35,7 @@ for (const variant of ["real", "proto"]) {
           const n = a.animationName ?? a.effect?.target?.className ?? "";
           a.pause();
           a.currentTime = /cta-melt|nv-melt|drop-tilt|drop-breathe/.test(a.animationName ?? "") ? t : a.currentTime;
+          a.effect?.target?.closest?.("[data-offscreen]")?.removeAttribute("data-offscreen");
         }
       }, t);
       await p.waitForTimeout(100);
