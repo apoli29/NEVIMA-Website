@@ -3,6 +3,8 @@
 import { useEffect, useId, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import {
+  AUDIENCES,
+  AUDIENCE_NOTE,
   COMPLEX,
   COUNTRIES,
   COUNTS,
@@ -12,6 +14,7 @@ import {
   LANGUAGES,
   MAX,
   PAGES,
+  PERSONAL_ABROAD,
   PHOTO_PLANS,
   REACH,
   REGIONS,
@@ -25,6 +28,7 @@ import {
   inLang,
   labelOf,
   type Answers,
+  type AudienceId,
   type Contact,
   type CountryId,
   type DesignId,
@@ -61,6 +65,8 @@ export const STUDIO_EMAIL = "ola@nevima.studio";
 
 export type Draft = {
   services: ServiceId[];
+  /** A business, or personal use (a consumer, in Portugal only). */
+  audience: AudienceId | "";
   sector: SectorId | "";
   sectorOther: string;
   country: CountryId | "";
@@ -95,6 +101,7 @@ export const EMPTY_DRAFT: Draft = {
   // Web design is always part of a project: the other services are only
   // offered together with a website (the user's rule, 2026-10-07).
   services: ["web"],
+  audience: "",
   sector: "",
   sectorOther: "",
   country: "",
@@ -215,6 +222,10 @@ const NO_REFERENCES: Copy<readonly { id: "none"; label: string }[]> = {
   pt: [{ id: "none", label: "Não tenho" }],
 };
 
+/** Personal use outside Portugal: not taken on for now. */
+export const personalAbroad = (draft: Draft) =>
+  draft.audience === "personal" && draft.country !== "" && draft.country !== "PT";
+
 export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: Lang): Errors {
   const t = translator(lang);
   const PICK_ONE = t("Choose one to continue.", "Escolher uma opção para continuar.");
@@ -223,12 +234,17 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
   const web = draft.services.includes("web");
   if (step === "basics") {
     if (!draft.services.length) e.services = PICK_ANY;
-    if (!draft.sector) e.sector = PICK_ONE;
-    else if (draft.sector === "other" && !draft.sectorOther.trim()) {
-      e.sector = t("Tell us what your business does.", "Falta indicar a área do negócio.");
+    if (!draft.audience) e.audience = PICK_ONE;
+    if (draft.audience !== "personal") {
+      if (!draft.sector) e.sector = PICK_ONE;
+      else if (draft.sector === "other" && !draft.sectorOther.trim()) {
+        e.sector = t("Tell us what your business does.", "Falta indicar a área do negócio.");
+      }
     }
     if (!draft.country) e.country = PICK_ONE;
     else if (draft.country === "other" && !draft.countryOther.trim()) e.country = t("Tell us which country.", "Falta indicar o país.");
+    // Personal use outside Portugal goes no further (shown as it is picked).
+    if (personalAbroad(draft)) e.country = t(PERSONAL_ABROAD);
   }
   if (step === "web") {
     // A project beyond what we take on needs nothing more answered.
@@ -265,7 +281,12 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
       e.email = t("Enter an email address we can reply to.", "Falta um email válido para a resposta.");
     }
     if (!/^[+()\d][\d\s().-]{5,24}$/.test(contact.phone.trim())) e.phone = t("Enter a phone number.", "Falta um número de telefone válido.");
-    if (!contact.company.trim()) e.company = t("Enter your company's name.", "Falta indicar o nome da empresa.");
+    // A client for personal use has no business name to give.
+    if (draft.audience !== "personal" && !contact.company.trim()) {
+      e.company = draft.audience === "business"
+        ? t("Enter your business's name.", "Falta indicar o nome do negócio.")
+        : t("Enter your company's name.", "Falta indicar o nome da empresa.");
+    }
     if (!contact.consent) e.consent = t("Tick the box so we can use your details.", "É necessário assinalar a caixa para podermos usar os dados.");
   }
   return e;
@@ -276,10 +297,13 @@ export function toAnswers(draft: Draft): Answers {
   const groups = groupsFor(draft.services);
   const answers: Answers = {
     services: draft.services,
-    sector: draft.sector as SectorId,
+    audience: draft.audience as AudienceId,
     country: draft.country as CountryId,
   };
-  if (draft.sector === "other") answers.sectorOther = draft.sectorOther.trim();
+  if (draft.audience === "business") {
+    answers.sector = draft.sector as SectorId;
+    if (draft.sector === "other") answers.sectorOther = draft.sectorOther.trim();
+  }
   if (draft.country === "other") answers.countryOther = draft.countryOther.trim();
   if (groups.web) {
     const references = draft.noReferences
@@ -328,10 +352,12 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
     `${t("Name", "Nome")}: ${contact.name}`,
     `Email: ${contact.email}`,
     `${t("Phone", "Telefone")}: ${contact.phone}`,
-    `${t("Company", "Empresa")}: ${contact.company}`,
+    ...(a.audience === "business" ? [`${t("Business name", "Nome do negócio")}: ${contact.company}`] : []),
     "",
+    // Which Proposal to send: a business's, or a consumer's with the annex.
+    `${t("Client", "Cliente")}: ${label(AUDIENCES, a.audience)}`,
     `${t("Services", "Serviços")}: ${a.services.map((s) => label(SERVICES, s)).join(", ")}`,
-    `${t("Business", "Negócio")}: ${a.sectorOther ?? label(SECTORS, a.sector)}`,
+    ...(a.sector ? [`${t("Business", "Negócio")}: ${a.sectorOther ?? label(SECTORS, a.sector)}`] : []),
     `${t("Country", "País")}: ${a.countryOther ?? label(COUNTRIES, a.country)}`,
   ];
   if (a.web) {
@@ -679,6 +705,24 @@ export function StepScreen({
               }
             />
           </Question>
+          {/* Business or personal use (user, 2026-10-19): it decides
+              which Proposal is sent, and personal use is taken on in
+              Portugal only. */}
+          <Question
+            id="audience"
+            label={t("Who is the website for?", "O website é para…")}
+            error={errors.audience}
+            footnote={t(AUDIENCE_NOTE)}
+          >
+            <Segmented
+              name="audience"
+              options={list(AUDIENCES)}
+              value={draft.audience}
+              onChange={(audience) => setDraft({ audience })}
+              labelledBy="audience-q"
+            />
+          </Question>
+          {draft.audience !== "personal" && (
           <Question id="sector" label={t("What does your business do?", "Qual é a área do negócio?")} error={errors.sector}>
             <Segmented
               name="sector"
@@ -697,7 +741,17 @@ export function StepScreen({
               />
             )}
           </Question>
-          <Question id="country" label={t("Where is your business based?", "Onde está sediado o negócio?")} error={errors.country}>
+          )}
+          <Question
+            id="country"
+            label={
+              draft.audience === "personal"
+                ? t("Which country are you in?", "Em que país?")
+                : t("Where is your business based?", "Onde está sediado o negócio?")
+            }
+            // The note below says it as soon as it applies.
+            error={personalAbroad(draft) ? undefined : errors.country}
+          >
             <Segmented
               name="country"
               options={list(COUNTRIES)}
@@ -714,6 +768,11 @@ export function StepScreen({
                 onChange={(countryOther) => setDraft({ countryOther })}
                 autoComplete="country-name"
               />
+            )}
+            {personalAbroad(draft) && (
+              <p role="status" className="pf-out">
+                {t(PERSONAL_ABROAD)}
+              </p>
             )}
           </Question>
         </div>
@@ -1060,7 +1119,13 @@ export function StepScreen({
       {step === "estimate" && <EstimateScreen state={estimate} retry={retryEstimate} web={web} />}
 
       {step === "contact" && (
-        <ContactScreen contact={contact} setContact={setContact} errors={errors} send={send} />
+        <ContactScreen
+          contact={contact}
+          setContact={setContact}
+          errors={errors}
+          send={send}
+          audience={draft.audience}
+        />
       )}
 
       {step === "sent" && (
@@ -1235,6 +1300,7 @@ export function ContactScreen({
   errors,
   send,
   partner = false,
+  audience = "",
 }: {
   contact: Contact;
   setContact: (patch: Partial<Contact>) => void;
@@ -1243,9 +1309,11 @@ export function ContactScreen({
   /** The partners' form (development companies): no estimate, and we
       get in touch rather than send a proposal. */
   partner?: boolean;
+  /** Who the website is for: personal use has no business name to ask. */
+  audience?: AudienceId | "";
 }) {
   const t = useT();
-  const rows = [
+  const all = [
     { key: "name", label: t("Name", "Nome"), type: "text", autoComplete: "name", placeholder: t("Your name", "Nome") },
     {
       key: "email",
@@ -1257,12 +1325,14 @@ export function ContactScreen({
     { key: "phone", label: t("Phone", "Telefone"), type: "tel", autoComplete: "tel", placeholder: "+351 900 000 000" },
     {
       key: "company",
-      label: t("Company", "Empresa"),
+      // The partners are companies; a client's may be a sole trader.
+      label: partner ? t("Company", "Empresa") : t("Business name", "Nome do negócio"),
       type: "text",
       autoComplete: "organization",
-      placeholder: t("Your business", "Nome da empresa"),
+      placeholder: partner ? t("Your business", "Nome da empresa") : t("Your business", "Nome do negócio"),
     },
   ] as const;
+  const rows = audience === "personal" ? all.filter((row) => row.key !== "company") : all;
 
   return (
     <>
