@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { flushSync } from "react-dom";
 import {
   animate,
@@ -426,10 +426,17 @@ export function Process({ ready }: { ready: boolean }) {
   const toggle = (id: Extra) =>
     setExtras((was) => (was.includes(id) ? was.filter((e) => e !== id) : [...was, id]));
   const t = useT();
-  const phases = phasesIn(useLang()).map((phase) => ({
-    ...phase,
-    steps: phase.steps.filter((step) => !step.extra || extras.includes(step.extra)),
-  }));
+  const lang = useLang();
+  // The same objects from one render to the next, so a step or a phase
+  // heading is only drawn again when it changes (see StepCard, PhaseHead).
+  const phases = useMemo(
+    () =>
+      phasesIn(lang).map((phase) => ({
+        ...phase,
+        steps: phase.steps.filter((step) => !step.extra || extras.includes(step.extra)),
+      })),
+    [lang, extras],
+  );
   const stepCount = phases.reduce((n, phase) => n + phase.steps.length, 0);
 
   const [layout, setLayout] = useState<Layout>(NO_LAYOUT);
@@ -704,7 +711,9 @@ export function Process({ ready }: { ready: boolean }) {
 
 /* A phase's heading. Held at the row's left edge while its steps slide by
    under it, and carried off by its own last step once that has gone past. */
-function PhaseHead({
+/* Drawn again only when its own props change: the row's stops being
+   reached re-render the section, and every heading and step with it. */
+const PhaseHead = memo(function PhaseHead({
   phase,
   box,
   x,
@@ -730,9 +739,9 @@ function PhaseHead({
       </h3>
     </motion.div>
   );
-}
+});
 
-function StepCard({ step, n, count, on }: { step: Step; n: number; count: number; on: boolean }) {
+const StepCard = memo(function StepCard({ step, n, count, on }: { step: Step; n: number; count: number; on: boolean }) {
   const t = useT();
   const href = useHref();
   return (
@@ -790,7 +799,7 @@ function StepCard({ step, n, count, on }: { step: Step; n: number; count: number
       </dl>
     </li>
   );
-}
+});
 
 function Label({ children }: { children: ReactNode }) {
   return (

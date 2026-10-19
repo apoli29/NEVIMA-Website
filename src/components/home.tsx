@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   animate,
   cubicBezier,
@@ -25,6 +25,18 @@ import { Studio } from "./studio";
 import { hasOpened, markOpened, returningTo } from "@/lib/return-spot";
 import { booted, OPENING_CLASS } from "@/lib/opened";
 import { useT } from "@/lib/use-lang";
+
+/* The sections under the opening, drawn again only when their own props
+   change. The page's phase changes as the opening starts and ends, and
+   without this every section and form below was drawn again at that very
+   moment, the first frames of the mark's flight among them. */
+const StatementScreenM = memo(StatementScreen);
+const StudioM = memo(Studio);
+const ServicesM = memo(Services);
+const ProcessM = memo(Process);
+const ComparisonM = memo(Comparison);
+const WorkTogetherM = memo(WorkTogether);
+const FooterM = memo(Footer);
 
 /* ==================================================================
    One gesture, one take.
@@ -479,7 +491,7 @@ export function Home() {
             />
           </motion.div>
 
-          <StatementScreen rise={wordsRise} settled={phase === "open"} />
+          <StatementScreenM rise={wordsRise} settled={phase === "open"} />
 
           {/* The curtain. Black over a second screen that is already built,
               so lifting it is the whole transition. Lifted, it is still on
@@ -504,21 +516,21 @@ export function Home() {
           </div>
           </section>
 
-          <Studio ready={studioIn} />
+          <StudioM ready={studioIn} />
           {/* The services are drawn over the screen too. The studio alone
               is shorter than the screen since the co-founders moved to the
               about page, and a stuck element only stays stuck while its
               box still has room: the screen came loose half covered and
               slid away under the studio instead of being closed over. */}
-          <Services ready={phase === "open"} />
+          <ServicesM ready={phase === "open"} />
         </div>
 
-        <Process ready={phase === "open"} />
-        <Comparison ready={phase === "open"} />
+        <ProcessM ready={phase === "open"} />
+        <ComparisonM ready={phase === "open"} />
       </main>
 
-      <WorkTogether />
-      <Footer />
+      <WorkTogetherM />
+      <FooterM />
       </div>
 
       <ProposalOverlay ctl={proposal} />
