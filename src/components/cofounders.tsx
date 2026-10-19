@@ -53,7 +53,7 @@ const FOUNDERS: Founder[] = [
     last: "Costa",
     role: "Co-founder",
     study: "Multimedia, ISLA",
-    bio: "Emanuel (21) is currently pursuing a degree in Multimedia at ISLA, a historic network of private education institutions in Portugal that stands out in areas such as Management, Finance and Information Technology. Emanuel has freelance experience in professional photo shoots, having already provided that service at weddings, major regional political campaigns and more.",
+    bio: "Emanuel (21) is studying for a degree in Multimedia at ISLA, a historic network of private education institutions in Portugal that stands out in areas such as Management, Finance and Information Technology. Emanuel has freelance experience in professional photo shoots, having already provided that service at weddings, major regional political campaigns and more.",
     skills: [
       "Web structuring and programming",
       "User interface and user experience",
@@ -72,7 +72,7 @@ const FOUNDERS: Founder[] = [
     last: "Policarpo",
     role: "Co-founder",
     study: "Business Communication, ISCAP",
-    bio: "António (20) holds a degree in Business Communication from ISCAP, a school recognized as a benchmark in Business Sciences. Freelancing for a real estate company, António was in charge of planning and executing its communication ecosystem, which included the website and social media.",
+    bio: "António (20) holds a degree in Business Communication from ISCAP, a school recognized as a benchmark in Business Sciences. Freelancing for a real estate company, António was in charge of planning and executing its entire communication ecosystem, which included the website and social media.",
     skills: [
       "Strategic communication",
       "Corporate identity (brand storytelling)",
@@ -88,7 +88,7 @@ const PT: Record<Founder["id"], Pick<Founder, "role" | "study" | "bio" | "skills
   ec: {
     role: "Cofundador",
     study: "Multimédia, ISLA",
-    bio: "O Emanuel (21) está a tirar a licenciatura em Multimédia no ISLA, uma rede histórica de instituições de ensino privado em Portugal que se destaca em áreas como a Gestão, as Finanças e as Tecnologias de Informação. Tem experiência como freelancer em sessões fotográficas profissionais, serviço que já prestou em casamentos, em grandes campanhas políticas regionais e não só.",
+    bio: "O Emanuel (21) frequenta a licenciatura em Multimédia no ISLA, uma rede histórica de instituições de ensino privado em Portugal que se destaca em áreas como a Gestão, as Finanças e as Tecnologias de Informação. Tem experiência como freelancer em sessões fotográficas profissionais, serviço que já prestou em casamentos, em grandes campanhas políticas regionais e não só.",
     skills: [
       "Estruturação e programação web",
       "Interface e experiência do utilizador",
@@ -102,7 +102,7 @@ const PT: Record<Founder["id"], Pick<Founder, "role" | "study" | "bio" | "skills
   ap: {
     role: "Cofundador",
     study: "Comunicação Empresarial, ISCAP",
-    bio: "O António (20) é licenciado em Comunicação Empresarial pelo ISCAP, uma escola reconhecida como referência nas Ciências Empresariais. Como freelancer numa empresa do setor imobiliário, ficou responsável por planear e executar todo o seu ecossistema de comunicação, que incluía o website e as redes sociais.",
+    bio: "O António (20) é licenciado em Comunicação Empresarial pelo ISCAP, uma escola reconhecida como referência nas Ciências Empresariais. Enquanto freelancer numa empresa do setor imobiliário, ficou responsável por planear e executar todo o seu ecossistema de comunicação, que incluía o website e as redes sociais.",
     skills: [
       "Comunicação estratégica",
       "Identidade corporativa (brand storytelling)",

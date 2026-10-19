@@ -273,8 +273,8 @@ export function AboutValues() {
           <SlideIn ready from="right" delay={0.12} className="w-full max-w-[20rem] shrink-0">
             <p ref={subRef} className="abt-val-sub text-[0.9375rem] leading-[1.45] text-ash">
               {t(
-                "Pick one to see what it means. None of them works alone, so they never stay apart for long.",
-                "Basta escolher um para conhecer o seu significado. Nenhum funciona sozinho, por isso nunca ficam separados por muito tempo.",
+                "Each one shapes the way we work. Choose one to find out how.",
+                "Cada um molda a forma como trabalhamos. Basta escolher um para descobrir como.",
               )}
             </p>
           </SlideIn>

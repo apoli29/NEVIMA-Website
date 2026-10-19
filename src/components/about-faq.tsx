@@ -6,7 +6,7 @@ import { useHref, useLang, useT } from "@/lib/use-lang";
 import { SlideIn } from "./enter";
 import { PassLink } from "./floating-nav";
 import { useProposal } from "./proposal-flow";
-import { Chevron, Illuminated, LIGHT_DELAY_MS } from "./services";
+import { Chevron, Illuminated, LIGHT_DELAY_MS, Stressed } from "./services";
 import { useSeen } from "./use-seen";
 
 /* ==================================================================
@@ -43,6 +43,10 @@ type Question = {
   flow?: readonly string[];
   /** Points, each with an optional lead in bold. */
   list?: readonly { lead?: string; text: string }[];
+  /** Words after the steps or the points, in the same type. */
+  after?: string;
+  /** One word of the answer underlined (see Stressed). */
+  stress?: string;
   /** Where to go next: a page, a place on the home page, or the
       free-proposal form, opened here out of the button. */
   link?: { label: string; href: string } | { label: string; proposal: true };
@@ -51,8 +55,8 @@ type Question = {
 const QUESTIONS: readonly Question[] = [
   {
     id: "process",
-    q: "How does it work, from start to finish?",
-    a: "We explain our whole process from the very start. In short, it goes like this:",
+    q: "How do all your services work together, from start to finish?",
+    a: "When a client comes to us, we bring total rigor and organization, to guarantee a top-tier service that is never held back by setbacks that cause extremely long waits. Here’s the process, in short:",
     flow: [
       "Form and estimate",
       "Exact price",
@@ -67,20 +71,20 @@ const QUESTIONS: readonly Question[] = [
   },
   {
     id: "why",
-    q: "Why should I choose your services over others?",
+    q: "Why should I choose Nevima?",
     list: [
-      { lead: "Direct contact:", text: "you always speak with the two people actually doing the work." },
-      { lead: "Transparency:", text: "a price estimate from the very start, and the reasoning behind every exact price we send." },
-      { lead: "No hidden costs:", text: "hosting at no cost for as long as your website is live, and basic SEO always included." },
-      { lead: "Speed:", text: "websites delivered from 4 working days, without compromising quality." },
-      { lead: "Cutting-edge:", text: "the most modern tools and know-how, which deliver better results at lower prices." },
-      { lead: "Peace of mind:", text: "we take care of the logistics for you, from the domain and hosting to the legal pages and registering your trademark." },
+      { lead: "Closeness and personalization:", text: "working with Nevima, you deal directly with the two people providing your service(s). That means much closer, more personal follow-up, where you are listened to and the focus is on delivering a tailor-made result, to your taste." },
+      { lead: "Transparency:", text: "web design services can often be needlessly opaque. We want to be a solution to that problem, which is why we show our work process openly and, through a short form, give an estimate for every project that breaks down the specific cost of each service." },
+      { lead: "We don’t profit from extra costs:", text: "we include free hosting and SEO practices in our service. Many companies charge exorbitant prices for them, which can exceed €100 a year." },
+      { lead: "Speed:", text: "websites delivered on short timelines, without compromising quality." },
+      { lead: "Cutting-edge:", text: "we use the most modern tools and know-how, which make us more efficient. The result? Higher-quality websites at lower prices." },
+      { lead: "Peace of mind:", text: "we handle all the hosting logistics, create the pages for your legal information and assist you in setting up your domain and registering your trademark." },
     ],
   },
   {
     id: "cost",
     q: "How much does a website cost?",
-    a: "It depends on your project: its size, its languages, its forms and any additional services you choose. That\u2019s why our free proposal form gives you an estimate straight away, and within a few hours we come back with the exact price, always explaining how we got there. Prices are set for Portugal, for Spain and Italy, and for the USA; for any other country, we quote on request.",
+    a: "It depends on the project: its size, its languages, the number of forms, the additional services chosen and several other factors. Our form calculates an accurate estimate for your project, and we always reply to every form sent within a few hours, with the exact price.",
     link: { label: "Get your free proposal", proposal: true },
   },
   {
@@ -91,12 +95,12 @@ const QUESTIONS: readonly Question[] = [
   {
     id: "time",
     q: "How long does a website take?",
-    a: "It depends on each project, which is why, once you fill in the form, we always give you a personalized timeline. As a rule, the whole process, from the start to the final presentation, takes no more than 18 to 20 working days. It can take longer if you add more services.",
+    a: "It depends on each project, which is why, once the form is filled in, we always give you a personalized timeline. A large web design project (with every kind of extra included) usually takes no more than 18 to 22 working days. It can take longer with other services included.",
   },
   {
     id: "start",
     q: "When does the service start, and when does it end?",
-    a: "We start the moment we have the signed contract and all your materials in hand. The project is complete once you approve the final website in our last call and it goes live. Even so, our support doesn\u2019t end there: we stay on hand for whatever you need.",
+    a: "We start the moment we have the signed contract and all your materials in hand. The project is complete once you approve the final website in our last call, after which it goes live. Even so, our support doesn\u2019t end there: we stay on hand for whatever you need.",
   },
   {
     id: "logistics",
@@ -108,14 +112,14 @@ const QUESTIONS: readonly Question[] = [
       },
       {
         lead: "Us:",
-        text: "everything else. That means registering your domain (or connecting the one you already have), hosting your website, putting the legal pages on it and, if applicable, registering your trademark together with you.",
+        text: "we register your domain (or connect the one you already have), host your website and put the legal pages on it. If applicable, we also guide you through registering your trademark, which is filed in your business\u2019s own name.",
       },
     ],
   },
   {
     id: "hosting",
     q: "Is hosting really free?",
-    a: "Yes. We don\u2019t charge you for hosting: it\u2019s free for as long as your website is live with us.",
+    a: "Yes. We don\u2019t charge for hosting: it\u2019s free.",
   },
   {
     id: "monthly",
@@ -125,28 +129,34 @@ const QUESTIONS: readonly Question[] = [
   {
     id: "domain",
     q: "Do I need my own domain?",
-    a: "Yes, every website needs one. If your business doesn\u2019t have one yet, it\u2019s included in our service; if you already have one, we take its cost off the final price.",
+    a: "Yes, every website needs one. If your business doesn\u2019t have one yet, we include the domain\u2019s price in the project\u2019s quote, to keep things simple; if you already have one, we take its cost off the final price.",
   },
   {
     id: "changes",
-    q: "How does it work if I want changes?",
-    a: "Changes that take us only a few minutes are never charged. For anything bigger, we always agree the price with you before we start. Better still, our process is designed to avoid them: once part of your website is built, we book a free call to show you where it\u2019s heading, and we adjust whatever your feedback calls for. The result? A website made to your taste, far less likely to need changes.",
+    q: "What if I want changes to my website?",
+    list: [
+      { text: "Changes that take us only a few minutes are never charged." },
+      { text: "Bigger changes need a quote and set dates before they are made, which we always agree with you." },
+    ],
+    after: "Even so, our process is already designed to avoid them: once part of your website is built, we book a free call to show you the direction it\u2019s taking, and we adjust whatever your feedback calls for. The result? A website made to your taste, which will hardly need any changes.",
     link: { label: "See it in How we work", href: "/#process-strategy" },
   },
   {
     id: "ai",
     q: "Do you use AI?",
-    a: "Yes, we use AI in our process. As the technology has advanced, it has become an essential tool in our field, boosting both the speed of the process and its value for money.",
+    a: "Yes, we use AI in our process. As the technology has advanced, it has become an essential, indispensable tool in our field, boosting both the speed of the process and its value for money.",
   },
   {
     id: "ai-quality",
     q: "If you use AI, doesn\u2019t that lower the quality of your service?",
-    a: "No. AI takes the repetitive work off our hands, so our time goes into the decisions that really matter. Every design decision and every line that goes live is ours and reviewed by one of us, and you see the work and give your feedback before anything is launched.",
+    a: "No. AI eases design and programming processes that are, at times, very repetitive. Regardless, we go over every AI intervention ourselves, carefully and more than once.",
+    stress: "every",
   },
   {
     id: "seo-geo",
     q: "What are SEO and GEO?",
-    a: "SEO (Search Engine Optimization) is what gets a website to the highest positions it can reach in its audience\u2019s searches. A website with poorly worked SEO disappears into the last pages of results, while personalized SEO reaches the first ones. GEO (Generative Engine Optimization) does the same for AI: more and more people turn to it to find businesses, and GEO raises the chances of yours appearing in its recommendations and answers. Basic SEO is included in every website we design.",
+    a: "SEO (Search Engine Optimization) is a set of practices that put a website in the best possible positions in the searches made by its target audiences. With poorly worked SEO, a website is lost in the last pages of results; with personalized SEO, it reaches higher positions, on the first pages.",
+    after: "GEO (Generative Engine Optimization) is a different set of practices with a similar purpose, aimed at Artificial Intelligence instead. More and more of us turn to Artificial Intelligence for suggestions and recommendations, and these practices raise the chances of AI tools recommending a business to their users.",
   },
   {
     id: "extras",
@@ -161,7 +171,7 @@ const QUESTIONS: readonly Question[] = [
   {
     id: "languages",
     q: "Which languages can my website be in?",
-    a: "Portuguese is always included; English and any other language are added to the price. Languages other than Portuguese and English are translated by an AI specialized in translation, with over 95% accuracy, and we always send you the final text so you can point out anything you\u2019d like written differently.",
+    a: "We always include Portuguese, unless it makes no sense for a particular business. English and any other language add to the price. Languages other than Portuguese and English are translated by an AI specialized in translation, with over 95% accuracy (we take this into account in our prices). In those cases, if changes are needed, we provide a simply structured document where you give us the translations of the sentences that need fine-tuning, at an additional but affordable price.",
   },
 ];
 
@@ -171,8 +181,8 @@ type Words = Omit<Question, "id" | "link"> & { link?: string };
 
 const PT_QUESTIONS: Record<string, Words> = {
   process: {
-    q: "Como funciona, do início ao fim?",
-    a: "Explicamos todo o nosso processo logo desde o início. Em resumo, é assim:",
+    q: "Como funciona o processo de todos os vossos serviços juntos, do início ao fim?",
+    a: "Quando um cliente recorre aos nossos serviços, apresentamos um nível total de rigor e organização, de forma a garantir um serviço de topo, que não é prejudicado por inconvenientes que provoquem tempos de espera altíssimos. Eis o processo, de forma resumida:",
     flow: [
       "Formulário e estimativa",
       "Preço exato",
@@ -186,19 +196,19 @@ const PT_QUESTIONS: Record<string, Words> = {
     link: "Ver cada passo em Como trabalhamos",
   },
   why: {
-    q: "Porque devo escolher os vossos serviços e não outros?",
+    q: "Porque é que devo escolher a Nevima?",
     list: [
-      { lead: "Contacto direto:", text: "a conversa é sempre com as duas pessoas que fazem de facto o trabalho." },
-      { lead: "Transparência:", text: "uma estimativa de preço logo de início, e a justificação de cada preço exato que enviamos." },
-      { lead: "Sem custos escondidos:", text: "alojamento sem custos enquanto o website estiver online, e SEO básico sempre incluído." },
-      { lead: "Rapidez:", text: "websites entregues a partir de 4 dias úteis, sem comprometer a qualidade." },
-      { lead: "Vanguarda:", text: "as ferramentas e o know-how mais modernos, que dão melhores resultados a preços mais baixos." },
-      { lead: "Tranquilidade:", text: "tratamos da logística, do domínio e do alojamento às páginas legais e ao registo da marca." },
+      { lead: "Proximidade e personalização:", text: "ao trabalhar com a Nevima, o contacto acontece diretamente com os dois responsáveis pela prestação do(s) serviço(s). Isto permite um acompanhamento muito mais próximo e personalizado, onde o cliente é ouvido e o foco é apresentar um resultado feito à medida, ao seu gosto." },
+      { lead: "Transparência:", text: "muitas vezes, os serviços de web design podem ser desnecessariamente pouco transparentes. Queremos ser uma solução para esse problema, e é por isso que mostramos abertamente o nosso processo de trabalho e, através de um breve formulário, apresentamos uma estimativa de orçamento para cada projeto, que discrimina os custos específicos de cada serviço." },
+      { lead: "Não lucramos com custos extra:", text: "incluímos alojamento gratuito e práticas de SEO no nosso serviço. Grande parte das empresas cobra preços exorbitantes por isso, que podem ultrapassar os 100 euros anuais." },
+      { lead: "Rapidez:", text: "websites entregues em prazos curtos, sem comprometer a qualidade." },
+      { lead: "Vanguarda:", text: "usamos as ferramentas e o know-how mais modernos, que nos permitem maior eficiência. O resultado? Websites com maior qualidade e preços mais reduzidos." },
+      { lead: "Tranquilidade:", text: "tratamos de toda a logística de alojamento, criamos as páginas para as informações legais e assistimos na criação do domínio e no registo da marca." },
     ],
   },
   cost: {
     q: "Quanto custa um website?",
-    a: "Depende do projeto: do tamanho, das línguas, dos formulários e dos serviços adicionais escolhidos. É por isso que o nosso formulário de proposta gratuita apresenta logo uma estimativa e, em poucas horas, enviamos o preço exato, explicando sempre como lá chegámos. Os preços estão definidos para Portugal, para Espanha e Itália, e para os EUA; para qualquer outro país, fazemos orçamento sob consulta.",
+    a: "Depende do projeto: do tamanho, dos idiomas, do número de formulários, dos serviços adicionais escolhidos e de vários outros fatores. Temos um formulário que calcula uma estimativa precisa para o projeto do cliente, e respondemos sempre aos formulários submetidos em poucas horas, com o preço exato.",
     link: "Pedir proposta gratuita",
   },
   reply: {
@@ -207,11 +217,11 @@ const PT_QUESTIONS: Record<string, Words> = {
   },
   time: {
     q: "Quanto tempo demora um website?",
-    a: "Depende de cada projeto, e é por isso que, depois de preenchido o formulário, indicamos sempre um prazo personalizado. Por norma, todo o processo, do início à apresentação final, não passa dos 18 a 20 dias úteis. Pode demorar mais com outros serviços incluídos.",
+    a: "Depende de cada projeto, e é por isso que, depois de preenchido o formulário, indicamos sempre um prazo personalizado. Um grande projeto de web design (com todo o tipo de extras incluídos) por norma não passa dos 18 a 22 dias úteis. Pode demorar mais com outros serviços incluídos.",
   },
   start: {
     q: "Quando começa o serviço, e quando termina?",
-    a: "Começamos assim que tivermos o contrato assinado e todos os materiais na mão. O projeto fica concluído quando o website final é aprovado na nossa última chamada e fica online. Ainda assim, o nosso apoio não acaba aí: continuamos disponíveis para o que for necessário.",
+    a: "Começamos assim que tivermos o contrato assinado e todos os materiais necessários. O projeto fica concluído quando o website final é aprovado na nossa última chamada, sendo posteriormente colocado no ar. Ainda assim, o nosso apoio não acaba aí: continuamos disponíveis para o que for necessário.",
   },
   logistics: {
     q: "De que é que tenho de tratar a nível logístico, e o que faz a Nevima por mim?",
@@ -222,13 +232,13 @@ const PT_QUESTIONS: Record<string, Words> = {
       },
       {
         lead: "Nevima:",
-        text: "tudo o resto. Ou seja, registar o domínio (ou ligar um já existente), alojar o website, colocar nele as páginas legais e, se se aplicar, registar a marca em conjunto com o cliente.",
+        text: "registamos o domínio (ou ligamos um já existente), alojamos o website e colocamos nele as páginas legais. Se se aplicar, acompanhamos ainda o cliente no registo da marca, que é feito em nome do próprio negócio.",
       },
     ],
   },
   hosting: {
     q: "O alojamento é mesmo gratuito?",
-    a: "Sim. Não cobramos o alojamento: é gratuito enquanto o website estiver online connosco.",
+    a: "Sim. Não cobramos o alojamento: é gratuito.",
   },
   monthly: {
     q: "Vou pagar uma mensalidade?",
@@ -236,24 +246,30 @@ const PT_QUESTIONS: Record<string, Words> = {
   },
   domain: {
     q: "Preciso de ter um domínio próprio?",
-    a: "Sim, todos os websites precisam de um. Se o negócio ainda não tem, está incluído no nosso serviço; se já existe, descontamos o seu custo no preço final.",
+    a: "Sim, todos os websites precisam de um. Se o negócio ainda não tem, incluímos o preço do domínio no orçamento do projeto, para simplificar; se já existe, descontamos o seu custo no preço final.",
   },
   changes: {
-    q: "Como funciona se eu quiser alterações?",
-    a: "As alterações que nos levam só alguns minutos nunca são cobradas. Para algo maior, o preço é sempre combinado antes de começarmos. Melhor ainda, o nosso processo foi pensado para as evitar: quando parte do website estiver construída, marcamos uma chamada gratuita para mostrar a direção que está a tomar, e ajustamos o que for necessário com base no feedback. O resultado? Um website feito à medida do gosto do cliente, que dificilmente vai precisar de alterações.",
+    q: "E se eu desejar alterações no website?",
+    list: [
+      { text: "As alterações que nos levam só alguns minutos nunca são cobradas." },
+      { text: "Alterações maiores exigem a criação de um orçamento e a definição de datas para serem aplicadas, que combinamos sempre com o cliente." },
+    ],
+    after: "No entanto, o nosso processo já foi pensado para as evitar: quando parte do website estiver construída, marcamos uma chamada gratuita para mostrar a direção que está a tomar, e ajustamos o que for necessário com base no feedback. O resultado? Um website feito à medida do gosto do cliente, que dificilmente vai precisar de alterações.",
     link: "Ver como funciona em Como trabalhamos",
   },
   ai: {
     q: "Usam IA?",
-    a: "Sim, usamos IA no nosso processo. Com a evolução da tecnologia, tornou-se uma ferramenta essencial na nossa área, que aumenta tanto a rapidez do processo como a sua relação qualidade-preço.",
+    a: "Sim, usamos IA no nosso processo. Com a evolução da tecnologia, tornou-se uma ferramenta essencial e indispensável na nossa área, que aumenta tanto a rapidez do processo como a sua relação qualidade-preço.",
   },
   "ai-quality": {
     q: "Se usam IA, isso não baixa a qualidade do vosso serviço?",
-    a: "Não. A IA tira-nos das mãos o trabalho repetitivo, para que o nosso tempo vá para as decisões que realmente importam. Cada decisão de design e cada linha que fica online são nossas e revistas por um de nós, e o cliente vê o trabalho e dá a sua opinião antes de qualquer lançamento.",
+    a: "Não. A IA facilita processos de design e de programação que são, por vezes, muito repetitivos. Independentemente disso, todas as intervenções de IA são vistas e revistas a dedo por nós.",
+    stress: "todas",
   },
   "seo-geo": {
     q: "O que são o SEO e o GEO?",
-    a: "O SEO (Search Engine Optimization) é o que coloca um website nas melhores posições possíveis das pesquisas feitas pelo seu público. Com um SEO mal trabalhado, um website fica perdido nas últimas páginas de resultados; com um SEO personalizado, chega às primeiras. O GEO (Generative Engine Optimization) faz o mesmo para a IA: cada vez mais pessoas recorrem a ela para encontrar negócios, e o GEO aumenta a probabilidade de um negócio aparecer nas suas recomendações e respostas. O SEO básico está incluído em todos os websites que fazemos.",
+    a: "O SEO (Search Engine Optimization) consiste num conjunto de práticas que colocam um website nas melhores posições possíveis das pesquisas efetuadas pelos públicos-alvo. Com um SEO mal trabalhado, um website fica perdido nas últimas páginas de resultados; com um SEO personalizado, alcança posições mais altas, nas primeiras páginas.",
+    after: "O GEO (Generative Engine Optimization) consiste num conjunto de práticas diferentes, com um propósito semelhante, mas direcionado para a Inteligência Artificial. Todos nós usamos cada vez mais a Inteligência Artificial para obter sugestões e recomendações, e estas práticas aumentam a probabilidade de as ferramentas de Inteligência Artificial recomendarem um negócio aos seus utilizadores.",
   },
   extras: {
     q: "Oferecem os serviços adicionais em separado?",
@@ -265,7 +281,7 @@ const PT_QUESTIONS: Record<string, Words> = {
   },
   languages: {
     q: "Em que línguas pode estar o meu website?",
-    a: "O português está sempre incluído; o inglês e qualquer outra língua acrescem ao preço. As línguas além do português e do inglês são traduzidas por uma IA especializada em tradução, com mais de 95% de precisão, e enviamos sempre o texto final, onde é possível indicar o que se prefira escrito de outra forma.",
+    a: "Incluímos sempre a língua portuguesa, a não ser que não faça sentido para um negócio em particular. O inglês e qualquer outra língua acrescem ao preço. As línguas além do português e do inglês são traduzidas por uma IA especializada em tradução, com mais de 95% de precisão (temos esta questão em consideração quando praticamos os preços). Nestes casos, se forem necessárias mudanças, fornecemos um documento com uma estrutura simples, onde o cliente disponibiliza as traduções das frases que precisem de ser afinadas, com um preço adicional, mas em conta.",
   },
 };
 
@@ -422,16 +438,17 @@ function Question({
                   // (user, 2026-10-18).
                   key={`answer-${opened}`}
                   text={item.a}
+                  stress={item.stress}
                   delayMs={LIGHT_DELAY_MS * 0.6}
                   reduce={reduce}
                   className="svc-copy std-ink abt-ragged abt-answer"
                 />
               ) : (
                 <p data-lit="true" className="svc-copy std-ink abt-ragged abt-answer">
-                  {item.a}
+                  <Stressed text={item.a} word={item.stress} />
                 </p>
               ))}
-            {(item.flow || item.list || item.link) && (
+            {(item.flow || item.list || item.after || item.link) && (
               // Comes in once the words are lit, each time it is opened.
               <div key={`more-${opened}`} className={`faq-more ${item.a ? "mt-5" : ""}`}>
                 {item.flow && (
@@ -453,8 +470,13 @@ function Question({
                     ))}
                   </ul>
                 )}
+                {item.after && (
+                  <p data-lit="true" className={`svc-copy std-ink abt-ragged abt-answer ${item.flow || item.list ? "mt-5" : ""}`}>
+                    {item.after}
+                  </p>
+                )}
                 {item.link && (
-                  <div className={item.flow || item.list ? "mt-7" : ""}>
+                  <div className={item.flow || item.list || item.after ? "mt-7" : ""}>
                     {"proposal" in item.link ? (
                       <ProposalAsk label={item.link.label} />
                     ) : (

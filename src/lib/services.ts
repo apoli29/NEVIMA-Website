@@ -38,13 +38,13 @@ export const SERVICES: Service[] = [
     slug: "web-design",
     title: "Web Design",
     tier: "main",
-    body: "Web design is Nevima’s main service for a reason: it is where we deliver our best results. To the partners who put their trust in us, we deliver a website that reflects the essence of their business and catches the attention of potential clients and any other stakeholder alike.",
+    body: "Web design is Nevima’s main service, and not by chance: it is where we achieve our best results. We deliver websites that reflect the essence of each business and catch the attention of the potential clients and other stakeholders of our partners, who put their trust in us.",
     included: {
       title: "Also included",
       items: [
         "Free hosting, for as long as your website is live",
-        "Basic SEO, without which a website barely shows up in searches",
-        "A free call once part of the website is built, to tune it to your taste early and keep changes at the end to a minimum",
+        "Basic SEO, to make sure your website shows up in search results",
+        "A free call once part of the project is built. The goal? To make changes to your taste and understand the direction the project should take, so nothing needs changing at the end",
       ],
     },
     aura: "64 190 214",
@@ -58,7 +58,7 @@ export const SERVICES: Service[] = [
     slug: "visual-identity",
     title: "Visual Identity",
     tier: "within",
-    body: "Many businesses that need a new website also have a weak brand identity, one that conveys little credibility or professionalism to their clients. A high-quality website alone is unlikely to change that, because a client’s first impression always rests on the core of an identity: the logo and the symbol. We offer this service as a complement to our web design, to solve that problem and to match the quality of our websites.",
+    body: "Many businesses that need a new website also have an identity with weaknesses, which convey little credibility and professionalism to their clients. A client’s first impression always rests on the core of an organizational identity: the logo and/or the symbol. That’s why we offer this service as a complement to our web design: to solve that problem and guarantee an identity that lives up to the quality of our websites.",
     included: {
       title: "Included",
       items: ["Logo", "Symbol (if applicable)"],
@@ -75,7 +75,7 @@ export const SERVICES: Service[] = [
     title: "SEO",
     tier: "additional",
     full: "Search Engine Optimization",
-    body: "Search Engine Optimization is what gets a website to the highest positions it can reach in its audience’s searches. A website with poorly worked SEO disappears into the last pages of results, while personalized SEO reaches the first ones.",
+    body: "Search Engine Optimization is what puts a website in the top positions of the results of the searches its audience makes. With poorly worked SEO, a website ends up going unnoticed among the last pages of results. With personalized SEO, websites reach better positions, on the first pages.",
     aura: "218 158 86",
     photos: [
       photo("1614849963640-9cc74b2a826f"),
@@ -88,7 +88,7 @@ export const SERVICES: Service[] = [
     title: "GEO",
     tier: "additional",
     full: "Generative Engine Optimization",
-    body: "More and more people turn to AI to find businesses. GEO raises the chances of yours appearing in AI recommendations and search results.",
+    body: "More and more people turn to AI to find businesses that solve their problems or meet their needs. GEO raises the chances of a business appearing in the recommendations and search results of AI tools.",
     aura: "84 132 255",
     photos: [
       photo("1708311000280-861d2c89305a"),
@@ -100,7 +100,7 @@ export const SERVICES: Service[] = [
     slug: "photo-shoot",
     title: "Photo Shoot",
     tier: "additional",
-    body: "A website shows its best side with images that are truly yours. Nevima photographs your business, so the people who find you see who you really are instead of a stock photo. Photos only, or photos and video: you choose. Like all our additional services, it is offered only together with a website we design, and it is priced in your estimate.",
+    body: "We provide this service within Portugal, as a solution for businesses that want a highly personalized website but have no photos of their business, their premises or their products and/or services. A website is only personalized when it reflects the essence of the business, and that includes visual elements that portray it.",
     aura: "120 120 120",
     // Waiting for the studio's three Unsplash links.
     photos: [],
@@ -111,19 +111,19 @@ export const SERVICES: Service[] = [
 const PT: Record<string, Pick<Service, "title" | "body" | "included">> = {
   "web-design": {
     title: "Web Design",
-    body: "O web design é o principal serviço da Nevima, e não é por acaso: é aqui que alcançamos os melhores resultados. A quem confia em nós, entregamos um website que reflete a essência do negócio e capta a atenção de potenciais clientes e de todas as outras partes interessadas.",
+    body: "O web design é o serviço principal da Nevima, e não é por acaso: é no web design que obtemos os melhores resultados. Entregamos websites que refletem a essência do negócio e que captam a atenção de potenciais clientes e de outros stakeholders dos nossos parceiros, que depositam confiança em nós.",
     included: {
       title: "Também incluído",
       items: [
         "Alojamento gratuito, enquanto o website estiver online",
-        "SEO básico, sem o qual um website quase não aparece nas pesquisas",
-        "Uma chamada gratuita quando parte do website já estiver construída, para o ajustar desde cedo ao gosto do cliente e reduzir ao mínimo as alterações finais",
+        "SEO básico, para assegurar que o website aparece nos resultados de pesquisa",
+        "Uma chamada gratuita quando parte do projeto estiver desenvolvida. O objetivo? Aplicar alterações ao gosto do cliente e compreender a direção que o projeto deve tomar, para evitar a necessidade de alterações no final",
       ],
     },
   },
   "visual-identity": {
     title: "Identidade Visual",
-    body: "Muitos negócios que precisam de um website novo têm também uma identidade de marca fraca, que transmite pouca credibilidade e profissionalismo aos seus clientes. Dificilmente um website de grande qualidade resolve isso sozinho, porque a primeira impressão de um cliente assenta sempre no núcleo de uma identidade: o logótipo e o símbolo. Oferecemos este serviço como complemento do nosso web design, para resolver esse problema e garantir uma identidade à altura da qualidade dos nossos websites.",
+    body: "Muitos negócios que precisam de um website novo têm também uma identidade com debilidades, que transmitem pouca credibilidade e profissionalismo aos seus clientes. A primeira impressão de um cliente assenta sempre no núcleo de uma identidade organizacional: o logótipo e/ou o símbolo. É por isso que oferecemos este serviço como complemento do nosso web design: para resolver esse problema e garantir uma identidade à altura da qualidade dos nossos websites.",
     included: {
       title: "Incluído",
       items: ["Logótipo", "Símbolo (se aplicável)"],
@@ -131,15 +131,15 @@ const PT: Record<string, Pick<Service, "title" | "body" | "included">> = {
   },
   seo: {
     title: "SEO",
-    body: "O SEO (Search Engine Optimization) é o que coloca um website nas melhores posições possíveis das pesquisas feitas pelo seu público. Com um SEO mal trabalhado, um website fica perdido nas últimas páginas de resultados; com um SEO personalizado, chega às primeiras.",
+    body: "O SEO (Search Engine Optimization) é responsável por colocar um website nas melhores posições dos resultados das pesquisas feitas pelo seu público. Com um SEO mal trabalhado, um website acaba por passar despercebido entre as últimas páginas de resultados. Com um SEO personalizado, os websites alcançam melhores posições, nas primeiras páginas.",
   },
   geo: {
     title: "GEO",
-    body: "Cada vez mais pessoas recorrem à IA para encontrar negócios. O GEO aumenta a probabilidade de um negócio aparecer nas recomendações e nos resultados de pesquisa das ferramentas de IA.",
+    body: "Cada vez mais pessoas recorrem à IA para encontrar negócios que resolvam os seus problemas ou necessidades. O GEO aumenta a probabilidade de um negócio aparecer nas recomendações e nos resultados de pesquisa das ferramentas de IA.",
   },
   "photo-shoot": {
     title: "Sessão Fotográfica",
-    body: "Um website mostra o que tem de melhor quando as imagens são verdadeiramente próprias. A Nevima fotografa o negócio, para que quem o encontra veja quem está realmente por trás dele, e não fotografias de banco de imagens. Só fotografia, ou fotografia e vídeo: a escolha é do cliente. Como todos os nossos serviços adicionais, só está disponível em conjunto com um website desenvolvido por nós, e o preço entra na estimativa.",
+    body: "Fornecemos este serviço dentro de Portugal, como solução para os negócios que querem um website altamente personalizado, mas que não têm fotografias do seu negócio, do seu estabelecimento ou dos seus produtos e/ou serviços. Um website só é personalizado quando reflete a essência do negócio, o que inclui a presença de elementos visuais que o retratem.",
   },
 };
 

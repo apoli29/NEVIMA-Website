@@ -70,8 +70,8 @@ export type PartnerYesNo = (typeof PARTNER_YES_NO)[number]["id"];
 
 /** What the form says before its first question. */
 export const PARTNER_INTRO: Copy = {
-  en: "We take care of the front end only: everything on the back end, hosting and putting it online included, stays with you. Design is part of our service: we create it with an AI-led process, which lets us move fast and iterate on your feedback. If you already have a design, we can use it as inspiration, but we don't replicate existing designs one to one.",
-  pt: "Tratamos apenas do front end: todo o back end, incluindo o alojamento e a colocação do projeto online, fica a cargo do parceiro. O design faz parte do nosso serviço: criamo-lo com um processo guiado por IA, que nos permite avançar depressa e ajustar com base no feedback. Um design já existente pode servir de inspiração, mas não replicamos designs existentes à letra.",
+  en: "We partner with development companies, collaborating with them as a UI/UX service. That means we are only responsible for the front end: the whole back end, including connecting the front end to it, hosting and putting the project online, stays with the partner. Design is part of our service: we create it with an AI-led process, which lets us move fast and iterate on your feedback. If you already have a design, we can use it as inspiration, but we don't replicate existing designs one to one.",
+  pt: "Desenvolvemos parcerias com empresas de desenvolvimento, onde colaboramos com um serviço de UI/UX. Isto significa que apenas nos responsabilizamos pelo front end: todo o back end, incluindo a integração do front end com o back end, o alojamento e a colocação do projeto online, fica a cargo do parceiro. O design faz parte do nosso serviço: criamo-lo com um processo guiado por IA, que nos permite avançar depressa e ajustar com base no feedback. Um design já existente pode servir de inspiração, mas não replicamos designs existentes à letra.",
 };
 
 /** Our stack, asked as one question: a partner it does not fit is not
