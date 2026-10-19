@@ -1,0 +1,5 @@
+/* What-if: the drops keep their tilt and breathing (compositor-friendly
+   transform/opacity) but lose the melt (background-position/size, which
+   can only be animated by repainting and re-filtering every frame). */
+.cta-drop::before { animation: drop-tilt 6.5s ease-in-out infinite alternate, drop-breathe 3.4s ease-in-out infinite !important; }
+.cta-drop-light::before { animation-name: drop-tilt, drop-breathe-light !important; }
