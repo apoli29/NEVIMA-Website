@@ -198,12 +198,8 @@ const DOMAIN_NOTE: Copy = {
   pt: "Sem domínio, tratamos do registo e o custo acresce ao preço. Com um domínio já existente, não há nada a pagar.",
 };
 const PAGES_NOTE: Copy = {
-  en: "Not sure? We estimate for 3 to 8 pages, so the range can be a little wider than with a set number.",
-  pt: "Sem um número definido, estimamos para 3 a 8 páginas, por isso o intervalo pode ser um pouco mais largo.",
-};
-const DESIGN_NOTE: Copy = {
-  en: "Advanced costs 25% more than Essential+ on the website's price.",
-  pt: "O Avançado custa mais 25% do que o Essencial+ no preço do website.",
+  en: "Not sure? We estimate for 3 to 8 pages, so the range of your final estimate can be a little wider than with a set number.",
+  pt: "Sem um número definido, estimamos para 3 a 8 páginas, por isso o intervalo da estimativa final pode ser um pouco mais largo.",
 };
 const TEXTS_NOTE: Copy = {
   en: "If you don't, writing them is added to the price, as a range set by your website's size.",
@@ -557,11 +553,12 @@ export function Ticks<T extends string>({
             }
             className="sr-only"
           />
-          <span className="flex items-center gap-2.5">
-            <span aria-hidden="true" className="pf-tick" />
-            <span className="mono-label">{o.label}</span>
+          {/* A tick with no name carries its note beside it instead. */}
+          <span className={`flex gap-2.5 ${o.label ? "items-center" : "items-start"}`}>
+            <span aria-hidden="true" className={`pf-tick ${o.label ? "" : "mt-[0.3rem] shrink-0"}`} />
+            {o.label ? <span className="mono-label">{o.label}</span> : <span className="pf-note mt-0">{o.note}</span>}
           </span>
-          {o.note && <span className="pf-note">{o.note}</span>}
+          {o.label && o.note && <span className="pf-note">{o.note}</span>}
         </label>
       ))}
     </div>
@@ -729,7 +726,7 @@ export function StepScreen({
               that needs the third needs nothing else answered. */}
           <Question
             id="features"
-            label={t("What does your website need to do?", "O que deve o website fazer?")}
+            label={t("What is your website's core goal?", "Qual o objetivo central do website?")}
             hint={t("Each level adds to the one before", "Cada nível soma-se ao anterior")}
             group={false}
           >
@@ -808,7 +805,7 @@ export function StepScreen({
           )}
           {!draft.complex && (
           <>
-          <Question id="design" label={t("Design level*", "Nível de design*")} error={errors.design} footnote={`*${t(DESIGN_NOTE)}`}>
+          <Question id="design" label={t("Design level", "Nível de design")} error={errors.design}>
             <Segmented
               name="design"
               options={list(DESIGN)}
@@ -851,7 +848,7 @@ export function StepScreen({
           </Question>
           <Question
             id="texts"
-            label={t("Do you have any texts ready?*", "Os textos já estão prontos?*")}
+            label={t("Are there texts ready to be used?*", "Já existem textos prontos a ser usados?*")}
             error={errors.texts}
             footnote={`*${t(TEXTS_NOTE)}`}
           >
@@ -865,7 +862,7 @@ export function StepScreen({
           </Question>
           <Question
             id="references"
-            label={t("Websites whose look you like", "Websites com um visual de que gostas")}
+            label={t("Websites whose look you like", "Websites com um visual de referência")}
             hint={t("Up to two", "Até dois")}
             error={errors.references}
           >
@@ -873,7 +870,7 @@ export function StepScreen({
               <>
                 <Field
                   id={`${uid}-ref1`}
-                  label={t("First website you like", "Primeiro website de que gostas")}
+                  label={t("First website you like", "Primeiro website de referência")}
                   placeholder="website.com"
                   value={draft.reference1}
                   onChange={(reference1) => setDraft({ reference1 })}
@@ -882,7 +879,7 @@ export function StepScreen({
                 />
                 <Field
                   id={`${uid}-ref2`}
-                  label={t("Second website you like", "Segundo website de que gostas")}
+                  label={t("Second website you like", "Segundo website de referência")}
                   placeholder="website.com"
                   value={draft.reference2}
                   onChange={(reference2) => setDraft({ reference2 })}
@@ -900,7 +897,7 @@ export function StepScreen({
           </Question>
           <Question
             id="domain"
-            label={t("Do you already have a domain?*", "Já existe domínio?*")}
+            label={t("Do you already have a domain?*", "O negócio já possui domínio?*")}
             error={errors.domain}
             footnote={`*${t(DOMAIN_NOTE)}`}
           >

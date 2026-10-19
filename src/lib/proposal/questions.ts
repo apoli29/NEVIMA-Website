@@ -114,8 +114,10 @@ export type CountId = (typeof COUNTS)[number]["id"];
 export const COMPLEX = [
   {
     id: "complex",
-    label: "We need one of these",
-    pt: "Precisamos de um destes",
+    // No name of its own (user, 2026-10-19): the tick stands beside what
+    // it covers.
+    label: "",
+    pt: "",
     note: "An online shop, a client area with login, payments built into the website, or a connection to your internal software (invoicing, CRM…).",
     notePt: "Uma loja online, uma área de cliente com login, pagamentos integrados no website, ou uma ligação a software interno (faturação, CRM…).",
   },
@@ -134,8 +136,8 @@ export const DESIGN = [
     id: "essential",
     label: "Essential+",
     pt: "Essencial+",
-    note: "Clean, well-built design with simple, elegant motion",
-    notePt: "Design limpo e bem construído, com movimento simples e elegante",
+    note: "Clean design that works with simple, elegant motion and animation",
+    notePt: "Design limpo, que funciona com movimentos e animações simples e elegantes",
   },
   {
     id: "advanced",
@@ -301,8 +303,8 @@ export type Estimate = {
 /** Said wherever languages other than Portuguese and English are asked
     for or priced (user). */
 export const TRANSLATION_NOTE: Copy = {
-  en: "Languages other than Portuguese and English are translated by an AI specialised in translation, with over 95% accuracy. We always send you a final document, so you can point out any sentence you'd like written differently.",
-  pt: "As línguas além do português e do inglês são traduzidas por uma IA especializada em tradução, com mais de 95% de precisão. Enviamos sempre um documento final, onde é possível indicar qualquer frase que se prefira escrita de outra forma.",
+  en: "Languages other than Portuguese and English are translated by an AI specialised in translation, with over 95% accuracy. If changes are needed, we provide a simply structured document where you give us the translations of the sentences that need fine-tuning, at an additional but affordable price.",
+  pt: "As línguas além do português e do inglês são traduzidas por uma IA especializada em tradução, com mais de 95% de precisão. Se forem necessárias mudanças, fornecemos um documento com uma estrutura simples, onde o cliente disponibiliza as traduções das frases que precisem de ser afinadas, com um preço adicional, mas em conta.",
 };
 
 /** How many languages were typed under "Other": "French, German and

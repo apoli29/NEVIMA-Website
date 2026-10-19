@@ -195,8 +195,8 @@ export function Services({ ready }: { ready: boolean }) {
           >
             <p ref={subRef} className="text-[0.9375rem] leading-[1.45] text-balance text-ash">
               {t(
-                "Websites first. Every additional service is offered only together with a website we design.",
-                "O website está sempre no centro: os serviços adicionais só estão disponíveis em conjunto com um website desenvolvido por nós.",
+                "Web design is our core activity. Our additional services are only available together with a website we design.",
+                "O web design é a nossa atividade central. Os serviços adicionais só estão disponíveis em conjunto com um website desenvolvido por nós.",
               )}
             </p>
           </SlideIn>
@@ -659,12 +659,30 @@ export function Chevron({
     then whatever of the marked tail reached it. */
 type LitLine = { lead: string; body: string; mark: string };
 
-function LineWords({ line }: { line: LitLine }) {
+/** The text with one word in it underlined, the first time it stands
+    whole (the FAQ's "every"). An underline takes no width, so the lines
+    measure the same with it or without it. */
+export function Stressed({ text, word }: { text: string; word?: string }) {
+  const at = word ? stressAt(text, word) : -1;
+  if (!word || at < 0) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, at)}
+      <u className="underline decoration-1 underline-offset-[0.14em]">{text.slice(at, at + word.length)}</u>
+      {text.slice(at + word.length)}
+    </>
+  );
+}
+
+const stressAt = (text: string, word: string) =>
+  text.search(new RegExp(`(?<![\\p{L}])${word}(?![\\p{L}])`, "u"));
+
+function LineWords({ line, stress }: { line: LitLine; stress?: string }) {
   return (
     <>
       {line.lead && <strong>{line.lead}</strong>}
       {line.lead && (line.body || line.mark) ? " " : null}
-      {line.body}
+      <Stressed text={line.body} word={stress} />
       {line.body && line.mark ? " " : null}
       {line.mark && <mark>{line.mark}</mark>}
     </>
@@ -675,12 +693,15 @@ export function Illuminated({
   text,
   lead,
   mark,
+  stress,
   delayMs,
   durationMs = LIGHT_MS,
   reduce,
   className,
 }: {
   text: string;
+  /** One word of the text underlined (see Stressed). */
+  stress?: string;
   /** Set in bold ahead of the text and lit with it (the comparison table). */
   lead?: string;
   /** Run on under the text and struck through with a marker (the pillar).
@@ -748,6 +769,9 @@ export function Illuminated({
     return () => window.removeEventListener("resize", finish);
   }, [lit]);
 
+  // Only the first line it falls on carries the underline.
+  const stressLine = stress && lines ? lines.findIndex((line) => stressAt(line.body, stress) >= 0) : -1;
+
   const per = lines ? durationMs / (1 + LIGHT_OVERLAP * (lines.length - 1)) : 0;
 
   // The light's own end hands over to the plain text, but an animationend
@@ -766,7 +790,7 @@ export function Illuminated({
         <>
           {lead && <strong>{lead}</strong>}
           {lead ? " " : null}
-          {text}
+          <Stressed text={text} word={stress} />
           {mark ? " " : null}
           {mark && <mark>{mark}</mark>}
         </>
@@ -776,7 +800,7 @@ export function Illuminated({
           // lit copy sits exactly over it and the light uncovers it.
           <span key={i} className="svc-line">
             <span>
-              <LineWords line={line} />
+              <LineWords line={line} stress={i === stressLine ? stress : undefined} />
             </span>
             <span
               aria-hidden="true"
@@ -789,7 +813,7 @@ export function Illuminated({
                 i === lines.length - 1 ? () => setLit(true) : undefined
               }
             >
-              <LineWords line={line} />
+              <LineWords line={line} stress={i === stressLine ? stress : undefined} />
             </span>
           </span>
         ))

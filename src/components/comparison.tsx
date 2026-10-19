@@ -299,7 +299,7 @@ export function Comparison({ ready }: { ready: boolean }) {
               )}
             </span>
             <span className="block font-medium">
-              <MarkedLine text={t("Here’s the honest comparison.", "Eis a comparação honesta.")} />
+              <MarkedLine text={t("We make an honest comparison.", "Fazemos uma comparação honesta.")} />
             </span>
           </h2>
         </SlideIn>
