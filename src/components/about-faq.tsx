@@ -79,7 +79,7 @@ const QUESTIONS: readonly Question[] = [
       { lead: "We don’t profit from extra costs:", text: "we include free hosting and SEO practices in our service. Many companies charge exorbitant prices for them, which can exceed €100 a year." },
       { lead: "Speed:", text: "websites delivered on short timelines, without compromising quality." },
       { lead: "Cutting-edge:", text: "we use the most modern tools and know-how, which make us more efficient. The result? Higher-quality websites at lower prices." },
-      { lead: "Peace of mind:", text: "we handle all the hosting logistics, create the pages for your legal information and assist you in setting up your domain and registering your trademark." },
+      { lead: "Peace of mind:", text: "we handle all the hosting logistics, put your legal pages on the website and assist you in setting up your domain and registering your trademark." },
     ],
   },
   {
@@ -109,7 +109,7 @@ const QUESTIONS: readonly Question[] = [
     list: [
       {
         lead: "You:",
-        text: "your materials (the photos you already have of your business, your logo and symbol) and the content of your legal pages, which by law must be produced by your business itself.",
+        text: "your materials (the photos you already have of your business, your logo and symbol) and the content of your legal pages, which is your business\u2019s own responsibility.",
       },
       {
         lead: "Us:",
@@ -136,8 +136,7 @@ const QUESTIONS: readonly Question[] = [
     id: "changes",
     q: "What if I want changes to my website?",
     list: [
-      { text: "Changes that take us only a few minutes are never charged." },
-      { text: "Bigger changes need a quote and set dates before they are made, which we always agree with you." },
+      { text: "Your first four small changes, of up to 15 minutes each, are free." },
     ],
     after: "Even so, our process is already designed to avoid them: once part of your website is built, we book a free call to show you the direction it\u2019s taking, and we adjust whatever your feedback calls for. The result? A website made to your taste, which will hardly need any changes.",
     link: { label: "See it in How we work", href: "/#process-strategy" },
@@ -156,7 +155,7 @@ const QUESTIONS: readonly Question[] = [
   {
     id: "seo-geo",
     q: "What are SEO and GEO?",
-    a: "SEO (Search Engine Optimization) is a set of practices that put a website in the best possible positions in the searches made by its target audiences. With poorly worked SEO, a website is lost in the last pages of results; with personalized SEO, it reaches higher positions, on the first pages.",
+    a: "SEO (Search Engine Optimization) is a set of practices that put a website in the best possible positions in the searches made by its target audiences. With poorly worked SEO, a website is lost in the last pages of results; with personalized SEO, it has a much better chance of reaching the first pages.",
     after: "GEO (Generative Engine Optimization) is a different set of practices with a similar purpose, aimed at Artificial Intelligence instead. More and more of us turn to Artificial Intelligence for suggestions and recommendations, and these practices raise the chances of AI tools recommending a business to their users.",
   },
   {
@@ -172,7 +171,7 @@ const QUESTIONS: readonly Question[] = [
   {
     id: "languages",
     q: "Which languages can my website be in?",
-    a: "We always include Portuguese, unless it makes no sense for a particular business. English and any other language add to the price. Languages other than Portuguese and English are translated by an AI specialized in translation, with over 95% accuracy (we take this into account in our prices). In those cases, if changes are needed, we provide a simply structured document where you give us the translations of the sentences that need fine-tuning, at an additional but affordable price.",
+    a: "Portuguese and English are always included. Each other language costs €35 and is translated by an AI specialized in translation. In those cases, if changes are needed, we provide a simply structured document where you give us the translations of the sentences that need fine-tuning.",
   },
 ];
 
@@ -204,7 +203,7 @@ const PT_QUESTIONS: Record<string, Words> = {
       { lead: "Não lucramos com custos extra:", text: "incluímos alojamento gratuito e práticas de SEO no nosso serviço. Grande parte das empresas cobra preços exorbitantes por isso, que podem ultrapassar os 100 euros anuais." },
       { lead: "Rapidez:", text: "websites entregues em prazos curtos, sem comprometer a qualidade." },
       { lead: "Vanguarda:", text: "usamos as ferramentas e o know-how mais modernos, que nos permitem maior eficiência. O resultado? Websites com maior qualidade e preços mais reduzidos." },
-      { lead: "Tranquilidade:", text: "tratamos de toda a logística de alojamento, criamos as páginas para as informações legais e assistimos na criação do domínio e no registo da marca." },
+      { lead: "Tranquilidade:", text: "tratamos de toda a logística de alojamento, colocamos no website as páginas legais e assistimos na criação do domínio e no registo da marca." },
     ],
   },
   cost: {
@@ -229,7 +228,7 @@ const PT_QUESTIONS: Record<string, Words> = {
     list: [
       {
         lead: "Cliente:",
-        text: "os materiais (as fotografias já existentes do negócio, o logótipo e o símbolo) e o conteúdo das páginas legais, que por lei tem de ser produzido pelo próprio negócio.",
+        text: "os materiais (as fotografias já existentes do negócio, o logótipo e o símbolo) e o conteúdo das páginas legais, que é da responsabilidade do próprio negócio.",
       },
       {
         lead: "Nevima:",
@@ -252,8 +251,7 @@ const PT_QUESTIONS: Record<string, Words> = {
   changes: {
     q: "E se eu desejar alterações no website?",
     list: [
-      { text: "As alterações que nos levam só alguns minutos nunca são cobradas." },
-      { text: "Alterações maiores exigem a criação de um orçamento e a definição de datas para serem aplicadas, que combinamos sempre com o cliente." },
+      { text: "As primeiras quatro alterações pequenas, de até 15 minutos cada, não são cobradas." },
     ],
     after: "No entanto, o nosso processo já foi pensado para as evitar: quando parte do website estiver construída, marcamos uma chamada gratuita para mostrar a direção que está a tomar, e ajustamos o que for necessário com base no feedback. O resultado? Um website feito à medida do gosto do cliente, que dificilmente vai precisar de alterações.",
     link: "Ver como funciona em Como trabalhamos",
@@ -269,7 +267,7 @@ const PT_QUESTIONS: Record<string, Words> = {
   },
   "seo-geo": {
     q: "O que são o SEO e o GEO?",
-    a: "O SEO (Search Engine Optimization) consiste num conjunto de práticas que colocam um website nas melhores posições possíveis das pesquisas efetuadas pelos públicos-alvo. Com um SEO mal trabalhado, um website fica perdido nas últimas páginas de resultados; com um SEO personalizado, alcança posições mais altas, nas primeiras páginas.",
+    a: "O SEO (Search Engine Optimization) consiste num conjunto de práticas que colocam um website nas melhores posições possíveis das pesquisas efetuadas pelos públicos-alvo. Com um SEO mal trabalhado, um website fica perdido nas últimas páginas de resultados; com um SEO personalizado, tem muito mais hipóteses de alcançar as primeiras páginas.",
     after: "O GEO (Generative Engine Optimization) consiste num conjunto de práticas diferentes, com um propósito semelhante, mas direcionado para a Inteligência Artificial. Todos nós usamos cada vez mais a Inteligência Artificial para obter sugestões e recomendações, e estas práticas aumentam a probabilidade de as ferramentas de Inteligência Artificial recomendarem um negócio aos seus utilizadores.",
   },
   extras: {
@@ -282,7 +280,7 @@ const PT_QUESTIONS: Record<string, Words> = {
   },
   languages: {
     q: "Em que línguas pode estar o meu website?",
-    a: "Incluímos sempre a língua portuguesa, a não ser que não faça sentido para um negócio em particular. O inglês e qualquer outra língua acrescem ao preço. As línguas além do português e do inglês são traduzidas por uma IA especializada em tradução, com mais de 95% de precisão (temos esta questão em consideração quando praticamos os preços). Nestes casos, se forem necessárias mudanças, fornecemos um documento com uma estrutura simples, onde o cliente disponibiliza as traduções das frases que precisem de ser afinadas, com um preço adicional, mas em conta.",
+    a: "Incluímos sempre o português e o inglês. Cada uma das outras línguas custa 35 € e é traduzida por uma IA especializada em tradução. Nestes casos, se forem necessárias mudanças, fornecemos um documento com uma estrutura simples, onde o cliente disponibiliza as traduções das frases que precisem de ser afinadas.",
   },
 };
 

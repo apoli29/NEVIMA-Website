@@ -54,14 +54,13 @@ function web(
   if (a.pages === "10+") return { reason: t("More than 10 pages", "Mais de 10 páginas") };
   const notes = [t(p.includes), t(p.marginNote)];
 
-  // Portuguese is included; every other language counts, English too.
+  // Portuguese and English are included; each other language is paid.
   const others = a.languages.includes("other") ? countLanguages(a.languagesOther ?? "") : 0;
-  const extraLanguages = (a.languages.includes("en") ? 1 : 0) + others;
-  if (extraLanguages > 3) return { reason: t("More than three additional languages", "Mais de três línguas adicionais") };
+  if (others > 3) return { reason: t("More than three additional languages", "Mais de três línguas adicionais") };
 
   const design = a.design === "advanced" ? 1 + p.advancedPercent / 100 : 1;
   const [fewest, most] = p.pages[a.pages][market];
-  const extras = extraLanguages ? p.languages[extraLanguages as 1 | 2 | 3] : 0;
+  const extras = others * p.perLanguage;
 
   // The pages' range, and on its ceiling the margin for what the form
   // does not ask.

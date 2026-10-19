@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Instrument_Sans } from "next/font/google";
 import localFont from "next/font/local";
+import { CookieConsent } from "@/components/cookie-consent";
 import { CtaGlassFilters } from "@/components/cta-glass";
 import { HtmlLang, LANG_SCRIPT } from "@/components/html-lang";
 import { OffscreenPause } from "@/components/offscreen-pause";
@@ -82,6 +83,7 @@ export default function RootLayout({
         <OffscreenPause />
         <PageWipe />
         {children}
+        <CookieConsent />
       </body>
     </html>
   );
