@@ -74,6 +74,21 @@ const state = (p) =>
   ok(card.l < 390 && card.r > 0, `phone deep link: the step is on screen (${card.l}–${card.r})`);
   await p.context().close();
 }
+{ // Phone: the studio's "a completely different approach" leads to How we work.
+  const p = await page({ width: 390, height: 844 });
+  await p.mouse.click(195, 280);
+  await sleep(2800);
+  const link = await p.$(".std-approach");
+  if (link) {
+    await link.scrollIntoViewIfNeeded();
+    await sleep(800);
+    await link.click();
+    await sleep(2000);
+    const s = await state(p);
+    ok(!s.shut && s.rowShown && Math.abs(s.top) <= 2, `phone studio link: How we work opened and on screen (top ${s.top})`);
+  } else ok(false, "phone studio link: .std-approach found");
+  await p.context().close();
+}
 { // Phone on its side.
   const p = await page({ width: 844, height: 390 });
   await p.mouse.click(422, 130);
