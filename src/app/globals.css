@@ -1554,6 +1554,29 @@
     -webkit-box-decoration-break: slice;
     box-decoration-break: slice;
   }
+  /* The stroked words are the way to How we work: pressed, they go;
+     pointed at, the stroke thickens and the drop under the pointer says
+     where to (studio.tsx, ApproachLink). */
+  .std-approach { color: inherit; text-decoration: none; cursor: pointer; }
+  .std-approach .std-stroke { transition: background-size 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+  .std-approach:hover .std-stroke,
+  .std-approach:focus-visible .std-stroke { background-size: var(--draw, 100%) 0.12em; }
+  .std-approach:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 4px; }
+  .std-approach-tip {
+    position: fixed;
+    z-index: 60;
+    pointer-events: none;
+    /* Above the pointer, clear of the words it points at. */
+    translate: -50% calc(-100% - 1.4rem);
+    animation: std-tip-in 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @keyframes std-tip-in {
+    from { opacity: 0; scale: 0.8; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .std-approach-tip { animation: none; }
+  }
+
   /* The two co-founders in a capsule, a line's height, set into the line
      after "two", in colour: the way to the about page. Every 6s they
      shake for about three seconds. Pointed at, the capsule opens in the
