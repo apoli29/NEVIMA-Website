@@ -34,15 +34,17 @@ const STATEMENT: Copy = {
 
 /* The pillar, up to and including the colon it turns on. */
 const PILLAR: Copy = {
-  en: "Our pillar is efficiency, because we deliver elite results without long turnaround times. The secret is simple:",
-  pt: "O nosso pilar é a eficiência: entregamos resultados de excelência em prazos curtos. O segredo é simples:",
+  en: "Our pillar is efficiency: we deliver elite results, without long turnaround times. The secret is simple:",
+  pt: "O nosso pilar é a eficiência: entregamos resultados de excelência, sem prazos demorados. O segredo é simples:",
 };
 
 /* And what follows it, which is run through with a black marker. */
-// A non-breaking hyphen: "know-how" is never split across two lines.
+// A non-breaking hyphen: "know-how" is never split across two lines. And
+// a non-breaking space after the article, so the marker never starts on a
+// lone "o" at a line's end.
 const PILLAR_MARK: Copy = {
-  en: "the know\u2011how we have and using the right tools.",
-  pt: "o nosso know\u2011how e o uso das ferramentas certas.",
+  en: "the\u00a0know\u2011how we have and using the right tools.",
+  pt: "o\u00a0nosso know\u2011how e o uso das ferramentas certas.",
 };
 
 /** How far out of the shell each half of the statement starts, in pixels. */
