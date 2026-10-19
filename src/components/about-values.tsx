@@ -590,10 +590,19 @@ function Callout({
   }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // The ring follows its drop as the drop drifts, and the slanted stretch
-  // with it; the turn and the words stay put.
+  // with it; the turn and the words stay put. Only while the section is
+  // near the screen: off it, the water under the drops is held still too,
+  // and every frame spent here was a layout read and a repaint for nothing.
   useEffect(() => {
     if (!lead || aim.kind !== "drop") return;
     let frame = 0;
+    const near = new IntersectionObserver(
+      ([entry]) => {
+        cancelAnimationFrame(frame);
+        frame = entry?.isIntersecting ? requestAnimationFrame(follow) : 0;
+      },
+      { rootMargin: "25% 0px 25% 0px" },
+    );
     const follow = () => {
       const box = section.current?.getBoundingClientRect();
       const a = box ? anchor(aim.i, lead.dir, box) : null;
@@ -607,7 +616,11 @@ function Callout({
       frame = requestAnimationFrame(follow);
     };
     frame = requestAnimationFrame(follow);
-    return () => cancelAnimationFrame(frame);
+    if (section.current) near.observe(section.current);
+    return () => {
+      near.disconnect();
+      cancelAnimationFrame(frame);
+    };
   }, [lead]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!lead) return null;

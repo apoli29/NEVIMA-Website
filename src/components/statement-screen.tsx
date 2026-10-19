@@ -60,7 +60,9 @@ export function StatementScreen({
   const t = useT();
   return (
     // Padded clear of the floating bar at the top.
-    <div className="pointer-events-none absolute inset-0 z-10 pt-[7.25rem] pb-[clamp(1.25rem,3.5svh,2.75rem)] md:pt-[clamp(8.5rem,17svh,10rem)]">
+    // In the flow on a screen too short to hold it (see home.tsx), so the
+    // screen takes its height.
+    <div className="pointer-events-none absolute inset-0 z-10 pt-[7.25rem] pb-[clamp(1.25rem,3.5svh,2.75rem)] md:pt-[clamp(8.5rem,17svh,10rem)] short:relative">
       <motion.div style={{ y: rise }} className="shell flex h-full flex-col">
         {/* The open room is shared out two to one, above the words and
             below them: they stand low, nearer the index than the bar. */}

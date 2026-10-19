@@ -3,8 +3,10 @@ import { Geist_Mono, Instrument_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import { CtaGlassFilters } from "@/components/cta-glass";
 import { HtmlLang, LANG_SCRIPT } from "@/components/html-lang";
+import { OffscreenPause } from "@/components/offscreen-pause";
 import { PageWipe } from "@/components/page-wipe";
 import { ReturnKeeper } from "@/components/return-keeper";
+import { OPENING_SCRIPT } from "@/lib/opened";
 import "./globals.css";
 
 /* Titles: Satoshi (manual v2), self-hosted from /fonts. The variable file is
@@ -65,15 +67,19 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     // The language is set again on a /pt page before it is painted (see
-    // html-lang.tsx), so the server's "en" is expected to differ there.
+    // html-lang.tsx), so the server's "en" is expected to differ there; so
+    // is the class, which holds the home page still while its opening
+    // plays (OPENING_SCRIPT, src/lib/opened.ts).
     <html lang="en" className={`${title.variable} ${read.variable} ${mono.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: LANG_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: OPENING_SCRIPT }} />
       </head>
       <body className="antialiased">
         <HtmlLang />
         <CtaGlassFilters />
         <ReturnKeeper />
+        <OffscreenPause />
         <PageWipe />
         {children}
       </body>

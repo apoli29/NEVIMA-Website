@@ -4,6 +4,14 @@
    upright, square windows. The second screen sets its mark low and its
    copy high on these (see jelly-field.tsx, which uses the same 23/20). */
 @custom-variant upright (@media (max-aspect-ratio: 23/20));
+/* A screen too short to hold the second screen or How we work a screen
+   tall (a phone on its side, the oldest small phones, a netbook): both are
+   then as tall as they need to be and scrolled through (home.tsx,
+   process.tsx). */
+@custom-variant short (@media (max-height: 600px));
+/* An upright phone with a short screen (360x640, 375x667): How we work's
+   held screen is set a little closer, so the heading and the row fit. */
+@custom-variant low-phone (@media (max-width: 767px) and (max-height: 700px));
 
 @theme {
   /* ---- surfaces --------------------------------------------------
@@ -101,12 +109,32 @@
      enough to scroll the browser has drawn a scrollbar by then: taking it
      away widens the viewport, so the centred wordmark slid half a scrollbar
      to the right before the opening had started, and its flight was
-     measured against the narrower screen. */
-  html:has([data-opening]) {
+     measured against the narrower screen. The class is put on in the head
+     before the first paint and kept right by home.tsx (OPENING_CLASS in
+     src/lib/opened.ts). It was `html:has([data-opening])`, which had the
+     browser recalculate the style of the whole page each time anything was
+     added to it, for as long as the page was open. */
+  html.nv-opening {
     overflow: hidden;
     overscroll-behavior: none;
   }
   html::-webkit-scrollbar { display: none; }
+
+  /* A never-ending loop off the screen is held where it is, and let go a
+     little before it comes back (offscreen-pause.tsx); the second screen's,
+     too, once the studio has closed over it ([data-covered], home.tsx).
+     Nothing that can be seen ever stops. */
+  [data-offscreen],
+  [data-offscreen]::before,
+  [data-offscreen]::after,
+  [data-offscreen] *,
+  [data-offscreen] *::before,
+  [data-offscreen] *::after,
+  [data-covered] *,
+  [data-covered] *::before,
+  [data-covered] *::after {
+    animation-play-state: paused !important;
+  }
 
   /* The page held still with reduced motion, where there is no Lenis to
      stop (see useSmoothScroll). */
@@ -554,6 +582,16 @@
     transition: color 0.25s ease;
   }
   .prop-close:hover { color: var(--color-ink); }
+  /* A target a finger can find (24px or more each way, WCAG 2.2), drawn
+     round the words without moving them, as the foot's small links are. */
+  .prop-close,
+  .hit-wide { position: relative; }
+  .prop-close::before,
+  .hit-wide::before {
+    content: "";
+    position: absolute;
+    inset: -11px -6px;
+  }
   /* The yes of "Clear all answers?", underlined: it is the one that acts. */
   .pf-clear-yes { color: var(--color-ink); text-decoration: underline; text-underline-offset: 3px; }
   .prop-done {
@@ -1143,31 +1181,47 @@
      its glass a tenth slimmer than the others' (the user found it too
      chunky up there). */
   .cta-drop-light { padding: 0.72em 1.45em; color: var(--color-ink); }
-  .cta-drop::before {
-    content: "";
+  /* The glass (Glass in cta-glass.tsx, first inside every drop). The
+     three spots are elements of their own inside it rather than three
+     backgrounds, so that their melting is a transform the browser plays
+     on its own: animated as background positions and sizes, under the
+     filter, it repainted the whole page on every frame, as long as a
+     single drop was anywhere on it. The glass clips them to its box, as
+     a background is clipped to the box it is painted in. */
+  .cta-glass {
     position: absolute;
     inset: -0.6em -0.85em -0.7em -0.8em;
     z-index: -30;
+    overflow: hidden;
     pointer-events: none;
     transform-origin: 46% 54%;
-    /* Only the spots' strength matters: the filter paints the colour. */
-    background:
-      radial-gradient(closest-side, #000, rgb(0 0 0 / 0)) -6% 42% / 58% 150% no-repeat,
-      radial-gradient(closest-side, #000, rgb(0 0 0 / 0)) 50% 58% / 64% 130% no-repeat,
-      radial-gradient(closest-side, #000, rgb(0 0 0 / 0)) 106% 48% / 58% 162% no-repeat;
     filter: url(#cta-glass);
     animation:
-      cta-melt 11s ease-in-out infinite alternate,
       drop-tilt 6.5s ease-in-out infinite alternate,
       drop-breathe 3.4s ease-in-out infinite;
   }
-  .cta-drop-light::before {
+  .cta-drop-light > .cta-glass {
     inset: -0.54em -0.85em -0.63em -0.8em;
     filter: url(#cta-glass-light);
     /* On black, a white drop that fades as far as the black one does
        turns grey; it breathes less. */
-    animation-name: cta-melt, drop-tilt, drop-breathe-light;
+    animation-name: drop-tilt, drop-breathe-light;
   }
+  /* Only the spots' strength matters: the filter paints the colour. */
+  .cta-glass > span {
+    position: absolute;
+    transform-origin: 0 0;
+    background: radial-gradient(closest-side, #000, rgb(0 0 0 / 0));
+    /* Longhands: a shorthand with no name is minified to "none". The name
+       is each spot's own, below. */
+    animation-duration: 11s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+  }
+  .cta-glass > :nth-child(1) { left: -2.52%; top: -21%; width: 58%; height: 150%; animation-name: cta-melt-1; }
+  .cta-glass > :nth-child(2) { left: 18%; top: -17.4%; width: 64%; height: 130%; animation-name: cta-melt-2; }
+  .cta-glass > :nth-child(3) { left: 44.52%; top: -29.76%; width: 58%; height: 162%; animation-name: cta-melt-3; }
 
   .cta-drop:hover,
   .cta-drop:focus-visible { transform: scale(1.04); }
@@ -1176,16 +1230,32 @@
   .cta-drop:focus-visible .btn-neu-face > span { transform: translateX(3px); }
 
   /* The spots trade places a little: the fuller end swaps sides and the
-     waist wanders, so the piece changes shape without ever pinching. */
-  @keyframes cta-melt {
-    0%   { background-position: -6% 42%, 50% 58%, 106% 48%;
-           background-size: 58% 150%, 64% 130%, 58% 162%; }
-    35%  { background-position: -4% 54%, 46% 44%, 104% 56%;
-           background-size: 60% 158%, 62% 128%, 56% 148%; }
-    70%  { background-position: -7% 48%, 54% 54%, 105% 40%;
-           background-size: 57% 162%, 66% 134%, 58% 150%; }
-    100% { background-position: -5% 58%, 48% 46%, 107% 50%;
-           background-size: 59% 146%, 63% 132%, 57% 160%; }
+     waist wanders, so the piece changes shape without ever pinching. Each
+     spot sits where it starts and moves by a transform from there; the
+     keyframes are the positions and sizes the spots once took as
+     backgrounds (left to right, at 0%, 35%, 70% and 100% of 11s, eased
+     in and out, there and back), turned into a move and a scale:
+       0%   at -6% 42%, 50% 58%, 106% 48%; sized 58% 150%, 64% 130%, 58% 162%
+       35%  at -4% 54%, 46% 44%, 104% 56%; sized 60% 158%, 62% 128%, 56% 148%
+       70%  at -7% 48%, 54% 54%, 105% 40%; sized 57% 162%, 66% 134%, 58% 150%
+       100% at -5% 58%, 48% 46%, 107% 50%; sized 59% 146%, 63% 132%, 57% 160% */
+  @keyframes cta-melt-1 {
+    0%   { transform: translate(0%, 0%) scale(1, 1); }
+    35%  { transform: translate(1.5862%, -6.88%) scale(1.03448, 1.05333); }
+    70%  { transform: translate(-0.8448%, -5.84%) scale(0.98276, 1.08); }
+    100% { transform: translate(0.8103%, -3.7867%) scale(1.01724, 0.97333); }
+  }
+  @keyframes cta-melt-2 {
+    0%   { transform: translate(0%, 0%) scale(1, 1); }
+    35%  { transform: translate(-0.8125%, 3.9077%) scale(0.96875, 0.98462); }
+    70%  { transform: translate(0.5625%, -0.7385%) scale(1.03125, 1.03077); }
+    100% { transform: translate(-0.375%, 2.0615%) scale(0.98438, 1.01538); }
+  }
+  @keyframes cta-melt-3 {
+    0%   { transform: translate(0%, 0%) scale(1, 1); }
+    35%  { transform: translate(2.1379%, 1.7778%) scale(0.96552, 0.91358); }
+    70%  { transform: translate(-0.7241%, 6.0247%) scale(1, 0.92593); }
+    100% { transform: translate(2.569%, -0.1481%) scale(0.98276, 0.98765); }
   }
   @keyframes drop-tilt {
     0%   { transform: rotate(-1.6deg) scale(1, 1); }
@@ -1202,7 +1272,8 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .cta-drop,
-    .cta-drop::before { animation: none; transition: none; }
+    .cta-glass,
+    .cta-glass > span { animation: none; transition: none; }
   }
 
   /* ---- services ---------------------------------------------------
@@ -2448,6 +2519,40 @@
     .prc-stage { min-height: 0; padding: 1.25rem 1.25rem 0; }
     .prc-stage.prc-wide { --prc-w: min(84vw, 21rem); }
   }
+  /* Phones (process.tsx, COMPACT): the row waits behind one key, the
+     services' black band turned to point down, and opened, a word at the
+     end of the extra services' keys takes it away again. The row comes in
+     with the fade every heading's entrance has (0.42s, easing out). */
+  .prc-open { border: 0; font: inherit; cursor: pointer; }
+  @media (hover: hover) {
+    .svc-folio.prc-open:hover .svc-folio-arrow { transform: translateY(2px); }
+  }
+  .prc-close {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.55em 0.25em 0.5em 0.75em;
+    border: 0;
+    background: transparent;
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+    cursor: pointer;
+  }
+  .prc-close:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 2px; }
+  [data-fresh] .prc-body { animation: prc-reveal 0.42s ease-out both; }
+  @keyframes prc-reveal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-fresh] .prc-body { animation: none; }
+  }
+  @media (max-width: 767px) and (max-height: 700px) {
+    .prc-head { padding-bottom: 0.5rem; }
+    .prc-stage { padding-top: 0.875rem; }
+  }
   .prc-partner {
     font-size: clamp(0.8125rem, 0.9vw, 0.875rem);
     line-height: 1.4;
@@ -2707,7 +2812,7 @@
   }
   /* The black drop at the white one's size, so the two stand level. */
   .fo-exit.cta-drop { padding: 0.72em 1.45em; }
-  .fo-exit.cta-drop::before { inset: -0.54em -0.85em -0.63em -0.8em; }
+  .fo-exit.cta-drop > .cta-glass { inset: -0.54em -0.85em -0.63em -0.8em; }
   .fo-exit .btn-neu-face { display: inline-flex; align-items: center; gap: 0.55em; }
   /* Its arrow points back, so it moves back. */
   .fo-exit:hover .btn-neu-face > .fo-exit-arrow,

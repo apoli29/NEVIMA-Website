@@ -55,19 +55,46 @@ const ERROR_OF: Partial<Record<keyof Draft, string>> = {
   region: "town",
 };
 
-type Audience = "business" | "partner";
-const AUDIENCES: Audience[] = ["business", "partner"];
-
-export function WorkTogether() {
-  const reduce = useReducedMotion() ?? false;
-  const t = useT();
+/* The photographs taking turns behind the section. Their own component, so
+   each turn redraws the two of them and not the forms beside them. */
+function Photos({ reduce }: { reduce: boolean }) {
   const [shown, setShown] = useState(0);
   useEffect(() => {
     if (reduce) return;
     const id = window.setInterval(() => setShown((i) => (i + 1) % PHOTOS.length), HOLD_MS);
     return () => window.clearInterval(id);
   }, [reduce]);
+  return (
+    <>
+      {PHOTOS.map((photo, i) => (
+        <span
+          key={photo.large}
+          aria-hidden="true"
+          data-shown={i === shown ? "" : undefined}
+          className="abt-hero-slide absolute inset-0 -z-20"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={photo.large}
+            srcSet={`${photo.small} 1280w, ${photo.large} 2400w`}
+            sizes="100vw"
+            alt=""
+            loading="lazy"
+            draggable={false}
+            className="wt-photo size-full object-cover select-none"
+          />
+        </span>
+      ))}
+    </>
+  );
+}
 
+type Audience = "business" | "partner";
+const AUDIENCES: Audience[] = ["business", "partner"];
+
+export function WorkTogether() {
+  const reduce = useReducedMotion() ?? false;
+  const t = useT();
   /* Two forms, one for each kind of client (user, 2026-10-18): a
      business owner's free proposal, and a development company's
      partnership. Until someone takes part, they take turns every four
@@ -143,25 +170,7 @@ export function WorkTogether() {
     >
       {/* Where "Partner with us" leads. */}
       <span id="partner" aria-hidden="true" className="absolute top-0" />
-      {PHOTOS.map((photo, i) => (
-        <span
-          key={photo.large}
-          aria-hidden="true"
-          data-shown={i === shown ? "" : undefined}
-          className="abt-hero-slide absolute inset-0 -z-20"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={photo.large}
-            srcSet={`${photo.small} 1280w, ${photo.large} 2400w`}
-            sizes="100vw"
-            alt=""
-            loading="lazy"
-            draggable={false}
-            className="wt-photo size-full object-cover select-none"
-          />
-        </span>
-      ))}
+      <Photos reduce={reduce} />
       <span aria-hidden="true" className="abt-hero-scrim absolute inset-0 -z-10" />
       <span aria-hidden="true" className="abt-grain absolute inset-0 -z-10" />
 

@@ -1,0 +1,37 @@
+/* What-if: the drops' melt carried by the compositor. The three spots
+   become three elements inside the filtered glass (see compositor-melt.js)
+   and move by transform instead of background-position/size, so nothing is
+   repainted on the main thread while they melt. Geometry follows cta-melt
+   exactly at its keyframes. Experiment only: nothing in the project changes. */
+.cta-drop::before { display: none !important; }
+.nv-glass {
+  overflow: hidden;
+  position: absolute; inset: -0.6em -0.85em -0.7em -0.8em; z-index: -30; pointer-events: none;
+  transform-origin: 46% 54%; filter: url(#cta-glass);
+  animation: drop-tilt 6.5s ease-in-out infinite alternate, drop-breathe 3.4s ease-in-out infinite;
+}
+.cta-drop-light .nv-glass { inset: -0.54em -0.85em -0.63em -0.8em; filter: url(#cta-glass-light); animation-name: drop-tilt, drop-breathe-light; }
+.nv-spot { position: absolute; transform-origin: 0 0; background: radial-gradient(closest-side, #000, rgb(0 0 0 / 0)); animation: 11s ease-in-out infinite alternate; }
+@media (prefers-reduced-motion: reduce) { .nv-glass, .nv-spot { animation: none; } }
+
+.nv-spot:nth-child(1) { left: -2.5200%; top: -21.0000%; width: 58%; height: 150%; animation-name: nv-melt-0; }
+@keyframes nv-melt-0 {
+  0% { transform: translate(0.0000%, 0.0000%) scale(1.00000, 1.00000); }
+  35% { transform: translate(1.5862%, -6.8800%) scale(1.03448, 1.05333); }
+  70% { transform: translate(-0.8448%, -5.8400%) scale(0.98276, 1.08000); }
+  100% { transform: translate(0.8103%, -3.7867%) scale(1.01724, 0.97333); }
+}
+.nv-spot:nth-child(2) { left: 18.0000%; top: -17.4000%; width: 64%; height: 130%; animation-name: nv-melt-1; }
+@keyframes nv-melt-1 {
+  0% { transform: translate(0.0000%, 0.0000%) scale(1.00000, 1.00000); }
+  35% { transform: translate(-0.8125%, 3.9077%) scale(0.96875, 0.98462); }
+  70% { transform: translate(0.5625%, -0.7385%) scale(1.03125, 1.03077); }
+  100% { transform: translate(-0.3750%, 2.0615%) scale(0.98438, 1.01538); }
+}
+.nv-spot:nth-child(3) { left: 44.5200%; top: -29.7600%; width: 58%; height: 162%; animation-name: nv-melt-2; }
+@keyframes nv-melt-2 {
+  0% { transform: translate(0.0000%, 0.0000%) scale(1.00000, 1.00000); }
+  35% { transform: translate(2.1379%, 1.7778%) scale(0.96552, 0.91358); }
+  70% { transform: translate(-0.7241%, 6.0247%) scale(1.00000, 0.92593); }
+  100% { transform: translate(2.5690%, -0.1481%) scale(0.98276, 0.98765); }
+}

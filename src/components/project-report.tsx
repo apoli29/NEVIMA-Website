@@ -5,6 +5,7 @@ import { useAnimate, useReducedMotion } from "motion/react";
 import type { Lang, Translate } from "@/lib/i18n";
 import { useLang, useT } from "@/lib/use-lang";
 import { TO_FILL, serviceLabel, type Project } from "@/lib/work";
+import { Glass } from "./cta-glass";
 
 /* ==================================================================
    The project report
@@ -665,6 +666,7 @@ export function ProjectReport({
       >
         <div className="rp-bar" style={flying ? { opacity: 0 } : undefined}>
           <button ref={close} type="button" onClick={shut} className="cta-drop cta-drop-light rp-bar-button">
+            <Glass />
             <span className="btn-neu-face">
               {t("Close", "Fechar")}
               <span aria-hidden="true">&times;</span>

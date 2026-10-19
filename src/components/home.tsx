@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   animate,
   cubicBezier,
@@ -23,8 +23,20 @@ import { StatementScreen } from "./statement-screen";
 import { useSmoothScroll } from "./smooth-scroll";
 import { Studio } from "./studio";
 import { hasOpened, markOpened, returningTo } from "@/lib/return-spot";
-import { booted } from "@/lib/opened";
+import { booted, OPENING_CLASS } from "@/lib/opened";
 import { useT } from "@/lib/use-lang";
+
+/* The sections under the opening, drawn again only when their own props
+   change. The page's phase changes as the opening starts and ends, and
+   without this every section and form below was drawn again at that very
+   moment, the first frames of the mark's flight among them. */
+const StatementScreenM = memo(StatementScreen);
+const StudioM = memo(Studio);
+const ServicesM = memo(Services);
+const ProcessM = memo(Process);
+const ComparisonM = memo(Comparison);
+const WorkTogetherM = memo(WorkTogether);
+const FooterM = memo(Footer);
 
 /* ==================================================================
    One gesture, one take.
@@ -278,6 +290,21 @@ export function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /* The page held still in CSS (globals.css) until it is handed back. On a
+     fresh load the class is already there from the head (OPENING_SCRIPT);
+     this keeps it right from then on, before anything is painted: off as
+     soon as the page is open (a skipped opening included), on for an
+     opening reached by the router, and off if the page is left mid-run. */
+  useMeasureEffect(() => {
+    const root = document.documentElement;
+    if (phase === "open") {
+      root.classList.remove(OPENING_CLASS);
+      return;
+    }
+    root.classList.add(OPENING_CLASS);
+    return () => root.classList.remove(OPENING_CLASS);
+  }, [phase]);
+
   /* Sent here for the free-proposal form (the bar's "Get your free
      proposal" on another page links to /#proposal): the opening runs on
      its own, as one gesture would have fired it, and the form opens out
@@ -436,14 +463,20 @@ export function Home() {
               the field is fully opaque: their combined alpha dips, and
               whatever is behind reads through. The stage owning its own
               ground closes that window. */}
-          {/* data-opening is what locks the page in CSS (globals.css). It is
-              rendered on the server, so the lock is there from the first
-              paint, before the listeners below exist. */}
+          {/* data-opening marks the stage while it is the opening's. The page
+              itself is locked by a class on the root (OPENING_CLASS, above),
+              which is there from the first paint, before the listeners below
+              exist. */}
           <section
             data-opening={phase === "open" ? undefined : ""}
+            // Wholly under the studio: its loops are held (globals.css).
+            data-covered={covered ? "" : undefined}
             className={
               phase === "open"
-                ? "sticky top-0 h-[100svh] overflow-hidden bg-paper"
+                ? // On a screen too short for its index and readouts (a phone on
+                  // its side), it is as tall as it needs to be and scrolled
+                  // through, rather than held a screen tall and cut off.
+                  "sticky top-0 h-[100svh] overflow-hidden bg-paper short:relative short:h-auto short:min-h-[100svh]"
                 : "fixed inset-0 z-30 overflow-hidden bg-paper"
             }
           >
@@ -461,7 +494,7 @@ export function Home() {
             />
           </motion.div>
 
-          <StatementScreen rise={wordsRise} settled={phase === "open"} />
+          <StatementScreenM rise={wordsRise} settled={phase === "open"} />
 
           {/* The curtain. Black over a second screen that is already built,
               so lifting it is the whole transition. Lifted, it is still on
@@ -486,21 +519,21 @@ export function Home() {
           </div>
           </section>
 
-          <Studio ready={studioIn} />
+          <StudioM ready={studioIn} />
           {/* The services are drawn over the screen too. The studio alone
               is shorter than the screen since the co-founders moved to the
               about page, and a stuck element only stays stuck while its
               box still has room: the screen came loose half covered and
               slid away under the studio instead of being closed over. */}
-          <Services ready={phase === "open"} />
+          <ServicesM ready={phase === "open"} />
         </div>
 
-        <Process ready={phase === "open"} />
-        <Comparison ready={phase === "open"} />
+        <ProcessM ready={phase === "open"} />
+        <ComparisonM ready={phase === "open"} />
       </main>
 
-      <WorkTogether />
-      <Footer />
+      <WorkTogetherM />
+      <FooterM />
       </div>
 
       <ProposalOverlay ctl={proposal} />

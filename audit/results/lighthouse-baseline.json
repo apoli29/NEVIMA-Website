@@ -1,0 +1,560 @@
+{
+  "label": "baseline",
+  "date": "2026-10-19T01:14:02.555Z",
+  "results": {
+    "/": {
+      "median": {
+        "score": 90,
+        "fcpMs": 1210,
+        "lcpMs": 3345,
+        "tbtMs": 155,
+        "cls": 0,
+        "siMs": 1488,
+        "ttiMs": 4176,
+        "bootupMs": 921,
+        "mainThreadMs": 3027,
+        "jsKB": 237,
+        "totalKB": 422,
+        "domSize": 967,
+        "lcpElement": null,
+        "unusedJsKB": 46,
+        "unusedCssKB": 0,
+        "nonComposited": 10,
+        "longTasks": 5
+      },
+      "runs": [
+        {
+          "score": 90,
+          "fcpMs": 1209,
+          "lcpMs": 3345,
+          "tbtMs": 157,
+          "cls": 0,
+          "siMs": 1493,
+          "ttiMs": 4193,
+          "bootupMs": 932,
+          "mainThreadMs": 3056,
+          "jsKB": 237,
+          "totalKB": 422,
+          "domSize": 967,
+          "lcpElement": null,
+          "unusedJsKB": 46,
+          "unusedCssKB": 0,
+          "nonComposited": 10,
+          "longTasks": 6,
+          "nonCompositedDetail": [
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            },
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            },
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            },
+            {
+              "node": "<::after>",
+              "why": [
+                "Unsupported CSS Property: background-position-x"
+              ]
+            },
+            {
+              "node": "<::after>",
+              "why": [
+                "Unsupported CSS Property: background-position-x"
+              ]
+            },
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            },
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            },
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            },
+            {
+              "node": "<::after>",
+              "why": [
+                "Unsupported CSS Property: background-position-x"
+              ]
+            },
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            }
+          ]
+        },
+        {
+          "score": 90,
+          "fcpMs": 1210,
+          "lcpMs": 3345,
+          "tbtMs": 155,
+          "cls": 0,
+          "siMs": 1488,
+          "ttiMs": 4176,
+          "bootupMs": 921,
+          "mainThreadMs": 3027,
+          "jsKB": 237,
+          "totalKB": 422,
+          "domSize": 967,
+          "lcpElement": null,
+          "unusedJsKB": 46,
+          "unusedCssKB": 0,
+          "nonComposited": 10,
+          "longTasks": 5
+        },
+        {
+          "score": 90,
+          "fcpMs": 1211,
+          "lcpMs": 3346,
+          "tbtMs": 165,
+          "cls": 0,
+          "siMs": 1515,
+          "ttiMs": 4210,
+          "bootupMs": 905,
+          "mainThreadMs": 3142,
+          "jsKB": 237,
+          "totalKB": 422,
+          "domSize": 967,
+          "lcpElement": null,
+          "unusedJsKB": 45,
+          "unusedCssKB": 0,
+          "nonComposited": 10,
+          "longTasks": 7
+        }
+      ]
+    },
+    "/pt": {
+      "median": {
+        "score": 90,
+        "fcpMs": 1217,
+        "lcpMs": 3400,
+        "tbtMs": 141,
+        "cls": 0,
+        "siMs": 1513,
+        "ttiMs": 4241,
+        "bootupMs": 864,
+        "mainThreadMs": 2814,
+        "jsKB": 237,
+        "totalKB": 423,
+        "domSize": 984,
+        "lcpElement": null,
+        "unusedJsKB": 45,
+        "unusedCssKB": 0,
+        "nonComposited": 10,
+        "longTasks": 4
+      },
+      "runs": [
+        {
+          "score": 90,
+          "fcpMs": 1210,
+          "lcpMs": 3380,
+          "tbtMs": 148,
+          "cls": 0,
+          "siMs": 1509,
+          "ttiMs": 4182,
+          "bootupMs": 946,
+          "mainThreadMs": 3081,
+          "jsKB": 237,
+          "totalKB": 423,
+          "domSize": 984,
+          "lcpElement": null,
+          "unusedJsKB": 45,
+          "unusedCssKB": 0,
+          "nonComposited": 10,
+          "longTasks": 6,
+          "nonCompositedDetail": [
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            },
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            },
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            },
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            },
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            },
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            },
+            {
+              "node": "<::after>",
+              "why": [
+                "Unsupported CSS Property: background-position-x"
+              ]
+            },
+            {
+              "node": "<::after>",
+              "why": [
+                "Unsupported CSS Property: background-position-x"
+              ]
+            },
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            },
+            {
+              "node": "<::after>",
+              "why": [
+                "Unsupported CSS Property: background-position-x"
+              ]
+            }
+          ]
+        },
+        {
+          "score": 90,
+          "fcpMs": 1217,
+          "lcpMs": 3400,
+          "tbtMs": 141,
+          "cls": 0,
+          "siMs": 1513,
+          "ttiMs": 4241,
+          "bootupMs": 864,
+          "mainThreadMs": 2814,
+          "jsKB": 237,
+          "totalKB": 423,
+          "domSize": 984,
+          "lcpElement": null,
+          "unusedJsKB": 45,
+          "unusedCssKB": 0,
+          "nonComposited": 10,
+          "longTasks": 4
+        },
+        {
+          "score": 91,
+          "fcpMs": 1212,
+          "lcpMs": 3250,
+          "tbtMs": 160,
+          "cls": 0,
+          "siMs": 1482,
+          "ttiMs": 4198,
+          "bootupMs": 921,
+          "mainThreadMs": 2955,
+          "jsKB": 237,
+          "totalKB": 423,
+          "domSize": 984,
+          "lcpElement": null,
+          "unusedJsKB": 45,
+          "unusedCssKB": 0,
+          "nonComposited": 10,
+          "longTasks": 5
+        }
+      ]
+    },
+    "/about": {
+      "median": {
+        "score": 76,
+        "fcpMs": 1212,
+        "lcpMs": 4812,
+        "tbtMs": 307,
+        "cls": 0,
+        "siMs": 1662,
+        "ttiMs": 4812,
+        "bootupMs": 766,
+        "mainThreadMs": 2653,
+        "jsKB": 243,
+        "totalKB": 628,
+        "domSize": 721,
+        "lcpElement": "<p class=\"svc-copy abt-statement-p\" data-lit=\"true\">",
+        "unusedJsKB": 48,
+        "unusedCssKB": 0,
+        "nonComposited": 5,
+        "longTasks": 6
+      },
+      "runs": [
+        {
+          "score": 75,
+          "fcpMs": 1216,
+          "lcpMs": 4816,
+          "tbtMs": 330,
+          "cls": 0,
+          "siMs": 1774,
+          "ttiMs": 4816,
+          "bootupMs": 894,
+          "mainThreadMs": 3002,
+          "jsKB": 243,
+          "totalKB": 628,
+          "domSize": 721,
+          "lcpElement": "<p class=\"svc-copy abt-statement-p\" data-lit=\"true\">",
+          "unusedJsKB": 48,
+          "unusedCssKB": 0,
+          "nonComposited": 5,
+          "longTasks": 9
+        },
+        {
+          "score": 76,
+          "fcpMs": 1212,
+          "lcpMs": 4812,
+          "tbtMs": 307,
+          "cls": 0,
+          "siMs": 1662,
+          "ttiMs": 4812,
+          "bootupMs": 766,
+          "mainThreadMs": 2653,
+          "jsKB": 243,
+          "totalKB": 628,
+          "domSize": 721,
+          "lcpElement": "<p class=\"svc-copy abt-statement-p\" data-lit=\"true\">",
+          "unusedJsKB": 48,
+          "unusedCssKB": 0,
+          "nonComposited": 5,
+          "longTasks": 6
+        },
+        {
+          "score": 78,
+          "fcpMs": 1217,
+          "lcpMs": 4817,
+          "tbtMs": 252,
+          "cls": 0,
+          "siMs": 1701,
+          "ttiMs": 4817,
+          "bootupMs": 777,
+          "mainThreadMs": 2826,
+          "jsKB": 243,
+          "totalKB": 628,
+          "domSize": 721,
+          "lcpElement": "<p class=\"svc-copy abt-statement-p\" data-lit=\"true\">",
+          "unusedJsKB": 48,
+          "unusedCssKB": 0,
+          "nonComposited": 5,
+          "longTasks": 7,
+          "nonCompositedDetail": [
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            },
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            },
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            },
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            },
+            {
+              "node": "<::before>",
+              "why": [
+                "Unsupported CSS Properties: background-position-x, background-position-y, background-size"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "/services/seo": {
+      "median": {
+        "score": 95,
+        "fcpMs": 1057,
+        "lcpMs": 2757,
+        "tbtMs": 111,
+        "cls": 0,
+        "siMs": 1057,
+        "ttiMs": 3092,
+        "bootupMs": 484,
+        "mainThreadMs": 1137,
+        "jsKB": 242,
+        "totalKB": 591,
+        "domSize": 300,
+        "lcpElement": "<p class=\"mt-9 max-w-[54ch] text-[clamp(1.125rem,1.5vw,1.375rem)] leading-[1.45] tra…\">",
+        "unusedJsKB": 32,
+        "unusedCssKB": 0,
+        "nonComposited": 0,
+        "longTasks": 4
+      },
+      "runs": [
+        {
+          "score": 95,
+          "fcpMs": 1060,
+          "lcpMs": 2748,
+          "tbtMs": 102,
+          "cls": 0,
+          "siMs": 1060,
+          "ttiMs": 3058,
+          "bootupMs": 464,
+          "mainThreadMs": 1082,
+          "jsKB": 242,
+          "totalKB": 591,
+          "domSize": 300,
+          "lcpElement": "<p class=\"mt-9 max-w-[54ch] text-[clamp(1.125rem,1.5vw,1.375rem)] leading-[1.45] tra…\">",
+          "unusedJsKB": 32,
+          "unusedCssKB": 0,
+          "nonComposited": 0,
+          "longTasks": 3
+        },
+        {
+          "score": 95,
+          "fcpMs": 1057,
+          "lcpMs": 2757,
+          "tbtMs": 111,
+          "cls": 0,
+          "siMs": 1057,
+          "ttiMs": 3092,
+          "bootupMs": 484,
+          "mainThreadMs": 1137,
+          "jsKB": 242,
+          "totalKB": 591,
+          "domSize": 300,
+          "lcpElement": "<p class=\"mt-9 max-w-[54ch] text-[clamp(1.125rem,1.5vw,1.375rem)] leading-[1.45] tra…\">",
+          "unusedJsKB": 32,
+          "unusedCssKB": 0,
+          "nonComposited": 0,
+          "longTasks": 4
+        },
+        {
+          "score": 96,
+          "fcpMs": 1059,
+          "lcpMs": 2563,
+          "tbtMs": 95,
+          "cls": 0,
+          "siMs": 1059,
+          "ttiMs": 3564,
+          "bootupMs": 422,
+          "mainThreadMs": 1022,
+          "jsKB": 242,
+          "totalKB": 591,
+          "domSize": 300,
+          "lcpElement": "<p class=\"mt-9 max-w-[54ch] text-[clamp(1.125rem,1.5vw,1.375rem)] leading-[1.45] tra…\">",
+          "unusedJsKB": 32,
+          "unusedCssKB": 0,
+          "nonComposited": 0,
+          "longTasks": 4,
+          "nonCompositedDetail": []
+        }
+      ]
+    },
+    "/portfolio": {
+      "median": {
+        "score": 0,
+        "fcpMs": null,
+        "lcpMs": null,
+        "tbtMs": null,
+        "cls": null,
+        "siMs": null,
+        "ttiMs": null,
+        "bootupMs": null,
+        "mainThreadMs": null,
+        "jsKB": 0,
+        "totalKB": 0,
+        "lcpElement": null,
+        "unusedJsKB": 0,
+        "unusedCssKB": 0,
+        "nonComposited": 0,
+        "longTasks": 0
+      },
+      "runs": [
+        {
+          "score": 0,
+          "fcpMs": null,
+          "lcpMs": null,
+          "tbtMs": null,
+          "cls": null,
+          "siMs": null,
+          "ttiMs": null,
+          "bootupMs": null,
+          "mainThreadMs": null,
+          "jsKB": 0,
+          "totalKB": 0,
+          "lcpElement": null,
+          "unusedJsKB": 0,
+          "unusedCssKB": 0,
+          "nonComposited": 0,
+          "longTasks": 0,
+          "nonCompositedDetail": []
+        },
+        {
+          "score": 0,
+          "fcpMs": null,
+          "lcpMs": null,
+          "tbtMs": null,
+          "cls": null,
+          "siMs": null,
+          "ttiMs": null,
+          "bootupMs": null,
+          "mainThreadMs": null,
+          "jsKB": 0,
+          "totalKB": 0,
+          "lcpElement": null,
+          "unusedJsKB": 0,
+          "unusedCssKB": 0,
+          "nonComposited": 0,
+          "longTasks": 0
+        },
+        {
+          "score": 0,
+          "fcpMs": null,
+          "lcpMs": null,
+          "tbtMs": null,
+          "cls": null,
+          "siMs": null,
+          "ttiMs": null,
+          "bootupMs": null,
+          "mainThreadMs": null,
+          "jsKB": 0,
+          "totalKB": 0,
+          "lcpElement": null,
+          "unusedJsKB": 0,
+          "unusedCssKB": 0,
+          "nonComposited": 0,
+          "longTasks": 0
+        }
+      ]
+    }
+  }
+}

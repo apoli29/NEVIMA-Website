@@ -1,0 +1,4 @@
+/* What-if, upper bound: every CSS animation on the page held still (what
+   pausing everything off screen would approach where nothing animated is
+   in view). Not a proposal: the visible ones must keep running. */
+*, *::before, *::after { animation-play-state: paused !important; }
