@@ -44,7 +44,13 @@ const fixed = (n: number): Range => ({ min: n, max: n });
 const down10 = (n: number) => Math.floor(n / 10) * 10;
 const up10 = (n: number) => Math.ceil(n / 10) * 10;
 
-function web(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"], t: Translate): Priced {
+function web(
+  a: NonNullable<Answers["web"]>,
+  market: Market,
+  p: Pricing["web"],
+  t: Translate,
+  personal = false,
+): Priced {
   if (a.pages === "10+") return { reason: t("More than 10 pages", "Mais de 10 páginas") };
   const notes = [t(p.includes), t(p.marginNote)];
 
@@ -69,8 +75,12 @@ function web(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"], 
     max += hi * p.textsMarket[market];
     notes.push(
       t(
-        "Includes writing the website's texts from what you tell us about your business.",
-        "Inclui a escrita dos textos do website a partir da informação dada sobre o negócio.",
+        personal
+          ? "Includes writing the website's texts from what you tell us about your project."
+          : "Includes writing the website's texts from what you tell us about your business.",
+        personal
+          ? "Inclui a escrita dos textos do website a partir da informação dada sobre o projeto."
+          : "Inclui a escrita dos textos do website a partir da informação dada sobre o negócio.",
       ),
     );
   }
@@ -87,8 +97,8 @@ function web(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"], 
   if (a.domain === "no") {
     notes.push(
       t(
-        `Doesn't include the domain, which you register in your business's name and pay for directly: about €${p.newDomain.min}–${p.newDomain.max} a year. We guide you through it.`,
-        `Não inclui o domínio, registado em nome do negócio e pago diretamente: cerca de ${p.newDomain.min}–${p.newDomain.max} € por ano. Acompanhamos todo o processo.`,
+        `Doesn't include the domain, which you register in ${personal ? "your own" : "your business's"} name and pay for directly: about €${p.newDomain.min}–${p.newDomain.max} a year. We guide you through it.`,
+        `Não inclui o domínio, registado em ${personal ? "nome próprio" : "nome do negócio"} e pago diretamente: cerca de ${p.newDomain.min}–${p.newDomain.max} € por ano. Acompanhamos todo o processo.`,
       ),
     );
   }
@@ -246,7 +256,7 @@ export function estimate(answers: Answers, pricing: Pricing = PRICING, lang: Lan
 
   const { web: webAnswers, photo: photoAnswers, search: searchAnswers } = answers;
   for (const id of answers.services) {
-    if (id === "web" && webAnswers) add("web", (m) => web(webAnswers, m, pricing.web, t));
+    if (id === "web" && webAnswers) add("web", (m) => web(webAnswers, m, pricing.web, t, answers.audience === "personal"));
     if (id === "identity") add("identity", (m) => identity(webAnswers?.urgent === "yes", m, pricing.web, t));
     if (id === "photo" && photoAnswers) add("photo", () => photo(photoAnswers, answers.country, pricing, t));
     if ((id === "seo" || id === "geo") && searchAnswers) {
