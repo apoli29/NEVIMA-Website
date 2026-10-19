@@ -38,7 +38,7 @@ export const SERVICES: Service[] = [
     slug: "web-design",
     title: "Web Design",
     tier: "main",
-    body: "Web design is Nevima’s main service, and not by chance: it is where we achieve our best results. We deliver websites that reflect the essence of each business and catch the attention of the potential clients and other stakeholders of our partners, who put their trust in us.",
+    body: "Web design is Nevima’s main service, and not by chance: it is where we achieve our best results. We deliver websites that reflect the essence of each business and catch the attention of the potential clients and other stakeholders of our partners.",
     included: {
       title: "Also included",
       items: [
@@ -111,7 +111,7 @@ export const SERVICES: Service[] = [
 const PT: Record<string, Pick<Service, "title" | "body" | "included">> = {
   "web-design": {
     title: "Web Design",
-    body: "O web design é o serviço principal da Nevima, e não é por acaso: é no web design que obtemos os melhores resultados. Entregamos websites que refletem a essência do negócio e que captam a atenção de potenciais clientes e de outros stakeholders dos nossos parceiros, que depositam confiança em nós.",
+    body: "O web design é o serviço principal da Nevima, e não é por acaso: é no web design que obtemos os melhores resultados. Entregamos websites que refletem a essência do negócio e que captam a atenção de potenciais clientes e de outros stakeholders dos nossos parceiros.",
     included: {
       title: "Também incluído",
       items: [

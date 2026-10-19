@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "motion/react";
 import type { Copy, Lang } from "@/lib/i18n";
 import { useHref, useLang, useT } from "@/lib/use-lang";
 import { ENTER_EASE } from "./enter";
+import { showProcess } from "./process";
 import { Illuminated } from "./services";
 
 /* ==================================================================
@@ -18,7 +20,9 @@ import { Illuminated } from "./services";
      the page brings it up, at the pace of the scroll. After "two" the
      co-founders are set into the line, two round portraits in colour in
      a capsule: the section's way to the about page. Its last words are
-     underlined by a stroke drawn as they are read;
+     underlined by a stroke drawn as they are read, and are the way to
+     How we work (user, 2026-10-19: "a completely different approach" as
+     a button to it);
    - on the right, wider and smaller, the pillar, justified, its answer
      run through with the black marker.
 
@@ -198,9 +202,11 @@ function InkStatement({ reduce }: { reduce: boolean }) {
       const under: React.ReactNode[] = [];
       for (let j = i; j < n; j++) under.push(word(j), j < n - 1 ? " " : null);
       out.push(
-        <Stroke key="stroke" progress={scrollYProgress} from={at(i + 1)} to={Math.min(1, at(n - 1) + span)} reduce={reduce}>
-          {under}
-        </Stroke>,
+        <ApproachLink key="stroke">
+          <Stroke progress={scrollYProgress} from={at(i + 1)} to={Math.min(1, at(n - 1) + span)} reduce={reduce}>
+            {under}
+          </Stroke>
+        </ApproachLink>,
       );
       break;
     } else if (i === PORTRAITS_AFTER) {
@@ -273,6 +279,62 @@ function Stroke({
     <motion.span className="std-stroke" style={reduce ? undefined : ({ "--draw": draw } as never)}>
       {children}
     </motion.span>
+  );
+}
+
+/* "A completely different approach" goes to How we work, on this page.
+   Pointed at with a mouse, "Find out about our approach" follows the
+   pointer, a drop like the site's other buttons; nothing is set into the
+   line, so the justified paragraph never moves. Pressed, the page goes
+   to the process; should it not be on the page, the address takes over. */
+function ApproachLink({ children }: { children: React.ReactNode }) {
+  const t = useT();
+  const href = useHref();
+  const [tip, setTip] = useState<{ x: number; y: number } | null>(null);
+  const label = t("Find out about our approach", "Conhecer a nossa abordagem");
+  const follow = (e: React.PointerEvent) => {
+    if (e.pointerType === "mouse") setTip({ x: e.clientX, y: e.clientY });
+  };
+  // A scroll moves the words from under a pointer at rest.
+  useEffect(() => {
+    if (!tip) return;
+    const hide = () => setTip(null);
+    window.addEventListener("scroll", hide, { passive: true });
+    return () => window.removeEventListener("scroll", hide);
+  }, [tip]);
+  return (
+    <>
+      <a
+        href={href("/#process")}
+        className="std-approach"
+        onClick={(e) => {
+          if (showProcess()) {
+            e.preventDefault();
+            setTip(null);
+          }
+        }}
+        onPointerEnter={follow}
+        onPointerMove={follow}
+        onPointerLeave={() => setTip(null)}
+      >
+        {children}
+        <span className="sr-only"> ({label})</span>
+      </a>
+      {tip &&
+        createPortal(
+          <span
+            aria-hidden="true"
+            className="cta-drop std-approach-tip inline-flex text-[0.9375rem] leading-none whitespace-nowrap"
+            style={{ left: tip.x, top: tip.y }}
+          >
+            <span className="btn-neu-face">
+              {label}
+              <span className="ml-2.5 inline-block">&rarr;</span>
+            </span>
+          </span>,
+          document.body,
+        )}
+    </>
   );
 }
 
