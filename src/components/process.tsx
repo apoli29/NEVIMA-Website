@@ -553,8 +553,59 @@ export function Process({ ready }: { ready: boolean }) {
   const progress = useTransform([held, scrollYProgress], ([h, p]: number[]) => (h! >= 0 ? h! : p!));
   const x = useTransform(progress, [0, 1], [0, -layout.travel]);
 
-  // Folded for a trip up the page past it (see foldProcess).
+  /* Where the browser can tie an animation to the scroll itself (a view
+     timeline on the section), the row, the rail's fill and the phase
+     headings are slid by it, on the compositor, with the page's own
+     scrolling: set from script, as below, they are a frame or more behind a
+     finger whenever the phone is busy, and the row shudders against the
+     page (user, 2026-10-19: How we work "trava muito no telemóvel"). The
+     same lines, the same stops: only who moves them changes. The script
+     still moves them while the row is held (see foldProcess) and where the
+     browser has no view timelines. */
   const [folded, setFolded] = useState(false);
+  const [heldOn, setHeldOn] = useState(false);
+  useMotionValueEvent(held, "change", (h) => setHeldOn((was) => (was === h >= 0 ? was : h >= 0)));
+  const [timelines, setTimelines] = useState(false);
+  useEffect(() => setTimelines(typeof window !== "undefined" && "ViewTimeline" in window), []);
+  const scrolled = timelines && pinned && !heldOn && !folded && layout.travel > 0;
+  const rail = useRef<HTMLSpanElement>(null);
+  // In the layout phase, so a fold (which commits at once, see foldProcess)
+  // hands the row back to the script before the next frame is drawn.
+  useIsomorphicLayout(() => {
+    const el = section.current;
+    const row = track.current;
+    if (!scrolled || !el || !row) return;
+    const ViewTimelineCtor = (window as unknown as { ViewTimeline: new (o: { subject: Element; axis?: string }) => AnimationTimeline }).ViewTimeline;
+    const timeline = new ViewTimelineCtor({ subject: el, axis: "block" });
+    // The section's whole held stretch: its top at the screen's top to its
+    // foot at the screen's foot (useScroll's "start start" to "end end").
+    const range = { timeline, rangeStart: "contain 0%", rangeEnd: "contain 100%", fill: "both", easing: "linear" } as KeyframeAnimationOptions;
+    const travel = layout.travel;
+    const runs: Animation[] = [
+      row.animate([{ transform: "translateX(0px)" }, { transform: `translateX(${-travel}px)` }], range),
+    ];
+    if (rail.current) {
+      runs.push(rail.current.animate([{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], range));
+    }
+    // Each heading held at the row's edge from where its phase reaches it
+    // until its last step carries it off (PhaseHead's hold, as keyframes).
+    row.querySelectorAll<HTMLElement>("[data-phase-head]").forEach((head, p) => {
+      const box = layout.phases[p];
+      if (!box) return;
+      const room = Math.max(0, box.width - box.head);
+      const at = (q: number) => Math.min(Math.max(travel * q - box.left, 0), room);
+      const from = Math.min(Math.max(box.left / travel, 0), 1);
+      const to = Math.min(Math.max((box.left + room) / travel, 0), 1);
+      const frames: Keyframe[] = [{ offset: 0, transform: `translateX(${at(0)}px)` }];
+      if (from > 0 && from < 1) frames.push({ offset: from, transform: `translateX(${at(from)}px)` });
+      if (to > from && to < 1) frames.push({ offset: to, transform: `translateX(${at(to)}px)` });
+      frames.push({ offset: 1, transform: `translateX(${at(1)}px)` });
+      runs.push(head.animate(frames, range));
+    });
+    return () => runs.forEach((run) => run.cancel());
+  }, [scrolled, layout]);
+
+  // Folded for a trip up the page past it (see foldProcess).
   useEffect(() => {
     if (!pinned) return;
     fold = () => {
@@ -784,7 +835,7 @@ export function Process({ ready }: { ready: boolean }) {
             className="prc-track"
             style={
               {
-                x: pinned ? x : 0,
+                x: pinned && !scrolled ? x : 0,
                 "--prc-rail-top": `${layout.railTop}px`,
                 "--prc-rail-width": `${layout.railWidth}px`,
               } as never
@@ -794,9 +845,10 @@ export function Process({ ready }: { ready: boolean }) {
                 for the way come. */}
             <span aria-hidden="true" className="prc-rail" />
             <motion.span
+              ref={rail}
               aria-hidden="true"
               className="prc-rail prc-rail-fill"
-              style={{ scaleX: pinned ? progress : 1 }}
+              style={{ scaleX: pinned && !scrolled ? progress : 1 }}
             />
             {phases.map((phase, p) => (
               <li key={phase.id} data-phase aria-labelledby={`phase-${phase.id}`} className="prc-phase">
@@ -804,7 +856,7 @@ export function Process({ ready }: { ready: boolean }) {
                   phase={phase}
                   box={layout.phases[p]}
                   x={x}
-                  reduce={!pinned}
+                  reduce={!pinned || scrolled}
                 />
                 <ol data-steps className="prc-steps">
                   {phase.steps.map((step) => {

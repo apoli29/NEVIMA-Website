@@ -62,11 +62,21 @@ export function StatementScreen({
     // Padded clear of the floating bar at the top.
     // In the flow on a screen too short to hold it (see home.tsx), so the
     // screen takes its height.
-    <div className="pointer-events-none absolute inset-0 z-10 pt-[7.25rem] pb-[clamp(1.25rem,3.5svh,2.75rem)] md:pt-[clamp(8.5rem,17svh,10rem)] short:relative">
+    // On a phone it is in the flow too, and the screen as tall as it holds
+    // (see below and home.tsx).
+    <div className="pointer-events-none absolute inset-0 z-10 pt-[7.25rem] pb-[clamp(1.25rem,3.5svh,2.75rem)] md:pt-[clamp(8.5rem,17svh,10rem)] short:relative max-md:relative">
       <motion.div style={{ y: rise }} className="shell flex h-full flex-col">
+        {/* On a phone the words stand in the middle of the first screen,
+            with as much water over them as under them for the drops
+            (user, 2026-10-19: the drops were few and small, crowded into
+            the strip over the headline), and the index comes after,
+            its label and the top of its first row showing at the foot of
+            the screen. Elsewhere this box is not there (md:contents). */}
+        <div className="flex flex-col max-md:min-h-[calc(100svh-7.25rem-4.5rem)] md:contents">
         {/* The open room is shared out two to one, above the words and
-            below them: they stand low, nearer the index than the bar. */}
-        <div aria-hidden="true" className="min-h-0 flex-[2]" />
+            below them: they stand low, nearer the index than the bar. On
+            a phone, evenly. Never less than a band a drop fits in. */}
+        <div aria-hidden="true" className="min-h-0 flex-[2] max-md:min-h-[7.5rem] max-md:flex-1" />
         <div className="flex flex-wrap items-start justify-between gap-x-16 gap-y-4">
           {/* As wide as the headline's longest line and no wider, so the
               drops can come up to its right. */}
@@ -112,7 +122,8 @@ export function StatementScreen({
         </div>
 
 
-        <div aria-hidden="true" className="min-h-6 flex-1" />
+        <div aria-hidden="true" className="min-h-6 flex-1 max-md:min-h-[7.5rem]" />
+        </div>
 
         {/* The way on, standing in the bottom right corner. */}
         <div className="grid grid-cols-12 gap-x-4">

@@ -3,6 +3,7 @@
 import { useEffect, type RefObject } from "react";
 import type Lenis from "lenis";
 import { useReducedMotion } from "motion/react";
+import { scrollHeld } from "./smooth-scroll";
 
 /* ==================================================================
    The gateway
@@ -188,7 +189,8 @@ export function useGateway(lenis: RefObject<Lenis | null>, active: boolean) {
 
     const onWheel = (event: WheelEvent) => {
       const instance = lenis.current;
-      if (!instance) return;
+      // Held by something over the page (the bar's menu): not ours.
+      if (!instance || scrollHeld()) return;
       if (stalled(event)) return;
       if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
       if (!opening(instance, event.deltaY > 0)) return;
@@ -198,21 +200,41 @@ export function useGateway(lenis: RefObject<Lenis | null>, active: boolean) {
     };
 
     let from = 0;
+    /** This gesture has drawn the screen, so its end is ours too. */
+    let owned = false;
 
     const onTouchStart = (event: TouchEvent) => {
       from = event.touches[0]?.clientY ?? 0;
+      owned = false;
     };
 
+    /* Kept from Lenis as the wheel is. With touch left native, Lenis answers
+       every touchmove, and the touchend after it, by stopping whatever move
+       it is running, which is the one just handed to it here: the screen
+       crept a frame per touch and stopped dead when the finger lifted, and
+       most swipes moved nothing at all. */
     const onTouchMove = (event: TouchEvent) => {
       const instance = lenis.current;
-      if (!instance) return;
+      if (!instance || scrollHeld()) return;
       const y = event.touches[0]?.clientY ?? 0;
       const by = from - y;
       from = y;
       if (stalled(event)) return;
+      // Already being scrolled by the browser (the gesture began below the
+      // seam and turned back): it cannot be taken over halfway, and drawing
+      // on top of it would have the two fight.
+      if (!event.cancelable) return;
       if (!opening(instance, by > 0)) return;
       event.preventDefault();
+      event.stopPropagation();
+      owned = true;
       draw(instance, (by / SWIPE_TRAVEL) * cover());
+    };
+
+    const onTouchEnd = (event: TouchEvent) => {
+      if (!owned) return;
+      owned = false;
+      event.stopPropagation();
     };
 
     const DOWN_KEYS = new Set(["ArrowDown", "PageDown", "End", " ", "Spacebar"]);
@@ -220,7 +242,7 @@ export function useGateway(lenis: RefObject<Lenis | null>, active: boolean) {
 
     const onKey = (event: KeyboardEvent) => {
       const instance = lenis.current;
-      if (!instance) return;
+      if (!instance || scrollHeld()) return;
       const down = DOWN_KEYS.has(event.key);
       if (!down && !UP_KEYS.has(event.key)) return;
       // Keys typed into a field are the field's: a space in the proposal
@@ -234,15 +256,47 @@ export function useGateway(lenis: RefObject<Lenis | null>, active: boolean) {
       draw(instance, (down ? 1 : -1) * KEY_STEP * cover());
     };
 
-    window.addEventListener("wheel", onWheel, capture);
+    /* Held to blocking listeners only near the screen. A touchmove or wheel
+       listener that may cancel makes the browser wait on the page's script
+       before every step of every scroll, anywhere on the page; below the
+       studio there is nothing here to cancel, so there the page scrolls on
+       the browser's own. No finger travels a screen and a half in one move,
+       so any gesture that can reach the screen starts with them on. */
+    let on = false;
+    // Where the screen ends, read again only when the page changes size,
+    // not on every scroll.
+    let seam = cover();
+    const sized = new ResizeObserver(() => {
+      seam = cover();
+      toggle();
+    });
+    const near = () => window.scrollY < seam + window.innerHeight * 1.5;
+    const toggle = () => {
+      const want = near();
+      if (want === on) return;
+      on = want;
+      if (on) {
+        window.addEventListener("wheel", onWheel, capture);
+        window.addEventListener("touchmove", onTouchMove, capture);
+      } else {
+        window.removeEventListener("wheel", onWheel, capture);
+        window.removeEventListener("touchmove", onTouchMove, capture);
+      }
+    };
+    toggle();
+    sized.observe(document.body);
+    window.addEventListener("scroll", toggle, { passive: true });
     window.addEventListener("touchstart", onTouchStart, { passive: true, capture: true });
-    window.addEventListener("touchmove", onTouchMove, capture);
+    window.addEventListener("touchend", onTouchEnd, { passive: true, capture: true });
     window.addEventListener("keydown", onKey, true);
 
     return () => {
+      sized.disconnect();
+      window.removeEventListener("scroll", toggle);
       window.removeEventListener("wheel", onWheel, capture);
-      window.removeEventListener("touchstart", onTouchStart, true);
       window.removeEventListener("touchmove", onTouchMove, capture);
+      window.removeEventListener("touchstart", onTouchStart, true);
+      window.removeEventListener("touchend", onTouchEnd, true);
       window.removeEventListener("keydown", onKey, true);
       window.clearTimeout(release);
     };
