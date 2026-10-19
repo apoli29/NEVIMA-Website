@@ -26,15 +26,26 @@ for (const [w,h] of SIZES) {
     const vh = innerHeight;
     // How we work, at its start.
     const sec = document.getElementById("how-we-work");
+    // Shut on a phone (lote 9): opened, as a visitor would.
+    const openKey = sec.querySelector("[data-prc-open]");
+    const shut = !!openKey;
+    if (openKey) {
+      openKey.click();
+      await new Promise(r => setTimeout(r, 700));
+    }
     window.scrollTo(0, sec.getBoundingClientRect().top + scrollY);
     await new Promise(r => setTimeout(r, 900));
+    const pinned = getComputedStyle(sec.firstElementChild).position === "sticky";
     const screen = sec.firstElementChild;
     const parts = [...screen.querySelectorAll("h2, p, button, li.prc-stage, .prc-head, a")].map(e => e.getBoundingClientRect()).filter(r => r.width && r.height && r.left < innerWidth && r.right > 0);
     const top2 = Math.min(...parts.map(r => r.top)), bot2 = Math.max(...parts.map(r => r.bottom));
     const bar2 = document.querySelector("header .shell > div")?.getBoundingClientRect().bottom ?? 0;
-    return { s: [Math.max(0, Math.round(bar - top1)), Math.max(0, Math.round(bot1 - vh))], p: [Math.max(0, Math.round(bar2 - top2)), Math.max(0, Math.round(bot2 - vh))] };
+    // Not held, nothing can be cut: it scrolls.
+    const cut2 = pinned ? [Math.max(0, Math.round(bar2 - top2)), Math.max(0, Math.round(bot2 - vh))] : ["free", "free"];
+    const cut1 = getComputedStyle(stage).position === "sticky" ? [Math.max(0, Math.round(bar - top1)), Math.max(0, Math.round(bot1 - vh))] : ["free", "free"];
+    return { s: cut1, p: cut2, shut };
   });
-  console.log(`${(w+"x"+h).padEnd(10)} | ${String(r.s[0]).padStart(5)} / ${String(r.s[1]).padEnd(24)} | ${String(r.p[0]).padStart(5)} / ${r.p[1]}`);
+  console.log(`${(w+"x"+h).padEnd(10)} | ${String(r.s[0]).padStart(5)} / ${String(r.s[1]).padEnd(24)} | ${String(r.p[0]).padStart(5)} / ${r.p[1]}${r.shut ? "   (shut until opened)" : ""}`);
   await ctx.close();
 }
 await b.close();

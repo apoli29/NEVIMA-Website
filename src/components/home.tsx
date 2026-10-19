@@ -473,7 +473,10 @@ export function Home() {
             data-covered={covered ? "" : undefined}
             className={
               phase === "open"
-                ? "sticky top-0 h-[100svh] overflow-hidden bg-paper"
+                ? // On a screen too short for its index and readouts (a phone on
+                  // its side), it is as tall as it needs to be and scrolled
+                  // through, rather than held a screen tall and cut off.
+                  "sticky top-0 h-[100svh] overflow-hidden bg-paper short:relative short:h-auto short:min-h-[100svh]"
                 : "fixed inset-0 z-30 overflow-hidden bg-paper"
             }
           >

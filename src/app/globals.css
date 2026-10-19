@@ -4,6 +4,14 @@
    upright, square windows. The second screen sets its mark low and its
    copy high on these (see jelly-field.tsx, which uses the same 23/20). */
 @custom-variant upright (@media (max-aspect-ratio: 23/20));
+/* A screen too short to hold the second screen or How we work a screen
+   tall (a phone on its side, the oldest small phones, a netbook): both are
+   then as tall as they need to be and scrolled through (home.tsx,
+   process.tsx). */
+@custom-variant short (@media (max-height: 600px));
+/* An upright phone with a short screen (360x640, 375x667): How we work's
+   held screen is set a little closer, so the heading and the row fit. */
+@custom-variant low-phone (@media (max-width: 767px) and (max-height: 700px));
 
 @theme {
   /* ---- surfaces --------------------------------------------------
@@ -2487,6 +2495,40 @@
     .prc-head { width: calc(100vw - 2 * var(--gutter) - 0.5rem); padding: 0 1.25rem 0.85rem; }
     .prc-stage { min-height: 0; padding: 1.25rem 1.25rem 0; }
     .prc-stage.prc-wide { --prc-w: min(84vw, 21rem); }
+  }
+  /* Phones (process.tsx, COMPACT): the row waits behind one key, the
+     services' black band turned to point down, and opened, a word at the
+     end of the extra services' keys takes it away again. The row comes in
+     with the fade every heading's entrance has (0.42s, easing out). */
+  .prc-open { border: 0; font: inherit; cursor: pointer; }
+  @media (hover: hover) {
+    .svc-folio.prc-open:hover .svc-folio-arrow { transform: translateY(2px); }
+  }
+  .prc-close {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.55em 0.25em 0.5em 0.75em;
+    border: 0;
+    background: transparent;
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.25em;
+    cursor: pointer;
+  }
+  .prc-close:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 2px; }
+  [data-fresh] .prc-body { animation: prc-reveal 0.42s ease-out both; }
+  @keyframes prc-reveal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-fresh] .prc-body { animation: none; }
+  }
+  @media (max-width: 767px) and (max-height: 700px) {
+    .prc-head { padding-bottom: 0.5rem; }
+    .prc-stage { padding-top: 0.875rem; }
   }
   .prc-partner {
     font-size: clamp(0.8125rem, 0.9vw, 0.875rem);

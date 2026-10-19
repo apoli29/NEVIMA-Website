@@ -185,6 +185,17 @@ async function capture(outDir) {
         await scrollToY(page, y);
         await shot(page, dir, name);
       }
+      // On a phone How we work is shut until opened (lote 9): opened, too.
+      if (await page.$("[data-prc-open]")) {
+        await page.click("[data-prc-open]");
+        await step(page, 1400);
+        for (const [name, f] of [["home-11-process-opened-start", 0], ["home-12-process-opened-mid", 0.5]]) {
+          const y = await yOf(page, "#how-we-work", f);
+          if (y === null) continue;
+          await scrollToY(page, y);
+          await shot(page, dir, name);
+        }
+      }
       await page.close();
     }
 
@@ -310,7 +321,7 @@ async function compare(a, b, noiseDir) {
           na.forEach((x, k) => {
             const a = Number(x);
             const b = Number(nb[k]);
-            const tol = Math.abs(a) <= 1.5 ? 0.02 : 3; // opacities and scales; pixels
+            const tol = Math.abs(a) <= 1.5 ? 0.035 : 8; // opacities and scales; pixels (runs of one build differ by up to one frame, ~0.025 and ~7px mid-flight)
             if (!(Math.abs(a - b) <= tol)) worst += ` ${sa.ms}ms ${key}[${k}] ${a}→${b};`;
           });
         }
