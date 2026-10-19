@@ -51,7 +51,12 @@ function holdAnimations(at) {
 
 async function shot(page, dir, name) {
   await page.evaluate(holdAnimations, 1500);
-  await page.screenshot({ path: path.join(dir, `${name}.png`) });
+  // Twice, a frame apart: finishing an animation can start a follow-up one
+  // (Motion chains its own), which is then held too.
+  await page.clock.runFor(16);
+  await page.evaluate(holdAnimations, 1500);
+  await page.clock.runFor(16);
+  await page.screenshot({ path: path.join(dir, `${name}.png`), animations: "disabled", caret: "hide" });
 }
 
 async function step(page, ms) {
@@ -95,17 +100,52 @@ async function capture(outDir) {
     {
       const page = await context.newPage();
       await page.clock.install({ time: new Date("2026-10-19T10:00:00Z") });
+      // Installed, the clock still runs on with real time; paused, it only
+      // moves when stepped, which is what makes two runs the same.
+      await page.clock.pauseAt(new Date("2026-10-19T10:00:01Z"));
       await page.goto(BASE + "/", { waitUntil: "networkidle" });
       await step(page, 1500);
       await shot(page, dir, "home-00-black");
       await page.mouse.click(Math.round(vp.width / 2), Math.round(vp.height / 3));
+      // The run starts on whichever frame the click lands before, which
+      // varies by one frame from run to run. Every sample is timed from the
+      // first frame the mark is seen to move (102ms into the run), so two
+      // runs are read on the same frames.
+      const markNow = () =>
+        page.evaluate(() => getComputedStyle(document.querySelector(".fixed.inset-0.z-\\[60\\] img") ?? document.body).transform);
+      const atRest = await markNow();
+      for (let waited = 0; waited < 800 && (await markNow()) === atRest; waited += 16) await page.clock.runFor(16);
+      const probe = [];
+      globalThis.__last = 100;
       for (const ms of [300, 700, 1100, 1500, 1800, 2100]) {
         // Cumulative: each frame of the run at its own moment.
-        await step(page, ms - (globalThis.__last ?? 0));
+        await step(page, ms - globalThis.__last);
         globalThis.__last = ms;
-        await page.screenshot({ path: path.join(dir, `home-01-run-${String(ms).padStart(4, "0")}ms.png`) });
+        // The opening's state read as numbers, which are exact run to run
+        // (the screenshots of a moving, rescaled layer are not quite).
+        probe.push({
+          ms,
+          ...(await page.evaluate(() => {
+            const st = (el, ...props) => (el ? props.map((k) => getComputedStyle(el)[k]).join(" | ") : null);
+            return {
+              curtain: st(document.querySelector("main section > .bg-ink.absolute.inset-0"), "opacity"),
+              mark: st(document.querySelector(".fixed.inset-0.z-\\[60\\] img"), "transform", "left", "top", "width"),
+              bar: st(document.querySelector("header"), "opacity", "transform"),
+              links: st(document.querySelector("header nav"), "opacity"),
+              words: st(document.querySelector("main section .shell.flex.h-full"), "transform"),
+            };
+          })),
+        });
+        await shot(page, dir, `home-01-run-${String(ms).padStart(4, "0")}ms`);
       }
       globalThis.__last = 0;
+      fs.writeFileSync(path.join(dir, "opening.json"), JSON.stringify(probe, null, 2));
+      if (arg("opening-only", "") === "on") {
+        await page.close();
+        await context.close();
+        console.log(`${vp.name}: opening done`);
+        continue;
+      }
       await step(page, 1500);
       await shot(page, dir, "home-02-second-screen");
       const points = [
@@ -131,6 +171,9 @@ async function capture(outDir) {
     for (const p of ["/about", "/services/seo", "/portfolio", "/pt/about"]) {
       const page = await context.newPage();
       await page.clock.install({ time: new Date("2026-10-19T10:00:00Z") });
+      // Installed, the clock still runs on with real time; paused, it only
+      // moves when stepped, which is what makes two runs the same.
+      await page.clock.pauseAt(new Date("2026-10-19T10:00:01Z"));
       await page.goto(BASE + p, { waitUntil: "networkidle" });
       await step(page, 2500);
       const slug = p.replace(/^\//, "").replace(/\//g, "_");
@@ -153,7 +196,13 @@ async function capture(outDir) {
   await browser.close();
 }
 
-async function compare(a, b) {
+async function compare(a, b, noiseDir) {
+  // With a second reference run, an image that already differs between the
+  // two references is "unstable": it passes if the after-run differs from
+  // the reference by no more than 1.5x that noise.
+  const noise = {};
+  if (noiseDir && fs.existsSync(path.join(noiseDir, "compare.json")))
+    for (const r of JSON.parse(fs.readFileSync(path.join(noiseDir, "compare.json"), "utf8"))) noise[r.file] = r.pixels ?? 0;
   const browser = await chromium.launch({ executablePath: CHROME, headless: true });
   const page = await browser.newPage();
   const files = [];
@@ -214,17 +263,46 @@ async function compare(a, b) {
     if (res.size) rows.push({ file: f, status: "different size" });
     else {
       const share = res.diff / res.total;
-      rows.push({ file: f, status: res.diff ? "DIFFERS" : "identical", pixels: res.diff, share: Math.round(share * 1e6) / 1e4 + "%" });
+      const floor = noise[f] ?? 0;
+      const status = !res.diff ? "identical" : floor && res.diff <= floor * 1.5 ? "within noise" : "DIFFERS";
+      rows.push({ file: f, status, pixels: res.diff, noise: floor, share: Math.round(share * 1e6) / 1e4 + "%" });
       if (res.png) fs.writeFileSync(path.join(b, f.replace(/\.png$/, ".diff.png")), Buffer.from(res.png.split(",")[1], "base64"));
     }
   }
   await browser.close();
-  const bad = rows.filter((r) => r.status !== "identical");
-  for (const r of rows) console.log(`${r.status.padEnd(16)} ${r.file} ${r.pixels ?? ""} ${r.share ?? ""}`);
-  console.log(`\n${rows.length - bad.length}/${rows.length} identical`);
+  // The opening's numbers must match exactly.
+  for (const d of fs.readdirSync(a)) {
+    const oa = path.join(a, d, "opening.json");
+    const ob = path.join(b, d, "opening.json");
+    if (fs.existsSync(oa) && fs.existsSync(ob)) {
+      // Read as numbers, within what two runs of the same build differ by
+      // (a few thousandths): a change of duration, delay or curve moves
+      // these by tenths.
+      const A = JSON.parse(fs.readFileSync(oa, "utf8"));
+      const B = JSON.parse(fs.readFileSync(ob, "utf8"));
+      let worst = "";
+      A.forEach((sa, i) => {
+        for (const key of Object.keys(sa)) {
+          if (key === "ms") continue;
+          const na = String(sa[key] ?? "").match(/-?[\d.]+/g) ?? [];
+          const nb = String(B[i]?.[key] ?? "").match(/-?[\d.]+/g) ?? [];
+          na.forEach((x, k) => {
+            const a = Number(x);
+            const b = Number(nb[k]);
+            const tol = Math.abs(a) <= 1.5 ? 0.02 : 3; // opacities and scales; pixels
+            if (!(Math.abs(a - b) <= tol)) worst += ` ${sa.ms}ms ${key}[${k}] ${a}→${b};`;
+          });
+        }
+      });
+      rows.push({ file: `${d}/opening.json`, status: worst ? "DIFFERS" : "within noise", note: worst.trim() });
+    }
+  }
+  const bad = rows.filter((r) => r.status === "DIFFERS" || r.status.startsWith("missing") || r.status.startsWith("different"));
+  for (const r of rows) console.log(`${r.status.padEnd(16)} ${r.file} ${r.pixels ?? ""} ${r.share ?? ""}${r.noise ? ` (noise ${r.noise})` : ""}${r.note ? " " + r.note : ""}`);
+  console.log(`\n${rows.length - bad.length}/${rows.length} pass`);
   fs.writeFileSync(path.join(b, "compare.json"), JSON.stringify(rows, null, 2));
 }
 
 const cmp = process.argv.indexOf("--compare");
-if (cmp > -1) await compare(process.argv[cmp + 1], process.argv[cmp + 2]);
+if (cmp > -1) await compare(process.argv[cmp + 1], process.argv[cmp + 2], arg("noise", ""));
 else await capture(path.resolve(arg("out", path.join(HERE, "screens", "before"))));
