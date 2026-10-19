@@ -3,6 +3,7 @@ import { Geist_Mono, Instrument_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import { CtaGlassFilters } from "@/components/cta-glass";
 import { HtmlLang, LANG_SCRIPT } from "@/components/html-lang";
+import { OffscreenPause } from "@/components/offscreen-pause";
 import { PageWipe } from "@/components/page-wipe";
 import { ReturnKeeper } from "@/components/return-keeper";
 import { OPENING_SCRIPT } from "@/lib/opened";
@@ -78,6 +79,7 @@ export default function RootLayout({
         <HtmlLang />
         <CtaGlassFilters />
         <ReturnKeeper />
+        <OffscreenPause />
         <PageWipe />
         {children}
       </body>

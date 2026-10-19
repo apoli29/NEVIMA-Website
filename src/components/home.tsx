@@ -457,6 +457,8 @@ export function Home() {
               exist. */}
           <section
             data-opening={phase === "open" ? undefined : ""}
+            // Wholly under the studio: its loops are held (globals.css).
+            data-covered={covered ? "" : undefined}
             className={
               phase === "open"
                 ? "sticky top-0 h-[100svh] overflow-hidden bg-paper"

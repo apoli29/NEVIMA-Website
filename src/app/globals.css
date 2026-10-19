@@ -112,6 +112,22 @@
   }
   html::-webkit-scrollbar { display: none; }
 
+  /* A never-ending loop off the screen is held where it is, and let go a
+     little before it comes back (offscreen-pause.tsx); the second screen's,
+     too, once the studio has closed over it ([data-covered], home.tsx).
+     Nothing that can be seen ever stops. */
+  [data-offscreen],
+  [data-offscreen]::before,
+  [data-offscreen]::after,
+  [data-offscreen] *,
+  [data-offscreen] *::before,
+  [data-offscreen] *::after,
+  [data-covered] *,
+  [data-covered] *::before,
+  [data-covered] *::after {
+    animation-play-state: paused !important;
+  }
+
   /* The page held still with reduced motion, where there is no Lenis to
      stop (see useSmoothScroll). */
   html.scroll-held {
