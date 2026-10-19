@@ -12,9 +12,14 @@
 
    Rendered once in the root layout, out of sight; every drop points at
    it by id.
+
+   The three spots are three elements of their own inside the glass
+   (Glass, below), each moved by a transform rather than painted as a
+   background that moves: the browser can then melt them on its own,
+   without repainting the page on every frame for it (see .cta-glass).
    ================================================================== */
 
-function Glass({
+function GlassFilter({
   id,
   body,
   rim,
@@ -78,9 +83,20 @@ export function CtaGlassFilters() {
       style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}
     >
       <defs>
-        <Glass id="cta-glass" body="#0b0b0b" rim="#5a5a5a" shadow />
-        <Glass id="cta-glass-light" body="#ffffff" rim="#c4c4c4" shadow={false} />
+        <GlassFilter id="cta-glass" body="#0b0b0b" rim="#5a5a5a" shadow />
+        <GlassFilter id="cta-glass-light" body="#ffffff" rim="#c4c4c4" shadow={false} />
       </defs>
     </svg>
+  );
+}
+
+/** A drop's glass: put first inside every .cta-drop, before its face. */
+export function Glass() {
+  return (
+    <span aria-hidden="true" className="cta-glass">
+      <span />
+      <span />
+      <span />
+    </span>
   );
 }

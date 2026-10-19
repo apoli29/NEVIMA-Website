@@ -20,6 +20,7 @@ import { PassLink } from "./floating-nav";
 import { useInkAlign } from "./ink-align";
 import { useProposal } from "./proposal-flow";
 import { jumpTo } from "./smooth-scroll";
+import { Glass } from "./cta-glass";
 
 /* ==================================================================
    How we work
@@ -839,6 +840,7 @@ function ProposalCta() {
       className="cta-drop relative isolate inline-flex items-center justify-center text-[0.875rem] leading-none whitespace-nowrap"
       style={{ visibility: launched && present ? "hidden" : undefined }}
     >
+      <Glass />
       <span className="btn-neu-face">
         <Label>{t("Get your free proposal", "Pedir proposta gratuita")}</Label>
       </span>
