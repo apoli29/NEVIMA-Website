@@ -104,7 +104,7 @@ export function StatementScreen({
               ),
             )}
             <span className="block font-medium">
-              {t("We make sure it doesn’t go unnoticed.", "Nós garantimos que não passa despercebida.")}
+              {t("We make sure it doesn’t go unnoticed.", "Nós garantimos que a sua não passa despercebida.")}
             </span>
           </h2>
         </div>
