@@ -112,7 +112,7 @@ const QUESTIONS: readonly Question[] = [
       },
       {
         lead: "Us:",
-        text: "we register your domain (or connect the one you already have), host your website and put the legal pages on it. If applicable, we also guide you through registering your trademark, which is filed in your business\u2019s own name.",
+        text: "we guide you through registering your domain (or connect the one you already have), host your website and put the legal pages on it. If applicable, we also guide you through registering your trademark, which is filed in your business\u2019s own name.",
       },
     ],
   },
@@ -129,7 +129,7 @@ const QUESTIONS: readonly Question[] = [
   {
     id: "domain",
     q: "Do I need my own domain?",
-    a: "Yes, every website needs one. If your business doesn\u2019t have one yet, we include the domain\u2019s price in the project\u2019s quote, to keep things simple; if you already have one, we take its cost off the final price.",
+    a: "Yes, every website needs one. If your business doesn\u2019t have one yet, it is registered in your business\u2019s own name and paid for directly, usually €10 to €30 a year: we guide you through it step by step and connect it to your website. If you already have one, we connect it at no extra cost.",
   },
   {
     id: "changes",
@@ -232,7 +232,7 @@ const PT_QUESTIONS: Record<string, Words> = {
       },
       {
         lead: "Nevima:",
-        text: "registamos o domínio (ou ligamos um já existente), alojamos o website e colocamos nele as páginas legais. Se se aplicar, acompanhamos ainda o cliente no registo da marca, que é feito em nome do próprio negócio.",
+        text: "acompanhamos o registo do domínio (ou ligamos um já existente), alojamos o website e colocamos nele as páginas legais. Se se aplicar, acompanhamos ainda o cliente no registo da marca, que é feito em nome do próprio negócio.",
       },
     ],
   },
@@ -246,7 +246,7 @@ const PT_QUESTIONS: Record<string, Words> = {
   },
   domain: {
     q: "Preciso de ter um domínio próprio?",
-    a: "Sim, todos os websites precisam de um. Se o negócio ainda não tem, incluímos o preço do domínio no orçamento do projeto, para simplificar; se já existe, descontamos o seu custo no preço final.",
+    a: "Sim, todos os websites precisam de um. Se o negócio ainda não tem, o domínio é registado em nome do próprio negócio e pago diretamente, normalmente entre 10 e 30 € por ano: acompanhamos todo o processo, passo a passo, e ligamo-lo ao website. Se já existe, ligamo-lo sem custos adicionais.",
   },
   changes: {
     q: "E se eu desejar alterações no website?",

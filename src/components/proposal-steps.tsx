@@ -194,8 +194,8 @@ const PHOTO_NOTE: Copy = {
   pt: "A sessão fotográfica só está disponível em Portugal. A deslocação para lá dos 30 km de Arcozelo acresce ao preço do serviço.",
 };
 const DOMAIN_NOTE: Copy = {
-  en: "If you don't have a domain yet, we register it for you and its cost is added to the price. If you already have one, there's nothing to pay.",
-  pt: "Sem domínio, tratamos do registo e o custo acresce ao preço. Com um domínio já existente, não há nada a pagar.",
+  en: "If you don't have a domain yet, you register it in your business's name and pay for it directly, and we guide you through every step. If you already have one, there's nothing to add.",
+  pt: "Sem domínio, o registo é feito em nome do negócio e pago diretamente, com o nosso acompanhamento em todos os passos. Com um domínio já existente, não há nada a acrescentar.",
 };
 const PAGES_NOTE: Copy = {
   en: "Not sure? We estimate for 3 to 8 pages, so the range of your final estimate can be a little wider than with a set number.",
@@ -757,6 +757,15 @@ export function StepScreen({
                     setDraft({ features: withEmails ? features : features.filter((f) => f !== "emails") });
                   }}
                 />
+                {/* The platforms behind these, said plainly (user,
+                    2026-10-19): the client's own free account, set up
+                    together. */}
+                <p className="pf-footnote">
+                  {t(
+                    "For these, we help you open a free account on an email or booking platform, in your business's name, and assist you all the way.",
+                    "Para isto, criamos em conjunto uma conta gratuita numa plataforma de email ou de marcações, em nome do negócio, com acompanhamento total.",
+                  )}
+                </p>
               </div>
               <div className="pf-level" role="group" aria-labelledby={`${uid}-level3`}>
                 <p id={`${uid}-level3`} className="pf-level-name">
