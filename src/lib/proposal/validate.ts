@@ -203,8 +203,7 @@ export function readContact(raw: unknown, { company: needsCompany = true } = {})
   if (!phone || !PHONE.test(phone)) return { ok: false, error: "phone" };
   if (company === null || (needsCompany && !company)) return { ok: false, error: "company" };
   if (message === null || message.length > MAX.message) return { ok: false, error: "message" };
-  if (raw.consent !== true) return { ok: false, error: "consent" };
-  return { ok: true, value: { name, email, phone, company, message, consent: true } };
+  return { ok: true, value: { name, email, phone, company, message } };
 }
 
 /** The partners' answers (development companies): every pick from its

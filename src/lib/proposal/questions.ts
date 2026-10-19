@@ -367,7 +367,6 @@ export type Contact = {
   phone: string;
   company: string;
   message: string;
-  consent: boolean;
 };
 
 /** Limits on free text, shared so the fields and the server agree. */
