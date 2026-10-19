@@ -42,7 +42,7 @@ export const SERVICES: Service[] = [
     included: {
       title: "Also included",
       items: [
-        "Free hosting, for as long as your website is live",
+        "Free hosting, set up and looked after by us",
         "Basic SEO, to make sure your website shows up in search results",
         "A free call once part of the project is built. The goal? To make changes to your taste and understand the direction the project should take, so nothing needs changing at the end",
       ],
@@ -115,7 +115,7 @@ const PT: Record<string, Pick<Service, "title" | "body" | "included">> = {
     included: {
       title: "Também incluído",
       items: [
-        "Alojamento gratuito, enquanto o website estiver online",
+        "Alojamento gratuito, configurado e acompanhado por nós",
         "SEO básico, para assegurar que o website aparece nos resultados de pesquisa",
         "Uma chamada gratuita quando parte do projeto estiver desenvolvida. O objetivo? Aplicar alterações ao gosto do cliente e compreender a direção que o projeto deve tomar, para evitar a necessidade de alterações no final",
       ],

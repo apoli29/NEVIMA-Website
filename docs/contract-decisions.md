@@ -76,7 +76,7 @@ Cada serviço tem uma cláusula própria (9 a 15) com o que inclui, o que não i
   - na renovação, a nevima pode passar a cobrar um **valor simbólico** que só cobre custos, **até 60 €/ano**; se o Cliente recusar (ou não renovar), recebe o código sem custo;
   - alojado no plano **Pro** da Vercel;
   - **limite justo:** 100 mil CDN requests por mês; acima disso, **120 €/ano** entre 100 mil e 1 milhão, e **orçamento especializado** acima de 1 milhão (valores a laranja, para os sócios confirmarem que são justos);
-  - o site continua a dizer "for as long as your website is live": **o site não muda** por agora (pedido do utilizador).
+  - o site deixou de prometer prazo (2026-10-19, utilizador): saíram "for as long as your website is live", "for life" e "enquanto o website estiver online". O site diz só que o alojamento é gratuito, como a cl. 12.1, sem ressalvas ("gratuito, mas…" não, pedido do utilizador); as condições da renovação e do limite justo ficam no contrato.
 - **16:** o crédito é o logótipo da nevima no rodapé, com −5% no website.
 - **17 (Propriedade intelectual):**
   - "integral" quer dizer todo o preço;

@@ -124,7 +124,7 @@ const QUESTIONS: readonly Question[] = [
   {
     id: "monthly",
     q: "Will I pay a monthly fee?",
-    a: "Not for your website: hosting is free for as long as it is live, and basic SEO is already included. The only services paid monthly are SEO and GEO, because they are ongoing work, and only if you choose them.",
+    a: "Not for your website: hosting is free and basic SEO is already included. The only services paid monthly are SEO and GEO, because they are ongoing work, and only if you choose them.",
   },
   {
     id: "domain",
@@ -242,7 +242,7 @@ const PT_QUESTIONS: Record<string, Words> = {
   },
   monthly: {
     q: "Vou pagar uma mensalidade?",
-    a: "Pelo website, não: o alojamento é gratuito enquanto estiver online, e o SEO básico já está incluído. Os únicos serviços pagos ao mês são o SEO e o GEO, porque são trabalho contínuo, e só se forem escolhidos.",
+    a: "Pelo website, não: o alojamento é gratuito e o SEO básico já está incluído. Os únicos serviços pagos ao mês são o SEO e o GEO, porque são trabalho contínuo, e só se forem escolhidos.",
   },
   domain: {
     q: "Preciso de ter um domínio próprio?",

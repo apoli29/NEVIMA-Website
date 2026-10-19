@@ -163,8 +163,8 @@ export function Field({
 const PERKS = [
   {
     light: "Free hosting,",
-    medium: "for life.",
-    text: "We host your website at no cost, for as long as it is online.",
+    medium: "handled by us.",
+    text: "We host your website at no cost and take care of it for you.",
   },
   {
     light: "Built",
