@@ -14,7 +14,7 @@ import { LiquidLens } from "./liquid-lens";
 const RISE = 0.22;
 
 const WORDMARK = "/nevima-wordmark-white.svg";
-const EMAIL = "ola@nevima.pt";
+const EMAIL = "ola@nevima.studio";
 /** Where a visitor's choice to hold the backdrop still is remembered. */
 export const STILL_KEY = "nevima:footer-still";
 

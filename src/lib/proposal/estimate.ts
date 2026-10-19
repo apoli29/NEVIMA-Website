@@ -81,15 +81,14 @@ function web(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"], 
   }
   if (others > 0) notes.push(`*${t(TRANSLATION_NOTE)}`);
 
-  // The domain we register for a client without one, which does not
-  // scale with the country or the deadline: added last.
+  // A client without a domain registers and pays for it directly, in
+  // their own name (contract v1.9, clause 13): its cost is shown for
+  // reference and never added to the range.
   if (a.domain === "no") {
-    min += p.newDomain.min;
-    max += p.newDomain.max;
     notes.push(
       t(
-        `Includes registering your domain, about €${p.newDomain.min}–${p.newDomain.max}.`,
-        `Inclui o registo do domínio, cerca de ${p.newDomain.min}–${p.newDomain.max} €.`,
+        `Doesn't include the domain, which you register in your business's name and pay for directly: about €${p.newDomain.min}–${p.newDomain.max} a year. We guide you through it.`,
+        `Não inclui o domínio, registado em nome do negócio e pago diretamente: cerca de ${p.newDomain.min}–${p.newDomain.max} € por ano. Acompanhamos todo o processo.`,
       ),
     );
   }

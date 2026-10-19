@@ -1,6 +1,6 @@
 # Contrato de prestação de serviços: decisões
 
-O estado atual do contrato, as decisões dos sócios e o que ainda está em aberto. A fonte é `contratos/contrato-nevima.html`, impresso em PDF com o Edge sem interface (ver o histórico do git). Este ficheiro descreve a **v1.8** (2026-10-17), em `contratos/contrato-nevima-v1.8.pdf`. A v1.8 é a v1.7 com uma regra nova na cl. 4.1: se a nevima, depois de analisar o negócio, sugerir alterações ao âmbito com um preço fora dos intervalos da estimativa, apresenta também a Proposta com as escolhas do Cliente, dentro dos intervalos, e o Cliente escolhe uma das duas (como diz o formulário, PR #133). A v1.7 estava alinhada com o formulário de proposta (PR #128 e #129), sem os preços do formulário. A estimativa é um intervalo (cl. 4.1). O nível de design é Essential+ ou Advanced (cl. 11.1). A escrita dos textos, quando o Cliente não os tem, é orçamentada na Proposta (cl. 11.2); já não há funcionalidades extra, porque a nevima não faz backend. O SEO (cl. 14) e o GEO (cl. 15) são cada um um conjunto de práticas aplicadas de uma só vez, com efeito maior a curto prazo, e podem ter um serviço mensal opcional que as mantém eficazes. A Proposta tem uma linha pontual e uma linha mensal para cada um.
+O estado atual do contrato, as decisões dos sócios e o que ainda está em aberto. A fonte é `contratos/contrato-nevima.html`, impresso em PDF com o Edge sem interface (ver o histórico do git). Este ficheiro descreve a **v1.9** (2026-10-19), em `contratos/contrato-nevima-v1.9.pdf`. A v1.9 fecha a cl. 13 (domínio): o Cliente regista e paga o domínio diretamente, em seu nome e numa conta sua; a nevima acompanha sem custo e liga o website através da partilha de acesso do registador (Hostinger); a Proposta mostra o custo estimado do domínio só como referência, fora do preço; a linha "Registo de domínio" saiu da tabela de preços. A v1.8 é a v1.7 com uma regra nova na cl. 4.1: se a nevima, depois de analisar o negócio, sugerir alterações ao âmbito com um preço fora dos intervalos da estimativa, apresenta também a Proposta com as escolhas do Cliente, dentro dos intervalos, e o Cliente escolhe uma das duas (como diz o formulário, PR #133). A v1.7 estava alinhada com o formulário de proposta (PR #128 e #129), sem os preços do formulário. A estimativa é um intervalo (cl. 4.1). O nível de design é Essential+ ou Advanced (cl. 11.1). A escrita dos textos, quando o Cliente não os tem, é orçamentada na Proposta (cl. 11.2); já não há funcionalidades extra, porque a nevima não faz backend. O SEO (cl. 14) e o GEO (cl. 15) são cada um um conjunto de práticas aplicadas de uma só vez, com efeito maior a curto prazo, e podem ter um serviço mensal opcional que as mantém eficazes. A Proposta tem uma linha pontual e uma linha mensal para cada um.
 
 Os trechos a laranja escuro (`.pending`) aguardam a decisão final dos sócios. As cláusulas ajustáveis têm a etiqueta **Ajustável** no título e uma frase que diz **quais os pontos** se podem ajustar (v1.5): **6.1** (sinal), **6.2** (prazo do pagamento final), **6.5** (meios de pagamento), **8.2** (prazo dos Materiais), **10.6** (desmarcação da sessão) e **21.2** (o sinal no cancelamento). A cl. 16 deixou de ser ajustável, porque as escolhas de portfólio e de crédito já se fazem na Proposta. Um ajuste só vale se ficar escrito nas Condições específicas, com a cláusula e o ponto (cl. 5.2).
 
@@ -76,7 +76,7 @@ Cada serviço tem uma cláusula própria (9 a 15) com o que inclui, o que não i
   - na renovação, a nevima pode passar a cobrar um **valor simbólico** que só cobre custos, **até 60 €/ano**; se o Cliente recusar (ou não renovar), recebe o código sem custo;
   - alojado no plano **Pro** da Vercel;
   - **limite justo:** 100 mil CDN requests por mês; acima disso, **120 €/ano** entre 100 mil e 1 milhão, e **orçamento especializado** acima de 1 milhão (valores a laranja, para os sócios confirmarem que são justos);
-  - o site continua a dizer "for as long as your website is live": **o site não muda** por agora (pedido do utilizador).
+  - o site deixou de prometer prazo (2026-10-19, utilizador): saíram "for as long as your website is live", "for life" e "enquanto o website estiver online". O site diz só que o alojamento é gratuito, como a cl. 12.1, sem ressalvas ("gratuito, mas…" não, pedido do utilizador); as condições da renovação e do limite justo ficam no contrato.
 - **16:** o crédito é o logótipo da nevima no rodapé, com −5% no website.
 - **17 (Propriedade intelectual):**
   - "integral" quer dizer todo o preço;
@@ -94,9 +94,6 @@ Cada serviço tem uma cláusula própria (9 a 15) com o que inclui, o que não i
   - Condições específicas.
 
 ## Por decidir (a laranja)
-- **Domínio (cl. 13):**
-  - a nevima regista o domínio por quem não o tem e cobra o custo à parte; quem já tem não paga, e a nevima liga o website se for exequível;
-  - falta definir **como** (a partilha de conta do Hostinger foi a recomendação).
 - **Formulários (cl. 11.3 e Parte IV, art. 2.4):** confirmar como funcionam.
 - **SEO e GEO (cl. 14, 15, 6.6):** conteúdo e cobrança. O GEO pode ser pontual ou mensal (ver a memória de questões de preço). A cl. 6.7 também está a laranja.
 - **Identidade visual (cl. 9.4):** quantas rondas de revisão estão incluídas.
@@ -107,7 +104,7 @@ Cada serviço tem uma cláusula própria (9 a 15) com o que inclui, o que não i
 - Qual Arcozelo (o concelho), na cl. 10.3.
 - Se o web design inclui a escrita dos textos (cl. 11.1; o site diz "includes copy").
 - Diferenças entre o site e o contrato:
-  - o simulador desconta o domínio existente (10 a 30 €) e cobra 45 € pelo inglês e 20 € por outra língua, contra 35 / 55 / 80 € no contrato;
+  - o simulador cobra 45 € pelo inglês e 20 € por outra língua, contra 35 / 55 / 80 € no contrato;
   - a duração do alojamento.
 - **Atualizações de segurança (a explorar mais tarde):** se o alojamento gratuito inclui aplicar as correções de segurança do Next.js (por exemplo, as falhas de março de 2025 e o "React2Shell" de dezembro de 2025), e como fazê-lo em muitos sites (a mesma base em todos, Dependabot). Frase proposta: "O alojamento inclui manter o website no ar tal como foi entregue e aplicar as atualizações de segurança que a nevima considere necessárias. Não inclui alterações, funcionalidades novas nem atualizações de outra natureza, que seguem a cláusula 11."
 - NIF e morada de cada sócio; revisão pelo advogado.
@@ -118,3 +115,8 @@ Cada serviço tem uma cláusula própria (9 a 15) com o que inclui, o que não i
 - **Estimativa dos sócios:** cerca de 100 visitas por mês por site, o que dá 5 a 10 mil requests por site, robôs incluídos.
 - **Consequência:** 30 sites cabem no Pro (20 $/mês) sem custos extra; ~100 a 200 sites antes do limite incluído.
 - **Plano para crescer:** quando a conta se aproximar do limite, o segundo sócio abre uma segunda conta Pro e passa a publicar lá.
+
+## Domínio (2026-10-19, decidido pelo utilizador; v1.9)
+- O Cliente regista e paga o domínio diretamente, em seu nome, numa conta sua no registador (recomendação: Hostinger). A nevima pede acesso pela partilha de acesso da Hostinger (papel de Colaborador ou Admin), gere o DNS e liga o domínio à Vercel. Nada passa pela fatura da nevima, por isso não há refaturação nem efeito no limite de isenção de IVA.
+- O formulário deixou de somar o domínio ao preço: mostra uma nota com o custo estimado (10–30 € por ano, `pricing.ts` `newDomain`) e diz que é pago diretamente. O FAQ diz o mesmo.
+- Cl. 13.4: saiu "normalmente cerca de 2 dias"; fica "no prazo que ela indicar" (as Regras de Registo .pt de 2026 falam noutros prazos).

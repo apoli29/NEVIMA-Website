@@ -147,8 +147,8 @@ export function Footer() {
             <p className="mono text-ash-2">contacto</p>
             <ul className="mt-5 space-y-3">
               <li>
-                <a href="mailto:ola@nevima.pt" className="body text-chalk hover:text-chalk/45">
-                  ola@nevima.pt
+                <a href="mailto:ola@nevima.studio" className="body text-chalk hover:text-chalk/45">
+                  ola@nevima.studio
                 </a>
               </li>
               <li className="body text-ash">Portugal &mdash; remoto</li>

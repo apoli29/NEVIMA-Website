@@ -41,7 +41,7 @@ const mono = Geist_Mono({
 /* The English site's title and description; the Portuguese pages carry
    their own (src/app/pt/layout.tsx). */
 export const metadata: Metadata = {
-  metadataBase: new URL("https://nevima.pt"),
+  metadataBase: new URL("https://nevima.studio"),
   title: {
     default: "nevima — websites and visual identity",
     template: "%s · nevima",

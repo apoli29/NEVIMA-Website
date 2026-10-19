@@ -593,11 +593,17 @@ export function Process({ ready }: { ready: boolean }) {
   layoutNow.current = layout;
   useEffect(() => {
     seek = (id) => {
-      // Shut on a phone: opened first, and found once it has measured
-      // itself (home.tsx asks again a moment later).
+      // Shut on a phone: opened first, and found here once it has measured
+      // itself, so every caller (home.tsx's deep links, the studio's "a
+      // completely different approach") is answered at once.
       if (shutNow.current) {
         setOpen(true);
-        return false;
+        let tries = 0;
+        const again = () => {
+          if (!seek?.(id) && ++tries < 20) window.setTimeout(again, 100);
+        };
+        window.setTimeout(again, 100);
+        return true;
       }
       const el = section.current;
       const t = track.current;

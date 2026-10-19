@@ -38,11 +38,11 @@ export const SERVICES: Service[] = [
     slug: "web-design",
     title: "Web Design",
     tier: "main",
-    body: "Web design is Nevima’s main service, and not by chance: it is where we achieve our best results. We deliver websites that reflect the essence of each business and catch the attention of the potential clients and other stakeholders of our partners, who put their trust in us.",
+    body: "Web design is Nevima’s main service, and not by chance: it is where we achieve our best results. We deliver websites that reflect the essence of each business and catch the attention of the potential clients and other stakeholders of our partners.",
     included: {
       title: "Also included",
       items: [
-        "Free hosting, for as long as your website is live",
+        "Free hosting, with everything set up for your website to go live without a hitch",
         "Basic SEO, to make sure your website shows up in search results",
         "A free call once part of the project is built. The goal? To make changes to your taste and understand the direction the project should take, so nothing needs changing at the end",
       ],
@@ -111,11 +111,11 @@ export const SERVICES: Service[] = [
 const PT: Record<string, Pick<Service, "title" | "body" | "included">> = {
   "web-design": {
     title: "Web Design",
-    body: "O web design é o serviço principal da Nevima, e não é por acaso: é no web design que obtemos os melhores resultados. Entregamos websites que refletem a essência do negócio e que captam a atenção de potenciais clientes e de outros stakeholders dos nossos parceiros, que depositam confiança em nós.",
+    body: "O web design é o serviço principal da Nevima, e não é por acaso: é no web design que obtemos os melhores resultados. Entregamos websites que refletem a essência do negócio e que captam a atenção de potenciais clientes e de outros stakeholders dos nossos parceiros.",
     included: {
       title: "Também incluído",
       items: [
-        "Alojamento gratuito, enquanto o website estiver online",
+        "Alojamento gratuito, com todas as configurações necessárias para o website ir para o ar sem problemas",
         "SEO básico, para assegurar que o website aparece nos resultados de pesquisa",
         "Uma chamada gratuita quando parte do projeto estiver desenvolvida. O objetivo? Aplicar alterações ao gosto do cliente e compreender a direção que o projeto deve tomar, para evitar a necessidade de alterações no final",
       ],

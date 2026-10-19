@@ -99,8 +99,10 @@ export const PRICING = {
       bookings: [25, 40] as [number, number],
     },
     featuresMarket: { pt: 1, "es-it": 1.15, us: 1.75 } satisfies Record<Market, number>,
-    /** A client without a domain pays for the one we register for them
-        (contract, clause 13); one who has a domain pays nothing. */
+    /** What a new domain costs a year, shown to a client without one as
+        a reference only: the client registers and pays for it directly,
+        in their own name (contract v1.9, clause 13), so it is never
+        added to our price. */
     newDomain: { min: 10, max: 30 },
     /** Added for an urgent deadline, on the website and its extras. The
         timeline is then agreed between both sides. */
