@@ -608,6 +608,8 @@ export function Home() {
                 src="/nevima-wordmark-white.svg"
                 alt=""
                 draggable={false}
+                // The first screen's largest paint: fetched ahead of the rest.
+                fetchPriority="high"
                 className="w-[min(78vw,22rem)] select-none md:w-[min(58vw,36rem)]"
               />
             </div>

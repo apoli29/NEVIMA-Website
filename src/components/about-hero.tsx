@@ -46,9 +46,12 @@ const SPEED = 2.5;
 const LIGHT_MS = 1500 / SPEED;
 const LIGHT_AT_MS = [450 / SPEED, 1500 / SPEED];
 
-/** The statement's ground: one photograph at two widths. */
+/** The statement's ground: one photograph at four widths, so a phone with a
+    dense screen takes the 1600 or the 1920 rather than the 2400 (1.2 MB). */
 const PHOTO = {
   small: "/about/folds-1280.webp",
+  mid: "/about/folds-1600.webp",
+  wide: "/about/folds-1920.webp",
   large: "/about/folds-2400.webp",
 };
 
@@ -65,7 +68,7 @@ export function AboutHero() {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={PHOTO.large}
-        srcSet={`${PHOTO.small} 1280w, ${PHOTO.large} 2400w`}
+        srcSet={`${PHOTO.small} 1280w, ${PHOTO.mid} 1600w, ${PHOTO.wide} 1920w, ${PHOTO.large} 2400w`}
         sizes="100vw"
         alt=""
         aria-hidden="true"

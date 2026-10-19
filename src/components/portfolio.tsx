@@ -124,6 +124,20 @@ export function Portfolio() {
     window.addEventListener("pageshow", onShow);
     return () => window.removeEventListener("pageshow", onShow);
   }, []);
+  // The entry's safety net (user, 2026-10-19): the bar and the cards are
+  // served invisible for Motion to bring in, so on a slow phone CSS shows
+  // them anyway 0.6s in (fo-wait in globals.css). Once the script is up the
+  // net is taken away, unless it has already caught them, in which case it
+  // stays and Motion's own entry plays on underneath, unseen.
+  useEffect(() => {
+    const el = room.current;
+    if (!el) return;
+    const caught = el
+      .querySelector(".fo-top")
+      ?.getAnimations()
+      .some((a) => a instanceof CSSAnimation && a.animationName === "fo-wait" && Number(a.currentTime) > 600);
+    if (!caught) el.removeAttribute("data-fo-wait");
+  }, []);
   const sign = useRef<HTMLSpanElement>(null);
 
   return (
@@ -131,7 +145,7 @@ export function Portfolio() {
     // motion Motion drops the movement itself and CSS stops the drift.
     <MotionConfig reducedMotion="user">
       {/* Everything but the open card or form, out of reach while it is out. */}
-      <main ref={room} id="top" inert={away} className="fo-room">
+      <main ref={room} id="top" inert={away} className="fo-room" data-fo-wait="">
         {/* The foot's ground. The lens follows the hand over the black and
             gives way as the hand reaches a photo, which sits above it. */}
         <div ref={ground} className="absolute inset-0 z-0">

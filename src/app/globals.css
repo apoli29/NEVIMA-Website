@@ -23,7 +23,8 @@
      carried by opacity steps, never by a second hue.                 */
   --color-ink: #000000;
   --color-ash: #55534f;
-  --color-ash-2: #8a8783;
+  /* 4.8:1 on white, the least that reads at caption size (WCAG AA). */
+  --color-ash-2: #75726e;
 
   /* ---- lines ----------------------------------------------------- */
   --color-hair: rgba(0, 0, 0, 0.1);
@@ -233,6 +234,10 @@
   }
   @media (min-width: 1280px) {
     .mono-label { font-size: 0.71875rem; }
+  }
+  /* On a phone the labels are read at arm's length: 12px, not 11. */
+  @media (max-width: 767.98px) {
+    .mono-label { font-size: 0.75rem; }
   }
 
   /* Taking work: a green light that breathes. */
@@ -1895,6 +1900,9 @@
     position: relative;
     top: 0.08em;
   }
+  @media (max-width: 767.98px) {
+    .xs-exp { font-size: max(0.75rem, 0.3em); }
+  }
 
   .xs-name {
     transition:
@@ -2813,6 +2821,25 @@
   }
   /* The site's black ring vanishes on this black. */
   .fo-room :focus-visible { outline-color: rgb(255 255 255 / 0.9); }
+  /* The entry's safety net: shown 0.6s in even if the script is still on
+     its way (taken away by portfolio.tsx once it is up). A CSS animation
+     outranks the inline opacity Motion serves them with. */
+  .fo-room[data-fo-wait] .fo-top {
+    animation: fo-wait 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
+  }
+  .fo-room[data-fo-wait] .fo-tile {
+    animation: fo-wait-tile 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
+  }
+  /* Opacity alone on the bar: a filter there would cut its drops' glass
+     off from what lies behind it. */
+  @keyframes fo-wait {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes fo-wait-tile {
+    from { opacity: 0; filter: blur(10px); }
+    to { opacity: 1; filter: blur(0px); }
+  }
 
   /* The two buttons, side by side in the middle at the top, over
      everything in the room. */

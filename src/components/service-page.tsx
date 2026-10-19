@@ -119,7 +119,7 @@ export function ServicePage({ slug, lang }: { slug: string; lang: Lang }) {
                 <li key={other.slug}>
                   <Link
                     href={href(servicePath(other.slug))}
-                    className="display text-[clamp(1.5rem,2.4vw,2.25rem)] leading-[1.1] tracking-[-0.02em] text-ink/35 transition-colors duration-300 hover:text-ink"
+                    className="display text-[clamp(1.5rem,2.4vw,2.25rem)] leading-[1.1] tracking-[-0.02em] text-ink/55 transition-colors duration-300 hover:text-ink"
                   >
                     {other.title}
                   </Link>

@@ -57,9 +57,11 @@ const ENTER_SHIFT = 56;
 /* The pillar is lit once the section is in sight. */
 const PILLAR_LIGHT_MS = 500;
 
+/* The capsule's faces are a few dozen pixels across: cut-down copies of the
+   about page's portraits (240px on the short side), not the portraits. */
 const FOUNDERS = [
-  { name: "Emanuel Costa", photo: "/cofounders/ec.webp", focus: "44% 45%" },
-  { name: "António Policarpo", photo: "/cofounders/ap.webp", focus: "50% 48%" },
+  { name: "Emanuel Costa", photo: "/cofounders/ec-face.webp", focus: "44% 45%" },
+  { name: "António Policarpo", photo: "/cofounders/ap-face.webp", focus: "50% 48%" },
 ] as const;
 
 /* The statement's words, and where it is given its two people and its
