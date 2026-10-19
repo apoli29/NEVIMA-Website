@@ -57,7 +57,7 @@ import { useLang, useT } from "@/lib/use-lang";
    knows a price: the estimate comes from /api/estimate.
    ================================================================== */
 
-export const STUDIO_EMAIL = "ola@nevima.pt";
+export const STUDIO_EMAIL = "ola@nevima.studio";
 
 export type Draft = {
   services: ServiceId[];

@@ -32,7 +32,7 @@ import { useSeen } from "./use-seen";
    answers the question blinks).
    ================================================================== */
 
-const EMAIL = "ola@nevima.pt";
+const EMAIL = "ola@nevima.studio";
 
 type Question = {
   id: string;

@@ -601,7 +601,7 @@ export function Contact() {
           </Reveal>
           <Reveal delay={0.16}>
             <div className="flex flex-wrap gap-3">
-              <Button href="mailto:ola@nevima.pt">ola@nevima.pt</Button>
+              <Button href="mailto:ola@nevima.studio">ola@nevima.studio</Button>
               <Button href="#servicos" variant="ghost">
                 ver serviços
               </Button>

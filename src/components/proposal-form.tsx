@@ -36,7 +36,7 @@ import { useT } from "@/lib/use-lang";
    SectionIndex), in either language.
    ================================================================== */
 
-const EMAIL = "ola@nevima.pt";
+const EMAIL = "ola@nevima.studio";
 const NEEDS = {
   en: ["Web Design", "Visual Identity", "SEO", "GEO"],
   pt: ["Web Design", "Identidade Visual", "SEO", "GEO"],
