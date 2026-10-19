@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
   const answers = readAnswers(fields.answers);
   if (!answers.ok) return json({ error: "invalid", field: answers.error }, 422);
-  const contact = readContact(fields.contact);
+  const contact = readContact(fields.contact, { company: answers.value.audience === "business" });
   if (!contact.ok) return json({ error: "invalid", field: contact.error }, 422);
 
   const lang = fields.lang === "pt" ? "pt" : "en";

@@ -1,5 +1,6 @@
 import "server-only";
 import {
+  AUDIENCES,
   COUNTRIES,
   COUNTS,
   DESIGN,
@@ -72,12 +73,18 @@ export function readAnswers(raw: unknown): Result<Answers> {
   const services = many(SERVICES, raw.services);
   // Every other service is only offered together with web design.
   if (!services || !services.includes("web")) return { ok: false, error: "services" };
-  const sector = one(SECTORS, raw.sector);
-  if (!sector) return { ok: false, error: "sector" };
+  const audience = one(AUDIENCES, raw.audience);
+  if (!audience) return { ok: false, error: "audience" };
   const country = one(COUNTRIES, raw.country);
   if (!country) return { ok: false, error: "country" };
+  // Personal use is taken on in Portugal only.
+  if (audience === "personal" && country !== "PT") return { ok: false, error: "audience" };
 
-  const answers: Answers = { services, sector, country };
+  const answers: Answers = { services, audience, country };
+  // What the business does is asked of a business only.
+  const sector = audience === "business" ? one(SECTORS, raw.sector) : undefined;
+  if (audience === "business" && !sector) return { ok: false, error: "sector" };
+  if (sector) answers.sector = sector;
   if (sector === "other") {
     const other = text(raw.sectorOther, MAX.short);
     if (!other) return { ok: false, error: "sectorOther" };
@@ -182,7 +189,9 @@ export function readAnswers(raw: unknown): Result<Answers> {
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PHONE = /^[+()\d][\d\s().-]{5,24}$/;
 
-export function readContact(raw: unknown): Result<Contact> {
+/** The business's name is asked of a business (and of the partners'
+    form); a client for personal use has none. */
+export function readContact(raw: unknown, { company: needsCompany = true } = {}): Result<Contact> {
   if (!isObject(raw)) return { ok: false, error: "contact" };
   const name = text(raw.name, MAX.short);
   const email = text(raw.email, MAX.short);
@@ -192,7 +201,7 @@ export function readContact(raw: unknown): Result<Contact> {
   if (!name) return { ok: false, error: "name" };
   if (!email || !EMAIL.test(email)) return { ok: false, error: "email" };
   if (!phone || !PHONE.test(phone)) return { ok: false, error: "phone" };
-  if (!company) return { ok: false, error: "company" };
+  if (company === null || (needsCompany && !company)) return { ok: false, error: "company" };
   if (message === null || message.length > MAX.message) return { ok: false, error: "message" };
   if (raw.consent !== true) return { ok: false, error: "consent" };
   return { ok: true, value: { name, email, phone, company, message, consent: true } };

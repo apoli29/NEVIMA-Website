@@ -24,6 +24,48 @@ export const SERVICES = [
 ] as const;
 export type ServiceId = (typeof SERVICES)[number]["id"];
 
+/** Who the website is for. A business includes sole traders and the
+    self-employed; personal use makes the client a consumer, which the
+    contract's annex for "Particulares" covers, and is taken on in
+    Portugal only (user, 2026-10-19). */
+export const AUDIENCES = [
+  { id: "business", label: "A business", pt: "Um negócio" },
+  { id: "personal", label: "Personal use", pt: "Uso pessoal" },
+] as const;
+export type AudienceId = (typeof AUDIENCES)[number]["id"];
+
+export const AUDIENCE_NOTE: Copy = {
+  en: "A business includes sole traders and self-employed professionals.",
+  pt: "Um negócio inclui empresários em nome individual e profissionais liberais.",
+};
+
+/** Personal use outside Portugal: not taken on for now. */
+export const PERSONAL_ABROAD: Copy = {
+  en: "For now, we only take on personal-use projects in Portugal.",
+  pt: "De momento, apenas trabalhamos com projetos de uso pessoal em Portugal.",
+};
+
+/** The second level's notes for personal use: visitors rather than a
+    business's clients (user, 2026-10-19). */
+export const PERSONAL_FEATURE_NOTES: Record<"forms" | "newsletter" | "emails" | "bookings", Copy> = {
+  forms: {
+    en: "Visitors fill in a form. You get their answers by email and reply yourself.",
+    pt: "Os visitantes preenchem um formulário. As respostas chegam por email, para serem respondidas diretamente.",
+  },
+  newsletter: {
+    en: "Visitors sign up with their email. You get each sign-up by email and follow up yourself.",
+    pt: "Os visitantes inscrevem-se com o email. Cada inscrição chega por email, para lhe ser dado seguimento diretamente.",
+  },
+  emails: {
+    en: "Automatic emails, ready to go out in reply to forms or newsletter sign-ups. Designed with a look of their own, in keeping with the website.",
+    pt: "Emails automáticos já preparados para enviar como resposta a formulários ou a newsletters. Produzidos com uma estética personalizada, coesa com o website.",
+  },
+  bookings: {
+    en: "Visitors book a time themselves, straight into your calendar.",
+    pt: "Os visitantes marcam diretamente uma hora no calendário.",
+  },
+};
+
 /** What the business does. It tells us about the project; it never
     changes the price by itself (what a sector needs is asked as features). */
 export const SECTORS = [
@@ -220,7 +262,9 @@ export type ReachId = (typeof REACH)[number]["id"];
     group is present only when its service was chosen. */
 export type Answers = {
   services: ServiceId[];
-  sector: SectorId;
+  audience: AudienceId;
+  /** Asked only of a business. */
+  sector?: SectorId;
   sectorOther?: string;
   country: CountryId;
   countryOther?: string;

@@ -3,6 +3,8 @@
 import { useEffect, useId, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import {
+  AUDIENCES,
+  AUDIENCE_NOTE,
   COMPLEX,
   COUNTRIES,
   COUNTS,
@@ -12,6 +14,8 @@ import {
   LANGUAGES,
   MAX,
   PAGES,
+  PERSONAL_ABROAD,
+  PERSONAL_FEATURE_NOTES,
   PHOTO_PLANS,
   REACH,
   REGIONS,
@@ -25,6 +29,7 @@ import {
   inLang,
   labelOf,
   type Answers,
+  type AudienceId,
   type Contact,
   type CountryId,
   type DesignId,
@@ -61,6 +66,8 @@ export const STUDIO_EMAIL = "ola@nevima.studio";
 
 export type Draft = {
   services: ServiceId[];
+  /** A business, or personal use (a consumer, in Portugal only). */
+  audience: AudienceId | "";
   sector: SectorId | "";
   sectorOther: string;
   country: CountryId | "";
@@ -95,6 +102,7 @@ export const EMPTY_DRAFT: Draft = {
   // Web design is always part of a project: the other services are only
   // offered together with a website (the user's rule, 2026-10-07).
   services: ["web"],
+  audience: "",
   sector: "",
   sectorOther: "",
   country: "",
@@ -165,7 +173,7 @@ export function actionFor(step: StepId, next: StepId | undefined, t: Translate) 
 function titleFor(step: StepId, draft: Draft, t: Translate) {
   switch (step) {
     case "basics":
-      return t("Your business", "O negócio");
+      return draft.audience === "personal" ? t("Your project", "O projeto") : t("Your business", "O negócio");
     case "web":
       return "Web design";
     case "photo":
@@ -197,6 +205,12 @@ const DOMAIN_NOTE: Copy = {
   en: "If you don't have a domain yet, you register it in your business's name and pay for it directly, and we guide you through every step. If you already have one, there's nothing to add.",
   pt: "Sem domínio, o registo é feito em nome do negócio e pago diretamente, com o nosso acompanhamento em todos os passos. Com um domínio já existente, não há nada a acrescentar.",
 };
+
+/** The same, for personal use. */
+const DOMAIN_NOTE_PERSONAL: Copy = {
+  en: "If you don't have a domain yet, you register it in your own name and pay for it directly, and we guide you through every step. If you already have one, there's nothing to add.",
+  pt: "Sem domínio, o registo é feito em nome próprio e pago diretamente, com o nosso acompanhamento em todos os passos. Com um domínio já existente, não há nada a acrescentar.",
+};
 const PAGES_NOTE: Copy = {
   en: "Not sure? We estimate for 3 to 8 pages, so the range of your final estimate can be a little wider than with a set number.",
   pt: "Sem um número definido, estimamos para 3 a 8 páginas, por isso o intervalo da estimativa final pode ser um pouco mais largo.",
@@ -215,6 +229,10 @@ const NO_REFERENCES: Copy<readonly { id: "none"; label: string }[]> = {
   pt: [{ id: "none", label: "Não tenho" }],
 };
 
+/** Personal use outside Portugal: not taken on for now. */
+export const personalAbroad = (draft: Draft) =>
+  draft.audience === "personal" && draft.country !== "" && draft.country !== "PT";
+
 export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: Lang): Errors {
   const t = translator(lang);
   const PICK_ONE = t("Choose one to continue.", "Escolher uma opção para continuar.");
@@ -223,12 +241,17 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
   const web = draft.services.includes("web");
   if (step === "basics") {
     if (!draft.services.length) e.services = PICK_ANY;
-    if (!draft.sector) e.sector = PICK_ONE;
-    else if (draft.sector === "other" && !draft.sectorOther.trim()) {
-      e.sector = t("Tell us what your business does.", "Falta indicar a área do negócio.");
+    if (!draft.audience) e.audience = PICK_ONE;
+    if (draft.audience !== "personal") {
+      if (!draft.sector) e.sector = PICK_ONE;
+      else if (draft.sector === "other" && !draft.sectorOther.trim()) {
+        e.sector = t("Tell us what your business does.", "Falta indicar a área do negócio.");
+      }
     }
     if (!draft.country) e.country = PICK_ONE;
     else if (draft.country === "other" && !draft.countryOther.trim()) e.country = t("Tell us which country.", "Falta indicar o país.");
+    // Personal use outside Portugal goes no further (shown as it is picked).
+    if (personalAbroad(draft)) e.country = t(PERSONAL_ABROAD);
   }
   if (step === "web") {
     // A project beyond what we take on needs nothing more answered.
@@ -265,7 +288,12 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
       e.email = t("Enter an email address we can reply to.", "Falta um email válido para a resposta.");
     }
     if (!/^[+()\d][\d\s().-]{5,24}$/.test(contact.phone.trim())) e.phone = t("Enter a phone number.", "Falta um número de telefone válido.");
-    if (!contact.company.trim()) e.company = t("Enter your company's name.", "Falta indicar o nome da empresa.");
+    // A client for personal use has no business name to give.
+    if (draft.audience !== "personal" && !contact.company.trim()) {
+      e.company = draft.audience === "business"
+        ? t("Enter your business's name.", "Falta indicar o nome do negócio.")
+        : t("Enter your company's name.", "Falta indicar o nome da empresa.");
+    }
     if (!contact.consent) e.consent = t("Tick the box so we can use your details.", "É necessário assinalar a caixa para podermos usar os dados.");
   }
   return e;
@@ -276,10 +304,13 @@ export function toAnswers(draft: Draft): Answers {
   const groups = groupsFor(draft.services);
   const answers: Answers = {
     services: draft.services,
-    sector: draft.sector as SectorId,
+    audience: draft.audience as AudienceId,
     country: draft.country as CountryId,
   };
-  if (draft.sector === "other") answers.sectorOther = draft.sectorOther.trim();
+  if (draft.audience === "business") {
+    answers.sector = draft.sector as SectorId;
+    if (draft.sector === "other") answers.sectorOther = draft.sectorOther.trim();
+  }
   if (draft.country === "other") answers.countryOther = draft.countryOther.trim();
   if (groups.web) {
     const references = draft.noReferences
@@ -328,10 +359,12 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
     `${t("Name", "Nome")}: ${contact.name}`,
     `Email: ${contact.email}`,
     `${t("Phone", "Telefone")}: ${contact.phone}`,
-    `${t("Company", "Empresa")}: ${contact.company}`,
+    ...(a.audience === "business" ? [`${t("Business name", "Nome do negócio")}: ${contact.company}`] : []),
     "",
+    // Which Proposal to send: a business's, or a consumer's with the annex.
+    `${t("Client", "Cliente")}: ${label(AUDIENCES, a.audience)}`,
     `${t("Services", "Serviços")}: ${a.services.map((s) => label(SERVICES, s)).join(", ")}`,
-    `${t("Business", "Negócio")}: ${a.sectorOther ?? label(SECTORS, a.sector)}`,
+    ...(a.sector ? [`${t("Business", "Negócio")}: ${a.sectorOther ?? label(SECTORS, a.sector)}`] : []),
     `${t("Country", "País")}: ${a.countryOther ?? label(COUNTRIES, a.country)}`,
   ];
   if (a.web) {
@@ -649,6 +682,9 @@ export function StepScreen({
   const lang = useLang();
   const t = useT();
   const list = <T extends Parameters<typeof inLang>[0][number]>(l: readonly T[]) => inLang(l, lang);
+  // Personal use: a project and its visitors, not a business and its
+  // clients (user, 2026-10-19).
+  const personal = draft.audience === "personal";
 
   return (
     <motion.div
@@ -679,6 +715,24 @@ export function StepScreen({
               }
             />
           </Question>
+          {/* Business or personal use (user, 2026-10-19): it decides
+              which Proposal is sent, and personal use is taken on in
+              Portugal only. */}
+          <Question
+            id="audience"
+            label={t("Who is the website for?", "O website é para…")}
+            error={errors.audience}
+            footnote={t(AUDIENCE_NOTE)}
+          >
+            <Segmented
+              name="audience"
+              options={list(AUDIENCES)}
+              value={draft.audience}
+              onChange={(audience) => setDraft({ audience })}
+              labelledBy="audience-q"
+            />
+          </Question>
+          {draft.audience !== "personal" && (
           <Question id="sector" label={t("What does your business do?", "Qual é a área do negócio?")} error={errors.sector}>
             <Segmented
               name="sector"
@@ -697,7 +751,17 @@ export function StepScreen({
               />
             )}
           </Question>
-          <Question id="country" label={t("Where is your business based?", "Onde está sediado o negócio?")} error={errors.country}>
+          )}
+          <Question
+            id="country"
+            label={
+              draft.audience === "personal"
+                ? t("Which country are you in?", "Em que país?")
+                : t("Where is your business based?", "Onde está sediado o negócio?")
+            }
+            // The note below says it as soon as it applies.
+            error={personalAbroad(draft) ? undefined : errors.country}
+          >
             <Segmented
               name="country"
               options={list(COUNTRIES)}
@@ -714,6 +778,11 @@ export function StepScreen({
                 onChange={(countryOther) => setDraft({ countryOther })}
                 autoComplete="country-name"
               />
+            )}
+            {personalAbroad(draft) && (
+              <p role="status" className="pf-out">
+                {t(PERSONAL_ABROAD)}
+              </p>
             )}
           </Question>
         </div>
@@ -732,22 +801,31 @@ export function StepScreen({
           >
             <div className="pf-levels">
               <div className="pf-level">
-                <p className="pf-level-name">{t("Present your business", "Apresentar o negócio")}</p>
+                <p className="pf-level-name">
+                  {personal ? t("Present your project", "Apresentar o projeto") : t("Present your business", "Apresentar o negócio")}
+                </p>
                 <p className="pf-footnote">
-                  {t(
-                    "The story behind it, the details that set you apart, the products or services you offer and how to reach you.",
-                    "A história por trás do negócio, os pormenores que o distinguem, os produtos ou serviços que oferece e os contactos.",
-                  )}
+                  {personal
+                    ? t(
+                        "Who you are, what you want to show and how to reach you.",
+                        "Quem está por trás do projeto, o que se quer mostrar e os contactos.",
+                      )
+                    : t(
+                        "The story behind it, the details that set you apart, the products or services you offer and how to reach you.",
+                        "A história por trás do negócio, os pormenores que o distinguem, os produtos ou serviços que oferece e os contactos.",
+                      )}
                 </p>
                 <span className="mono-label pf-level-tag">{t("Always included", "Sempre incluído")}</span>
               </div>
               <div className="pf-level" role="group" aria-labelledby={`${uid}-level2`}>
                 <p id={`${uid}-level2`} className="pf-level-name">
-                  {t("+ Receive information from your clients", "+ Receber informação dos clientes")}
+                  {personal
+                    ? t("+ Receive information from visitors", "+ Receber informação dos visitantes")
+                    : t("+ Receive information from your clients", "+ Receber informação dos clientes")}
                 </p>
                 <Ticks
                   name="features"
-                  options={list(FEATURES)}
+                  options={list(FEATURES).map((o) => (personal ? { ...o, note: t(PERSONAL_FEATURE_NOTES[o.id]) } : o))}
                   value={draft.features}
                   // Automatic emails are what the forms and the newsletter
                   // send: without either, there is nothing to send them.
@@ -761,10 +839,15 @@ export function StepScreen({
                     2026-10-19): the client's own free account, set up
                     together. */}
                 <p className="pf-footnote">
-                  {t(
-                    "For these, we help you open a free account on an email or booking platform, in your business's name, and assist you all the way.",
-                    "Para isto, criamos em conjunto uma conta gratuita numa plataforma de email ou de marcações, em nome do negócio, com acompanhamento total.",
-                  )}
+                  {personal
+                    ? t(
+                        "For these, we help you open a free account on an email or booking platform, in your own name, and assist you all the way.",
+                        "Para isto, criamos em conjunto uma conta gratuita numa plataforma de email ou de marcações, em nome próprio, com acompanhamento total.",
+                      )
+                    : t(
+                        "For these, we help you open a free account on an email or booking platform, in your business's name, and assist you all the way.",
+                        "Para isto, criamos em conjunto uma conta gratuita numa plataforma de email ou de marcações, em nome do negócio, com acompanhamento total.",
+                      )}
                 </p>
               </div>
               <div className="pf-level" role="group" aria-labelledby={`${uid}-level3`}>
@@ -906,9 +989,9 @@ export function StepScreen({
           </Question>
           <Question
             id="domain"
-            label={t("Do you already have a domain?*", "O negócio já possui domínio?*")}
+            label={personal ? t("Do you already have a domain?*", "Já existe um domínio?*") : t("Do you already have a domain?*", "O negócio já possui domínio?*")}
             error={errors.domain}
-            footnote={`*${t(DOMAIN_NOTE)}`}
+            footnote={`*${t(personal ? DOMAIN_NOTE_PERSONAL : DOMAIN_NOTE)}`}
           >
             <Segmented
               name="domain"
@@ -950,7 +1033,7 @@ export function StepScreen({
           </Question>
           <Question
             id="town"
-            label={t("Where is your business located?", "Onde fica o negócio?")}
+            label={personal ? t("Where will the shoot be?", "Onde vai decorrer a sessão?") : t("Where is your business located?", "Onde fica o negócio?")}
             hint={
               draft.country === "PT"
                 ? undefined
@@ -959,7 +1042,9 @@ export function StepScreen({
             footnote={
               draft.country === "PT"
                 ? t(
-                    "In some parts of the Porto area and in the rest of the country, travel costs are covered by your business.",
+                    personal
+                      ? "In some parts of the Porto area and in the rest of the country, travel costs are covered by you."
+                      : "In some parts of the Porto area and in the rest of the country, travel costs are covered by your business.",
                     "Em algumas zonas da área do Porto e no resto do país, as despesas de deslocação ficam a cargo do cliente.",
                   )
                 : undefined
@@ -1023,7 +1108,11 @@ export function StepScreen({
               />
             </Question>
           )}
-          <Question id="reach" label={t("How far does your business reach?", "Qual é o alcance do negócio?")} error={errors.reach}>
+          <Question
+            id="reach"
+            label={personal ? t("How far should the website reach?", "Qual é o alcance pretendido?") : t("How far does your business reach?", "Qual é o alcance do negócio?")}
+            error={errors.reach}
+          >
             <Segmented
               name="reach"
               options={list(REACH)}
@@ -1057,10 +1146,16 @@ export function StepScreen({
         </div>
       )}
 
-      {step === "estimate" && <EstimateScreen state={estimate} retry={retryEstimate} web={web} />}
+      {step === "estimate" && <EstimateScreen state={estimate} retry={retryEstimate} web={web} personal={personal} />}
 
       {step === "contact" && (
-        <ContactScreen contact={contact} setContact={setContact} errors={errors} send={send} />
+        <ContactScreen
+          contact={contact}
+          setContact={setContact}
+          errors={errors}
+          send={send}
+          audience={draft.audience}
+        />
       )}
 
       {step === "sent" && (
@@ -1092,7 +1187,17 @@ function useReview() {
   return review;
 }
 
-function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: () => void; web: boolean }) {
+function EstimateScreen({
+  state,
+  retry,
+  web,
+  personal = false,
+}: {
+  state: EstimateState;
+  retry: () => void;
+  web: boolean;
+  personal?: boolean;
+}) {
   const review = useReview();
   const lang = useLang();
   const t = useT();
@@ -1221,8 +1326,8 @@ function EstimateScreen({ state, retry, web }: { state: EstimateState; retry: ()
       {/* What the ranges promise (user, 2026-10-17). */}
       <motion.p variants={ROW} className="pf-footnote mt-2 max-w-[38em]">
         {t(
-          "It assumes a project exactly as your answers describe it. After looking at your business, we may suggest some changes we think would be best for your project; in that case, the price may end up outside these ranges, lower or higher. Either way, we always also send you an offer based on your own choices, priced within these ranges.",
-          "Parte de um projeto exatamente como as respostas o descrevem. Depois de conhecermos o negócio, podemos sugerir algumas alterações que consideramos melhores para o projeto; nesse caso, o preço pode ficar fora destes intervalos, para baixo ou para cima. Seja como for, enviamos sempre também uma proposta com base nas escolhas feitas, com o preço dentro destes intervalos.",
+          `It assumes a project exactly as your answers describe it. After looking at your ${personal ? "project" : "business"}, we may suggest some changes we think would be best for your project; in that case, the price may end up outside these ranges, lower or higher. Either way, we always also send you an offer based on your own choices, priced within these ranges.`,
+          `Parte de um projeto exatamente como as respostas o descrevem. Depois de ${personal ? "analisarmos o projeto" : "conhecermos o negócio"}, podemos sugerir algumas alterações que consideramos melhores para o projeto; nesse caso, o preço pode ficar fora destes intervalos, para baixo ou para cima. Seja como for, enviamos sempre também uma proposta com base nas escolhas feitas, com o preço dentro destes intervalos.`,
         )}
       </motion.p>
     </div>
@@ -1235,6 +1340,7 @@ export function ContactScreen({
   errors,
   send,
   partner = false,
+  audience = "",
 }: {
   contact: Contact;
   setContact: (patch: Partial<Contact>) => void;
@@ -1243,9 +1349,11 @@ export function ContactScreen({
   /** The partners' form (development companies): no estimate, and we
       get in touch rather than send a proposal. */
   partner?: boolean;
+  /** Who the website is for: personal use has no business name to ask. */
+  audience?: AudienceId | "";
 }) {
   const t = useT();
-  const rows = [
+  const all = [
     { key: "name", label: t("Name", "Nome"), type: "text", autoComplete: "name", placeholder: t("Your name", "Nome") },
     {
       key: "email",
@@ -1257,12 +1365,14 @@ export function ContactScreen({
     { key: "phone", label: t("Phone", "Telefone"), type: "tel", autoComplete: "tel", placeholder: "+351 900 000 000" },
     {
       key: "company",
-      label: t("Company", "Empresa"),
+      // The partners are companies; a client's may be a sole trader.
+      label: partner ? t("Company", "Empresa") : t("Business name", "Nome do negócio"),
       type: "text",
       autoComplete: "organization",
-      placeholder: t("Your business", "Nome da empresa"),
+      placeholder: partner ? t("Your business", "Nome da empresa") : t("Your business", "Nome do negócio"),
     },
   ] as const;
+  const rows = audience === "personal" ? all.filter((row) => row.key !== "company") : all;
 
   return (
     <>
@@ -1318,10 +1428,12 @@ export function ContactScreen({
                       "For example, specific start or delivery dates, or anything else important (optional)",
                       "Por exemplo, datas específicas de início ou de entrega, ou outras informações importantes (opcional)",
                     )
-                  : t(
-                      "Anything else we should know about your business or your project (optional)",
-                      "Qualquer outra informação útil sobre o negócio ou o projeto (opcional)",
-                    )
+                  : audience === "personal"
+                    ? t("Anything else we should know about your project (optional)", "Qualquer outra informação útil sobre o projeto (opcional)")
+                    : t(
+                        "Anything else we should know about your business or your project (optional)",
+                        "Qualquer outra informação útil sobre o negócio ou o projeto (opcional)",
+                      )
               }
               value={contact.message}
               onChange={(e) => setContact({ message: e.target.value })}
