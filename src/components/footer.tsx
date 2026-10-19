@@ -184,9 +184,21 @@ export function Footer() {
 
         <div className="relative z-10 mt-8 flex flex-col gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
           {/* The year is read on the client; a cached page can be a year behind. */}
-          <p data-calm className="ftr-meta" suppressHydrationWarning>
-            &copy; {new Date().getFullYear()} nevima
-          </p>
+          <div data-calm className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <p className="ftr-meta" suppressHydrationWarning>
+              &copy; {new Date().getFullYear()} nevima
+            </p>
+            {/* The legal pages, from every page's foot (the law asks for
+                the provider's details to be easy to reach). */}
+            <nav aria-label={t("Legal", "Informação legal")} className="flex flex-wrap items-center gap-x-6 gap-y-3">
+              <a href={href("/privacy")} className="ftr-link ftr-meta">
+                {t("Privacy", "Privacidade")}
+              </a>
+              <a href={href("/legal-notice")} className="ftr-link ftr-meta">
+                {t("Legal notice", "Aviso legal")}
+              </a>
+            </nav>
+          </div>
           <div data-calm className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <LanguageSwitch path={path} lang={lang} label={t("Language", "Idioma")} />
             {/* Nothing to pause with reduced motion. Hidden by the media
