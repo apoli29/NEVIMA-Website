@@ -113,10 +113,14 @@ const PHONE_W = 768;
 const EDGE_MARGIN = 16;
 const NAV_GAP = 20;
 /** A screen whose shorter side is under this, in CSS pixels, is a phone:
-    it has fewer drops, and the user asked for them there a tenth bigger
-    and set a little further apart. */
+    it has fewer drops than a wide screen, and the user asked for them
+    there bigger and set a little further apart (2026-10-19: they were too
+    small and too few, so the words on a phone now stand in the middle of
+    open water, with room for more of them round it, see
+    statement-screen.tsx). */
 const SMALL = 600;
-const SMALL_GROW = 1.1;
+const SMALL_GROW = 1.45;
+const SMALL_COUNT = 11;
 const SMALL_SPREAD = 1.2;
 /** Two drops that come close pull together (see drops() in the shader),
     the big ones from further off: the field round each reaches this
@@ -133,6 +137,9 @@ const FILL_GAP = 0.45;
     drop's body, edge to edge past their pull: where the screen has no
     room for them all at that, it has fewer. */
 const GAP_MIN = 0.45;
+/** On a phone, where the drops are bigger against the screen, the gaps
+    between them may be narrower, so there are more of them (2026-10-19). */
+const SMALL_GAP_MIN = 0.22;
 /** A big drop (a third bigger than the middle-sized one, or more) keeps
     this many times the two bodies between its centre and another big
     one's: on a screen whose open water is a single band (a laptop), the
@@ -785,7 +792,7 @@ export function JellyField({
       const mid = order[Math.floor(order.length / 2)];
       const r = body(mid);
       const c = clearance(mid);
-      const least = r * GAP_MIN;
+      const least = r * (Math.min(w, h) < SMALL ? SMALL_GAP_MIN : GAP_MIN);
       const again = laidFor === `${w}x${h}`;
       const spots: { x: number; y: number; r: number }[] = [];
       for (let k = 0; k < order.length; k++) {
@@ -1025,7 +1032,7 @@ export function JellyField({
               }
             }
           }
-          if (!best || bestGap < Math.max(fair, body(order[Math.floor(order.length / 2)]) * GAP_MIN)) break;
+          if (!best || bestGap < Math.max(fair, body(order[Math.floor(order.length / 2)]) * (Math.min(w, h) < SMALL ? SMALL_GAP_MIN : GAP_MIN))) break;
           next[i] = best;
           placed.push(i);
         }
@@ -1192,7 +1199,7 @@ export function JellyField({
       const small = Math.min(w, h) < SMALL;
       const asked = manyAt.current;
       if (asked) return Math.min(small ? asked.small : asked.large, DROPS.length - PERCHED);
-      return small && floodAt.current <= 1 ? 6 : 16;
+      return small && floodAt.current <= 1 ? SMALL_COUNT : 16;
     };
     const placeDrops = (now: number) => {
       const side = dropSide();

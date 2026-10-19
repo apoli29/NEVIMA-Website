@@ -189,15 +189,17 @@ export function Footer() {
           </p>
           <div data-calm className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <LanguageSwitch path={path} lang={lang} label={t("Language", "Idioma")} />
-            {!reduce && (
-              <button
-                type="button"
-                onClick={toggleStill}
-                className="ftr-link ftr-meta cursor-pointer"
-              >
-                {still ? t("Resume motion", "Retomar movimento") : t("Pause motion", "Parar movimento")}
-              </button>
-            )}
+            {/* Nothing to pause with reduced motion. Hidden by the media
+                query rather than left out: the server cannot know the
+                setting, and leaving it out on the client only made the
+                page fail to hydrate there. */}
+            <button
+              type="button"
+              onClick={toggleStill}
+              className="ftr-link ftr-meta cursor-pointer motion-reduce:hidden"
+            >
+              {still ? t("Resume motion", "Retomar movimento") : t("Pause motion", "Parar movimento")}
+            </button>
             <a href="#top" className="ftr-link ftr-meta">
               {t("Back to top", "Voltar ao topo")}
             </a>

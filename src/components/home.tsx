@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
 import {
   animate,
   cubicBezier,
@@ -159,6 +159,33 @@ function useCovered(ready: boolean) {
   return covered;
 }
 
+/* A stuck screen taller than the screen it is on (the second screen on a
+   phone) is held by its foot rather than by its head: it scrolls by like
+   any other until its foot reaches the foot of the screen, and is held
+   there while the studio is drawn up over it. Set only while it is stuck;
+   when it is in the flow (a screen too short, see `short`), an offset
+   would move it instead. */
+function useStuckAtFoot(stage: RefObject<HTMLElement | null>, ready: boolean) {
+  useEffect(() => {
+    const el = stage.current;
+    if (!el || !ready) return;
+    const set = () => {
+      const stuck = getComputedStyle(el).position === "sticky";
+      const over = el.offsetHeight - window.innerHeight;
+      el.style.top = stuck && over > 0 ? `${-over}px` : "";
+    };
+    set();
+    const sized = new ResizeObserver(set);
+    sized.observe(el);
+    window.addEventListener("resize", set);
+    return () => {
+      sized.disconnect();
+      window.removeEventListener("resize", set);
+      el.style.top = "";
+    };
+  }, [stage, ready]);
+}
+
 export function Home() {
   const reduce = useReducedMotion() ?? false;
   const progress = useMotionValue(0);
@@ -188,6 +215,8 @@ export function Home() {
 
   const heroSlot = useRef<HTMLDivElement>(null);
   const navSlot = useRef<HTMLImageElement>(null);
+  const stage = useRef<HTMLElement>(null);
+  useStuckAtFoot(stage, phase === "open");
   const [flight, setFlight] = useState<Flight>(PARKED);
   // The bar's mark is a file, and until it is in it has no width to measure
   // against. Without this the first reading is thrown away and the mark is
@@ -468,6 +497,7 @@ export function Home() {
               which is there from the first paint, before the listeners below
               exist. */}
           <section
+            ref={stage}
             data-opening={phase === "open" ? undefined : ""}
             // Wholly under the studio: its loops are held (globals.css).
             data-covered={covered ? "" : undefined}
@@ -476,7 +506,12 @@ export function Home() {
                 ? // On a screen too short for its index and readouts (a phone on
                   // its side), it is as tall as it needs to be and scrolled
                   // through, rather than held a screen tall and cut off.
-                  "sticky top-0 h-[100svh] overflow-hidden bg-paper short:relative short:h-auto short:min-h-[100svh]"
+                  // On a phone it is taller than the screen (the words in
+                  // the middle of the first one, the index after them, see
+                  // statement-screen.tsx): it scrolls until its foot is on
+                  // the foot of the screen and is held there, so the studio
+                  // still closes over it (useStuckAtFoot).
+                  "sticky top-0 h-[100svh] overflow-hidden bg-paper short:relative short:h-auto short:min-h-[100svh] max-md:h-auto max-md:min-h-[100svh]"
                 : "fixed inset-0 z-30 overflow-hidden bg-paper"
             }
           >

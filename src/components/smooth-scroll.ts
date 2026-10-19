@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import Lenis from "lenis";
 import { useReducedMotion } from "motion/react";
 
@@ -33,9 +33,36 @@ export function jumpTo(y: number) {
   else window.scrollTo(0, y);
 }
 
-export function useSmoothScroll(locked: boolean) {
+/* Holds asked for by things that are not the page, such as the bar's menu
+   on a phone: the page they sit on does not know they are open, so they say
+   so here and useSmoothScroll adds them to its own lock. The lock itself
+   stays in one place. */
+const holds = new Set<string>();
+const heard = new Set<() => void>();
+
+/** Holds the page still (`on`) or lets it go, under the name `by`. */
+export function holdScroll(by: string, on: boolean) {
+  if (holds.has(by) === on) return;
+  if (on) holds.add(by);
+  else holds.delete(by);
+  heard.forEach((tell) => tell());
+}
+
+/** Whether anything outside the page is holding it still. */
+export function scrollHeld() {
+  return holds.size > 0;
+}
+
+const listen = (tell: () => void) => {
+  heard.add(tell);
+  return () => heard.delete(tell);
+};
+
+export function useSmoothScroll(pageLocked: boolean) {
   const lenis = useRef<Lenis | null>(null);
   const reduce = useReducedMotion();
+  const held = useSyncExternalStore(listen, scrollHeld, () => false);
+  const locked = pageLocked || held;
 
   useEffect(() => {
     if (reduce) return;

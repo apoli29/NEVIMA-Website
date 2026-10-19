@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
+import { useEffect, useId, useRef, useState, type MouseEvent, type ReactNode, type RefObject } from "react";
 import { usePathname } from "next/navigation";
 import {
+  AnimatePresence,
   motion,
   useMotionValueEvent,
   useReducedMotion,
@@ -13,6 +14,7 @@ import { basePath, type Copy } from "@/lib/i18n";
 import { useHref, useT } from "@/lib/use-lang";
 import { useProposal } from "./proposal-flow";
 import { Glass } from "./cta-glass";
+import { getLenis, holdScroll } from "./smooth-scroll";
 
 /* ==================================================================
    The bar is a black, square-cornered strip floating clear of the page
@@ -79,7 +81,11 @@ function Pass({
    (#proposal), and the home page opens it as soon as it can.
    ================================================================== */
 
-const ASK_CLASS = "cta-drop cta-drop-light inline-flex items-center justify-center whitespace-nowrap text-[0.9375rem] leading-none";
+/* On a phone the bar also holds the menu, so the drop is set a little
+   closer, and on the narrowest phones a little smaller, with the wordmark,
+   so that the words on it are never cut. */
+const ASK_CLASS =
+  "cta-drop cta-drop-light inline-flex items-center justify-center whitespace-nowrap text-[0.9375rem] leading-none max-sm:px-[1.15em] max-[399.98px]:text-[0.8125rem] max-[359.98px]:text-[0.75rem]";
 
 function AskLabel() {
   const t = useT();
@@ -91,7 +97,7 @@ function AskLabel() {
           the links, so it says the short of it. */}
       <span className="max-lg:hidden">{t("Get your free proposal", "Pedir proposta gratuita")}</span>
       <span className="lg:hidden">{t("Free proposal", "Proposta gratuita")}</span>
-      <span aria-hidden="true" className="ml-2.5 inline-block">
+      <span aria-hidden="true" className="ml-2.5 inline-block max-[399.98px]:hidden">
         &rarr;
       </span>
     </span>
@@ -133,6 +139,160 @@ function ProposalAsk() {
     >
       <AskLabel />
     </button>
+  );
+}
+
+/* ==================================================================
+   The menu, on a phone
+
+   Under 640px the bar has no room for its links beside the button, so
+   they are folded behind "Menu" (user, 2026-10-19): a cell of its own at
+   the bar's end, ruled off as the links are, which reads "Close" while it
+   is open. The panel drops from under the bar, the bar's width, and is
+   dressed as the foot is: black, a small grey label over the list, the
+   links in the title face, ruled off by the foot's own hairline. It
+   holds the bar's three links and one more, the way to the two forms at
+   the foot of the page ("Get a quote"), which every page ends with. The
+   proposal stays on the bar, where it always is.
+
+   It closes on a link, on Escape, on a touch outside it, when focus
+   leaves it, and when the screen grows past the phone's width.
+   ================================================================== */
+
+const MENU_EXTRA: { label: Copy; href: string } = {
+  label: { en: "Get a quote", pt: "Pedir orçamento" },
+  href: "#work-together",
+};
+
+/** The width under which the bar's links fold into the menu (sm). */
+const PHONE = "(max-width: 639.98px)";
+
+function useMenu(tucked: boolean) {
+  const [open, setOpen] = useState(false);
+  // Held still while the panel is out, by the page's own lock.
+  useEffect(() => {
+    holdScroll("menu", open);
+    return () => holdScroll("menu", false);
+  }, [open]);
+  // The links come back to the bar on a wider screen, and the bar steps
+  // out of the way at the foot: either way the panel goes.
+  useEffect(() => {
+    if (!open) return;
+    const list = window.matchMedia(PHONE);
+    const shut = () => !list.matches && setOpen(false);
+    list.addEventListener("change", shut);
+    return () => list.removeEventListener("change", shut);
+  }, [open]);
+  useEffect(() => {
+    if (tucked) setOpen(false);
+  }, [tucked]);
+  return [open, setOpen] as const;
+}
+
+function MenuButton({ open, panel, onToggle }: { open: boolean; panel: string; onToggle: () => void }) {
+  const t = useT();
+  return (
+    <span className="flex items-stretch border-l border-paper/15 sm:hidden">
+      <button
+        type="button"
+        data-menu-toggle
+        aria-expanded={open}
+        aria-controls={panel}
+        onClick={onToggle}
+        // To the bar's own edge, so the whole end of the bar is the button.
+        className="nav-link -mr-3 flex items-center justify-center px-3 font-mono text-[0.6875rem] tracking-[0.04em] text-paper uppercase"
+      >
+        {/* Both words laid out in the same cell, so it is as wide as the
+            longer and the bar does not shift when it turns. */}
+        <span className="grid">
+          <span className={`nav-link-label col-start-1 row-start-1 text-center ${open ? "invisible" : ""}`}>Menu</span>
+          <span className={`nav-link-label col-start-1 row-start-1 text-center ${open ? "" : "invisible"}`}>
+            {t("Close", "Fechar")}
+          </span>
+        </span>
+      </button>
+    </span>
+  );
+}
+
+function MenuPanel({
+  id,
+  onHome,
+  onClose,
+}: {
+  id: string;
+  onHome: boolean;
+  onClose: (focusBack: boolean) => void;
+}) {
+  const reduce = useReducedMotion() ?? false;
+  const href = useHref();
+  const t = useT();
+  const items = [...NAV, MENU_EXTRA];
+
+  /* A place on this page is scrolled to once the page is let go: followed
+     at once, it would be asked of a page still held for the menu. */
+  const follow = (event: MouseEvent<HTMLAnchorElement>, to: string) => {
+    if (!to.startsWith("#")) {
+      onClose(false);
+      return;
+    }
+    event.preventDefault();
+    onClose(false);
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        const target = to === "#top" ? 0 : document.getElementById(to.slice(1));
+        if (target === null) return;
+        const lenis = getLenis();
+        if (lenis) lenis.scrollTo(target, { force: true });
+        else if (target === 0) window.scrollTo({ top: 0 });
+        else target.scrollIntoView();
+      }),
+    );
+  };
+
+  return (
+    <motion.div
+      id={id}
+      // Its own scrolling on a screen too short for it, which the page's
+      // smooth scroll must leave alone (see Lenis's prevent attribute).
+      data-lenis-prevent
+      initial={reduce ? { opacity: 0 } : { clipPath: "inset(0 0 100% 0)" }}
+      animate={reduce ? { opacity: 1 } : { clipPath: "inset(0 0 0% 0)" }}
+      exit={reduce ? { opacity: 0 } : { clipPath: "inset(0 0 100% 0)" }}
+      transition={{ duration: reduce ? 0.15 : 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="ftr pointer-events-auto -mx-3 max-h-[calc(100svh-6rem)] overflow-y-auto overscroll-contain border-t border-paper/15 px-3 pt-6 pb-7 text-paper sm:hidden"
+    >
+      <nav aria-label={t("Menu", "Menu")}>
+        <p className="ftr-label">Menu</p>
+        <ul className="mt-3">
+          {items.map((item, i) => {
+            // The bar's links point at the home page; the way to the
+            // forms is to this page's own, which every page ends with.
+            const to = item === MENU_EXTRA ? item.href : homeSection(item.href, onHome);
+            return (
+              <motion.li
+                key={item.href}
+                initial={reduce ? false : { opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: reduce ? 0 : 0.08 + i * 0.045, ease: [0.22, 1, 0.36, 1] }}
+                className="border-b border-white/10"
+              >
+                <a
+                  href={href(to)}
+                  onClick={(event) => follow(event, to)}
+                  className="ftr-menu-item flex items-center justify-between py-3.5"
+                >
+                  <span className="ftr-link">{t(item.label)}</span>
+                  <span aria-hidden="true" className="text-[1.125rem] text-paper/45">
+                    &rarr;
+                  </span>
+                </a>
+              </motion.li>
+            );
+          })}
+        </ul>
+      </nav>
+    </motion.div>
   );
 }
 
@@ -178,13 +338,53 @@ export function FloatingNav({
     setTucked(foot.getBoundingClientRect().top < b.offsetTop + b.offsetHeight + 16);
   });
 
+  const [menuOpen, setMenuOpen] = useMenu(tucked);
+  const menuId = useId();
+  const header = useRef<HTMLElement>(null);
+  const closeMenu = (focusBack: boolean) => {
+    setMenuOpen(false);
+    if (focusBack) header.current?.querySelector<HTMLElement>("[data-menu-toggle]")?.focus();
+  };
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.stopPropagation();
+      closeMenu(true);
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [menuOpen]);
+
   return (
+    <>
+    {/* What is under the open menu: dimmed, and a touch on it closes it. */}
+    <AnimatePresence>
+      {menuOpen && (
+        <motion.div
+          key="menu-shade"
+          aria-hidden="true"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: reduce ? 0 : 0.35 }}
+          onClick={() => closeMenu(false)}
+          className="fixed inset-0 z-40 bg-ink/35 sm:hidden"
+        />
+      )}
+    </AnimatePresence>
     <motion.header
+      ref={header}
       style={{ opacity }}
       animate={{ y: tucked ? "-120%" : "0%" }}
       transition={{ duration: reduce ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
       // Out of reach while it is out of sight.
       inert={tucked}
+      // Focus that leaves the bar and its menu closes the menu.
+      onBlur={(event) => {
+        if (menuOpen && !event.currentTarget.contains(event.relatedTarget as Node | null)) closeMenu(false);
+      }}
       className="pointer-events-none fixed inset-x-0 top-0 z-50 pt-4 md:pt-6"
     >
       {/* Same container as the headline, so the two share a left edge. The
@@ -193,7 +393,7 @@ export function FloatingNav({
           between the gutter and that padding as the float. */}
       <div className="shell">
         {/* Square-cornered, as everything set on the gallery wall is. */}
-        <div ref={bar} className="pointer-events-auto -mx-3 flex items-center justify-between gap-4 bg-ink px-3 py-2.5 md:-mx-5 md:gap-8 md:px-5 md:py-[0.8125rem] xl:-mx-8 xl:px-8">
+        <div ref={bar} className="pointer-events-auto -mx-3 flex items-center justify-between gap-4 bg-ink px-3 py-2.5 max-[399.98px]:gap-2.5 md:-mx-5 md:gap-8 md:px-5 md:py-[0.8125rem] xl:-mx-8 xl:px-8">
           <a
             href={onHome ? "#top" : href("/")}
             aria-label={t("nevima, home", "nevima, início")}
@@ -207,7 +407,7 @@ export function FloatingNav({
               src="/nevima-wordmark-white.svg"
               alt="nevima"
               onLoad={onMarkLoad}
-              className="block h-[1.35rem] w-auto md:h-[1.55rem]"
+              className="block h-[1.35rem] w-auto max-[399.98px]:h-[1.125rem] max-[359.98px]:h-[0.9375rem] md:h-[1.55rem]"
               style={{ opacity: markVisible ? 1 : 0 }}
             />
           </a>
@@ -240,13 +440,21 @@ export function FloatingNav({
                 of its own. The cell is padded by what the row took from the
                 bar, so the drop, taller than the words beside it, sets the
                 bar's height. */}
-            <span className="flex items-center border-paper/15 py-2.5 sm:border-l sm:pl-4 md:py-[0.8125rem] md:pl-5">
+            <span
+              className="flex items-center border-paper/15 py-2.5 sm:border-l sm:pl-4 md:py-[0.8125rem] md:pl-5 max-sm:pr-3 max-[359.98px]:pr-2.5"
+              onClickCapture={() => menuOpen && setMenuOpen(false)}
+            >
               <ProposalAsk />
             </span>
+            <MenuButton open={menuOpen} panel={menuId} onToggle={() => setMenuOpen(!menuOpen)} />
           </motion.nav>
         </div>
+        <AnimatePresence>
+          {menuOpen && <MenuPanel key="menu" id={menuId} onHome={onHome} onClose={closeMenu} />}
+        </AnimatePresence>
       </div>
     </motion.header>
+    </>
   );
 }
 
