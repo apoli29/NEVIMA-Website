@@ -1,0 +1,15 @@
+viewport   | second screen: cut top/bottom (px) | how we work: cut top/bottom (px)
+320x568    |  free / free                     |  free / free   (shut until opened)
+360x640    |     0 / 0                        |  free / free   (shut until opened)
+375x667    |     0 / 0                        |     0 / 0   (shut until opened)
+360x740    |     0 / 0                        |     0 / 0   (shut until opened)
+390x844    |     0 / 0                        |     0 / 0   (shut until opened)
+414x896    |     0 / 0                        |     0 / 0   (shut until opened)
+568x320    |  free / free                     |  free / free   (shut until opened)
+667x375    |  free / free                     |  free / free   (shut until opened)
+740x360    |  free / free                     |  free / free   (shut until opened)
+844x390    |  free / free                     |  free / free   (shut until opened)
+932x430    |  free / free                     |  free / free   (shut until opened)
+1024x600   |  free / free                     |  free / free
+1280x720   |     0 / 0                        |     0 / 0
+1366x768   |     0 / 0                        |     0 / 0

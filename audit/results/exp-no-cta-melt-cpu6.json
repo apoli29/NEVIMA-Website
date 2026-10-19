@@ -1,0 +1,746 @@
+{
+  "label": "exp-no-cta-melt",
+  "cpu": 6,
+  "webgl": false,
+  "inject": "audit/experiments/no-cta-melt.css",
+  "init": null,
+  "base": "http://localhost:3000",
+  "phone": {
+    "viewport": {
+      "width": 412,
+      "height": 915
+    },
+    "deviceScaleFactor": 2.625,
+    "isMobile": true,
+    "hasTouch": true,
+    "userAgent": "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Mobile Safari/537.36"
+  },
+  "date": "2026-10-19T01:07:26.052Z",
+  "results": [
+    {
+      "id": "second-screen-idle",
+      "title": "Second screen at rest (water + rotating headline)",
+      "windowMs": 4000,
+      "frames": {
+        "rafFps": 40.5,
+        "p50Ms": 16.7,
+        "p95Ms": 83.3,
+        "worstMs": 200.1,
+        "over33Pct": 9.9,
+        "over50Pct": 7.4
+      },
+      "compositor": {
+        "presentedFps": 62,
+        "droppedPct": 0,
+        "states": {
+          "STATE_PRESENTED_ALL": 164,
+          "STATE_PRESENTED_PARTIAL": 84
+        }
+      },
+      "longTasks": {
+        "count": 12,
+        "blockingMs": 562,
+        "longestMs": 211
+      },
+      "interactions": {},
+      "cls": 1,
+      "cdp": {
+        "taskMs": 4938.9,
+        "scriptMs": 417,
+        "layoutMs": 108.4,
+        "styleMs": 1498.6,
+        "layoutCount": 25,
+        "styleCount": 263
+      },
+      "trace": {
+        "mainThreadMs": {
+          "RunTask": 3406.7,
+          "FunctionCall": 344.3,
+          "FireAnimationFrame": 289.9,
+          "TimerFire": 8.6,
+          "EventDispatch": 19.5,
+          "UpdateLayoutTree": 991.2,
+          "Layout": 88.9,
+          "PrePaint": 453.6,
+          "Paint": 216.9,
+          "Layerize": 351.4,
+          "Commit": 238.3,
+          "HitTest": 91.3,
+          "MajorGC": 0,
+          "MinorGC": 0,
+          "V8.GC_SCAVENGER": 0
+        },
+        "paintCount": 249,
+        "rasterMs": 24.8,
+        "gpuProcessMs": 416.4,
+        "frameStates": {
+          "STATE_PRESENTED_ALL": 164,
+          "STATE_PRESENTED_PARTIAL": 84
+        },
+        "topPainted": [
+          {
+            "node": "PaintImage: ::after",
+            "count": 80,
+            "ms": 8.5
+          },
+          {
+            "node": "Paint: #document",
+            "count": 68,
+            "ms": 164.3
+          },
+          {
+            "node": "Paint: BUTTON class='idx-link idx-ask w-full text-left'",
+            "count": 44,
+            "ms": 12.3
+          },
+          {
+            "node": "Paint: A class='idx-link idx-ask idx-ask-second'",
+            "count": 44,
+            "ms": 4.7
+          },
+          {
+            "node": "Paint: A class='svc-folio'",
+            "count": 42,
+            "ms": 2.9
+          },
+          {
+            "node": "Paint: SPAN class='absolute inset-x-0 top-0 block leading-[1.16] whitespace-nowrap'",
+            "count": 24,
+            "ms": 0.3
+          },
+          {
+            "node": "Paint: DIV class='pointer-events-none absolute inset-0 z-10 pt-[7.25rem] pb-[clamp(1.25rem,3.5svh",
+            "count": 12,
+            "ms": 24.6
+          },
+          {
+            "node": "Paint: LI class='relative'",
+            "count": 5,
+            "ms": 0.1
+          },
+          {
+            "node": "Paint: SPAN class='absolute inset-x-0 top-0 z-10 block h-px origin-left bg-ink'",
+            "count": 5,
+            "ms": 1.8
+          },
+          {
+            "node": "Paint: A class='idx-link'",
+            "count": 3,
+            "ms": 2.9
+          },
+          {
+            "node": "Paint: SPAN class='idx-title'",
+            "count": 2,
+            "ms": 2.9
+          }
+        ]
+      },
+      "run": 1
+    },
+    {
+      "id": "how-we-work-scroll",
+      "title": "How we work: the row slides while the page scrolls",
+      "windowMs": 7589,
+      "frames": {
+        "rafFps": 51,
+        "p50Ms": 16.7,
+        "p95Ms": 33.3,
+        "worstMs": 283.4,
+        "over33Pct": 1.6,
+        "over50Pct": 1.3
+      },
+      "compositor": {
+        "presentedFps": 60.6,
+        "droppedPct": 0.4,
+        "states": {
+          "STATE_PRESENTED_ALL": 387,
+          "STATE_DROPPED": 2,
+          "STATE_PRESENTED_PARTIAL": 73
+        }
+      },
+      "longTasks": {
+        "count": 4,
+        "blockingMs": 617,
+        "longestMs": 289
+      },
+      "interactions": {
+        "7910": 40,
+        "7917": 24,
+        "7924": 32,
+        "7931": 40,
+        "7938": 32,
+        "7945": 24,
+        "7952": 24,
+        "7959": 296,
+        "7966": 32
+      },
+      "cls": 1,
+      "cdp": {
+        "taskMs": 7784.8,
+        "scriptMs": 612.3,
+        "layoutMs": 54,
+        "styleMs": 2776.8,
+        "layoutCount": 21,
+        "styleCount": 570
+      },
+      "trace": {
+        "mainThreadMs": {
+          "RunTask": 5661.2,
+          "FunctionCall": 496,
+          "FireAnimationFrame": 298.5,
+          "TimerFire": 24.7,
+          "EventDispatch": 206.2,
+          "UpdateLayoutTree": 1860.6,
+          "Layout": 40,
+          "PrePaint": 823.3,
+          "Paint": 335.3,
+          "Layerize": 414,
+          "Commit": 422.3,
+          "HitTest": 39.8,
+          "MajorGC": 33.7,
+          "MinorGC": 4.9,
+          "V8.GC_SCAVENGER": 4
+        },
+        "paintCount": 654,
+        "rasterMs": 6.8,
+        "gpuProcessMs": 722.9,
+        "frameStates": {
+          "STATE_PRESENTED_ALL": 387,
+          "STATE_DROPPED": 2,
+          "STATE_PRESENTED_PARTIAL": 73
+        },
+        "topPainted": [
+          {
+            "node": "PaintImage: ::after",
+            "count": 269,
+            "ms": 20.7
+          },
+          {
+            "node": "Paint: #document",
+            "count": 167,
+            "ms": 254.2
+          },
+          {
+            "node": "Paint: BUTTON class='idx-link idx-ask w-full text-left'",
+            "count": 147,
+            "ms": 29.2
+          },
+          {
+            "node": "Paint: A class='idx-link idx-ask idx-ask-second'",
+            "count": 147,
+            "ms": 14.8
+          },
+          {
+            "node": "Paint: A class='svc-folio'",
+            "count": 147,
+            "ms": 17.8
+          },
+          {
+            "node": "Paint: SPAN class='absolute inset-x-0 top-0 block leading-[1.16] whitespace-nowrap'",
+            "count": 34,
+            "ms": 2.5
+          },
+          {
+            "node": "Paint: DIV class='pointer-events-none absolute inset-0 z-10 pt-[7.25rem] pb-[clamp(1.25rem,3.5svh",
+            "count": 12,
+            "ms": 16.8
+          }
+        ]
+      },
+      "run": 1
+    },
+    {
+      "id": "how-we-work-idle",
+      "title": "How we work at rest, mid-row (cost of what keeps running)",
+      "windowMs": 4001,
+      "frames": {
+        "rafFps": 53,
+        "p50Ms": 16.7,
+        "p95Ms": 16.8,
+        "worstMs": 200.1,
+        "over33Pct": 1.9,
+        "over50Pct": 0.9
+      },
+      "compositor": {
+        "presentedFps": 61.2,
+        "droppedPct": 0,
+        "states": {
+          "STATE_PRESENTED_ALL": 219,
+          "STATE_PRESENTED_PARTIAL": 26
+        }
+      },
+      "longTasks": {
+        "count": 2,
+        "blockingMs": 255,
+        "longestMs": 195
+      },
+      "interactions": {},
+      "cls": 1,
+      "cdp": {
+        "taskMs": 3789.7,
+        "scriptMs": 234.9,
+        "layoutMs": 23.5,
+        "styleMs": 1313.1,
+        "layoutCount": 11,
+        "styleCount": 293
+      },
+      "trace": {
+        "mainThreadMs": {
+          "RunTask": 2709.1,
+          "FunctionCall": 190.8,
+          "FireAnimationFrame": 148.3,
+          "TimerFire": 15.4,
+          "EventDispatch": 16.7,
+          "UpdateLayoutTree": 888.2,
+          "Layout": 14.9,
+          "PrePaint": 458.3,
+          "Paint": 209.6,
+          "Layerize": 218,
+          "Commit": 193.9,
+          "HitTest": 8.6,
+          "MajorGC": 15.8,
+          "MinorGC": 0,
+          "V8.GC_SCAVENGER": 0
+        },
+        "paintCount": 357,
+        "rasterMs": 1.9,
+        "gpuProcessMs": 357.2,
+        "frameStates": {
+          "STATE_PRESENTED_ALL": 219,
+          "STATE_PRESENTED_PARTIAL": 26
+        },
+        "topPainted": [
+          {
+            "node": "PaintImage: ::after",
+            "count": 117,
+            "ms": 9.5
+          },
+          {
+            "node": "Paint: #document",
+            "count": 99,
+            "ms": 161.2
+          },
+          {
+            "node": "Paint: BUTTON class='idx-link idx-ask w-full text-left'",
+            "count": 77,
+            "ms": 18.1
+          },
+          {
+            "node": "Paint: A class='idx-link idx-ask idx-ask-second'",
+            "count": 77,
+            "ms": 13.2
+          },
+          {
+            "node": "Paint: A class='svc-folio'",
+            "count": 77,
+            "ms": 11.3
+          },
+          {
+            "node": "Paint: SPAN class='absolute inset-x-0 top-0 block leading-[1.16] whitespace-nowrap'",
+            "count": 21,
+            "ms": 2.6
+          },
+          {
+            "node": "Paint: DIV class='pointer-events-none absolute inset-0 z-10 pt-[7.25rem] pb-[clamp(1.25rem,3.5svh",
+            "count": 6,
+            "ms": 3.2
+          }
+        ]
+      },
+      "run": 1
+    },
+    {
+      "id": "how-we-work-chip",
+      "title": "How we work: tap the four extra-service chips (interaction latency)",
+      "windowMs": 4503,
+      "frames": {
+        "rafFps": 36.2,
+        "p50Ms": 16.7,
+        "p95Ms": 83.3,
+        "worstMs": 233.3,
+        "over33Pct": 9.2,
+        "over50Pct": 6.7
+      },
+      "compositor": {
+        "presentedFps": 60.6,
+        "droppedPct": 0.4,
+        "states": {
+          "STATE_PRESENTED_ALL": 172,
+          "STATE_PRESENTED_PARTIAL": 101,
+          "STATE_DROPPED": 1
+        }
+      },
+      "longTasks": {
+        "count": 10,
+        "blockingMs": 896,
+        "longestMs": 220
+      },
+      "interactions": {
+        "4443": 312,
+        "4450": 312,
+        "4457": 304,
+        "4464": 264
+      },
+      "cls": 1,
+      "cdp": {
+        "taskMs": 4904,
+        "scriptMs": 484.2,
+        "layoutMs": 71.1,
+        "styleMs": 1953.9,
+        "layoutCount": 18,
+        "styleCount": 259
+      },
+      "trace": {
+        "mainThreadMs": {
+          "RunTask": 3811.8,
+          "FunctionCall": 438.2,
+          "FireAnimationFrame": 182.7,
+          "TimerFire": 12.5,
+          "EventDispatch": 177.7,
+          "UpdateLayoutTree": 1460.5,
+          "Layout": 62.2,
+          "PrePaint": 422.4,
+          "Paint": 253.9,
+          "Layerize": 189.6,
+          "Commit": 160.8,
+          "HitTest": 67.4,
+          "MajorGC": 22,
+          "MinorGC": 14.9,
+          "V8.GC_SCAVENGER": 8.7
+        },
+        "paintCount": 280,
+        "rasterMs": 9.7,
+        "gpuProcessMs": 422.9,
+        "frameStates": {
+          "STATE_PRESENTED_ALL": 172,
+          "STATE_PRESENTED_PARTIAL": 101,
+          "STATE_DROPPED": 1
+        },
+        "topPainted": [
+          {
+            "node": "PaintImage: ::after",
+            "count": 85,
+            "ms": 7.9
+          },
+          {
+            "node": "Paint: #document",
+            "count": 72,
+            "ms": 174.3
+          },
+          {
+            "node": "Paint: BUTTON class='idx-link idx-ask w-full text-left'",
+            "count": 49,
+            "ms": 5.5
+          },
+          {
+            "node": "Paint: A class='idx-link idx-ask idx-ask-second'",
+            "count": 49,
+            "ms": 2.9
+          },
+          {
+            "node": "Paint: A class='svc-folio'",
+            "count": 48,
+            "ms": 4.8
+          },
+          {
+            "node": "Paint: DIV class='sticky top-0 flex h-[100svh] flex-col justify-center overflow-hidden pt-[clamp(",
+            "count": 30,
+            "ms": 41.3
+          },
+          {
+            "node": "Paint: SPAN class='absolute inset-x-0 top-0 block leading-[1.16] whitespace-nowrap'",
+            "count": 16,
+            "ms": 0.9
+          },
+          {
+            "node": "PaintImage: ::before",
+            "count": 9,
+            "ms": 1.5
+          },
+          {
+            "node": "PaintImage: DIV class='cmp-ground'",
+            "count": 8,
+            "ms": 0.1
+          },
+          {
+            "node": "Paint: DIV class='pointer-events-none absolute inset-0 z-10 pt-[7.25rem] pb-[clamp(1.25rem,3.5svh",
+            "count": 5,
+            "ms": 2.6
+          },
+          {
+            "node": "Paint: OL class='prc-track'",
+            "count": 4,
+            "ms": 17.2
+          },
+          {
+            "node": "Paint: SECTION class='sticky top-0 h-[100svh] overflow-hidden bg-paper'",
+            "count": 4,
+            "ms": 1.4
+          }
+        ]
+      },
+      "run": 1
+    },
+    {
+      "id": "lower-sections",
+      "title": "Comparison → work together → footer",
+      "windowMs": 7488,
+      "frames": {
+        "rafFps": 47.9,
+        "p50Ms": 16.7,
+        "p95Ms": 33.4,
+        "worstMs": 183.3,
+        "over33Pct": 2.5,
+        "over50Pct": 1.7
+      },
+      "compositor": {
+        "presentedFps": 61.2,
+        "droppedPct": 0.7,
+        "states": {
+          "STATE_PRESENTED_ALL": 361,
+          "STATE_PRESENTED_PARTIAL": 97,
+          "STATE_DROPPED": 3
+        }
+      },
+      "longTasks": {
+        "count": 5,
+        "blockingMs": 582,
+        "longestMs": 177
+      },
+      "interactions": {
+        "8691": 56,
+        "8698": 168,
+        "8705": 40,
+        "8712": 32,
+        "8719": 72,
+        "8726": 40,
+        "8733": 32,
+        "8740": 32
+      },
+      "cls": 1,
+      "cdp": {
+        "taskMs": 10850.5,
+        "scriptMs": 958.9,
+        "layoutMs": 193,
+        "styleMs": 3202.9,
+        "layoutCount": 626,
+        "styleCount": 1214
+      },
+      "trace": {
+        "mainThreadMs": {
+          "RunTask": 7337.1,
+          "FunctionCall": 1721.5,
+          "FireAnimationFrame": 1574,
+          "TimerFire": 20.1,
+          "EventDispatch": 184.6,
+          "UpdateLayoutTree": 1974.7,
+          "Layout": 114.3,
+          "PrePaint": 818.8,
+          "Paint": 471.1,
+          "Layerize": 745.2,
+          "Commit": 606.2,
+          "HitTest": 313,
+          "MajorGC": 27.7,
+          "MinorGC": 5,
+          "V8.GC_SCAVENGER": 3.2
+        },
+        "paintCount": 1205,
+        "rasterMs": 88.7,
+        "gpuProcessMs": 420.8,
+        "frameStates": {
+          "STATE_PRESENTED_ALL": 361,
+          "STATE_PRESENTED_PARTIAL": 97,
+          "STATE_DROPPED": 3
+        },
+        "topPainted": [
+          {
+            "node": "Paint: #document",
+            "count": 358,
+            "ms": 368.6
+          },
+          {
+            "node": "Paint: DIV class='cmp-edge'",
+            "count": 358,
+            "ms": 53.5
+          },
+          {
+            "node": "PaintImage: ::after",
+            "count": 253,
+            "ms": 14.2
+          },
+          {
+            "node": "Paint: BUTTON class='idx-link idx-ask w-full text-left'",
+            "count": 125,
+            "ms": 24.9
+          },
+          {
+            "node": "Paint: A class='idx-link idx-ask idx-ask-second'",
+            "count": 125,
+            "ms": 6.3
+          },
+          {
+            "node": "Paint: A class='svc-folio'",
+            "count": 125,
+            "ms": 5.2
+          },
+          {
+            "node": "Paint: SPAN class='absolute inset-x-0 top-0 block leading-[1.16] whitespace-nowrap'",
+            "count": 67,
+            "ms": 2.6
+          },
+          {
+            "node": "Paint: SPAN class='cmp-marked-over'",
+            "count": 33,
+            "ms": 0.3
+          },
+          {
+            "node": "Paint: DIV class='pointer-events-none absolute inset-0 z-10 pt-[7.25rem] pb-[clamp(1.25rem,3.5svh",
+            "count": 14,
+            "ms": 9.8
+          }
+        ]
+      },
+      "run": 1
+    },
+    {
+      "id": "about-scroll",
+      "title": "About page: scroll top to bottom",
+      "windowMs": 9446,
+      "frames": {
+        "rafFps": 59.8,
+        "p50Ms": 16.7,
+        "p95Ms": 16.7,
+        "worstMs": 33.4,
+        "over33Pct": 0.2,
+        "over50Pct": 0
+      },
+      "compositor": {
+        "presentedFps": 60.6,
+        "droppedPct": 0.2,
+        "states": {
+          "STATE_PRESENTED_ALL": 571,
+          "STATE_DROPPED": 1,
+          "STATE_PRESENTED_PARTIAL": 1
+        }
+      },
+      "longTasks": {
+        "count": 0,
+        "blockingMs": 0,
+        "longestMs": 0
+      },
+      "interactions": {
+        "9704": 32,
+        "9711": 16,
+        "9718": 24,
+        "9725": 16,
+        "9732": 24,
+        "9739": 32,
+        "9746": 16,
+        "9753": 24,
+        "9760": 16,
+        "9767": 16,
+        "9774": 16
+      },
+      "cls": 0,
+      "cdp": {
+        "taskMs": 4794.8,
+        "scriptMs": 438.5,
+        "layoutMs": 0,
+        "styleMs": 1200.5,
+        "layoutCount": 0,
+        "styleCount": 778
+      },
+      "trace": {
+        "mainThreadMs": {
+          "RunTask": 3912.5,
+          "FunctionCall": 430.3,
+          "FireAnimationFrame": 290.9,
+          "TimerFire": 12.5,
+          "EventDispatch": 224.4,
+          "UpdateLayoutTree": 892.7,
+          "Layout": 0,
+          "PrePaint": 759.7,
+          "Paint": 0,
+          "Layerize": 19.3,
+          "Commit": 415.8,
+          "HitTest": 65.2,
+          "MajorGC": 0,
+          "MinorGC": 3.7,
+          "V8.GC_SCAVENGER": 3.6
+        },
+        "paintCount": 0,
+        "rasterMs": 0,
+        "gpuProcessMs": 368.3,
+        "frameStates": {
+          "STATE_PRESENTED_ALL": 571,
+          "STATE_DROPPED": 1,
+          "STATE_PRESENTED_PARTIAL": 1
+        },
+        "topPainted": []
+      },
+      "run": 1
+    },
+    {
+      "id": "portfolio-idle",
+      "title": "Portfolio at rest",
+      "windowMs": 4000,
+      "frames": {
+        "rafFps": 60,
+        "p50Ms": 16.7,
+        "p95Ms": 16.8,
+        "worstMs": 16.8,
+        "over33Pct": 0,
+        "over50Pct": 0
+      },
+      "compositor": {
+        "presentedFps": 60.3,
+        "droppedPct": 0,
+        "states": {
+          "STATE_PRESENTED_ALL": 241
+        }
+      },
+      "longTasks": {
+        "count": 0,
+        "blockingMs": 0,
+        "longestMs": 0
+      },
+      "interactions": {},
+      "cls": 0,
+      "cdp": {
+        "taskMs": 1029.6,
+        "scriptMs": 85.6,
+        "layoutMs": 0,
+        "styleMs": 231,
+        "layoutCount": 0,
+        "styleCount": 309
+      },
+      "trace": {
+        "mainThreadMs": {
+          "RunTask": 903.7,
+          "FunctionCall": 88.6,
+          "FireAnimationFrame": 103.3,
+          "TimerFire": 3.6,
+          "EventDispatch": 9.9,
+          "UpdateLayoutTree": 192,
+          "Layout": 0,
+          "PrePaint": 200,
+          "Paint": 0,
+          "Layerize": 0.7,
+          "Commit": 76.8,
+          "HitTest": 0,
+          "MajorGC": 0,
+          "MinorGC": 0,
+          "V8.GC_SCAVENGER": 0
+        },
+        "paintCount": 0,
+        "rasterMs": 0,
+        "gpuProcessMs": 515.1,
+        "frameStates": {
+          "STATE_PRESENTED_ALL": 241
+        },
+        "topPainted": []
+      },
+      "run": 1
+    }
+  ]
+}

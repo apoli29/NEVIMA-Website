@@ -12,6 +12,7 @@ import {
 import { basePath, type Copy } from "@/lib/i18n";
 import { useHref, useT } from "@/lib/use-lang";
 import { useProposal } from "./proposal-flow";
+import { Glass } from "./cta-glass";
 
 /* ==================================================================
    The bar is a black, square-cornered strip floating clear of the page
@@ -60,6 +61,7 @@ function Pass({
       // it is not the one written last in the attribute.
       className={`relative isolate items-center justify-center whitespace-nowrap ${className}`}
     >
+      {className.includes("cta-drop") && <Glass />}
       {/* On its own layer so it can lean forward without the button
           following it (see .btn-neu-face). */}
       <span className="btn-neu-face">{label}</span>
@@ -82,6 +84,8 @@ const ASK_CLASS = "cta-drop cta-drop-light inline-flex items-center justify-cent
 function AskLabel() {
   const t = useT();
   return (
+    <>
+    <Glass />
     <span className="btn-neu-face">
       {/* In full from lg; below it the bar has no room for it beside
           the links, so it says the short of it. */}
@@ -91,6 +95,7 @@ function AskLabel() {
         &rarr;
       </span>
     </span>
+    </>
   );
 }
 
@@ -192,7 +197,7 @@ export function FloatingNav({
           <a
             href={onHome ? "#top" : href("/")}
             aria-label={t("nevima, home", "nevima, início")}
-            className="flex shrink-0 items-center"
+            className="hit-wide flex shrink-0 items-center"
           >
             {/* Held invisible until the opening mark has landed on it, then
                 taken over from the flying copy in the same pixels. */}

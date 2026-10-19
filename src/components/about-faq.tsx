@@ -8,6 +8,7 @@ import { PassLink } from "./floating-nav";
 import { useProposal } from "./proposal-flow";
 import { Chevron, Illuminated, LIGHT_DELAY_MS, Stressed } from "./services";
 import { useSeen } from "./use-seen";
+import { Glass } from "./cta-glass";
 
 /* ==================================================================
    FAQ
@@ -524,6 +525,7 @@ function ProposalAsk({ label }: { label: string }) {
   if (!proposal) {
     return (
       <a href={href("/#proposal")} className={look}>
+        <Glass />
         <span className="btn-neu-face">
           <Arrowed>{label}</Arrowed>
         </span>
@@ -544,6 +546,7 @@ function ProposalAsk({ label }: { label: string }) {
       className={look}
       style={{ visibility: launched && present ? "hidden" : undefined }}
     >
+      <Glass />
       <span className="btn-neu-face">
         <Arrowed>{label}</Arrowed>
       </span>

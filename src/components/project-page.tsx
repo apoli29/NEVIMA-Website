@@ -7,6 +7,7 @@ import { FloatingNav } from "./floating-nav";
 import { Footer } from "./footer";
 import { useSmoothScroll } from "./smooth-scroll";
 import { STATUS_LABEL, TO_FILL, previewPath, shown, type Project } from "@/lib/work";
+import { Glass } from "./cta-glass";
 
 /* ==================================================================
    A project's page
@@ -149,6 +150,8 @@ function Action({
 }) {
   const className = `cta-drop inline-flex shrink-0 text-[1rem] leading-none ${light ? "cta-drop-light" : ""}`;
   const face = (
+    <>
+    <Glass />
     <span className="btn-neu-face">
       {children}
       {arrow && (
@@ -157,6 +160,7 @@ function Action({
         </span>
       )}
     </span>
+    </>
   );
   if (!href) {
     return (

@@ -18,6 +18,7 @@ import { leavePortfolio } from "@/lib/return-spot";
 import { covered, fadeThen } from "./page-wipe";
 import { projectsIn, serviceLabel, shown, type Project } from "@/lib/work";
 import { useLang, useT } from "@/lib/use-lang";
+import { Glass } from "./cta-glass";
 
 /* ==================================================================
    The portfolio
@@ -156,6 +157,7 @@ export function Portfolio() {
             onClick={leave}
             className="fo-exit cta-drop inline-flex text-[0.9375rem] leading-none"
           >
+            <Glass />
             <span className="btn-neu-face">
               <span aria-hidden="true" className="fo-exit-arrow">
                 <svg viewBox="0 0 16 16" width="14" height="14" fill="none" className="block">
@@ -174,6 +176,7 @@ export function Portfolio() {
             className="cta-drop cta-drop-light inline-flex text-[0.9375rem] leading-none"
             style={{ visibility: proposal.present ? "hidden" : undefined }}
           >
+            <Glass />
             <span className="btn-neu-face">{t("Let’s work together", "Vamos trabalhar juntos")}</span>
           </button>
         </motion.nav>
