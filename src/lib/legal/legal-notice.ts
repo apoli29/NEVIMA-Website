@@ -82,7 +82,7 @@ export const LEGAL_NOTICE: LegalRecord = {
           title: "Conteúdos do website",
           blocks: [
             {
-              p: "Os textos, o design e a marca deste website pertencem aos prestadores. As imagens de terceiros são usadas ao abrigo das respetivas licenças.",
+              p: "Os textos, o design e a marca deste website pertencem aos prestadores. As imagens de terceiros são usadas ao abrigo das respetivas licenças. O uso do website rege-se pelos [Termos de Utilização](/terms).",
             },
             {
               p: "O tratamento de dados pessoais está descrito na [Política de Privacidade](/privacy).",
@@ -162,7 +162,7 @@ export const LEGAL_NOTICE: LegalRecord = {
           title: "Website content",
           blocks: [
             {
-              p: "The texts, design and brand on this website belong to the providers. Third-party images are used under their licences.",
+              p: "The texts, design and brand on this website belong to the providers. Third-party images are used under their licences. Use of the website is governed by the [Terms of Use](/terms).",
             },
             { p: "How personal data is handled is set out in the [Privacy Policy](/privacy)." },
           ],
@@ -194,6 +194,5 @@ export const LEGAL_NOTICE: LegalRecord = {
      visível e destacado (DL 156/2005, art. 5.º-B).
    - Área territorial atual do CICAP (Regulamento Harmonizado 2026); o
      CNIACC fica como entidade supletiva nacional.
-   - Quando existirem os Termos de Utilização, ligá-los em "Conteúdos".
    - Valor da alçada (5 000 €): Lei da Organização do Sistema Judiciário.
    ------------------------------------------------------------------ */
