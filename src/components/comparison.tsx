@@ -102,7 +102,7 @@ const ROWS: Row[] = [
     criterion: "Website hosting",
     them: "Excessive costs, for two reasons: relying on platforms such as Wix, among others, that can charge over \u20ac100 a year; and a lack of transparency, which leads to prices far above what the service really costs.",
     lead: "Completely free,",
-    us: "for as long as your website is live with us.",
+    us: "with no platform or subscription to pay for.",
   },
   {
     id: "seo",
@@ -147,7 +147,7 @@ const PT_ROWS: Record<string, Omit<Row, "id">> = {
     criterion: "Alojamento do website",
     them: "Custos excessivos, por dois motivos: a dependência de plataformas como o Wix, entre outras, que podem cobrar mais de 100\u00a0\u20ac por ano; e a falta de transparência, que leva a preços muito acima do custo real do serviço.",
     lead: "Totalmente gratuito,",
-    us: "enquanto o website estiver online connosco.",
+    us: "sem plataformas nem subscrições para pagar.",
   },
   seo: {
     criterion: "Práticas de SEO",

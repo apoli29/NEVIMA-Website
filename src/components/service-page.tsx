@@ -99,7 +99,7 @@ export function ServicePage({ slug, lang }: { slug: string; lang: Lang }) {
 
           <div className="mt-11 flex flex-wrap items-center gap-3 md:mt-14">
             <a
-              href="mailto:ola@nevima.pt"
+              href="mailto:ola@nevima.studio"
               className="btn-neu rounded-[8px] px-5 py-3 text-[0.9375rem] leading-none"
             >
               <span className="btn-neu-face">{t("Get in touch", "Contactar")}</span>
