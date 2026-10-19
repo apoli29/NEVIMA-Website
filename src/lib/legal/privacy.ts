@@ -207,7 +207,7 @@ export const PRIVACY: LegalRecord = {
           title: "Cookies e armazenamento no navegador",
           blocks: [
             {
-              p: "Este website não usa cookies. Guarda no navegador apenas o necessário para funções pedidas por quem o visita: voltar ao mesmo ponto da página depois do portefólio ou de mudar de língua, não repetir a animação de abertura na mesma visita e lembrar a opção “Parar movimento”. Nada disto é usado para seguir ou identificar visitantes.",
+              p: "Este website não usa cookies. Guarda no navegador apenas o necessário para funções pedidas por quem o visita: voltar ao mesmo ponto da página depois do portefólio ou de mudar de língua, não repetir a animação de abertura na mesma visita e lembrar a opção “Parar movimento”. Nada disto é usado para seguir ou identificar visitantes. O detalhe está na [Política de Cookies](/cookies).",
             },
           ],
         },
@@ -423,7 +423,7 @@ export const PRIVACY: LegalRecord = {
           title: "Cookies and browser storage",
           blocks: [
             {
-              p: "This website uses no cookies. It keeps in your browser only what is needed for things you ask it to do: bring you back to the same place on a page after the portfolio or a language change, not replay the opening animation in the same visit, and remember “Pause motion”. None of it is used to track or identify visitors.",
+              p: "This website uses no cookies. It keeps in your browser only what is needed for things you ask it to do: bring you back to the same place on a page after the portfolio or a language change, not replay the opening animation in the same visit, and remember “Pause motion”. None of it is used to track or identify visitors. The details are in the [Cookie Policy](/cookies).",
             },
           ],
         },

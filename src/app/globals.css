@@ -3522,7 +3522,7 @@
   .lg-section:first-child { padding-top: 0; }
   .lg-h2 { font-family: var(--font-title); font-size: clamp(1.5rem, 2.4vw, 1.875rem); font-weight: 500; letter-spacing: -0.015em; line-height: 1.15; color: var(--color-ink); padding-bottom: 0.9rem; border-bottom: 1px solid var(--color-ink); margin-bottom: 1.25rem; }
   .lg-p, .lg-list li { font-size: 1.0625rem; line-height: 1.65; color: var(--color-ink); }
-  .lg-p + .lg-p, .lg-list + .lg-p, .lg-p + .lg-list, .lg-table-wrap + .lg-p { margin-top: 1rem; }
+  .lg-p + .lg-p, .lg-list + .lg-p, .lg-p + .lg-list, .lg-table-wrap + .lg-p, .lg-p + .lg-table-wrap { margin-top: 1rem; }
   .lg-list { margin-top: 0.75rem; display: grid; gap: 0.4rem; }
   .lg-list li { position: relative; padding-left: 1.25rem; }
   .lg-list li::before { content: ""; position: absolute; left: 0; top: 0.8em; width: 0.5rem; height: 1px; background: var(--color-ink); }
@@ -3537,4 +3537,24 @@
   .lg-table thead th { font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-ash); border-bottom-color: var(--color-ink); padding-top: 0; }
   .lg-table tbody th { font-weight: 500; }
   .lg-section:last-child .lg-table { min-width: 0; }
+}
+
+/* ---- cookie banner and preferences (cookie-consent.tsx) -------------
+   The banner only shows when a non-essential service exists; both
+   choices weigh the same. The preferences are a plain modal. */
+@layer components {
+  .ck-banner { position: fixed; z-index: 60; left: var(--gutter); right: var(--gutter); bottom: var(--gutter); max-width: 40rem; margin-inline: auto; background: var(--color-paper); border: 1px solid var(--color-ink); padding: 1.25rem; }
+  .ck-text { font-size: 0.9375rem; line-height: 1.5; color: var(--color-ink); }
+  .ck-actions { margin-top: 1rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; }
+  .ck-btn { cursor: pointer; border: 1px solid var(--color-ink); padding: 0.6rem 1.1rem; font-size: 0.9375rem; color: var(--color-ink); background: var(--color-paper); }
+  .ck-btn:hover, .ck-btn:focus-visible { background: var(--color-ink); color: var(--color-paper); }
+  .ck-link { cursor: pointer; font-size: 0.9375rem; text-decoration: underline; text-underline-offset: 0.18em; color: var(--color-ink); }
+  .ck-dialog { position: fixed; inset: 0; margin: auto; height: fit-content; max-height: calc(100svh - 2 * var(--gutter)); overflow: auto; width: min(32rem, calc(100vw - 2 * var(--gutter))); border: 1px solid var(--color-ink); padding: 1.75rem; background: var(--color-paper); color: var(--color-ink); }
+  .ck-dialog::backdrop { background: rgb(0 0 0 / 0.45); }
+  .ck-title { font-family: var(--font-title); font-size: 1.5rem; font-weight: 500; letter-spacing: -0.01em; margin-bottom: 1rem; }
+  .ck-list { border-top: 1px solid var(--color-ink); }
+  .ck-row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.9rem 0; border-bottom: 1px solid var(--color-hair-strong); }
+  .ck-row strong { display: block; font-weight: 500; }
+  .ck-note { display: block; font-size: 0.875rem; color: var(--color-ash); }
+  .ck-row input { width: 1.1rem; height: 1.1rem; accent-color: var(--color-ink); flex: none; margin-top: 0.2rem; }
 }

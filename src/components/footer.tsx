@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { usePathname } from "next/navigation";
 import { basePath, LANG_NAME, HTML_LANG, switchPath, type Lang } from "@/lib/i18n";
+import { openConsent } from "@/lib/consent";
 import { keepLangSpot } from "@/lib/return-spot";
 import { servicesIn } from "@/lib/services";
 import { useHref, useLang, useT } from "@/lib/use-lang";
@@ -197,6 +198,12 @@ export function Footer() {
               <a href={href("/legal-notice")} className="ftr-link ftr-meta">
                 {t("Legal notice", "Aviso legal")}
               </a>
+              <a href={href("/cookies")} className="ftr-link ftr-meta">
+                {t("Cookies", "Cookies")}
+              </a>
+              <button type="button" onClick={openConsent} className="ftr-link ftr-meta cursor-pointer">
+                {t("Cookie preferences", "Preferências de cookies")}
+              </button>
             </nav>
           </div>
           <div data-calm className="flex flex-wrap items-center gap-x-6 gap-y-3">
