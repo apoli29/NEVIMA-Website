@@ -101,8 +101,12 @@
      enough to scroll the browser has drawn a scrollbar by then: taking it
      away widens the viewport, so the centred wordmark slid half a scrollbar
      to the right before the opening had started, and its flight was
-     measured against the narrower screen. */
-  html:has([data-opening]) {
+     measured against the narrower screen. The class is put on in the head
+     before the first paint and kept right by home.tsx (OPENING_CLASS in
+     src/lib/opened.ts). It was `html:has([data-opening])`, which had the
+     browser recalculate the style of the whole page each time anything was
+     added to it, for as long as the page was open. */
+  html.nv-opening {
     overflow: hidden;
     overscroll-behavior: none;
   }

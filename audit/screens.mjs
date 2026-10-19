@@ -50,6 +50,11 @@ function holdAnimations(at) {
 }
 
 async function shot(page, dir, name) {
+  // Images arrive on real time, not on the page's clock: wait for every one
+  // to be decoded, or a photo is there in one run and not in the next.
+  await page.evaluate(() =>
+    Promise.all([...document.images].map((img) => (img.complete ? img.decode?.() : new Promise((ok) => img.addEventListener("load", ok, { once: true }))).catch?.(() => {}))),
+  );
   await page.evaluate(holdAnimations, 1500);
   // Twice, a frame apart: finishing an animation can start a follow-up one
   // (Motion chains its own), which is then held too.
