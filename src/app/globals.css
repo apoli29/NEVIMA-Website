@@ -574,6 +574,16 @@
     transition: color 0.25s ease;
   }
   .prop-close:hover { color: var(--color-ink); }
+  /* A target a finger can find (24px or more each way, WCAG 2.2), drawn
+     round the words without moving them, as the foot's small links are. */
+  .prop-close,
+  .hit-wide { position: relative; }
+  .prop-close::before,
+  .hit-wide::before {
+    content: "";
+    position: absolute;
+    inset: -11px -6px;
+  }
   /* The yes of "Clear all answers?", underlined: it is the one that acts. */
   .pf-clear-yes { color: var(--color-ink); text-decoration: underline; text-underline-offset: 3px; }
   .prop-done {

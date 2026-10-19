@@ -197,7 +197,7 @@ export function FloatingNav({
           <a
             href={onHome ? "#top" : href("/")}
             aria-label={t("nevima, home", "nevima, início")}
-            className="flex shrink-0 items-center"
+            className="hit-wide flex shrink-0 items-center"
           >
             {/* Held invisible until the opening mark has landed on it, then
                 taken over from the flying copy in the same pixels. */}

@@ -62,7 +62,7 @@ export function ServicePage({ slug, lang }: { slug: string; lang: Lang }) {
         <header className="pt-4 md:pt-6">
           <div className="shell">
             <div className="-mx-3 flex items-center justify-between gap-4 rounded-[16px] bg-ink px-3 py-2.5 md:-mx-5 md:gap-8 md:px-5 md:py-3 xl:-mx-8 xl:px-8">
-              <Link href={href("/")} aria-label={t("nevima, home", "nevima, início")} className="flex shrink-0 items-center">
+              <Link href={href("/")} aria-label={t("nevima, home", "nevima, início")} className="hit-wide flex shrink-0 items-center">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/nevima-wordmark-white.svg"
