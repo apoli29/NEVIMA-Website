@@ -125,3 +125,5 @@ Cada serviço tem uma cláusula própria (9 a 15) com o que inclui, o que não i
   - al. e): proíbe cláusulas que "atestem conhecimentos das partes relativos ao contrato". A Aceitação da Proposta ("que declara ter recebido e lido") pode estar abrangida com Particulares.
 - Cl. 22: não exclui do limite os danos à vida, à integridade física e à saúde (art. 18.º, al. a), a confirmar).
 - Cl. 7.4 b), 8.3, 10.6 e 21.2: cláusulas penais (art. 19.º, al. c)).
+- **Cl. 17 (mais urgente):** CDADC, art. 43.º, n.º 2 (transmissão parcial: escrito com reconhecimento notarial das assinaturas) e art. 44.º (transmissão total: escritura pública), ambos sob pena de nulidade (confirmado no DRE). A cl. 17.1 apoia-se no art. 14.º, mas, ao dar os direitos ao Cliente "a partir do pagamento integral", pode ser lida como transmissão diferida.
+- Cl. 11.13 (aceitação 72 horas depois da Chamada de Validação, sem defeitos por escrito): ver DL 446/85, art. 19.º, al. d), que proíbe "ficções de [...] aceitação [...] com base em factos para tal insuficientes".
