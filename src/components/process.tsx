@@ -370,10 +370,13 @@ const SLOW = 1.6 / 1.5 / 1.2 / 1.5;
    layout to measure. */
 const useIsomorphicLayout = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
-/** A phone, upright or on its side: the row waits behind "See the whole
-    process" until it is asked for (user, 2026-10-19: on small screens the
-    slide was too long a scroll to sit through on the way down). */
-const COMPACT = "(max-width: 767px), (max-height: 500px)";
+/** A phone, upright or on its side, or a small tablet: the row is shown
+    still, a glimpse to make the visitor curious, and slides only once
+    asked to (user, 2026-10-19: on small screens the slide was too long a
+    scroll to sit through on the way down; 2026-10-20: the graphic in
+    sight as a teaser, no slide before the click, phones and small
+    tablets). */
+const COMPACT = "(max-width: 1023px), (max-height: 500px)";
 /** Too short a screen for the held screen to show the heading and the row
     together (a phone on its side, the smallest upright phones, a netbook):
     the row is swiped sideways instead of slid by the scroll, as it is with
@@ -754,27 +757,6 @@ export function Process({ ready }: { ready: boolean }) {
           </div>
         </div>
 
-        {/* Shut on a phone: the one way in (see COMPACT). */}
-        {shut && (
-          <div className="shell mt-[clamp(1.25rem,3svh,1.75rem)]">
-            <button
-              type="button"
-              data-prc-open
-              aria-expanded="false"
-              aria-controls="prc-row"
-              onClick={openRow}
-              className="svc-folio prc-open"
-            >
-              <span className="mono-label">{t("See the whole process", "Ver o processo completo")}</span>
-              <span aria-hidden="true" className="svc-folio-arrow">
-                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" className="block">
-                  <path d="M8 2v11M4 9l4 4 4-4" stroke="currentColor" strokeWidth="1.25" />
-                </svg>
-              </span>
-            </button>
-          </div>
-        )}
-
         {/* The extra services, to be chosen into the row. */}
         <div className="prc-body shell mt-[clamp(1rem,3svh,1.75rem)] low-phone:mt-3" hidden={shut}>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5 low-phone:gap-y-1.5">
@@ -824,11 +806,15 @@ export function Process({ ready }: { ready: boolean }) {
             the right edge of the screen; it is slid, not scrolled. With
             reduced motion, or on a screen too short to hold it, it is
             simply scrolled sideways. */}
+        {/* Shut, the row is a still glimpse under a veil, out of reach, and
+            the whole of it is the way in (see COMPACT). */}
+        <div className="relative">
         <div
           ref={viewport}
           id="prc-row"
-          hidden={shut}
-          className={`prc-body prc-viewport mt-[clamp(1rem,3.5svh,2.5rem)] low-phone:mt-3 ${pinned ? "" : "overflow-x-auto"}`}
+          inert={shut}
+          aria-hidden={shut || undefined}
+          className={`prc-viewport mt-[clamp(1rem,3.5svh,2.5rem)] low-phone:mt-3 ${shut ? "prc-teaser" : "prc-body"} ${pinned || shut ? "" : "overflow-x-auto"}`}
         >
           <motion.ol
             ref={track}
@@ -895,6 +881,26 @@ export function Process({ ready }: { ready: boolean }) {
               </a>
             </li>
           </motion.ol>
+        </div>
+        {shut && (
+          <button
+            type="button"
+            data-prc-open
+            aria-expanded="false"
+            aria-controls="prc-row"
+            onClick={openRow}
+            className="prc-teaser-open"
+          >
+            <span className="svc-folio prc-open">
+              <span className="mono-label">{t("Click here to view the full process", "Clicar aqui para ver o processo completo")}</span>
+              <span aria-hidden="true" className="svc-folio-arrow">
+                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" className="block">
+                  <path d="M8 2v11M4 9l4 4 4-4" stroke="currentColor" strokeWidth="1.25" />
+                </svg>
+              </span>
+            </span>
+          </button>
+        )}
         </div>
       </div>
     </section>

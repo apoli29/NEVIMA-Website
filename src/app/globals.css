@@ -2569,7 +2569,7 @@
     .prc-stage { min-height: 0; padding: 1.25rem 1.25rem 0; }
     .prc-stage.prc-wide { --prc-w: min(84vw, 21rem); }
   }
-  /* Phones (process.tsx, COMPACT): the row waits behind one key, the
+  /* Phones and small tablets (process.tsx, COMPACT): the row waits behind one key, the
      services' black band turned to point down, and opened, a word at the
      end of the extra services' keys takes it away again. The row comes in
      with the fade every heading's entrance has (0.42s, easing out). */
@@ -2591,6 +2591,33 @@
     cursor: pointer;
   }
   .prc-close:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 2px; }
+  /* Shut (user, 2026-10-20): the row stands still under a veil, fading
+     out to the right and towards its foot, a glimpse of what is there,
+     and nothing in it moves or answers until the key over it is pressed.
+     The whole glimpse is the key; its black band sits in the middle. */
+  .prc-teaser {
+    overflow: hidden;
+    max-height: min(26rem, 58svh);
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(90deg, #000 35%, transparent 96%), linear-gradient(#000 55%, transparent);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(90deg, #000 35%, transparent 96%), linear-gradient(#000 55%, transparent);
+    mask-composite: intersect;
+  }
+  .prc-teaser-open {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  .prc-teaser-open:focus-visible { outline: none; }
+  .prc-teaser-open:focus-visible .svc-folio { outline: 1px solid var(--color-ink); outline-offset: 3px; }
+  @media (hover: hover) {
+    .prc-teaser-open:hover .svc-folio-arrow { transform: translateY(2px); }
+  }
   [data-fresh] .prc-body { animation: prc-reveal 0.42s ease-out both; }
   @keyframes prc-reveal {
     from { opacity: 0; }

@@ -42,7 +42,7 @@ const TRAVEL = 635;
 /** The same for a finger: one ordinary swipe up the screen (about half its
     height) draws the whole of it, a short one half (user, 2026-10-19: it
     took three or four swipes on a phone, it should take one, two at most). */
-const SWIPE_TRAVEL = 320;
+const SWIPE_TRAVEL = 280;
 /** One key press, as a share of the screen. */
 const KEY_STEP = 0.187;
 
