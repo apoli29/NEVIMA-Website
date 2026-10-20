@@ -50,11 +50,11 @@ trabalhadores independentes que atuam sob a marca comercial **nevima** (doravant
 | Ponto de contacto para os titulares (ola@nevima.studio) | Ambos. Quem ler primeiro o pedido trata-o e avisa o outro no próprio dia. |
 | Informação aos titulares (Política de Privacidade, avisos nos formulários) | Ambos; qualquer alteração é aprovada pelos dois antes de publicada. |
 | Resposta a pedidos de exercício de direitos (arts. 15.º a 22.º) | Quem recebe o pedido, no prazo de um mês (art. 12.º, n.º 3), com o apoio do outro para procurar os dados nas suas contas. |
-| Registo das atividades de tratamento (art. 30.º) | [RESPONSAVEL_REGISTO], revisto pelos dois uma vez por ano. |
-| Contratos com subcontratantes (Vercel, Google, ferramentas usadas em projetos) | [RESPONSAVEL_FORNECEDORES]. Nenhum fornecedor novo que receba dados pessoais é usado sem acordo dos dois. |
+| Registo das atividades de tratamento (art. 30.º) | Os dois sócios, que o reveem juntos uma vez por ano e sempre que mudar um fornecedor, um formulário ou um prazo. |
+| Contratos com subcontratantes (Vercel, Google, ferramentas usadas em projetos) | Os dois sócios. Nenhum fornecedor novo que receba dados pessoais é usado sem acordo dos dois. |
 | Segurança (art. 32.º): acesso às contas, palavras-passe, verificação em dois passos | Cada um nas suas contas e dispositivos. |
 | Violações de dados (arts. 33.º e 34.º) | Quem detetar avisa o outro de imediato. Decidem juntos, e notificam a CNPD em 72 horas quando houver risco. Se não for possível falar com o outro a tempo, quem detetou notifica sozinho. |
-| Apagar os dados no fim dos prazos (secção 2) | [RESPONSAVEL_APAGAMENTO], com revisão no início de cada trimestre. |
+| Apagar os dados no fim dos prazos (secção 2) | Os dois sócios, no início de cada trimestre (lembrete no calendário). |
 | Regra de uso de IA: não pôr dados pessoais de terceiros em ferramentas sem acordo de tratamento de dados | Cada um, no seu trabalho. |
 
 ## 4. Relação com os titulares
@@ -85,7 +85,7 @@ NOTA INTERNA (não publicar)
 
 Bases legais: RGPD, arts. 4.º, n.º 7, 5.º, 6.º, 12.º, 15.º a 22.º, 26.º, 28.º, 30.º, 32.º a 34.º, 82.º; Lei 58/2019; CIVA, art. 52.º (10 anos, redação do DL 49/2025).
 
-A preencher pelos sócios: [MORADA_ANTONIO], [MORADA_EMANUEL], [RESPONSAVEL_REGISTO], [RESPONSAVEL_FORNECEDORES], [RESPONSAVEL_APAGAMENTO].
+A preencher pelos sócios: [MORADA_ANTONIO], [MORADA_EMANUEL].
 
 A CONFIRMAR: a cl. 5.2 (relação de responsabilidade entre os dois, a ver com o advogado no contexto da estrutura da atividade, secção 8 da auditoria).
 -->

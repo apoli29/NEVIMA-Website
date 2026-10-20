@@ -31,7 +31,7 @@
 
 1. Antes de começar, a nevima envia um orçamento com o preço e o prazo (cl. 11.10).
 2. Só são feitas se o Cliente aceitar o orçamento, e só são aplicadas depois de pagas (cl. 6.7).
-3. Referência para o orçamento: [VALOR_HORA] € por hora, com um mínimo de [MINIMO] hora.
+3. O preço é definido caso a caso, conforme o trabalho que a alteração exige, e fica escrito no orçamento.
 
 ## 4. Como pedir
 
@@ -49,5 +49,5 @@ Não existe hoje um plano de manutenção mensal. Se vier a existir, será descr
 <!--
 NOTA INTERNA (não publicar)
 Bases legais: contrato v1.11, cl. 6.7, 11.9–11.14; DL 84/2021 (conformidade dos conteúdos e serviços digitais com consumidores; prazo a confirmar no texto do diploma antes de o citar ao cliente); DL 446/85, art. 21.º, al. d) (com consumidores, não se pode excluir nem predeterminar a reparação de vícios).
-A PREENCHER: [VALOR_HORA], [MINIMO], prazo de resposta [2].
+A PREENCHER: prazo de resposta [2].
 -->

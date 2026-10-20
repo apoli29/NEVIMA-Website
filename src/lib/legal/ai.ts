@@ -5,8 +5,8 @@ import type { LegalRecord } from "./types";
 
    Where the studio uses AI and how a client is told, as the partners
    decided it (legal audit, 2026-10-19): Claude for design, code and
-   writing; an AI translation tool for languages other than Portuguese
-   and English; Higgsfield for images, video and 3D when a project needs
+   writing, and for languages other than Portuguese and English (with
+   a skill set up for translation); Higgsfield for images, video and 3D when a project needs
    it; never third parties' personal data in a tool without a data
    processing agreement.
    ================================================================== */
@@ -93,7 +93,7 @@ export const AI_POLICY: LegalRecord = {
           title: "Ferramentas",
           blocks: [
             {
-              p: "Usamos, entre outras, o Claude (Anthropic) para design, programação e textos, uma ferramenta de tradução especializada ([FERRAMENTA_TRADUCAO]) e o Higgsfield para imagem, vídeo e 3D. A lista pode mudar; a versão em vigor está sempre nesta página.",
+              p: "Usamos, entre outras, o Claude (Anthropic) para design, programação, textos e traduções (com instruções próprias para tradução) e o Higgsfield para imagem, vídeo e 3D. A lista pode mudar; a versão em vigor está sempre nesta página.",
             },
           ],
         },
@@ -188,7 +188,7 @@ export const AI_POLICY: LegalRecord = {
           title: "Tools",
           blocks: [
             {
-              p: "Among others, we use Claude (Anthropic) for design, programming and writing, a specialised translation tool ([FERRAMENTA_TRADUCAO]), and Higgsfield for images, video and 3D. The list may change; the current version is always on this page.",
+              p: "Among others, we use Claude (Anthropic) for design, programming, writing and translation (with instructions of our own for translation), and Higgsfield for images, video and 3D. The list may change; the current version is always on this page.",
             },
           ],
         },
@@ -222,9 +222,8 @@ export const AI_POLICY: LegalRecord = {
    5.º, 28.º e 32.º; CC, art. 79.º (imagem de pessoas reais); DL 57/2008
    (sem alegações não demonstráveis: saiu o "95%").
 
-   A PREENCHER: [FERRAMENTA_TRADUCAO].
    A CONFIRMAR: as condições de uso comercial dos resultados de cada
-   ferramenta (Anthropic, ferramenta de tradução, Higgsfield) no plano
+   ferramenta (Anthropic, Higgsfield) no plano
    usado; a promessa "indicamos na entrega os elementos feitos com IA"
    tem de passar a ser prática (ver a proposta de cláusula de IA no
    contrato, legal/02).
