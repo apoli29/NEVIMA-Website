@@ -3,7 +3,6 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
 import {
   animate,
-  cubicBezier,
   motion,
   useMotionValue,
   useReducedMotion,
@@ -97,7 +96,7 @@ const WORDS_IN = span(1712, 2242);
    seen to move the moment it is asked to, and still settles into the bar
    rather than arriving at it. Over a five-fold change of scale, the two
    ends are the only parts anyone reads. */
-const FLIGHT_EASE = cubicBezier(0.4, 0, 0.25, 1);
+const FLIGHT_EASE = "cubic-bezier(0.4, 0, 0.25, 1)";
 
 /** Where the mark starts, relative to where it ends. */
 type Flight = { left: number; top: number; width: number; dx: number; dy: number; scale: number };
@@ -264,11 +263,15 @@ export function Home() {
      bar-sized bitmap. Same measurements, read the other way round; the only
      difference is that the mark is now sharp where it is biggest and softens
      on the way into the bar, which is where the bar's own copy takes over. */
-  const markX = useTransform(progress, FLIGHT, [0, flight.dx], { ease: FLIGHT_EASE });
-  const markY = useTransform(progress, FLIGHT, [0, flight.dy], { ease: FLIGHT_EASE });
-  const markScale = useTransform(progress, FLIGHT, [1, flight.scale], {
-    ease: FLIGHT_EASE,
-  });
+  /* The flight itself is handed to the browser (open(), below) rather than
+     stepped from the clock: on a phone busy putting the page together under
+     the curtain, a move stepped from script dropped frames, and the mark
+     jumped across the screen and changed size in jerks. Played by the
+     compositor it keeps its pace whatever the page is doing. Same span of
+     the run, same curve. */
+  const markRef = useRef<HTMLImageElement>(null);
+  const flightRef = useRef(flight);
+  flightRef.current = flight;
 
   const barOpacity = useTransform(progress, BAR_IN, [0, 1]);
   const curtainOpacity = useTransform(progress, CURTAIN_OFF, [1, 0]);
@@ -286,8 +289,22 @@ export function Home() {
     if (phaseRef.current !== "waiting") return;
     phaseRef.current = "running";
     setPhase("running");
+    const total = reduce ? 700 : RUN_MS;
+    const { dx, dy, scale } = flightRef.current;
+    markRef.current?.animate(
+      [
+        { transform: "translate(0px, 0px) scale(1)" },
+        { transform: `translate(${dx}px, ${dy}px) scale(${scale})` },
+      ],
+      {
+        delay: FLIGHT[0] * total,
+        duration: (FLIGHT[1] - FLIGHT[0]) * total,
+        easing: FLIGHT_EASE,
+        fill: "both",
+      },
+    );
     animate(progress, 1, {
-      duration: reduce ? 0.7 : RUN_MS / 1000,
+      duration: total / 1000,
       // Linear on purpose: the clock is flat and each range carries its own
       // curve, so one eased master does not rush the middle.
       ease: "linear",
@@ -506,12 +523,12 @@ export function Home() {
                 ? // On a screen too short for its index and readouts (a phone on
                   // its side), it is as tall as it needs to be and scrolled
                   // through, rather than held a screen tall and cut off.
-                  // On a phone it is taller than the screen (the words in
-                  // the middle of the first one, the index after them, see
-                  // statement-screen.tsx): it scrolls until its foot is on
-                  // the foot of the screen and is held there, so the studio
-                  // still closes over it (useStuckAtFoot).
-                  "sticky top-0 h-[100svh] overflow-hidden bg-paper short:relative short:h-auto short:min-h-[100svh] max-md:h-auto max-md:min-h-[100svh]"
+                  // On a phone too it is one screen tall (user, 2026-10-19:
+                  // it was taller than the phone and took three or four
+                  // swipes to pass), the index set closer to fit; should it
+                  // ever be taller, it scrolls until its foot is on the foot
+                  // of the screen and is held there (useStuckAtFoot).
+                  "sticky top-0 h-[100svh] overflow-hidden bg-paper short:relative short:h-auto short:min-h-[100svh]"
                 : "fixed inset-0 z-30 overflow-hidden bg-paper"
             }
           >
@@ -579,7 +596,9 @@ export function Home() {
       {phase !== "open" && (
         <div className="pointer-events-none fixed inset-0 z-[60]">
           {flown ? (
-            <motion.img
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              ref={markRef}
               src="/nevima-wordmark-white.svg"
               alt=""
               draggable={false}
@@ -588,9 +607,6 @@ export function Home() {
                 left: flight.left,
                 top: flight.top,
                 width: flight.width,
-                x: markX,
-                y: markY,
-                scale: markScale,
                 transformOrigin: "center",
                 // Its own layer, rasterised once at the size it starts at and
                 // only scaled from there. Without it the SVG is redrawn at

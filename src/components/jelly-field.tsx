@@ -106,7 +106,7 @@ const CLEAR_MARGIN = 36;
     much further off on screens narrower than PHONE_W. It is laid on after
     the drops are spread, so only a drop that would come near that block
     moves; every other drop stays where it was. */
-const WARP_PAD = 32;
+const WARP_PAD = 24;
 const PHONE_W = 768;
 /** The least room, in CSS pixels, kept between a drop at the far end of
     its roaming and the edge of the screen and the floating bar. */
@@ -120,6 +120,17 @@ const NAV_GAP = 20;
     statement-screen.tsx). */
 const SMALL = 600;
 const SMALL_GROW = 1.45;
+/** Since the second screen is one screen tall on a phone too (user,
+    2026-10-19: "palavras ao meio, índice compacto"), its water is two thin
+    bands on a short one, over and under the words: there the drops are
+    smaller, still of mixed sizes (the user's condition), growing back to
+    SMALL_GROW as the screen gets taller (its height, in CSS pixels, from
+    SHORT_H to TALL_H). And their margin from the words is narrower, though
+    never under the 23px the glass is warped by as a drop moves. */
+const SHORT_GROW = 0.75;
+const SHORT_H = 680;
+const TALL_H = 820;
+const SMALL_CLEAR_MARGIN = 26;
 const SMALL_COUNT = 11;
 const SMALL_SPREAD = 1.2;
 /** Two drops that come close pull together (see drops() in the shader),
@@ -651,12 +662,15 @@ export function JellyField({
     const flooded = floodAt.current > 1;
     const dropSide = () => {
       const s = Math.min(w, h);
-      return (s < SMALL ? s * SMALL_GROW : s) * floodAt.current;
+      if (s >= SMALL) return s * floodAt.current;
+      const tall = Math.min(Math.max((h - SHORT_H) / (TALL_H - SHORT_H), 0), 1);
+      return s * (SHORT_GROW + (SMALL_GROW - SHORT_GROW) * tall) * floodAt.current;
     };
     /** Flooded, how far a drop may hang off the screen, as a share of its body. */
     const OVERHANG = 0.4;
     /** How far drop i keeps from the words. */
-    const clearance = (i: number) => DROPS[i].r * dropSide() * CLEAR_REACH + CLEAR_MARGIN;
+    const clearance = (i: number) =>
+      DROPS[i].r * dropSide() * CLEAR_REACH + (Math.min(w, h) < SMALL ? SMALL_CLEAR_MARGIN : CLEAR_MARGIN);
     /** Whether a drop centred here, keeping clearance c, is too near a
         block: with the block's own extra room, unless asked to leave it
         out (the spreading does, see WARP_PAD). */

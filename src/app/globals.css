@@ -309,6 +309,12 @@
   @media (min-width: 768px) {
     .idx-link { padding-block: 0.8rem; }
   }
+  /* The second screen's index on a phone: rows set closer and a size
+     smaller, so the whole screen fits on the phone's (user, 2026-10-19). */
+  @media (max-width: 767.98px) {
+    .idx-wall .idx-link { padding-block: 0.45rem; }
+    .idx-wall .idx-name { font-size: 1rem; }
+  }
   @media (min-width: 1280px) {
     .idx-link { padding-block: 0.95rem; }
   }
@@ -1297,6 +1303,15 @@
     .cta-glass,
     .cta-glass > span { animation: none; transition: none; }
   }
+  /* Safari (every browser on an iPhone) leaves the SVG filter off any
+     element moved by an animated transform: the spots, each on a layer of
+     its own, showed as three raw blurred blots and the drop as a grey
+     smudge. There the spots hold still; the drop still leans and breathes,
+     and the filter melts and lights them. (hanging-punctuation is Safari's
+     alone.) */
+  @supports (hanging-punctuation: first) {
+    .cta-glass > span { animation: none; }
+  }
 
   /* ---- services ---------------------------------------------------
      A near-black card with a faint light pooled in its top corner and a
@@ -2128,6 +2143,16 @@
     border-radius: 0.14em;
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
+  }
+  /* On a phone the line breaks in two, and at the heading's tight leading
+     each line's band covered the foot of the line above (the question's
+     descenders, then its own first line): the marked line gets room for
+     its bands. */
+  @media (max-width: 767.98px) {
+    .cmp-marked {
+      margin-top: 0.12em;
+      line-height: 1.2;
+    }
   }
   /* On the section's near-black the marker is turned over: a white band,
      the words coming out of it in black. */

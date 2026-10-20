@@ -62,21 +62,20 @@ export function StatementScreen({
     // Padded clear of the floating bar at the top.
     // In the flow on a screen too short to hold it (see home.tsx), so the
     // screen takes its height.
-    // On a phone it is in the flow too, and the screen as tall as it holds
-    // (see below and home.tsx).
-    <div className="pointer-events-none absolute inset-0 z-10 pt-[7.25rem] pb-[clamp(1.25rem,3.5svh,2.75rem)] md:pt-[clamp(8.5rem,17svh,10rem)] short:relative max-md:relative">
+    // On a phone, closer under the bar (it is shorter there).
+    <div className="pointer-events-none absolute inset-0 z-10 pt-[7.25rem] pb-[clamp(1.25rem,3.5svh,2.75rem)] max-md:pt-[5.25rem] md:pt-[clamp(8.5rem,17svh,10rem)] short:relative">
       <motion.div style={{ y: rise }} className="shell flex h-full flex-col">
-        {/* On a phone the words stand in the middle of the first screen,
-            with as much water over them as under them for the drops
-            (user, 2026-10-19: the drops were few and small, crowded into
-            the strip over the headline), and the index comes after,
-            its label and the top of its first row showing at the foot of
-            the screen. Elsewhere this box is not there (md:contents). */}
-        <div className="flex flex-col max-md:min-h-[calc(100svh-7.25rem-4.5rem)] md:contents">
+        {/* On a phone the words stand in the middle of the water between
+            the bar and the index, with as much of it over them as under
+            them for the drops, and the whole screen is one screen tall
+            (user, 2026-10-19: "palavras ao meio, índice compacto"). On a
+            phone too short for that (it scrolls, see home.tsx), the water
+            keeps bands a drop fits in. Elsewhere this box is not there (md:contents). */}
+        <div className="flex flex-col max-md:min-h-0 max-md:flex-1 md:contents">
         {/* The open room is shared out two to one, above the words and
             below them: they stand low, nearer the index than the bar. On
             a phone, evenly. Never less than a band a drop fits in. */}
-        <div aria-hidden="true" className="min-h-0 flex-[2] max-md:min-h-[7.5rem] max-md:flex-1" />
+        <div aria-hidden="true" className="min-h-0 flex-[2] max-md:min-h-[2.5rem] max-md:flex-1 max-md:short:min-h-[5.5rem]" />
         <div className="flex flex-wrap items-start justify-between gap-x-16 gap-y-4">
           {/* As wide as the headline's longest line and no wider, so the
               drops can come up to its right. */}
@@ -122,7 +121,7 @@ export function StatementScreen({
         </div>
 
 
-        <div aria-hidden="true" className="min-h-6 flex-1 max-md:min-h-[7.5rem]" />
+        <div aria-hidden="true" className="min-h-6 flex-1 max-md:min-h-[2.5rem] max-md:short:min-h-[5.5rem]" />
         </div>
 
         {/* The way on, standing in the bottom right corner. */}
@@ -375,7 +374,7 @@ function SectionIndex({ settled }: { settled: boolean }) {
     // it (the user moved them, and the drops with them).
     <div
       data-jelly-quiet
-      className="pointer-events-auto col-span-12 grid pb-6 md:pb-8 lg:col-span-4 lg:col-start-9"
+      className="pointer-events-auto col-span-12 grid pb-4 md:pb-8 lg:col-span-4 lg:col-start-9"
     >
       {/* The drops perch above the index itself (see jelly-field.tsx). While
           the proposal form is out, the index is hidden here: the form is
@@ -402,7 +401,7 @@ function SectionIndex({ settled }: { settled: boolean }) {
             {t("Index", "Índice")}
           </motion.span>
         </p>
-        <ol className="relative">
+        <ol className="idx-wall relative">
           {[{ key: "ask", link: null }, ...SECTION_LINKS.map((link) => ({ key: link.href, link }))].map(
             ({ key, link }, i) => (
               <li key={key} className="relative">
@@ -507,7 +506,10 @@ function RotatingEnding({ active, endings }: { active: boolean; endings: string[
     // tails of the "g" in "bring" and "grab" (Satoshi's run deep) are never
     // cut; the negative margin gives that room back, so the headline is set
     // exactly as if the box were one line tall.
-    <span aria-hidden="true" className="relative -mb-[0.24em] block h-[1.4em] overflow-hidden">
+    // Clipped by a clip-path as well: Safari lets a word that is being slid
+    // (on a layer of its own) out past overflow:hidden, and the word going
+    // and the word coming showed over the first line and under the second.
+    <span aria-hidden="true" className="relative -mb-[0.24em] block h-[1.4em] overflow-hidden [clip-path:inset(0)]">
       <AnimatePresence initial={false}>
         <motion.span
           key={i}
