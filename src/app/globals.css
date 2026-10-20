@@ -1030,9 +1030,10 @@
   .ftr-menu-item:hover .ftr-link,
   .ftr-menu-item:focus-visible .ftr-link { color: #ffffff; }
   /* The menu's way to the forms (user, 2026-10-20): white, its words in
-     black after the green light, a wave of bold running through them.
-     Its band reaches a little past the column on each side, so the words
-     stand on the same edge as the links above. */
+     black, the green light on the right before the arrow, and a light
+     running along the letters every few seconds. Its band reaches a
+     little past the column on each side, so the words stand on the same
+     edge as the links above. */
   .ftr-menu-quote {
     margin-inline: -0.75rem;
     padding-inline: 0.75rem;
@@ -1040,27 +1041,26 @@
     color: var(--color-ink);
   }
   .ftr-menu-quote:focus-visible { outline-color: var(--color-paper); outline-offset: 3px; }
-  .bold-wave { font-weight: 400; }
-  .bold-wave-ch {
-    display: inline-grid;
-    animation: bold-wave 3.6s ease-in-out infinite;
-    animation-delay: calc(var(--i) * 0.07s);
+  /* The gleam: a dark band in the letters' own fill, carried across them
+     left to right, then a rest (the user wanted a gleam passing over the
+     letters, not the letters turning bold; then a dark one: the words
+     stand in a deep grey, 6.4:1 on the white, and the band is black).
+     Only the fill moves, so the words never shift. */
+  .ftr-quote-shine {
+    background: linear-gradient(105deg, #595959 0%, #595959 40%, #1a1a1a 46%, #000 50%, #1a1a1a 54%, #595959 60%, #595959 100%);
+    background-size: 300% 100%;
+    background-position: 100% 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: quote-shine 3.6s cubic-bezier(0.45, 0, 0.25, 1) 0.6s infinite;
   }
-  /* The letter in bold, unseen, in the same cell: the cell is as wide as
-     the boldest the letter gets. */
-  .bold-wave-ch > span { grid-area: 1 / 1; }
-  .bold-wave-ch::after {
-    content: attr(data-ch);
-    grid-area: 1 / 1;
-    font-weight: 800;
-    visibility: hidden;
-  }
-  @keyframes bold-wave {
-    0%, 26%, 100% { font-weight: 400; }
-    9% { font-weight: 800; }
+  @keyframes quote-shine {
+    0% { background-position: 100% 0; }
+    45%, 100% { background-position: 0% 0; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .bold-wave-ch { animation: none; }
+    .ftr-quote-shine { animation: none; }
   }
   .ftr-menu-item:hover .ftr-link::after,
   .ftr-menu-item:focus-visible .ftr-link::after {
@@ -2597,33 +2597,14 @@
     .prc-stage { min-height: 0; padding: 1.25rem 1.25rem 0; }
     .prc-stage.prc-wide { --prc-w: min(84vw, 21rem); }
   }
-  /* Phones and small tablets (process.tsx, COMPACT): the row stands
-     still behind one key under it, the services' black band turned to
-     point down, and opened, a word at the end of the extra services' keys
-     takes it away again. */
-  /* Its words may take two lines on a phone (in Portuguese): the band
-     grows round them rather than holding the folio's one-line height. */
-  .prc-open { border: 0; font: inherit; cursor: pointer; height: auto; min-height: 2.5rem; padding-block: 0.6rem; text-align: left; }
-  @media (min-width: 768px) {
-    .prc-open { min-height: 3rem; }
+  /* Phones and small tablets (process.tsx, COMPACT): the row is swiped
+     sideways, never slid by the page's scroll. Each step's column stops
+     at the screen's edge as the finger lets go, so a swipe ends on a step
+     rather than between two. */
+  @media (max-width: 1023px), (max-height: 500px) {
+    .prc-viewport { scroll-snap-type: x proximity; scroll-padding-left: var(--prc-edge); overscroll-behavior-x: contain; }
+    .prc-stage { scroll-snap-align: start; }
   }
-  @media (hover: hover) {
-    .svc-folio.prc-open:hover .svc-folio-arrow { transform: translateY(2px); }
-  }
-  .prc-close {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5em;
-    padding: 0.55em 0.25em 0.5em 0.75em;
-    border: 0;
-    background: transparent;
-    color: var(--color-ink);
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.25em;
-    cursor: pointer;
-  }
-  .prc-close:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 2px; }
   @media (max-width: 767px) and (max-height: 700px) {
     .prc-head { padding-bottom: 0.5rem; }
     .prc-stage { padding-top: 0.875rem; }
