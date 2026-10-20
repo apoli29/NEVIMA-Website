@@ -225,8 +225,18 @@ export function Home() {
   useMeasureEffect(() => {
     const measure = () => {
       const hero = heroSlot.current?.getBoundingClientRect();
-      const nav = navSlot.current?.getBoundingClientRect();
-      if (!hero || !nav || nav.width === 0) return;
+      const seen = navSlot.current?.getBoundingClientRect();
+      if (!hero || !seen || seen.width === 0) return;
+      // Where the bar's mark stands at rest, not where its bar happens to
+      // be: a page reloaded at its foot has the bar tucked away above the
+      // screen (its lift is a transform, see floating-nav.tsx) until the
+      // opening puts the page back at the top, and the mark, aimed at the
+      // tucked bar, flew off the top of the screen and was then snapped
+      // into place (user, 2026-10-20).
+      const lift = navSlot.current?.closest("header");
+      const shift = lift ? getComputedStyle(lift).transform : "none";
+      const off = shift && shift !== "none" ? new DOMMatrixReadOnly(shift) : null;
+      const nav = off ? new DOMRect(seen.left - off.m41, seen.top - off.m42, seen.width, seen.height) : seen;
       // The mark is drawn at the size it spends the flight closest to and
       // longest at, and the height it will actually take there, read off the
       // bar's copy rather than off the slot it is measured against.
@@ -597,9 +607,11 @@ export function Home() {
 
       {/* The travelling mark, above everything until it has landed. Before
           the slots are measured it simply sits in the hero, which is also
-          what the server renders, so the first paint is never empty. */}
+          what the server renders, so the first paint is never empty. The
+          same box as the stage (--screen), so the mark waits exactly where
+          the slot it is measured from stands. */}
       {phase !== "open" && (
-        <div className="pointer-events-none fixed inset-0 z-[60]">
+        <div className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-(--screen)">
           {flown ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
