@@ -450,7 +450,7 @@ function Row({
             transition={{ duration: 0.6, delay: delay + 0.35, ease: [0.22, 1, 0.36, 1] }}
           >
             {/* What kind of service it is, on the right. */}
-            <span className={`mono-label max-sm:hidden ${main ? "xs-tag-main" : "idx-title"}`}>
+            <span className={`mono-label xs-tag max-sm:hidden ${main ? "xs-tag-main" : "idx-title"}`}>
               {main ? t("Main service", "Serviço principal") : t("Additional service", "Serviço adicional")}
             </span>
             <Chevron open={open} turns={turns} reduce={reduce} />

@@ -1929,6 +1929,18 @@
     color: var(--color-ink);
   }
 
+  /* Four of the five rows carry the same inked tag, so at the labels'
+     usual size they stack into a black band down the right of the list
+     that pulls the eye off the names (user, 2026-10-20). Set smaller and
+     tighter here only: the same marker is the right weight everywhere
+     else it is used. Still above the phone label floor, and the tags are
+     hidden below 640px anyway. */
+  .xs-tag {
+    font-size: 0.625rem;
+    letter-spacing: 0.05em;
+    padding: 0.25em 0.45em 0.2em;
+  }
+
   /* A service's number, raised off the name's cap height like an
      exponent: mono, a third of the name's size, never under the labels'. */
   .xs-exp {
