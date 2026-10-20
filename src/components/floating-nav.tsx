@@ -148,15 +148,17 @@ function ProposalAsk() {
    Under 640px the bar has no room for its links beside the button, so
    they are folded behind "Menu" (user, 2026-10-19): a cell of its own at
    the bar's end, ruled off as the links are, which reads "Close" while it
-   is open. The panel drops from under the bar, the bar's width, and is
-   dressed as the foot is: black, a small grey label over the list, the
-   links in the title face, ruled off by the foot's own hairline. It
-   holds the bar's three links and one more, the way to the two forms at
-   the foot of the page ("Get a quote"), which every page ends with. The
-   proposal stays on the bar, where it always is.
+   is open. The panel covers the whole screen (user, 2026-10-20: it was
+   meant to from the start), under the bar, which stays on it with its
+   "Close", and is dressed as the foot is: black, a small grey label over
+   the list, the links large in the title face, ruled off by the foot's
+   own hairline, and the foot's signature, the wordmark across the whole
+   width, at the bottom. It holds the bar's three links and one more, the
+   way to the two forms at the foot of the page ("Get a quote"), which
+   every page ends with. The proposal stays on the bar, where it always is.
 
-   It closes on a link, on Escape, on a touch outside it, when focus
-   leaves it, and when the screen grows past the phone's width.
+   It closes on a link, on Escape, when focus leaves it and the bar, and
+   when the screen grows past the phone's width.
    ================================================================== */
 
 const MENU_EXTRA: { label: Copy; href: string } = {
@@ -259,12 +261,14 @@ function MenuPanel({
       initial={reduce ? { opacity: 0 } : { clipPath: "inset(0 0 100% 0)" }}
       animate={reduce ? { opacity: 1 } : { clipPath: "inset(0 0 0% 0)" }}
       exit={reduce ? { opacity: 0 } : { clipPath: "inset(0 0 100% 0)" }}
-      transition={{ duration: reduce ? 0.15 : 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="ftr pointer-events-auto -mx-3 max-h-[calc(100svh-6rem)] overflow-y-auto overscroll-contain border-t border-paper/15 px-3 pt-6 pb-7 text-paper sm:hidden"
+      transition={{ duration: reduce ? 0.15 : 0.6, ease: [0.22, 1, 0.36, 1] }}
+      className="ftr fixed inset-0 z-40 overflow-y-auto overscroll-contain text-paper sm:hidden"
     >
+      {/* Clear of the bar at the top, and of the phone's own bar at the foot. */}
+      <div className="shell flex min-h-full flex-col pt-[6.75rem] pb-[max(1.75rem,env(safe-area-inset-bottom))]">
       <nav aria-label={t("Menu", "Menu")}>
         <p className="ftr-label">Menu</p>
-        <ul className="mt-3">
+        <ul className="mt-4 border-t border-white/10">
           {items.map((item, i) => {
             // The bar's links point at the home page; the way to the
             // forms is to this page's own, which every page ends with.
@@ -280,10 +284,10 @@ function MenuPanel({
                 <a
                   href={href(to)}
                   onClick={(event) => follow(event, to)}
-                  className="ftr-menu-item flex items-center justify-between py-3.5"
+                  className="ftr-menu-item flex items-center justify-between py-4 text-[clamp(2rem,9.5vw,2.75rem)] max-[359.98px]:py-3"
                 >
                   <span className="ftr-link">{t(item.label)}</span>
-                  <span aria-hidden="true" className="text-[1.125rem] text-paper/45">
+                  <span aria-hidden="true" className="text-[1.375rem] text-paper/45">
                     &rarr;
                   </span>
                 </a>
@@ -292,6 +296,18 @@ function MenuPanel({
           })}
         </ul>
       </nav>
+      {/* The foot's signature, across the whole width at the bottom. */}
+      <motion.img
+        src="/nevima-wordmark-white.svg"
+        alt=""
+        aria-hidden="true"
+        draggable={false}
+        initial={reduce ? false : { opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: reduce ? 0 : 0.3, ease: [0.22, 1, 0.36, 1] }}
+        className="mt-auto block w-full pt-12 select-none"
+      />
+      </div>
     </motion.div>
   );
 }
@@ -358,21 +374,17 @@ export function FloatingNav({
   }, [menuOpen]);
 
   return (
-    <>
-    {/* What is under the open menu: dimmed, and a touch on it closes it. */}
+    // Focus that leaves the bar and its menu closes the menu.
+    <div
+      className="contents"
+      onBlur={(event) => {
+        if (menuOpen && !event.currentTarget.contains(event.relatedTarget as Node | null)) closeMenu(false);
+      }}
+    >
+    {/* Out of the header: the header is moved by a transform (its tuck),
+        which would hold a fixed panel to the header's own box. */}
     <AnimatePresence>
-      {menuOpen && (
-        <motion.div
-          key="menu-shade"
-          aria-hidden="true"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: reduce ? 0 : 0.35 }}
-          onClick={() => closeMenu(false)}
-          className="fixed inset-0 z-40 bg-ink/35 sm:hidden"
-        />
-      )}
+      {menuOpen && <MenuPanel key="menu" id={menuId} onHome={onHome} onClose={closeMenu} />}
     </AnimatePresence>
     <motion.header
       ref={header}
@@ -381,10 +393,6 @@ export function FloatingNav({
       transition={{ duration: reduce ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
       // Out of reach while it is out of sight.
       inert={tucked}
-      // Focus that leaves the bar and its menu closes the menu.
-      onBlur={(event) => {
-        if (menuOpen && !event.currentTarget.contains(event.relatedTarget as Node | null)) closeMenu(false);
-      }}
       className="pointer-events-none fixed inset-x-0 top-0 z-50 pt-4 md:pt-6"
     >
       {/* Same container as the headline, so the two share a left edge. The
@@ -449,12 +457,9 @@ export function FloatingNav({
             <MenuButton open={menuOpen} panel={menuId} onToggle={() => setMenuOpen(!menuOpen)} />
           </motion.nav>
         </div>
-        <AnimatePresence>
-          {menuOpen && <MenuPanel key="menu" id={menuId} onHome={onHome} onClose={closeMenu} />}
-        </AnimatePresence>
       </div>
     </motion.header>
-    </>
+    </div>
   );
 }
 

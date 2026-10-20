@@ -813,8 +813,18 @@ export function LiquidLens({
     };
     nudge.current = wake;
 
+    // Set up only once the foot is within a screen and a half: at the top of
+    // a page it is far off, and a phone without a GPU (where the canvas is
+    // read back on every new frame) would pay for frames nobody sees yet.
+    let near = false;
+    let owed = false;
+
     let queued = 0;
     const repaint = () => {
+      if (!near) {
+        owed = true;
+        return;
+      }
       if (queued) return;
       queued = requestAnimationFrame(() => {
         queued = 0;
@@ -849,6 +859,18 @@ export function LiquidLens({
     // words beside it too.
     const edits = new MutationObserver(repaint);
     edits.observe(surface, { subtree: true, childList: true, characterData: true });
+
+    const approach = new IntersectionObserver(
+      ([entry]) => {
+        near = entry.isIntersecting;
+        if (near && owed) {
+          owed = false;
+          repaint();
+        }
+      },
+      { rootMargin: "150% 0px" },
+    );
+    approach.observe(surface);
 
     const seen = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
@@ -920,6 +942,7 @@ export function LiquidLens({
       cancelAnimationFrame(queued);
       resize.disconnect();
       edits.disconnect();
+      approach.disconnect();
       seen.disconnect();
       surface.removeEventListener("pointermove", onMove);
       surface.removeEventListener("pointerleave", onLeave);

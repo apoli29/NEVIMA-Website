@@ -23,7 +23,8 @@
      carried by opacity steps, never by a second hue.                 */
   --color-ink: #000000;
   --color-ash: #55534f;
-  --color-ash-2: #8a8783;
+  /* 4.8:1 on white, the least that reads at caption size (WCAG AA). */
+  --color-ash-2: #75726e;
 
   /* ---- lines ----------------------------------------------------- */
   --color-hair: rgba(0, 0, 0, 0.1);
@@ -234,6 +235,10 @@
   @media (min-width: 1280px) {
     .mono-label { font-size: 0.71875rem; }
   }
+  /* On a phone the labels are read at arm's length: 12px, not 11. */
+  @media (max-width: 767.98px) {
+    .mono-label { font-size: 0.75rem; }
+  }
 
   /* Taking work: a green light that breathes. */
   .live-dot {
@@ -303,6 +308,12 @@
   }
   @media (min-width: 768px) {
     .idx-link { padding-block: 0.8rem; }
+  }
+  /* The second screen's index on a phone: rows set closer and a size
+     smaller, so the whole screen fits on the phone's (user, 2026-10-19). */
+  @media (max-width: 767.98px) {
+    .idx-wall .idx-link { padding-block: 0.45rem; }
+    .idx-wall .idx-name { font-size: 1rem; }
   }
   @media (min-width: 1280px) {
     .idx-link { padding-block: 0.95rem; }
@@ -1285,6 +1296,15 @@
     .cta-glass,
     .cta-glass > span { animation: none; transition: none; }
   }
+  /* Safari (every browser on an iPhone) leaves the SVG filter off any
+     element moved by an animated transform: the spots, each on a layer of
+     its own, showed as three raw blurred blots and the drop as a grey
+     smudge. There the spots hold still; the drop still leans and breathes,
+     and the filter melts and lights them. (hanging-punctuation is Safari's
+     alone.) */
+  @supports (hanging-punctuation: first) {
+    .cta-glass > span { animation: none; }
+  }
 
   /* ---- services ---------------------------------------------------
      A near-black card with a faint light pooled in its top corner and a
@@ -1888,6 +1908,9 @@
     position: relative;
     top: 0.08em;
   }
+  @media (max-width: 767.98px) {
+    .xs-exp { font-size: max(0.75rem, 0.3em); }
+  }
 
   .xs-name {
     transition:
@@ -2113,6 +2136,16 @@
     border-radius: 0.14em;
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
+  }
+  /* On a phone the line breaks in two, and at the heading's tight leading
+     each line's band covered the foot of the line above (the question's
+     descenders, then its own first line): the marked line gets room for
+     its bands. */
+  @media (max-width: 767.98px) {
+    .cmp-marked {
+      margin-top: 0.12em;
+      line-height: 1.2;
+    }
   }
   /* On the section's near-black the marker is turned over: a white band,
      the words coming out of it in black. */
@@ -2529,7 +2562,7 @@
     .prc-stage { min-height: 0; padding: 1.25rem 1.25rem 0; }
     .prc-stage.prc-wide { --prc-w: min(84vw, 21rem); }
   }
-  /* Phones (process.tsx, COMPACT): the row waits behind one key, the
+  /* Phones and small tablets (process.tsx, COMPACT): the row waits behind one key, the
      services' black band turned to point down, and opened, a word at the
      end of the extra services' keys takes it away again. The row comes in
      with the fade every heading's entrance has (0.42s, easing out). */
@@ -2551,6 +2584,33 @@
     cursor: pointer;
   }
   .prc-close:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 2px; }
+  /* Shut (user, 2026-10-20): the row stands still under a veil, fading
+     out to the right and towards its foot, a glimpse of what is there,
+     and nothing in it moves or answers until the key over it is pressed.
+     The whole glimpse is the key; its black band sits in the middle. */
+  .prc-teaser {
+    overflow: hidden;
+    max-height: min(26rem, 58svh);
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(90deg, #000 35%, transparent 96%), linear-gradient(#000 55%, transparent);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(90deg, #000 35%, transparent 96%), linear-gradient(#000 55%, transparent);
+    mask-composite: intersect;
+  }
+  .prc-teaser-open {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  .prc-teaser-open:focus-visible { outline: none; }
+  .prc-teaser-open:focus-visible .svc-folio { outline: 1px solid var(--color-ink); outline-offset: 3px; }
+  @media (hover: hover) {
+    .prc-teaser-open:hover .svc-folio-arrow { transform: translateY(2px); }
+  }
   [data-fresh] .prc-body { animation: prc-reveal 0.42s ease-out both; }
   @keyframes prc-reveal {
     from { opacity: 0; }
@@ -2806,6 +2866,25 @@
   }
   /* The site's black ring vanishes on this black. */
   .fo-room :focus-visible { outline-color: rgb(255 255 255 / 0.9); }
+  /* The entry's safety net: shown 0.6s in even if the script is still on
+     its way (taken away by portfolio.tsx once it is up). A CSS animation
+     outranks the inline opacity Motion serves them with. */
+  .fo-room[data-fo-wait] .fo-top {
+    animation: fo-wait 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
+  }
+  .fo-room[data-fo-wait] .fo-tile {
+    animation: fo-wait-tile 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
+  }
+  /* Opacity alone on the bar: a filter there would cut its drops' glass
+     off from what lies behind it. */
+  @keyframes fo-wait {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes fo-wait-tile {
+    from { opacity: 0; filter: blur(10px); }
+    to { opacity: 1; filter: blur(0px); }
+  }
 
   /* The two buttons, side by side in the middle at the top, over
      everything in the room. */

@@ -41,8 +41,9 @@ function FormFrame() {
    ================================================================== */
 
 const PHOTOS = [
-  { small: "/contact/water-1280.webp", large: "/contact/water-2400.webp" },
-  { small: "/contact/sand-1280.webp", large: "/contact/sand-2400.webp" },
+  // Each at 1280, 1600, 1920 and 2400 wide: <name>-<width>.webp.
+  "/contact/water",
+  "/contact/sand",
 ];
 const HOLD_MS = 4000;
 
@@ -60,15 +61,15 @@ function Photos({ reduce }: { reduce: boolean }) {
     <>
       {PHOTOS.map((photo, i) => (
         <span
-          key={photo.large}
+          key={photo}
           aria-hidden="true"
           data-shown={i === shown ? "" : undefined}
           className="abt-hero-slide absolute inset-0 -z-20"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={photo.large}
-            srcSet={`${photo.small} 1280w, ${photo.large} 2400w`}
+            src={`${photo}-2400.webp`}
+            srcSet={[1280, 1600, 1920, 2400].map((w) => `${photo}-${w}.webp ${w}w`).join(", ")}
             sizes="100vw"
             alt=""
             loading="lazy"

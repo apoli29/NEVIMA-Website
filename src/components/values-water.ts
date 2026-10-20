@@ -766,6 +766,17 @@ export function useValuesWater(
       frame = requestAnimationFrame(tick);
     };
 
+    // Drawn only once the section is within a screen and a half. The values
+    // sit far down the page, and a frame drawn there at load costs a phone
+    // without a GPU (where the canvas is read back on every new frame) up to
+    // a second of blocked page; nobody sees it before they scroll to it.
+    let near = false;
+    let drawOwed = false;
+    const drawNear = () => {
+      if (near) draw();
+      else drawOwed = true;
+    };
+
     let queued = 0;
     const refit = () => {
       if (queued) return;
@@ -773,18 +784,30 @@ export function useValuesWater(
         queued = 0;
         if (disposed) return;
         size();
-        draw();
+        drawNear();
       });
     };
     refit();
     document.fonts.ready.then(() => {
       if (disposed || !w) return;
       measure();
-      draw();
+      drawNear();
     });
 
     const resize = new ResizeObserver(refit);
     resize.observe(view);
+
+    const approach = new IntersectionObserver(
+      ([entry]) => {
+        near = entry.isIntersecting;
+        if (near && drawOwed && w && !disposed) {
+          drawOwed = false;
+          draw();
+        }
+      },
+      { rootMargin: "150% 0px" },
+    );
+    approach.observe(view);
 
     const seen = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
@@ -859,6 +882,7 @@ export function useValuesWater(
       cancelAnimationFrame(frame);
       cancelAnimationFrame(queued);
       resize.disconnect();
+      approach.disconnect();
       seen.disconnect();
       section.removeEventListener("values:change", nudge);
       section.removeEventListener("pointerdown", onDown as EventListener);

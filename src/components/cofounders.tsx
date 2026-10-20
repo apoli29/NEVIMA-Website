@@ -251,7 +251,7 @@ function Plate({
           <motion.p {...fade(0.15)} className="mono-label text-ash-2">
             {founder.role}
           </motion.p>
-          <h4
+          <h3
             id={`founder-${founder.id}`}
             className="display mt-3 text-[clamp(2.5rem,3.4vw,3.375rem)] leading-[0.94] tracking-[-0.035em] text-ink"
           >
@@ -261,7 +261,7 @@ function Plate({
             <Rise shown={seen} delay={0.32}>
               <span className="font-medium">{founder.last}</span>
             </Rise>
-          </h4>
+          </h3>
         </div>
 
         {/* Justified, as the studio's other copy is, and held off the
