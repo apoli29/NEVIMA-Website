@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type MouseEvent, type ReactNode, type RefObject } from "react";
+import { useEffect, useId, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode, type RefObject } from "react";
 import { usePathname } from "next/navigation";
 import {
   AnimatePresence,
@@ -216,6 +216,28 @@ function MenuButton({ open, panel, onToggle }: { open: boolean; panel: string; o
   );
 }
 
+/* "Get a quote" in the menu (user, 2026-10-20): a wave of bold runs
+   through its letters, one after another, and fades, over and over. Each
+   letter holds the room it takes in bold (.bold-wave-ch), so the words
+   never shift as the wave passes. Read whole by a screen reader. */
+function BoldWave({ text }: { text: string }) {
+  return (
+    <span className="bold-wave">
+      <span className="sr-only">{text}</span>
+      <span aria-hidden="true">
+        {Array.from(text).map((ch, i) => {
+          const shown = ch === " " ? " " : ch;
+          return (
+            <span key={i} data-ch={shown} className="bold-wave-ch" style={{ "--i": i } as CSSProperties}>
+              <span>{shown}</span>
+            </span>
+          );
+        })}
+      </span>
+    </span>
+  );
+}
+
 function MenuPanel({
   id,
   onHome,
@@ -271,7 +293,8 @@ function MenuPanel({
           {items.map((item, i) => {
             // The bar's links point at the home page; the way to the
             // forms is to this page's own, which every page ends with.
-            const to = item === MENU_EXTRA ? item.href : homeSection(item.href, onHome);
+            const quote = item === MENU_EXTRA;
+            const to = quote ? item.href : homeSection(item.href, onHome);
             return (
               <motion.li
                 key={item.href}
@@ -283,10 +306,17 @@ function MenuPanel({
                 <a
                   href={href(to)}
                   onClick={(event) => follow(event, to)}
-                  className="ftr-menu-item flex items-center justify-between py-4 text-[clamp(2rem,9.5vw,2.75rem)] max-[359.98px]:py-3"
+                  className={`ftr-menu-item flex items-center justify-between py-4 text-[clamp(2rem,9.5vw,2.75rem)] max-[359.98px]:py-3 ${quote ? "ftr-menu-quote" : ""}`}
                 >
-                  <span className="ftr-link">{t(item.label)}</span>
-                  <span aria-hidden="true" className="text-[1.375rem] text-paper/45">
+                  {quote ? (
+                    <span className="flex items-center gap-3.5">
+                      <span aria-hidden="true" className="live-dot live-dot-loud shrink-0" />
+                      <BoldWave text={t(item.label)} />
+                    </span>
+                  ) : (
+                    <span className="ftr-link">{t(item.label)}</span>
+                  )}
+                  <span aria-hidden="true" className={`text-[1.375rem] ${quote ? "text-ink" : "text-paper/45"}`}>
                     &rarr;
                   </span>
                 </a>

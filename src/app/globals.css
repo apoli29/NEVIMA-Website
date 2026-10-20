@@ -1029,6 +1029,39 @@
   }
   .ftr-menu-item:hover .ftr-link,
   .ftr-menu-item:focus-visible .ftr-link { color: #ffffff; }
+  /* The menu's way to the forms (user, 2026-10-20): white, its words in
+     black after the green light, a wave of bold running through them.
+     Its band reaches a little past the column on each side, so the words
+     stand on the same edge as the links above. */
+  .ftr-menu-quote {
+    margin-inline: -0.75rem;
+    padding-inline: 0.75rem;
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+  .ftr-menu-quote:focus-visible { outline-color: var(--color-paper); outline-offset: 3px; }
+  .bold-wave { font-weight: 400; }
+  .bold-wave-ch {
+    display: inline-grid;
+    animation: bold-wave 3.6s ease-in-out infinite;
+    animation-delay: calc(var(--i) * 0.07s);
+  }
+  /* The letter in bold, unseen, in the same cell: the cell is as wide as
+     the boldest the letter gets. */
+  .bold-wave-ch > span { grid-area: 1 / 1; }
+  .bold-wave-ch::after {
+    content: attr(data-ch);
+    grid-area: 1 / 1;
+    font-weight: 800;
+    visibility: hidden;
+  }
+  @keyframes bold-wave {
+    0%, 26%, 100% { font-weight: 400; }
+    9% { font-weight: 800; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bold-wave-ch { animation: none; }
+  }
   .ftr-menu-item:hover .ftr-link::after,
   .ftr-menu-item:focus-visible .ftr-link::after {
     transform: scaleX(1);
