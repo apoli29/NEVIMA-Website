@@ -371,11 +371,12 @@ const SLOW = 1.6 / 1.5 / 1.2 / 1.5;
 const useIsomorphicLayout = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 /** A phone, upright or on its side, or a small tablet: the section is set
-    as it is on a computer, the row standing still at its start, and slides
-    only once asked to (user, 2026-10-19: on small screens the slide was
-    too long a scroll to sit through on the way down; 2026-10-20: no slide
-    before the click, phones and small tablets; later that day: the same
-    structure as on a computer, the key under the row, never over it). */
+    as it is on a computer, but the row is not slid by the page's scroll:
+    a sideways swipe takes the visitor along the process, and the page's
+    own scroll carries on down past it (user, 2026-10-19: on small screens
+    the slide was too long a scroll to sit through on the way down;
+    2026-10-20, after a key to open it had been tried: no key, sideways is
+    the process, down is the page). */
 const COMPACT = "(max-width: 1023px), (max-height: 500px)";
 /** Too short a screen for the held screen to show the heading and the row
     together (a phone on its side, the smallest upright phones, a netbook):
@@ -383,10 +384,6 @@ const COMPACT = "(max-width: 1023px), (max-height: 500px)";
     reduced motion. From 600px down it is the `short` variant's height
     (globals.css); an upright phone needs 660px for the held screen. */
 const SHORT = "(max-height: 600px), (max-width: 767px) and (max-height: 660px)";
-/** Opened once, kept open for the rest of the visit: a page the visitor
-    comes back to (the router, "Exit portfolio") has the row as it was. */
-let keptOpen = false;
-
 /** Whether a media query matches, read before the first paint in the
     browser (false on the server, where nothing is shown yet: the section
     is far under the opening's curtain). */
@@ -453,50 +450,24 @@ export function Process({ ready }: { ready: boolean }) {
   const subRef = useRef<HTMLParagraphElement>(null);
   useInkAlign(titleRef, subRef);
 
-  // On a phone the row is shut until opened (see COMPACT), and on a screen
-  // too short to hold it, it is swiped rather than slid (see SHORT).
+  // On a phone, or on a screen too short to hold it, the row is swiped
+  // rather than slid (see COMPACT, SHORT).
   const compact = useMedia(COMPACT);
   const short = useMedia(SHORT);
-  const [open, setOpenState] = useState(keptOpen);
-  const setOpen = (to: boolean) => {
-    keptOpen = to;
-    setOpenState(to);
-  };
-  const shut = compact && !open;
   /** The screen is a screen tall, held while it is read: everywhere but a
-      shut row or a screen too short for it. */
-  const screenful = !short && !shut;
+      phone or a screen too short for it. */
+  const screenful = !short && !compact;
   /** ... and the row slid by the scroll across it (not with reduced
       motion, where it is scrolled sideways). */
   const pinned = !reduce && screenful;
   const pinnedNow = useRef(pinned);
   pinnedNow.current = pinned;
-  const shutNow = useRef(shut);
-  shutNow.current = shut;
-  /** The section's top at the screen's top: the start of the slide once
-      opened, its heading under the bar once shut. */
-  const toTop = () =>
-    requestAnimationFrame(() => {
-      const el = section.current;
-      if (el) jumpTo(el.getBoundingClientRect().top + window.scrollY);
-    });
-  const openRow = () => {
-    setOpen(true);
-    toTop();
-  };
-  const shutRow = () => {
-    setOpen(false);
-    toTop();
-  };
 
   // The extra services the visitor has chosen to see: their steps join the
   // row; until then the row is the process every project goes through.
-  // Shut, choosing one is asking to see the process too: the row opens.
   const [extras, setExtras] = useState<Extra[]>([]);
-  const toggle = (id: Extra) => {
+  const toggle = (id: Extra) =>
     setExtras((was) => (was.includes(id) ? was.filter((e) => e !== id) : [...was, id]));
-    if (shut) openRow();
-  };
   const t = useT();
   const lang = useLang();
   // The same objects from one render to the next, so a step or a phase
@@ -645,18 +616,6 @@ export function Process({ ready }: { ready: boolean }) {
   layoutNow.current = layout;
   useEffect(() => {
     seek = (id) => {
-      // Shut on a phone: opened first, and found here once it has measured
-      // itself, so every caller (home.tsx's deep links, the studio's "a
-      // completely different approach") is answered at once.
-      if (shutNow.current) {
-        setOpen(true);
-        let tries = 0;
-        const again = () => {
-          if (!seek?.(id) && ++tries < 20) window.setTimeout(again, 100);
-        };
-        window.setTimeout(again, 100);
-        return true;
-      }
       const el = section.current;
       const t = track.current;
       const v = viewport.current;
@@ -715,7 +674,6 @@ export function Process({ ready }: { ready: boolean }) {
           ? { height: folded ? "var(--screen)" : `calc(var(--screen) + ${Math.round(layout.travel * SLOW)}px)` }
           : undefined
       }
-      data-shut={shut ? "" : undefined}
     >
       {/* The heading and the row as one block, the row close under the
           heading, held in the middle of the screen below the bar while the
@@ -778,23 +736,6 @@ export function Process({ ready }: { ready: boolean }) {
                   {t(extra.label)}
                 </button>
               ))}
-              {/* Opened on a phone: the way back to the short section, at
-                  the end of the keys, where it takes no line of its own. */}
-              {compact && open && (
-                <button
-                  type="button"
-                  aria-expanded="true"
-                  aria-controls="prc-row"
-                  aria-label={t("Close the process", "Fechar o processo")}
-                  onClick={shutRow}
-                  className="prc-close mono-label ml-auto"
-                >
-                  {t("Close", "Fechar")}
-                  <span aria-hidden="true" className="prc-chip-mark">
-                    {"\u2212"}
-                  </span>
-                </button>
-              )}
             </div>
           </div>
         </div>
@@ -802,15 +743,11 @@ export function Process({ ready }: { ready: boolean }) {
         {/* The row, set against the shell's left edge and free to run past
             the right edge of the screen; it is slid, not scrolled. With
             reduced motion, or on a screen too short to hold it, it is
-            simply scrolled sideways. */}
-        {/* Shut, the row stands still as it would at the start of its
-            slide, set as it is everywhere else, and cannot be swiped: the
-            steps past the first are out of reach until the key under it
-            is pressed (see COMPACT). */}
+            simply scrolled sideways, as it is on a phone (see COMPACT). */}
         <div
           ref={viewport}
           id="prc-row"
-          className={`prc-viewport mt-[clamp(1rem,3.5svh,2.5rem)] low-phone:mt-3 ${shut ? "overflow-x-clip" : pinned ? "" : "overflow-x-auto"}`}
+          className={`prc-viewport mt-[clamp(1rem,3.5svh,2.5rem)] low-phone:mt-3 ${pinned ? "" : "overflow-x-auto"}`}
         >
           <motion.ol
             ref={track}
@@ -850,14 +787,13 @@ export function Process({ ready }: { ready: boolean }) {
                         n={i}
                         count={stepCount}
                         on={!pinned || i < reached}
-                        away={shut && i > 0}
                       />
                     );
                   })}
                 </ol>
               </li>
             ))}
-            <li className="prc-end" inert={shut}>
+            <li className="prc-end">
               <h3 className="display text-[clamp(1.5rem,2.1vw,2.125rem)] leading-[1.02] font-light text-ink">
                 {t("It all starts with your estimate.", "Tudo começa com uma estimativa.")}
               </h3>
@@ -879,25 +815,6 @@ export function Process({ ready }: { ready: boolean }) {
             </li>
           </motion.ol>
         </div>
-        {shut && (
-          <div className="shell mt-[clamp(1.5rem,4svh,2.25rem)]">
-            <button
-              type="button"
-              data-prc-open
-              aria-expanded="false"
-              aria-controls="prc-row"
-              onClick={openRow}
-              className="svc-folio prc-open"
-            >
-              <span className="mono-label">{t("Click here to view the full process", "Clicar aqui para ver o processo completo")}</span>
-              <span aria-hidden="true" className="svc-folio-arrow">
-                <svg viewBox="0 0 16 16" width="14" height="14" fill="none" className="block">
-                  <path d="M8 2v11M4 9l4 4 4-4" stroke="currentColor" strokeWidth="1.25" />
-                </svg>
-              </span>
-            </button>
-          </div>
-        )}
       </div>
     </section>
   );
@@ -935,26 +852,12 @@ const PhaseHead = memo(function PhaseHead({
   );
 });
 
-const StepCard = memo(function StepCard({
-  step,
-  n,
-  count,
-  on,
-  away,
-}: {
-  step: Step;
-  n: number;
-  count: number;
-  on: boolean;
-  /** Past the first step of a shut row: in sight, out of reach. */
-  away: boolean;
-}) {
+const StepCard = memo(function StepCard({ step, n, count, on }: { step: Step; n: number; count: number; on: boolean }) {
   const t = useT();
   const href = useHref();
   return (
     <li
       data-step
-      inert={away}
       aria-labelledby={`step-${step.id}`}
       className={`prc-stage ${step.wide ? "prc-wide" : ""}`}
     >

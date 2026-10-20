@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode, type RefObject } from "react";
+import { useEffect, useId, useRef, useState, type MouseEvent, type ReactNode, type RefObject } from "react";
 import { usePathname } from "next/navigation";
 import {
   AnimatePresence,
@@ -14,6 +14,8 @@ import { basePath, type Copy } from "@/lib/i18n";
 import { useHref, useT } from "@/lib/use-lang";
 import { useProposal } from "./proposal-flow";
 import { Glass } from "./cta-glass";
+import { STILL_KEY } from "./footer";
+import { LiquidLens } from "./liquid-lens";
 import { getLenis, holdScroll } from "./smooth-scroll";
 
 /* ==================================================================
@@ -216,28 +218,6 @@ function MenuButton({ open, panel, onToggle }: { open: boolean; panel: string; o
   );
 }
 
-/* "Get a quote" in the menu (user, 2026-10-20): a wave of bold runs
-   through its letters, one after another, and fades, over and over. Each
-   letter holds the room it takes in bold (.bold-wave-ch), so the words
-   never shift as the wave passes. Read whole by a screen reader. */
-function BoldWave({ text }: { text: string }) {
-  return (
-    <span className="bold-wave">
-      <span className="sr-only">{text}</span>
-      <span aria-hidden="true">
-        {Array.from(text).map((ch, i) => {
-          const shown = ch === " " ? " " : ch;
-          return (
-            <span key={i} data-ch={shown} className="bold-wave-ch" style={{ "--i": i } as CSSProperties}>
-              <span>{shown}</span>
-            </span>
-          );
-        })}
-      </span>
-    </span>
-  );
-}
-
 function MenuPanel({
   id,
   onHome,
@@ -251,6 +231,16 @@ function MenuPanel({
   const href = useHref();
   const t = useT();
   const items = [...NAV, MENU_EXTRA];
+  // The foot's light behind the links (user, 2026-10-20: in place of the
+  // wordmark), held still if the visitor asked for it to be in the foot.
+  const panel = useRef<HTMLDivElement>(null);
+  const sign = useRef<HTMLImageElement>(null);
+  const [still, setStill] = useState(false);
+  useEffect(() => {
+    try {
+      setStill(!!localStorage.getItem(STILL_KEY));
+    } catch {}
+  }, []);
 
   /* A place on this page is scrolled to once the page is let go: followed
      at once, it would be asked of a page still held for the menu. */
@@ -275,6 +265,7 @@ function MenuPanel({
 
   return (
     <motion.div
+      ref={panel}
       id={id}
       // Its own scrolling on a screen too short for it, which the page's
       // smooth scroll must leave alone (see Lenis's prevent attribute).
@@ -283,11 +274,12 @@ function MenuPanel({
       animate={reduce ? { opacity: 1 } : { clipPath: "inset(0 0 0% 0)" }}
       exit={reduce ? { opacity: 0 } : { clipPath: "inset(0 0 100% 0)" }}
       transition={{ duration: reduce ? 0.15 : 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="ftr fixed inset-0 z-40 overflow-y-auto overscroll-contain text-paper sm:hidden"
+      className="ftr fixed inset-0 z-40 isolate overflow-y-auto overscroll-contain text-paper sm:hidden"
     >
+      <LiquidLens host={panel} mark={sign} src="/nevima-wordmark-white.svg" still={still} />
       {/* Clear of the bar at the top, and of the phone's own bar at the foot. */}
-      <div className="shell flex min-h-full flex-col pt-[6.75rem] pb-[max(1.75rem,env(safe-area-inset-bottom))]">
-      <nav aria-label={t("Menu", "Menu")}>
+      <div className="shell relative z-10 flex min-h-full flex-col pt-[6.75rem] pb-[max(1.75rem,env(safe-area-inset-bottom))]">
+      <nav aria-label={t("Menu", "Menu")} data-calm>
         <p className="ftr-label">Menu</p>
         <ul className="mt-4 border-t border-white/10">
           {items.map((item, i) => {
@@ -309,14 +301,14 @@ function MenuPanel({
                   className={`ftr-menu-item flex items-center justify-between py-4 text-[clamp(2rem,9.5vw,2.75rem)] max-[359.98px]:py-3 ${quote ? "ftr-menu-quote" : ""}`}
                 >
                   {quote ? (
-                    <span className="flex items-center gap-3.5">
-                      <span aria-hidden="true" className="live-dot live-dot-loud shrink-0" />
-                      <BoldWave text={t(item.label)} />
-                    </span>
+                    <span className="ftr-quote-shine">{t(item.label)}</span>
                   ) : (
                     <span className="ftr-link">{t(item.label)}</span>
                   )}
-                  <span aria-hidden="true" className={`text-[1.375rem] ${quote ? "text-ink" : "text-paper/45"}`}>
+                  <span aria-hidden="true" className={`flex items-center gap-4 text-[1.375rem] ${quote ? "text-ink" : "text-paper/45"}`}>
+                    {/* The green light on the right of "Get a quote", before
+                        its arrow (user, 2026-10-20). */}
+                    {quote && <span className="live-dot live-dot-loud shrink-0" />}
                     &rarr;
                   </span>
                 </a>
@@ -325,17 +317,22 @@ function MenuPanel({
           })}
         </ul>
       </nav>
-      {/* The foot's signature, across the whole width at the bottom. */}
-      <motion.img
-        src="/nevima-wordmark-white.svg"
-        alt=""
-        aria-hidden="true"
-        draggable={false}
-        initial={reduce ? false : { opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: reduce ? 0 : 0.3, ease: [0.22, 1, 0.36, 1] }}
-        className="mt-auto block w-full pt-12 select-none"
-      />
+      {/* The foot's signature, across the whole width at the bottom, on
+          the foot's light, as the foot itself has it (user, 2026-10-20);
+          the bar's own mark steps aside while the menu is open. */}
+      <div className="mt-auto pt-12">
+        <motion.img
+          ref={sign}
+          src="/nevima-wordmark-white.svg"
+          alt=""
+          aria-hidden="true"
+          draggable={false}
+          initial={reduce ? false : { opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: reduce ? 0 : 0.3, ease: [0.22, 1, 0.36, 1] }}
+          className="block w-full select-none"
+        />
+      </div>
       </div>
     </motion.div>
   );
@@ -434,7 +431,10 @@ export function FloatingNav({
           <a
             href={onHome ? "#top" : href("/")}
             aria-label={t("nevima, home", "nevima, início")}
-            className="hit-wide flex shrink-0 items-center"
+            className="hit-wide flex shrink-0 items-center transition-[opacity,visibility] duration-300"
+            // The menu has the mark across its foot: the bar's steps aside
+            // while it is open (user, 2026-10-20).
+            style={menuOpen ? { opacity: 0, visibility: "hidden" } : undefined}
           >
             {/* Held invisible until the opening mark has landed on it, then
                 taken over from the flying copy in the same pixels. */}
