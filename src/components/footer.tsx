@@ -201,6 +201,15 @@ export function Footer() {
               <a href={href("/cookies")} className="ftr-link ftr-meta">
                 {t("Cookies", "Cookies")}
               </a>
+              <a href={href("/terms")} className="ftr-link ftr-meta">
+                {t("Terms", "Termos")}
+              </a>
+              <a href={href("/ai")} className="ftr-link ftr-meta">
+                {t("Use of AI", "Uso de IA")}
+              </a>
+              <a href={href("/accessibility")} className="ftr-link ftr-meta">
+                {t("Accessibility", "Acessibilidade")}
+              </a>
               <button type="button" onClick={openConsent} className="ftr-link ftr-meta cursor-pointer">
                 {t("Cookie preferences", "Preferências de cookies")}
               </button>
