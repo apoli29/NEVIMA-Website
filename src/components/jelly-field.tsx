@@ -21,7 +21,10 @@ import { useReducedMotion } from "motion/react";
 
    The drops are not there when the screen opens: as the black lifts they
    land on the water one after another, each swelling out of nothing where
-   it lands and sending its own ring across the surface.
+   it lands. They once each sent a ring across the surface as they struck
+   it; the rings of a dozen drops at once ran together into a grainy,
+   restless water, read as a bug, as if the screen were being tapped all
+   over (user, 2026-10-20), so they land without one.
 
    No drop ever goes behind the words. The words are not one block but
    several, wherever on the screen each one is set ([data-jelly-quiet]),
@@ -71,6 +74,10 @@ const HAND = 0.32;
     and how wide, in CSS pixels. Light: a ripple, not a splash. */
 const DROP_DEPTH = 9 * HAND;
 const DROP_RADIUS = 18;
+/** What counts as a click or a tap: let go within this many CSS pixels of
+    where it was pressed, and within this many milliseconds. */
+const TAP_SLOP = 10;
+const TAP_MS = 500;
 /** A moving pointer draws a wake through the water, as a finger would:
     each touch is at most this deep, in CSS pixels, and this wide, and it
     is as deep as that only at this pointer speed, in CSS pixels a second.
@@ -163,11 +170,9 @@ const BIG_APART = 1.8;
     in the empty room above it, every other drop left where it is). */
 const PERCHED = 2;
 /** The landing: the drops come down this far apart, in seconds, each
-    swelling to its size over this long, and each strikes the water this
-    deep, in CSS pixels, over a ring as wide as itself. */
+    swelling to its size over this long. */
 const LAND_GAP_S = 0.11;
 const LAND_S = 0.9;
-const LAND_DEPTH = 7;
 
 const MAX_DPR = 1.5;
 /** Where the still screen is frozen, in seconds. */
@@ -1194,7 +1199,7 @@ export function JellyField({
     /* ---- the landing ---- */
 
     // Whether the drops are all down (or never had to come down), and which
-    // have struck the water so far.
+    // have come down so far.
     let landed = !entrance || reduce;
     const struck = new Set<number>();
     /** How far into its landing drop i is, 0 to 1, by its place in the
@@ -1233,16 +1238,10 @@ export function JellyField({
         ({ x, y } = pin(i, x, y));
         ({ x, y } = clear(i, x, y, clearance(i)));
 
-        // Coming down: it swells out of nothing where it lands, and the
-        // moment it touches it strikes the water.
+        // Coming down: it swells out of nothing where it lands.
         const g = grown(landSlot.get(i) ?? slot, now);
         if (g >= 1) down++;
-        if (g > 0 && !struck.has(i)) {
-          struck.add(i);
-          if (!landed) {
-            falls.push({ x, y, depth: LAND_DEPTH, radius: d.r * side * 0.9 });
-          }
-        }
+        if (g > 0) struck.add(i);
         const r = d.r * side * landing(g);
 
         const turn = i * 0.9 + slow * d.spin;
@@ -1378,9 +1377,22 @@ export function JellyField({
     });
     seen.observe(view);
 
-    // A click, or a tap, lets a drop of water fall where it lands.
+    // A click, or a tap, lets a drop of water fall where it lands: only a
+    // press let go where it was made, and soon. A finger drawn across the
+    // screen (a swipe, or pulling the page down to reload it) is not one
+    // (user, 2026-10-20); nor is a press the browser took over to scroll.
+    let press: { id: number; x: number; y: number; at: number } | null = null;
     const onDown = (event: PointerEvent) => {
-      if (event.button !== 0) return;
+      press = event.button === 0
+        ? { id: event.pointerId, x: event.clientX, y: event.clientY, at: event.timeStamp }
+        : null;
+    };
+    const onUp = (event: PointerEvent) => {
+      const was = press;
+      press = null;
+      if (!was || was.id !== event.pointerId) return;
+      if (Math.hypot(event.clientX - was.x, event.clientY - was.y) > TAP_SLOP) return;
+      if (event.timeStamp - was.at > TAP_MS) return;
       const rect = view.getBoundingClientRect();
       falls.push({
         x: event.clientX - rect.left,
@@ -1388,6 +1400,9 @@ export function JellyField({
         depth: DROP_DEPTH,
         radius: DROP_RADIUS,
       });
+    };
+    const onCancel = () => {
+      press = null;
     };
 
     // A moving pointer touches the water all along its way, as deep as it
@@ -1426,6 +1441,8 @@ export function JellyField({
 
     if (!reduce) {
       section.addEventListener("pointerdown", onDown as EventListener);
+      section.addEventListener("pointerup", onUp as EventListener);
+      section.addEventListener("pointercancel", onCancel);
       section.addEventListener("pointermove", onMove as EventListener);
       section.addEventListener("pointerleave", onLeave);
     }
@@ -1440,6 +1457,8 @@ export function JellyField({
       resize.disconnect();
       seen.disconnect();
       section.removeEventListener("pointerdown", onDown as EventListener);
+      section.removeEventListener("pointerup", onUp as EventListener);
+      section.removeEventListener("pointercancel", onCancel);
       section.removeEventListener("pointermove", onMove as EventListener);
       section.removeEventListener("pointerleave", onLeave);
       view.removeEventListener("webglcontextlost", onLost);

@@ -81,11 +81,9 @@ function Pass({
    (#proposal), and the home page opens it as soon as it can.
    ================================================================== */
 
-/* On a phone the bar also holds the menu, so the drop is set a little
-   closer, and on the narrowest phones a little smaller, with the wordmark,
-   so that the words on it are never cut. */
+/* Not shown on a phone, where the bar is the wordmark and the menu. */
 const ASK_CLASS =
-  "cta-drop cta-drop-light inline-flex items-center justify-center whitespace-nowrap text-[0.9375rem] leading-none max-sm:px-[1.15em] max-[399.98px]:text-[0.8125rem] max-[359.98px]:text-[0.75rem]";
+  "cta-drop cta-drop-light inline-flex items-center justify-center whitespace-nowrap text-[0.9375rem] leading-none";
 
 function AskLabel() {
   const t = useT();
@@ -97,7 +95,7 @@ function AskLabel() {
           the links, so it says the short of it. */}
       <span className="max-lg:hidden">{t("Get your free proposal", "Pedir proposta gratuita")}</span>
       <span className="lg:hidden">{t("Free proposal", "Proposta gratuita")}</span>
-      <span aria-hidden="true" className="ml-2.5 inline-block max-[399.98px]:hidden">
+      <span aria-hidden="true" className="ml-2.5 inline-block">
         &rarr;
       </span>
     </span>
@@ -155,7 +153,8 @@ function ProposalAsk() {
    own hairline, and the foot's signature, the wordmark across the whole
    width, at the bottom. It holds the bar's three links and one more, the
    way to the two forms at the foot of the page ("Get a quote"), which
-   every page ends with. The proposal stays on the bar, where it always is.
+   every page ends with. The proposal's drop is not on a phone's bar
+   (user, 2026-10-20); the index and the foot of every page still ask.
 
    It closes on a link, on Escape, when focus leaves it and the bar, and
    when the screen grows past the phone's width.
@@ -401,7 +400,7 @@ export function FloatingNav({
           between the gutter and that padding as the float. */}
       <div className="shell">
         {/* Square-cornered, as everything set on the gallery wall is. */}
-        <div ref={bar} className="pointer-events-auto -mx-3 flex items-center justify-between gap-4 bg-ink px-3 py-2.5 max-[399.98px]:gap-2.5 md:-mx-5 md:gap-8 md:px-5 md:py-[0.8125rem] xl:-mx-8 xl:px-8">
+        <div ref={bar} className="pointer-events-auto -mx-3 flex items-center max-sm:min-h-[3.25rem] justify-between gap-4 bg-ink px-3 py-2.5 max-[399.98px]:gap-2.5 md:-mx-5 md:gap-8 md:px-5 md:py-[0.8125rem] xl:-mx-8 xl:px-8">
           <a
             href={onHome ? "#top" : href("/")}
             aria-label={t("nevima, home", "nevima, início")}
@@ -415,7 +414,7 @@ export function FloatingNav({
               src="/nevima-wordmark-white.svg"
               alt="nevima"
               onLoad={onMarkLoad}
-              className="block h-[1.35rem] w-auto max-[399.98px]:h-[1.125rem] max-[359.98px]:h-[0.9375rem] md:h-[1.55rem]"
+              className="block h-[1.35rem] w-auto md:h-[1.55rem]"
               style={{ opacity: markVisible ? 1 : 0 }}
             />
           </a>
@@ -447,9 +446,11 @@ export function FloatingNav({
             {/* The one thing to press: a white drop (see .cta-drop), in a cell
                 of its own. The cell is padded by what the row took from the
                 bar, so the drop, taller than the words beside it, sets the
-                bar's height. */}
+                bar's height. Not on a phone (user, 2026-10-20): there the
+                bar is the wordmark and the menu, as tall as it was with the
+                drop on it. */}
             <span
-              className="flex items-center border-paper/15 py-2.5 sm:border-l sm:pl-4 md:py-[0.8125rem] md:pl-5 max-sm:pr-3 max-[359.98px]:pr-2.5"
+              className="flex items-center border-l border-paper/15 py-2.5 pl-4 max-sm:hidden md:py-[0.8125rem] md:pl-5"
               onClickCapture={() => menuOpen && setMenuOpen(false)}
             >
               <ProposalAsk />

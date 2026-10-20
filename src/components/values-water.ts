@@ -80,6 +80,10 @@ const MAX_STEPS = 8;
 const HAND = 0.32;
 const DROP_DEPTH = 9 * HAND;
 const DROP_RADIUS = 18;
+/** A click or a tap: let go within this many CSS pixels of where it was
+    pressed, and within this many milliseconds. */
+const TAP_SLOP = 10;
+const TAP_MS = 500;
 const WAKE_DEPTH = 1.75 * HAND;
 const WAKE_RADIUS = 22;
 const WAKE_SPEED = 800;
@@ -820,8 +824,20 @@ export function useValuesWater(
     const nudge = () => wake();
     section.addEventListener("values:change", nudge);
 
+    // Only a real click or tap: a press let go where it was made, and
+    // soon, never a finger drawn across the screen (see jelly-field.tsx).
+    let press: { id: number; x: number; y: number; at: number } | null = null;
     const onDown = (event: PointerEvent) => {
-      if (event.button !== 0) return;
+      press = event.button === 0
+        ? { id: event.pointerId, x: event.clientX, y: event.clientY, at: event.timeStamp }
+        : null;
+    };
+    const onUp = (event: PointerEvent) => {
+      const was = press;
+      press = null;
+      if (!was || was.id !== event.pointerId) return;
+      if (Math.hypot(event.clientX - was.x, event.clientY - was.y) > TAP_SLOP) return;
+      if (event.timeStamp - was.at > TAP_MS) return;
       const rect = view.getBoundingClientRect();
       falls.push({
         x: event.clientX - rect.left,
@@ -829,6 +845,9 @@ export function useValuesWater(
         depth: DROP_DEPTH,
         radius: DROP_RADIUS,
       });
+    };
+    const onCancel = () => {
+      press = null;
     };
     const onMove = (event: PointerEvent) => {
       if (event.pointerType !== "mouse") return;
@@ -869,6 +888,8 @@ export function useValuesWater(
 
     if (!reduce) {
       section.addEventListener("pointerdown", onDown as EventListener);
+      section.addEventListener("pointerup", onUp as EventListener);
+      section.addEventListener("pointercancel", onCancel);
       section.addEventListener("pointermove", onMove as EventListener);
       section.addEventListener("pointerleave", onLeave);
       section.addEventListener("values:pick", onPick);
@@ -886,6 +907,8 @@ export function useValuesWater(
       seen.disconnect();
       section.removeEventListener("values:change", nudge);
       section.removeEventListener("pointerdown", onDown as EventListener);
+      section.removeEventListener("pointerup", onUp as EventListener);
+      section.removeEventListener("pointercancel", onCancel);
       section.removeEventListener("pointermove", onMove as EventListener);
       section.removeEventListener("pointerleave", onLeave);
       section.removeEventListener("values:pick", onPick);
