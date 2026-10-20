@@ -49,13 +49,15 @@ import {
   type YesNo,
 } from "@/lib/proposal/questions";
 import { translator, type Copy, type Lang, type Translate } from "@/lib/i18n";
-import { useLang, useT } from "@/lib/use-lang";
+import { useHref, useLang, useT } from "@/lib/use-lang";
 
 /* ==================================================================
    The free proposal's questions, a screen at a time
 
-   Grouped by subject (the user's pick): the business first, then one
-   screen for each service chosen, then the estimate, then the request.
+   Grouped by subject (the user's pick): the services and who the
+   website is for first, then the website in two screens (what it is
+   for, then its content and launch; user, 2026-10-19), then one screen
+   for each other service chosen, then the estimate, then the request.
    Every question is a row between black hairlines, as the index's rows
    are, with its answers beside it: joined keys where one is picked,
    separate keys with a tick box where any number are. Nothing here
@@ -137,19 +139,21 @@ export const EMPTY_CONTACT: Contact = {
   phone: "",
   company: "",
   message: "",
-  consent: false,
 };
 
-export type StepId = "basics" | "web" | "photo" | "search" | "estimate" | "contact" | "sent";
+export type StepId = "basics" | "site" | "web" | "photo" | "search" | "estimate" | "contact" | "sent";
 
 /** The screens this draft goes through, in order. */
 export function stepsFor(draft: Draft): StepId[] {
   const groups = groupsFor(draft.services);
   // Needing the third level ends the form at the estimate's place, which
   // says the project is beyond what we take on now.
-  if (groups.web && draft.complex) return ["basics", "web", "estimate"];
+  if (groups.web && draft.complex) return ["basics", "site", "estimate"];
   return [
     "basics",
+    // Where the business is and what it does are asked with the website's
+    // goal, so this screen is never left out.
+    "site",
     ...(groups.web ? (["web"] as const) : []),
     ...(groups.photo ? (["photo"] as const) : []),
     ...(groups.search ? (["search"] as const) : []),
@@ -164,7 +168,7 @@ export function actionFor(step: StepId, next: StepId | undefined, t: Translate) 
   if (step === "estimate") return next ? t("Request final proposal", "Pedir proposta final") : t("Close", "Fechar");
   if (step === "contact") return t("Send request", "Enviar pedido");
   if (step === "sent") return t("Close", "Fechar");
-  // The first screen always leads to a service's questions.
+  // The first screen always leads to the website's.
   return next === "estimate" && step !== "basics"
     ? t("See my estimate", "Ver a minha estimativa")
     : t("Continue", "Continuar");
@@ -174,6 +178,8 @@ function titleFor(step: StepId, draft: Draft, t: Translate) {
   switch (step) {
     case "basics":
       return draft.audience === "personal" ? t("Your project", "O projeto") : t("Your business", "O negócio");
+    case "site":
+      return t("Your website", "O website");
     case "web":
       return "Web design";
     case "photo":
@@ -242,6 +248,8 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
   if (step === "basics") {
     if (!draft.services.length) e.services = PICK_ANY;
     if (!draft.audience) e.audience = PICK_ONE;
+  }
+  if (step === "site") {
     if (draft.audience !== "personal") {
       if (!draft.sector) e.sector = PICK_ONE;
       else if (draft.sector === "other" && !draft.sectorOther.trim()) {
@@ -252,14 +260,16 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
     else if (draft.country === "other" && !draft.countryOther.trim()) e.country = t("Tell us which country.", "Falta indicar o país.");
     // Personal use outside Portugal goes no further (shown as it is picked).
     if (personalAbroad(draft)) e.country = t(PERSONAL_ABROAD);
+    // A project beyond what we take on needs nothing more answered.
+    if (web && !draft.complex) {
+      if (draft.features.includes("forms") && !draft.forms) e.forms = PICK_ONE;
+      if (draft.features.includes("emails") && !draft.emails) e.emails = PICK_ONE;
+      if (!draft.design) e.design = PICK_ONE;
+      if (!draft.pages) e.pages = PICK_ONE;
+    }
   }
   if (step === "web") {
-    // A project beyond what we take on needs nothing more answered.
     if (draft.complex) return e;
-    if (draft.features.includes("forms") && !draft.forms) e.forms = PICK_ONE;
-    if (draft.features.includes("emails") && !draft.emails) e.emails = PICK_ONE;
-    if (!draft.design) e.design = PICK_ONE;
-    if (!draft.pages) e.pages = PICK_ONE;
     if (!draft.languages.length) e.languages = PICK_ANY;
     else if (draft.languages.includes("other") && !draft.languagesOther.trim()) {
       e.languages = t("Tell us which languages.", "Falta indicar as línguas.");
@@ -294,7 +304,6 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
         ? t("Enter your business's name.", "Falta indicar o nome do negócio.")
         : t("Enter your company's name.", "Falta indicar o nome da empresa.");
     }
-    if (!contact.consent) e.consent = t("Tick the box so we can use your details.", "É necessário assinalar a caixa para podermos usar os dados.");
   }
   return e;
 }
@@ -732,6 +741,11 @@ export function StepScreen({
               labelledBy="audience-q"
             />
           </Question>
+        </div>
+      )}
+
+      {step === "site" && (
+        <div className="pf-rows">
           {draft.audience !== "personal" && (
           <Question id="sector" label={t("What does your business do?", "Qual é a área do negócio?")} error={errors.sector}>
             <Segmented
@@ -785,13 +799,8 @@ export function StepScreen({
               </p>
             )}
           </Question>
-        </div>
-      )}
-
-      {step === "web" && (
-        <div className="pf-rows">
           {/* What the website has to do, in three levels, each adding to
-              the one before (user, 2026-10-18). Asked first: a project
+              the one before (user, 2026-10-18). Asked before the rest: a project
               that needs the third needs nothing else answered. */}
           <Question
             id="features"
@@ -915,6 +924,13 @@ export function StepScreen({
               labelledBy="pages-q"
             />
           </Question>
+          </>
+          )}
+        </div>
+      )}
+
+      {step === "web" && (
+        <div className="pf-rows">
           <Question
             id="languages"
             label={t("In which languages?", "Em que línguas?")}
@@ -1015,8 +1031,6 @@ export function StepScreen({
               labelledBy="urgent-q"
             />
           </Question>
-          </>
-          )}
         </div>
       )}
 
@@ -1353,6 +1367,7 @@ export function ContactScreen({
   audience?: AudienceId | "";
 }) {
   const t = useT();
+  const href = useHref();
   const all = [
     { key: "name", label: t("Name", "Nome"), type: "text", autoComplete: "name", placeholder: t("Your name", "Nome") },
     {
@@ -1451,39 +1466,27 @@ export function ContactScreen({
             </p>
           )}
         </motion.div>
+        {/* What the details are for, said where they are given (GDPR,
+            art. 13). No box to tick: answering a request for a proposal
+            needs no consent (art. 6(1)(b)), and a consent made a
+            condition of sending would not be free (art. 7(4)). */}
         <motion.div variants={ROW} className="pf-consent-row">
-          <label className="pf-consent">
-            <input
-              type="checkbox"
-              checked={contact.consent}
-              onChange={(e) => setContact({ consent: e.target.checked })}
-              aria-invalid={errors.consent ? true : undefined}
-              aria-describedby={errors.consent ? "consent-error" : undefined}
-              className="sr-only"
-            />
-            <span aria-hidden="true" className="pf-tick" />
-            <span>
-              {partner
-                ? t(
-                    "I agree to Nevima using these details to get in touch about this project, as set out in the ",
-                    "Aceito que a Nevima use estes dados para entrar em contacto sobre este projeto, como indicado na ",
-                  )
-                : t(
-                    "I agree to Nevima using these details to prepare and send my proposal, as set out in the ",
-                    "Aceito que a Nevima use estes dados para preparar e enviar a minha proposta, como indicado na ",
-                  )}
-              {/* A placeholder until the privacy policy page exists. */}
-              <a href="#privacy-policy" className="underline underline-offset-2">
-                {t("privacy policy", "política de privacidade")}
-              </a>
-              .
-            </span>
-          </label>
-          {errors.consent && (
-            <p id="consent-error" className="mono-label pf-error" role="alert">
-              {errors.consent}
-            </p>
-          )}
+          <p className="pf-consent">
+            {partner
+              ? t(
+                  "We only use these details to get in touch about this project, and delete them after 3 months if no contract follows. More in our ",
+                  "Estes dados servem apenas para entrar em contacto sobre este projeto e são apagados ao fim de 3 meses, se não houver contrato. Mais informação na ",
+                )
+              : t(
+                  "We only use these details to prepare and send your proposal, and delete them after 3 months if no contract follows. More in our ",
+                  "Estes dados servem apenas para preparar e enviar a proposta e são apagados ao fim de 3 meses, se não houver contrato. Mais informação na ",
+                )}
+            {/* In a new tab, so the answers given so far stay here. */}
+            <a href={href("/privacy")} target="_blank" rel="noopener" className="underline underline-offset-2">
+              {t("Privacy Policy", "Política de Privacidade")}
+            </a>
+            .
+          </p>
         </motion.div>
       </div>
       {send.status === "error" && (

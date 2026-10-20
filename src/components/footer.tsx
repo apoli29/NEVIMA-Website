@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { usePathname } from "next/navigation";
 import { basePath, LANG_NAME, HTML_LANG, switchPath, type Lang } from "@/lib/i18n";
+import { openConsent } from "@/lib/consent";
 import { keepLangSpot } from "@/lib/return-spot";
 import { servicesIn } from "@/lib/services";
 import { useHref, useLang, useT } from "@/lib/use-lang";
@@ -184,9 +185,36 @@ export function Footer() {
 
         <div className="relative z-10 mt-8 flex flex-col gap-4 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
           {/* The year is read on the client; a cached page can be a year behind. */}
-          <p data-calm className="ftr-meta" suppressHydrationWarning>
-            &copy; {new Date().getFullYear()} nevima
-          </p>
+          <div data-calm className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <p className="ftr-meta" suppressHydrationWarning>
+              &copy; {new Date().getFullYear()} nevima
+            </p>
+            {/* The legal pages, from every page's foot (the law asks for
+                the provider's details to be easy to reach). */}
+            <nav aria-label={t("Legal", "Informação legal")} className="flex flex-wrap items-center gap-x-6 gap-y-3">
+              <a href={href("/privacy")} className="ftr-link ftr-meta">
+                {t("Privacy", "Privacidade")}
+              </a>
+              <a href={href("/legal-notice")} className="ftr-link ftr-meta">
+                {t("Legal notice", "Aviso legal")}
+              </a>
+              <a href={href("/cookies")} className="ftr-link ftr-meta">
+                {t("Cookies", "Cookies")}
+              </a>
+              <a href={href("/terms")} className="ftr-link ftr-meta">
+                {t("Terms", "Termos")}
+              </a>
+              <a href={href("/ai")} className="ftr-link ftr-meta">
+                {t("Use of AI", "Uso de IA")}
+              </a>
+              <a href={href("/accessibility")} className="ftr-link ftr-meta">
+                {t("Accessibility", "Acessibilidade")}
+              </a>
+              <button type="button" onClick={openConsent} className="ftr-link ftr-meta cursor-pointer">
+                {t("Cookie preferences", "Preferências de cookies")}
+              </button>
+            </nav>
+          </div>
           <div data-calm className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <LanguageSwitch path={path} lang={lang} label={t("Language", "Idioma")} />
             {/* Nothing to pause with reduced motion. Hidden by the media

@@ -74,10 +74,10 @@ export const PRICING = {
 
     /** The visual identity redesign (logo and symbol). */
     identity: { pt: 110, "es-it": 125, us: 195 } satisfies ByMarket,
-    /** Portuguese is always the language included; the others are priced
-        together by how many there are, as the contract sets them (clause
-        11.4), the same in every country. More than three is quoted. */
-    languages: { 1: 35, 2: 55, 3: 80 } as Record<1 | 2 | 3, number>,
+    /** Portuguese and English are included; each other language costs
+        the same, in every country (user, 2026-10-19; contract clause
+        11.4). More than three is quoted. */
+    perLanguage: 35,
     /** Writing the website's texts when the client has none, as a range
         by the site's size (Portugal; other markets scaled by textsMarket).
         PROVISIONAL: figures to be confirmed by the studio. */

@@ -1,0 +1,18 @@
+import type { Metadata } from "next";
+import { LegalPage } from "@/components/legal-page";
+import { alternates } from "@/lib/i18n";
+import { ACCESSIBILITY } from "@/lib/legal/accessibility";
+
+const doc = ACCESSIBILITY.doc.en;
+
+export const metadata: Metadata = {
+  title: doc.title,
+  description: doc.lede,
+  alternates: alternates(ACCESSIBILITY.slug, "en"),
+  // As the other legal pages: out of search engines until the address is in.
+  robots: { index: false, follow: true },
+};
+
+export default function Page() {
+  return <LegalPage record={ACCESSIBILITY} />;
+}

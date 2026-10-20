@@ -75,7 +75,7 @@ export const SERVICES: Service[] = [
     title: "SEO",
     tier: "additional",
     full: "Search Engine Optimization",
-    body: "Search Engine Optimization is what puts a website in the top positions of the results of the searches its audience makes. With poorly worked SEO, a website ends up going unnoticed among the last pages of results. With personalized SEO, websites reach better positions, on the first pages.",
+    body: "Search Engine Optimization is what puts a website in the top positions of the results of the searches its audience makes. With poorly worked SEO, a website ends up going unnoticed among the last pages of results. With personalized SEO, websites have a much better chance of reaching the first pages.",
     aura: "218 158 86",
     photos: [
       photo("1614849963640-9cc74b2a826f"),
@@ -131,7 +131,7 @@ const PT: Record<string, Pick<Service, "title" | "body" | "included">> = {
   },
   seo: {
     title: "SEO",
-    body: "O SEO (Search Engine Optimization) é responsável por colocar um website nas melhores posições dos resultados das pesquisas feitas pelo seu público. Com um SEO mal trabalhado, um website acaba por passar despercebido entre as últimas páginas de resultados. Com um SEO personalizado, os websites alcançam melhores posições, nas primeiras páginas.",
+    body: "O SEO (Search Engine Optimization) é responsável por colocar um website nas melhores posições dos resultados das pesquisas feitas pelo seu público. Com um SEO mal trabalhado, um website acaba por passar despercebido entre as últimas páginas de resultados. Com um SEO personalizado, os websites têm muito mais hipóteses de alcançar as primeiras páginas.",
   },
   geo: {
     title: "GEO",

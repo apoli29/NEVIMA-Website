@@ -347,8 +347,8 @@ export type Estimate = {
 /** Said wherever languages other than Portuguese and English are asked
     for or priced (user). */
 export const TRANSLATION_NOTE: Copy = {
-  en: "Languages other than Portuguese and English are translated by an AI specialised in translation, with over 95% accuracy. If changes are needed, we provide a simply structured document where you give us the translations of the sentences that need fine-tuning, at an additional but affordable price.",
-  pt: "As línguas além do português e do inglês são traduzidas por uma IA especializada em tradução, com mais de 95% de precisão. Se forem necessárias mudanças, fornecemos um documento com uma estrutura simples, onde o cliente disponibiliza as traduções das frases que precisem de ser afinadas, com um preço adicional, mas em conta.",
+  en: "Portuguese and English are included. Each other language costs €35 and is translated by an AI specialised in translation. If changes are needed, we provide a simply structured document where you give us the translations of the sentences that need fine-tuning.",
+  pt: "O português e o inglês estão incluídos. Cada uma das outras línguas custa 35 € e é traduzida por uma IA especializada em tradução. Se forem necessárias mudanças, fornecemos um documento com uma estrutura simples, onde o cliente disponibiliza as traduções das frases que precisem de ser afinadas.",
 };
 
 /** How many languages were typed under "Other": "French, German and
@@ -367,7 +367,6 @@ export type Contact = {
   phone: string;
   company: string;
   message: string;
-  consent: boolean;
 };
 
 /** Limits on free text, shared so the fields and the server agree. */

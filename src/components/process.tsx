@@ -141,7 +141,7 @@ const PT_STEPS: Record<string, Pick<Step, "name" | "principle" | "text"> & { cta
   photo: {
     name: "A sessão fotográfica",
     principle: "Imagens próprias.",
-    text: "Combinamos uma data e, quando se aplique, uma taxa de deslocação. Consoante o andamento da sessão, indicamos uma data de entrega das fotografias e dos vídeos finais, e só começamos a construir o website quando estiverem prontos. Ficam inteiramente propriedade do cliente, que os pode usar livremente noutros projetos.",
+    text: "Combinamos uma data e, quando se aplique, uma taxa de deslocação. Consoante o andamento da sessão, indicamos uma data de entrega das fotografias e dos vídeos finais, e só começamos a construir o website quando estiverem prontos. Depois de pagos, ficam inteiramente do cliente, que os pode usar também noutros projetos.",
   },
   identity: {
     name: "Começamos pela identidade",
@@ -162,17 +162,17 @@ const PT_STEPS: Record<string, Pick<Step, "name" | "principle" | "text"> & { cta
   finish: {
     name: "Conclusão do website e SEO básico",
     principle: "Concluído, e pronto para ser encontrado.",
-    text: "Concluímos o website e aplicamos o SEO básico que vem com o nosso serviço de web design. Depois, marcamos uma chamada para apresentar o resultado final e receber a aprovação ou os pedidos de alteração. As alterações que nos levam só alguns minutos nunca são cobradas; para algo maior, enviamos um orçamento antes de começar.",
+    text: "Concluímos o website e aplicamos o SEO básico que vem com o nosso serviço de web design. Depois, marcamos uma chamada para apresentar o resultado final e receber a aprovação ou os pedidos de alteração. As primeiras quatro alterações pequenas, de até 15 minutos cada, não são cobradas; para algo maior, enviamos um orçamento antes de começar.",
   },
   hosting: {
     name: "Logística",
     principle: "Tratamos da logística.",
-    text: "Tratamos de tudo o que envolve o website, desde as páginas legais (política de privacidade, política de cookies e as restantes, cujo conteúdo a lei obriga o próprio negócio a produzir; nós colocamo-las no website) até ao alojamento e à ligação do domínio.",
+    text: "Tratamos de tudo o que envolve o website, desde as páginas legais (política de privacidade, política de cookies e as restantes, cujo conteúdo é da responsabilidade do negócio; nós colocamo-las no website) até ao alojamento e à ligação do domínio.",
   },
   seo: {
     name: "Aplicamos práticas de SEO",
     principle: "Primeiro aplicado, depois publicado.",
-    text: "Para trazer tráfego desde o primeiro dia, aplicamos o nosso trabalho pontual de SEO antes de o website ficar online. Este trabalho garante bons resultados nos primeiros meses; para que o tráfego não caia depois disso, recomendamos o nosso serviço mensal.",
+    text: "Para trazer tráfego desde o primeiro dia, aplicamos o nosso trabalho pontual de SEO antes de o website ficar online. Este trabalho tem mais efeito nos primeiros meses; para que o tráfego não caia depois disso, recomendamos o nosso serviço mensal.",
     cta: "Saber mais sobre SEO",
   },
   geo: {
@@ -263,7 +263,7 @@ const PHASES: Phase[] = [
         name: "The photo shoot",
         extra: "photo",
         principle: "Images of your own.",
-        text: "We agree a date with you, plus a travel fee where one applies. Depending on how the shoot goes, we give you a delivery date for the final photos and videos, and only start building your website once they are ready. You own them outright, so you are free to use them in other projects too.",
+        text: "We agree a date with you, plus a travel fee where one applies. Depending on how the shoot goes, we give you a delivery date for the final photos and videos, and only start building your website once they are ready. Once paid for, they are entirely yours, free to use in other projects too.",
         who: "Us",
         wide: true,
       },
@@ -296,7 +296,7 @@ const PHASES: Phase[] = [
         id: "finish",
         name: "Finishing the website and basic SEO",
         principle: "Finished, and ready to be found.",
-        text: "We finish the website and apply the basic SEO that comes with our web design service. Then we arrange a call to walk you through the final result, where you either approve it or ask for changes. Changes that take us only a few minutes are never charged; for anything bigger, you get a quote before we start.",
+        text: "We finish the website and apply the basic SEO that comes with our web design service. Then we arrange a call to walk you through the final result, where you either approve it or ask for changes. Your first four small changes, of up to 15 minutes each, are free; for anything bigger, you get a quote before we start.",
         // The client now sees the result and asks for changes here.
         who: "You and us",
         wide: true,
@@ -305,7 +305,7 @@ const PHASES: Phase[] = [
         id: "hosting",
         name: "Logistics",
         principle: "We handle the logistics.",
-        text: "We take care of everything around the website, from the legal pages (privacy policy, cookie policy and the rest, whose content the law requires your business to produce itself; we put them on the website) to hosting it and connecting your domain.",
+        text: "We take care of everything around the website, from the legal pages (privacy policy, cookie policy and the rest, whose content is your business's responsibility; we put them on the website) to hosting it and connecting your domain.",
         who: "Us",
       },
     ],
