@@ -42,9 +42,6 @@ Todas as páginas legais estão fora dos motores de busca (`noindex`) até a mor
 - `[MORADA]`: a morada a publicar no website e no contrato;
 - `[MORADA_ANTONIO]`, `[MORADA_EMANUEL]`: os domicílios fiscais, no acordo entre os sócios e no contrato;
 - **telefone**: obrigatório na informação pré-contratual com particulares (DL 24/2014, art. 4.º, n.º 1, al. a));
-- `[FERRAMENTA_TRADUCAO]`: o nome da ferramenta de tradução por IA;
-- `[VALOR_HORA]`, `[MINIMO]`: o preço por hora das alterações maiores;
-- `[RESPONSAVEL_REGISTO]`, `[RESPONSAVEL_FORNECEDORES]`, `[RESPONSAVEL_APAGAMENTO]`: quem trata de cada tarefa;
 - `[IBAN DO PRESTADOR]`: nos textos de faturação.
 
 **Ações:**
@@ -52,7 +49,7 @@ Todas as páginas legais estão fora dos motores de busca (`noindex`) até a mor
 2. Assinar o acordo entre os sócios (`01`).
 3. Verificar que os acordos de tratamento de dados da Vercel e da Google estão aceites (`07`, secção 2).
 4. Desligar o treino nas duas contas Claude.
-5. Pedir confirmação escrita à Vercel sobre alojar e cobrar sites de clientes no plano Pro (`02`, P5).
+5. Não dar aos clientes acesso à conta da Vercel (`02`, P5).
 6. Obter a autorização escrita dos clientes já mostrados no portefólio (Bsmartish, Estamento de Gerona).
 7. Decidir as propostas de alteração ao contrato (`02`) e levá-las ao advogado.
 8. Decidir a reserva contra o treino de IA no `robots.txt` (bloquear os robôs de treino e manter os de pesquisa e respostas, importantes para o GEO).
@@ -65,7 +62,7 @@ Todas as páginas legais estão fora dos motores de busca (`noindex`) até a mor
 2. Cl. 22 e 11.13, aceitação da Proposta: limite de responsabilidade, aceitação presumida, "declara ter recebido e lido".
 3. Cl. 7.4 b), 8.3, 10.6, 21.2: cláusulas penais.
 4. Relação entre os dois sócios: solidariedade e sociedade civil de facto (CC, arts. 980.º e 981.º).
-5. Clientes nos EUA; termos da Vercel (revenda).
+5. Clientes nos EUA.
 
 **Contabilista:**
 1. IVA de cada sócio (art. 53.º do CIVA em vigor) e acompanhamento do limiar.

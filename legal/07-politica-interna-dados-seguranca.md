@@ -42,8 +42,7 @@ Responsáveis: António Maria das Neves Sepúlveda de Sá Policarpo (NIF 2552503
 |---|---|---|---|---|
 | Vercel Inc. | Alojamento | DPA da Vercel (planos Pro e Enterprise) | DPF (certificada) + cláusulas-tipo | [VERIFICAR que está aceite na conta] |
 | Google (Workspace) | Email | Cloud Data Processing Addendum (consola de administração) | DPF [A CONFIRMAR] ou cláusulas-tipo | [VERIFICAR que está aceite] |
-| Anthropic (Claude Pro) | Design, código, textos | **Não há** no plano pessoal | — | Regra: sem dados pessoais de terceiros |
-| [FERRAMENTA_TRADUCAO] | Traduções | [VERIFICAR] | [VERIFICAR] | Regra: sem dados pessoais de terceiros sem acordo |
+| Anthropic (Claude Pro) | Design, código, textos, traduções | **Não há** no plano pessoal | — | Regra: sem dados pessoais de terceiros |
 | Higgsfield | Imagem, vídeo, 3D | [VERIFICAR] | [VERIFICAR] | Só com autorização das pessoas retratadas |
 
 ## 3. Segurança mínima (art. 32.º)
@@ -80,7 +79,7 @@ Uma violação é qualquer perda, divulgação ou acesso indevido a dados pessoa
 |---|---|---|---|---|
 | | | | | |
 
-## 7. Calendário de conservação (trimestral, responsável: [RESPONSAVEL_APAGAMENTO])
+## 7. Calendário de conservação (no início de cada trimestre, os dois sócios)
 
 - [ ] Apagar os pedidos de proposta e de parceria sem contrato com mais de 3 meses desde o último contacto (email e anexos).
 - [ ] Apagar os materiais de projetos entregues há mais de 12 meses (sem apagar o contrato nem as faturas).
@@ -90,5 +89,5 @@ Uma violação é qualquer perda, divulgação ou acesso indevido a dados pessoa
 <!--
 NOTA INTERNA (não publicar)
 Bases legais: RGPD, arts. 5.º, 6.º, 12.º, 15.º a 22.º, 24.º, 26.º, 28.º, 30.º, 32.º, 33.º, 34.º; Lei 58/2019; CIVA, art. 52.º.
-A preencher: [DATA], [RESPONSAVEL_APAGAMENTO], [FERRAMENTA_TRADUCAO], estado dos acordos ([VERIFICAR]).
+A preencher: [DATA], estado dos acordos ([VERIFICAR]).
 -->

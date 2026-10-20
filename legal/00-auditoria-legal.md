@@ -183,7 +183,7 @@ Prioridade: **P1** = antes de receber o próximo pedido; **P2** = antes de assin
 | D16 | Formulários dos sites dos clientes | Mensagens dos visitantes | Subcontratante | Parte IV | Não guardadas (a confirmar no código) | **Fornecedor de envio de email por identificar** |
 | D17 | Newsletter, emails automáticos, marcações (se avançarem) | Emails, horários, nomes | Subcontratante | Parte IV, a completar | — | **Por identificar** |
 | D18 | Sessão fotográfica | Imagem de pessoas | Subcontratante (para o cliente); **responsável** se usarem as fotos no vosso portefólio | Art. 28.º + art. 79.º CC + autorização específica para o portefólio | — | — |
-| D19 | **IA (Claude, tradução)** | Textos do cliente, por vezes com dados pessoais | Subcontratante; a ferramenta de IA é subcontratante ulterior | Exige um DPA com o fornecedor de IA e um plano sem treino com os dados | — | Anthropic (EUA) [plano e DPA A CONFIRMAR]; ferramenta de tradução [A IDENTIFICAR] |
+| D19 | **IA (Claude, tradução)** | Textos do cliente, por vezes com dados pessoais | Subcontratante; a ferramenta de IA é subcontratante ulterior | Exige um DPA com o fornecedor de IA e um plano sem treino com os dados | — | Anthropic (EUA), também para as traduções (Claude com uma skill); plano pessoal sem DPA, por isso sem dados pessoais de terceiros |
 
 ---
 
