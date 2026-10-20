@@ -104,7 +104,7 @@ export function Footer() {
       <div className="shell relative py-20 md:py-28">
         {/* data-calm marks what the backdrop's light keeps away from, so
             the words always stand on black. */}
-        <div className="relative z-10 grid gap-12 md:grid-cols-[1.5fr_1fr_1fr] md:gap-10">
+        <div className="relative z-10 grid gap-10 md:grid-cols-[1.5fr_1fr_1fr] md:gap-10">
           <div data-calm>
             <h2 className="ftr-label">{t("Get in touch", "Contacto")}</h2>
             <div className="mt-4 flex flex-wrap items-baseline gap-x-5 gap-y-2">
@@ -136,11 +136,14 @@ export function Footer() {
             </p>
           </div>
 
+          {/* On a phone each list runs across the foot and wraps, rather
+              than down it one link to a line (user, 2026-10-20: the foot
+              was far too long there). */}
           <nav aria-labelledby="ftr-menu" data-calm>
             <h2 id="ftr-menu" className="ftr-label">
               Menu
             </h2>
-            <ul className="mt-5 space-y-3">
+            <ul className="ftr-list">
               {NAV.map((item) => (
                 <li key={item.href}>
                   <a href={section(item.href)} className="ftr-link ftr-item">
@@ -155,7 +158,7 @@ export function Footer() {
               confused in a list of landmarks. */}
           <nav aria-label={t("Service pages", "Páginas dos serviços")} data-calm>
             <h2 className="ftr-label">{t("Services", "Serviços")}</h2>
-            <ul className="mt-5 space-y-3">
+            <ul className="ftr-list">
               {servicesIn(lang).map((service) => (
                 <li key={service.slug}>
                   {/* Each to its row in the services on the home page, opened

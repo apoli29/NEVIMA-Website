@@ -8,6 +8,7 @@ import { OffscreenPause } from "@/components/offscreen-pause";
 import { PageWipe } from "@/components/page-wipe";
 import { ReturnKeeper } from "@/components/return-keeper";
 import { OPENING_SCRIPT } from "@/lib/opened";
+import { SCREEN_SCRIPT } from "@/lib/screen";
 import "./globals.css";
 
 /* Titles: Satoshi (manual v2), self-hosted from /fonts. The variable file is
@@ -70,11 +71,13 @@ export default function RootLayout({
     // The language is set again on a /pt page before it is painted (see
     // html-lang.tsx), so the server's "en" is expected to differ there; so
     // is the class, which holds the home page still while its opening
-    // plays (OPENING_SCRIPT, src/lib/opened.ts).
+    // plays (OPENING_SCRIPT, src/lib/opened.ts), and the style, which
+    // carries the screen's height (SCREEN_SCRIPT, src/lib/screen.ts).
     <html lang="en" className={`${title.variable} ${read.variable} ${mono.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: LANG_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: OPENING_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: SCREEN_SCRIPT }} />
       </head>
       <body className="antialiased">
         <HtmlLang />

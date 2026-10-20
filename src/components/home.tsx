@@ -509,6 +509,11 @@ export function Home() {
               the field is fully opaque: their combined alpha dips, and
               whatever is behind reads through. The stage owning its own
               ground closes that window. */}
+          {/* As tall as the screen with the browser's bars out (--screen, see
+              src/lib/screen.ts), while the opening plays and after it alike:
+              a stage that changed height as the page was handed back had
+              its water cut and redrawn and its drops moved (user,
+              2026-10-20, on an iPhone). */}
           {/* data-opening marks the stage while it is the opening's. The page
               itself is locked by a class on the root (OPENING_CLASS, above),
               which is there from the first paint, before the listeners below
@@ -528,8 +533,8 @@ export function Home() {
                   // swipes to pass), the index set closer to fit; should it
                   // ever be taller, it scrolls until its foot is on the foot
                   // of the screen and is held there (useStuckAtFoot).
-                  "sticky top-0 h-[100svh] overflow-hidden bg-paper short:relative short:h-auto short:min-h-[100svh]"
-                : "fixed inset-0 z-30 overflow-hidden bg-paper"
+                  "sticky top-0 h-(--screen) overflow-hidden bg-paper short:relative short:h-auto short:min-h-(--screen)"
+                : "fixed inset-x-0 top-0 z-30 h-(--screen) overflow-hidden bg-paper"
             }
           >
           <motion.div

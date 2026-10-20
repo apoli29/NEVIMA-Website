@@ -370,12 +370,12 @@ const SLOW = 1.6 / 1.5 / 1.2 / 1.5;
    layout to measure. */
 const useIsomorphicLayout = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
-/** A phone, upright or on its side, or a small tablet: the row is shown
-    still, a glimpse to make the visitor curious, and slides only once
-    asked to (user, 2026-10-19: on small screens the slide was too long a
-    scroll to sit through on the way down; 2026-10-20: the graphic in
-    sight as a teaser, no slide before the click, phones and small
-    tablets). */
+/** A phone, upright or on its side, or a small tablet: the section is set
+    as it is on a computer, the row standing still at its start, and slides
+    only once asked to (user, 2026-10-19: on small screens the slide was
+    too long a scroll to sit through on the way down; 2026-10-20: no slide
+    before the click, phones and small tablets; later that day: the same
+    structure as on a computer, the key under the row, never over it). */
 const COMPACT = "(max-width: 1023px), (max-height: 500px)";
 /** Too short a screen for the held screen to show the heading and the row
     together (a phone on its side, the smallest upright phones, a netbook):
@@ -473,9 +473,6 @@ export function Process({ ready }: { ready: boolean }) {
   pinnedNow.current = pinned;
   const shutNow = useRef(shut);
   shutNow.current = shut;
-  // Opened by the visitor just now (not found open on arrival): the row
-  // comes in with a short fade (.prc-body).
-  const [fresh, setFresh] = useState(false);
   /** The section's top at the screen's top: the start of the slide once
       opened, its heading under the bar once shut. */
   const toTop = () =>
@@ -484,21 +481,22 @@ export function Process({ ready }: { ready: boolean }) {
       if (el) jumpTo(el.getBoundingClientRect().top + window.scrollY);
     });
   const openRow = () => {
-    setFresh(true);
     setOpen(true);
     toTop();
   };
   const shutRow = () => {
-    setFresh(false);
     setOpen(false);
     toTop();
   };
 
   // The extra services the visitor has chosen to see: their steps join the
   // row; until then the row is the process every project goes through.
+  // Shut, choosing one is asking to see the process too: the row opens.
   const [extras, setExtras] = useState<Extra[]>([]);
-  const toggle = (id: Extra) =>
+  const toggle = (id: Extra) => {
     setExtras((was) => (was.includes(id) ? was.filter((e) => e !== id) : [...was, id]));
+    if (shut) openRow();
+  };
   const t = useT();
   const lang = useLang();
   // The same objects from one render to the next, so a step or a phase
@@ -714,11 +712,10 @@ export function Process({ ready }: { ready: boolean }) {
       // lets go (user, 2026-10-15), never while the row is still sliding.
       style={
         pinned
-          ? { height: folded ? "100svh" : `calc(100svh + ${Math.round(layout.travel * SLOW)}px)` }
+          ? { height: folded ? "var(--screen)" : `calc(var(--screen) + ${Math.round(layout.travel * SLOW)}px)` }
           : undefined
       }
       data-shut={shut ? "" : undefined}
-      data-fresh={fresh ? "" : undefined}
     >
       {/* The heading and the row as one block, the row close under the
           heading, held in the middle of the screen below the bar while the
@@ -728,7 +725,7 @@ export function Process({ ready }: { ready: boolean }) {
         ref={screen}
         className={
           screenful
-            ? "prc-screen sticky top-0 flex h-[100svh] flex-col justify-center overflow-hidden pt-[clamp(5.5rem,11svh,6.5rem)] pb-[clamp(1.5rem,4svh,3rem)] low-phone:pt-[4.375rem] low-phone:pb-2.5"
+            ? "prc-screen sticky top-0 flex h-(--screen) flex-col justify-center overflow-hidden pt-[clamp(5.5rem,11svh,6.5rem)] pb-[clamp(1.5rem,4svh,3rem)] low-phone:pt-[4.375rem] low-phone:pb-2.5"
             : // Shut, or on a screen too short to hold it: the section
               // simply as tall as what it holds.
               "flex flex-col pt-[clamp(5.5rem,11svh,6.5rem)] pb-(--section-gap)"
@@ -758,7 +755,7 @@ export function Process({ ready }: { ready: boolean }) {
         </div>
 
         {/* The extra services, to be chosen into the row. */}
-        <div className="prc-body shell mt-[clamp(1rem,3svh,1.75rem)] low-phone:mt-3" hidden={shut}>
+        <div className="shell mt-[clamp(1rem,3svh,1.75rem)] low-phone:mt-3">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5 low-phone:gap-y-1.5">
             <p id="prc-extras" className="mono-label text-ink">
               {t(
@@ -806,15 +803,14 @@ export function Process({ ready }: { ready: boolean }) {
             the right edge of the screen; it is slid, not scrolled. With
             reduced motion, or on a screen too short to hold it, it is
             simply scrolled sideways. */}
-        {/* Shut, the row is a still glimpse under a veil, out of reach, and
-            the whole of it is the way in (see COMPACT). */}
-        <div className="relative">
+        {/* Shut, the row stands still as it would at the start of its
+            slide, set as it is everywhere else, and cannot be swiped: the
+            steps past the first are out of reach until the key under it
+            is pressed (see COMPACT). */}
         <div
           ref={viewport}
           id="prc-row"
-          inert={shut}
-          aria-hidden={shut || undefined}
-          className={`prc-viewport mt-[clamp(1rem,3.5svh,2.5rem)] low-phone:mt-3 ${shut ? "prc-teaser" : "prc-body"} ${pinned || shut ? "" : "overflow-x-auto"}`}
+          className={`prc-viewport mt-[clamp(1rem,3.5svh,2.5rem)] low-phone:mt-3 ${shut ? "overflow-x-clip" : pinned ? "" : "overflow-x-auto"}`}
         >
           <motion.ol
             ref={track}
@@ -854,13 +850,14 @@ export function Process({ ready }: { ready: boolean }) {
                         n={i}
                         count={stepCount}
                         on={!pinned || i < reached}
+                        away={shut && i > 0}
                       />
                     );
                   })}
                 </ol>
               </li>
             ))}
-            <li className="prc-end">
+            <li className="prc-end" inert={shut}>
               <h3 className="display text-[clamp(1.5rem,2.1vw,2.125rem)] leading-[1.02] font-light text-ink">
                 {t("It all starts with your estimate.", "Tudo começa com uma estimativa.")}
               </h3>
@@ -883,25 +880,24 @@ export function Process({ ready }: { ready: boolean }) {
           </motion.ol>
         </div>
         {shut && (
-          <button
-            type="button"
-            data-prc-open
-            aria-expanded="false"
-            aria-controls="prc-row"
-            onClick={openRow}
-            className="prc-teaser-open"
-          >
-            <span className="svc-folio prc-open">
+          <div className="shell mt-[clamp(1.5rem,4svh,2.25rem)]">
+            <button
+              type="button"
+              data-prc-open
+              aria-expanded="false"
+              aria-controls="prc-row"
+              onClick={openRow}
+              className="svc-folio prc-open"
+            >
               <span className="mono-label">{t("Click here to view the full process", "Clicar aqui para ver o processo completo")}</span>
               <span aria-hidden="true" className="svc-folio-arrow">
                 <svg viewBox="0 0 16 16" width="14" height="14" fill="none" className="block">
                   <path d="M8 2v11M4 9l4 4 4-4" stroke="currentColor" strokeWidth="1.25" />
                 </svg>
               </span>
-            </span>
-          </button>
+            </button>
+          </div>
         )}
-        </div>
       </div>
     </section>
   );
@@ -939,12 +935,26 @@ const PhaseHead = memo(function PhaseHead({
   );
 });
 
-const StepCard = memo(function StepCard({ step, n, count, on }: { step: Step; n: number; count: number; on: boolean }) {
+const StepCard = memo(function StepCard({
+  step,
+  n,
+  count,
+  on,
+  away,
+}: {
+  step: Step;
+  n: number;
+  count: number;
+  on: boolean;
+  /** Past the first step of a shut row: in sight, out of reach. */
+  away: boolean;
+}) {
   const t = useT();
   const href = useHref();
   return (
     <li
       data-step
+      inert={away}
       aria-labelledby={`step-${step.id}`}
       className={`prc-stage ${step.wide ? "prc-wide" : ""}`}
     >

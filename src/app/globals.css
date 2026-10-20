@@ -47,6 +47,10 @@
     /* 15% less, twice (user, 2026-10-15): from 7.2rem and 9.6rem. */
     --section-gap: 5.2rem;
 
+    /* The screen's height with the browser's bars out: what a screen held
+       a screen tall is sized to (see src/lib/screen.ts). */
+    --screen: min(100svh, var(--screen-h, 100svh));
+
     /* The headline's size (see .h1). */
     --h1-size: clamp(2rem, min(6.6vw, 9.6svh), 5rem);
   }
@@ -1002,6 +1006,17 @@
     font-size: 1.0625rem;
     color: rgb(255 255 255 / 0.72);
   }
+  /* The menu and the services: across, wrapping, on a phone; one to a
+     line from md, where they stand in columns of their own. */
+  .ftr-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    margin-top: 1rem;
+  }
+  @media (min-width: 768px) {
+    .ftr-list { flex-direction: column; flex-wrap: nowrap; gap: 0.75rem; margin-top: 1.25rem; }
+  }
 
   /* The bar's menu on a phone (floating-nav.tsx): the foot's links, set
      in the face and the tone of its address, a finger's height apiece. */
@@ -1168,10 +1183,10 @@
      The page's main calls to action, made of the same stuff as the drops
      on the water: a piece of black glass with a rim and a soft shadow
      down and to the right, and no highlight (the user found a flashing
-     one inside it too loud). The glass breathes: the body fades a little
-     and comes back, over and over. The words stay as they are
-     throughout, so the button is always as legible as at rest. On the
-     black bar it is the same glass inverted, white on black.
+     one inside it too loud). Its body is always the whole fill: it once
+     breathed, fading a little and coming back, and the user found the
+     faded drop read as greyed out, a white veil over it (2026-10-20). On
+     the black bar it is the same glass inverted, white on black.
 
      Its outline is the one the four value drops make when they run
      together on the about page (the user asked for that shape here):
@@ -1217,16 +1232,11 @@
     pointer-events: none;
     transform-origin: 46% 54%;
     filter: url(#cta-glass);
-    animation:
-      drop-tilt 6.5s ease-in-out infinite alternate,
-      drop-breathe 3.4s ease-in-out infinite;
+    animation: drop-tilt 6.5s ease-in-out infinite alternate;
   }
   .cta-drop-light > .cta-glass {
     inset: -0.54em -0.85em -0.63em -0.8em;
     filter: url(#cta-glass-light);
-    /* On black, a white drop that fades as far as the black one does
-       turns grey; it breathes less. */
-    animation-name: drop-tilt, drop-breathe-light;
   }
   /* Only the spots' strength matters: the filter paints the colour. */
   .cta-glass > span {
@@ -1283,14 +1293,6 @@
     50%  { transform: rotate(0.6deg) scale(1.02, 0.97); }
     100% { transform: rotate(1.4deg) scale(0.98, 1.03); }
   }
-  @keyframes drop-breathe {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.72; }
-  }
-  @keyframes drop-breathe-light {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.88; }
-  }
   @media (prefers-reduced-motion: reduce) {
     .cta-drop,
     .cta-glass,
@@ -1299,7 +1301,7 @@
   /* Safari (every browser on an iPhone) leaves the SVG filter off any
      element moved by an animated transform: the spots, each on a layer of
      its own, showed as three raw blurred blots and the drop as a grey
-     smudge. There the spots hold still; the drop still leans and breathes,
+     smudge. There the spots hold still; the drop still leans,
      and the filter melts and lights them. (hanging-punctuation is Safari's
      alone.) */
   @supports (hanging-punctuation: first) {
@@ -2562,11 +2564,16 @@
     .prc-stage { min-height: 0; padding: 1.25rem 1.25rem 0; }
     .prc-stage.prc-wide { --prc-w: min(84vw, 21rem); }
   }
-  /* Phones and small tablets (process.tsx, COMPACT): the row waits behind one key, the
-     services' black band turned to point down, and opened, a word at the
-     end of the extra services' keys takes it away again. The row comes in
-     with the fade every heading's entrance has (0.42s, easing out). */
-  .prc-open { border: 0; font: inherit; cursor: pointer; }
+  /* Phones and small tablets (process.tsx, COMPACT): the row stands
+     still behind one key under it, the services' black band turned to
+     point down, and opened, a word at the end of the extra services' keys
+     takes it away again. */
+  /* Its words may take two lines on a phone (in Portuguese): the band
+     grows round them rather than holding the folio's one-line height. */
+  .prc-open { border: 0; font: inherit; cursor: pointer; height: auto; min-height: 2.5rem; padding-block: 0.6rem; text-align: left; }
+  @media (min-width: 768px) {
+    .prc-open { min-height: 3rem; }
+  }
   @media (hover: hover) {
     .svc-folio.prc-open:hover .svc-folio-arrow { transform: translateY(2px); }
   }
@@ -2584,41 +2591,6 @@
     cursor: pointer;
   }
   .prc-close:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 2px; }
-  /* Shut (user, 2026-10-20): the row stands still under a veil, fading
-     out to the right and towards its foot, a glimpse of what is there,
-     and nothing in it moves or answers until the key over it is pressed.
-     The whole glimpse is the key; its black band sits in the middle. */
-  .prc-teaser {
-    overflow: hidden;
-    max-height: min(26rem, 58svh);
-    pointer-events: none;
-    -webkit-mask-image: linear-gradient(90deg, #000 35%, transparent 96%), linear-gradient(#000 55%, transparent);
-    -webkit-mask-composite: source-in;
-    mask-image: linear-gradient(90deg, #000 35%, transparent 96%), linear-gradient(#000 55%, transparent);
-    mask-composite: intersect;
-  }
-  .prc-teaser-open {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-  }
-  .prc-teaser-open:focus-visible { outline: none; }
-  .prc-teaser-open:focus-visible .svc-folio { outline: 1px solid var(--color-ink); outline-offset: 3px; }
-  @media (hover: hover) {
-    .prc-teaser-open:hover .svc-folio-arrow { transform: translateY(2px); }
-  }
-  [data-fresh] .prc-body { animation: prc-reveal 0.42s ease-out both; }
-  @keyframes prc-reveal {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    [data-fresh] .prc-body { animation: none; }
-  }
   @media (max-width: 767px) and (max-height: 700px) {
     .prc-head { padding-bottom: 0.5rem; }
     .prc-stage { padding-top: 0.875rem; }
@@ -2858,7 +2830,7 @@
 @layer components {
   .fo-room {
     position: relative;
-    height: 100svh;
+    height: var(--screen);
     min-height: 34rem;
     overflow: hidden;
     background: #000;
