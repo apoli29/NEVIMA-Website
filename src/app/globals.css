@@ -140,6 +140,13 @@
   [data-covered] *::after {
     animation-play-state: paused !important;
   }
+  /* Wholly under the studio, the second screen is not drawn at all. It is
+     held stuck under the studio, the services and How we work, and its
+     water's canvas and its index's loops are layers of their own; on an
+     iPhone, Safari laid a square of it over those sections as the page
+     was scrolled (user, 2026-10-26). Nothing of it can be seen while it is
+     covered, and the body's paper under it is the same white. */
+  [data-covered] { visibility: hidden; }
 
   /* The page held still with reduced motion, where there is no Lenis to
      stop (see useSmoothScroll). */
