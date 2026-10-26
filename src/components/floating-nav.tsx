@@ -83,24 +83,23 @@ function Pass({
    (#proposal), and the home page opens it as soon as it can.
    ================================================================== */
 
-/* Not shown on a phone, where the bar is the wordmark and the menu. */
-const ASK_CLASS =
-  "cta-drop cta-drop-light inline-flex items-center justify-center whitespace-nowrap text-[0.9375rem] leading-none";
+/* Not shown on a phone, where the bar is the wordmark and the menu. A
+   crate rather than a drop (user, 2026-10-26): the words on the bar's own
+   black, a white key at the end carrying the arrow, and a hairline round
+   the whole so the crate reads as one on a black bar. */
+const ASK_CLASS = "cta-crate inline-flex items-center whitespace-nowrap text-[0.9375rem] leading-none";
 
 function AskLabel() {
   const t = useT();
   return (
     <>
-    <Glass />
-    <span className="btn-neu-face">
       {/* In full from lg; below it the bar has no room for it beside
           the links, so it says the short of it. */}
       <span className="max-lg:hidden">{t("Get your free proposal", "Pedir proposta gratuita")}</span>
       <span className="lg:hidden">{t("Free proposal", "Proposta gratuita")}</span>
-      <span aria-hidden="true" className="ml-2.5 inline-block">
+      <span aria-hidden="true" className="cta-crate-key">
         &rarr;
       </span>
-    </span>
     </>
   );
 }

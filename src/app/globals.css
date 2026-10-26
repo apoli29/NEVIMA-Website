@@ -1298,6 +1298,51 @@
   .cta-melt > :nth-child(2) { left: 18%; top: -17.4%; width: 64%; height: 130%; animation-name: cta-melt-2; }
   .cta-melt > :nth-child(3) { left: 44.52%; top: -29.76%; width: 58%; height: 162%; animation-name: cta-melt-3; }
 
+  /* ---- the crate ---------------------------------------------------
+     The bar's proposal button (user, 2026-10-26, from a sketch): a crate
+     instead of a drop. The words sit on the bar's own black with a white
+     key at the end carrying the arrow; since the bar is black too, a
+     hairline draws the crate's edge, or there would be no box to see.
+     Every three seconds it is shaken, as a box is shaken to be opened.
+     Its hover is the hairline and the key, never a transform: the shake
+     owns that. */
+  .cta-crate {
+    position: relative;
+    gap: 0.9rem;
+    padding: 0.4rem 0.4rem 0.4rem 1.05rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--color-paper);
+    background: var(--color-ink);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.32);
+    transition: box-shadow 0.35s ease;
+    animation: cta-crate-shake 3s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+  }
+  .cta-crate:hover,
+  .cta-crate:focus-visible { box-shadow: inset 0 0 0 1px var(--color-paper); }
+  .cta-crate-key {
+    display: grid;
+    place-items: center;
+    width: 1.95em;
+    height: 1.95em;
+    flex: none;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .cta-crate:hover .cta-crate-key,
+  .cta-crate:focus-visible .cta-crate-key { transform: translateX(2px); }
+  /* Still for most of the three seconds, then four quick knocks that die
+     away: about a third of a second of shaking. */
+  @keyframes cta-crate-shake {
+    0%, 84%, 100% { transform: translate3d(0, 0, 0); }
+    86% { transform: translate3d(-2.5px, 0, 0); }
+    88.5% { transform: translate3d(2.5px, 0, 0); }
+    91% { transform: translate3d(-2px, 0, 0); }
+    93.5% { transform: translate3d(1.5px, 0, 0); }
+    96% { transform: translate3d(-1px, 0, 0); }
+  }
+
   .cta-drop:hover,
   .cta-drop:focus-visible { transform: scale(1.04); }
   .cta-drop .btn-neu-face > span { display: inline-block; transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
@@ -1339,15 +1384,20 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .cta-drop,
+    .cta-crate,
+    .cta-crate-key,
     .cta-glass,
     .cta-glass > span, .cta-melt, .cta-melt > span { animation: none; transition: none; }
   }
   /* Safari (every browser on an iPhone) leaves the SVG filter off any
      element moved by an animated transform: the spots, each on a layer of
      its own, showed as three raw blurred blots and the drop as a grey
-     smudge. There the spots hold still; the drop still leans,
-     and the filter melts and lights them. (hanging-punctuation is Safari's
-     alone.) */
+     smudge. The spots were stilled here for that, but the glass itself
+     went on leaning — and the glass is the element the filter is on, so
+     the smudge stayed (user, on an iPhone, 2026-10-26). The lean has
+     moved to .cta-melt inside, and everything under the glass holds still
+     in Safari: there the drop neither melts nor leans, and in return the
+     filter melts and lights it. (hanging-punctuation is Safari's alone.) */
   @supports (hanging-punctuation: first) {
     .cta-glass > span, .cta-melt, .cta-melt > span { animation: none; }
   }
