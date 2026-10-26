@@ -85,11 +85,14 @@ function Pass({
 
 /* Not shown on a phone, where the bar is the wordmark and the menu. A
    crate rather than a drop (user, 2026-10-26): the words on the bar's own
-   black, a white key at the end carrying the arrow, and a hairline round
-   the whole so the crate reads as one on a black bar. */
+   black and a white key at the end carrying the arrow, with no outline.
+   Pointed at, a white field runs in from the left over the whole button:
+   it is a second copy of the label in the inverse colours, uncovered from
+   left to right, so each letter and the key turn as the white reaches
+   them. */
 const ASK_CLASS = "cta-crate inline-flex items-center whitespace-nowrap text-[0.9375rem] leading-none";
 
-function AskLabel() {
+function AskWords() {
   const t = useT();
   return (
     <>
@@ -99,6 +102,17 @@ function AskLabel() {
       <span className="lg:hidden">{t("Free proposal", "Proposta gratuita")}</span>
       <span aria-hidden="true" className="cta-crate-key">
         &rarr;
+      </span>
+    </>
+  );
+}
+
+function AskLabel() {
+  return (
+    <>
+      <AskWords />
+      <span aria-hidden="true" className="cta-crate-fill">
+        <AskWords />
       </span>
     </>
   );
