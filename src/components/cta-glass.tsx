@@ -94,9 +94,12 @@ export function CtaGlassFilters() {
 export function Glass() {
   return (
     <span aria-hidden="true" className="cta-glass">
-      <span />
-      <span />
-      <span />
+      {/* The lean sits here, inside the filtered layer (see .cta-melt). */}
+      <span className="cta-melt">
+        <span />
+        <span />
+        <span />
+      </span>
     </span>
   );
 }
