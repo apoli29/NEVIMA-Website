@@ -2931,9 +2931,29 @@
     .fo-piece[data-i="0"] { --w: clamp(12rem, 34svh, 20rem); }
     .fo-piece[data-i="1"] { --w: clamp(13rem, 31svh, 18.5rem); }
   }
+  /* On phones the two were set by width alone (58vw and 50vw), which made
+     them as tall as most of the screen: they overlapped and pressed on the
+     buttons and the foot (user, 2026-10-26). Each is now the smaller of a
+     share of the width and a share of the height, so a short phone shrinks
+     them as well. They hang in the room left under the buttons, whose
+     height portfolio.tsx measures into --fo-bar (it grows when the buttons
+     wrap), the near one a quarter of the way down it and the far one
+     nearly three quarters, keeping clear of each other with room for their
+     drift. */
   @media (max-width: 767px) {
-    .fo-piece[data-i="0"] { --x: 62%; --y: 41%; --w: 58vw; }
-    .fo-piece[data-i="1"] { --x: 33%; --y: 73%; --w: 50vw; }
+    .fo-piece {
+      --fo-room: calc(100% - var(--fo-bar, 4.5rem));
+    }
+    .fo-piece[data-i="0"] {
+      --x: 63%;
+      --y: calc(var(--fo-bar, 4.5rem) + var(--fo-room) * 0.27);
+      --w: min(44vw, 25svh);
+    }
+    .fo-piece[data-i="1"] {
+      --x: 36%;
+      --y: calc(var(--fo-bar, 4.5rem) + var(--fo-room) * 0.72);
+      --w: min(38vw, 22svh);
+    }
   }
 
   /* Each on a slow loop of its own length, never in step. */
