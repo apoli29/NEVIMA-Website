@@ -2609,8 +2609,13 @@
     grid-template-rows: auto 1fr;
     width: max-content;
     padding-right: var(--prc-edge);
-    will-change: transform;
   }
+  /* A layer of its own only while the page's scroll slides it (a computer,
+     process.tsx's pinned). Swiped on a phone, it is never transformed, and
+     as a layer it was a 3000px-wide one inside the row's own scrolling:
+     on an iPhone, Safari left white squares of it unpainted as the page
+     was scrolled (user, 2026-10-26). */
+  .prc-track-slid { will-change: transform; }
   /* The rail, along the top of the steps; the fill grows over it. */
   /* Its length is measured (--prc-rail-width, see process.tsx): set from
      --prc-edge it was resolved against the whole row, not the screen, and

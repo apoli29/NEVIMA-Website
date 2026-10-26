@@ -751,7 +751,8 @@ export function Process({ ready }: { ready: boolean }) {
         >
           <motion.ol
             ref={track}
-            className="prc-track"
+            // Its own layer only where it is slid (see .prc-track-slid).
+            className={`prc-track ${pinned ? "prc-track-slid" : ""}`}
             style={
               {
                 x: pinned && !scrolled ? x : 0,
