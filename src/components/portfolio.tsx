@@ -138,6 +138,19 @@ export function Portfolio() {
       .some((a) => a instanceof CSSAnimation && a.animationName === "fo-wait" && Number(a.currentTime) > 600);
     if (!caught) el.removeAttribute("data-fo-wait");
   }, []);
+  // How far down the buttons reach, for the phone layout to hang the photos
+  // under them (globals.css, .fo-piece): on a narrow phone, and sooner in
+  // Portuguese, the two buttons wrap onto two lines and the bar grows.
+  useEffect(() => {
+    const el = room.current;
+    const bar = el?.querySelector<HTMLElement>(".fo-top");
+    if (!el || !bar) return;
+    const set = () => el.style.setProperty("--fo-bar", `${bar.offsetTop + bar.offsetHeight}px`);
+    set();
+    const watch = new ResizeObserver(set);
+    watch.observe(bar);
+    return () => watch.disconnect();
+  }, []);
   const sign = useRef<HTMLSpanElement>(null);
 
   return (
