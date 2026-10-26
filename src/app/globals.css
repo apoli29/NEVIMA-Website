@@ -3767,3 +3767,10 @@ html.dbg-layers .prc-track { background: rgb(255 0 0 / 0.18) !important; outline
 html.dbg-layers .cta-glass { outline: 2px dashed #2962ff; }
 html.dbg-layers #comparison .cmp-crit { background: rgb(0 230 118 / 0.6) !important; }
 html.dbg-layers main > div > section:first-child { background: #ffb74d !important; }
+/* DIAGNOSTIC ONLY (never merged): ?t=name,name switches a suspect off. */
+html.dbg-t-noscroll #prc-row { overflow: hidden !important; }
+html.dbg-t-light main > div > section:first-child { position: relative !important; }
+html.dbg-t-light canvas { display: none !important; }
+html.dbg-t-light .abt-hero-slide { will-change: auto !important; }
+html.dbg-t-nofilter .cta-glass { filter: none !important; background: #0b0b0b; border-radius: 999px; }
+html.dbg-t-nofilter .cta-melt { display: none !important; }

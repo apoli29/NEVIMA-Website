@@ -79,7 +79,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: OPENING_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: SCREEN_SCRIPT }} />
         {/* DIAGNOSTIC ONLY (never merged): ?layers tints the suspect layers. */}
-        <script dangerouslySetInnerHTML={{ __html: `if(/[?&]layers/.test(location.search))document.documentElement.classList.add("dbg-layers")` }} />
+        <script dangerouslySetInnerHTML={{ __html: `(function(){var s=location.search,d=document.documentElement;if(/[?&]layers/.test(s))d.classList.add("dbg-layers");var m=s.match(/[?&]t=([a-z,]+)/);if(m)m[1].split(",").forEach(function(n){d.classList.add("dbg-t-"+n)})})()` }} />
       </head>
       <body className="antialiased">
         <HtmlLang />
