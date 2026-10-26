@@ -1263,8 +1263,19 @@
     z-index: -30;
     overflow: hidden;
     pointer-events: none;
-    transform-origin: 46% 54%;
     filter: url(#cta-glass);
+  }
+  /* The lean is on a layer of its own inside the glass, not on the glass
+     itself: an element that both carries an SVG filter and runs a CSS
+     animation is promoted to a composited layer by Safari, which there
+     drops the filter and leaves the three raw spots showing as a smudge
+     round the drop (user, on an iPhone, 2026-10-26). Filtering the parent
+     and leaning the child draws the same thing — the filter is taken of
+     the child's painted result, transform and all. */
+  .cta-melt {
+    position: absolute;
+    inset: 0;
+    transform-origin: 46% 54%;
     animation: drop-tilt 6.5s ease-in-out infinite alternate;
   }
   .cta-drop-light > .cta-glass {
@@ -1272,7 +1283,7 @@
     filter: url(#cta-glass-light);
   }
   /* Only the spots' strength matters: the filter paints the colour. */
-  .cta-glass > span {
+  .cta-melt > span {
     position: absolute;
     transform-origin: 0 0;
     background: radial-gradient(closest-side, #000, rgb(0 0 0 / 0));
@@ -1283,9 +1294,9 @@
     animation-iteration-count: infinite;
     animation-direction: alternate;
   }
-  .cta-glass > :nth-child(1) { left: -2.52%; top: -21%; width: 58%; height: 150%; animation-name: cta-melt-1; }
-  .cta-glass > :nth-child(2) { left: 18%; top: -17.4%; width: 64%; height: 130%; animation-name: cta-melt-2; }
-  .cta-glass > :nth-child(3) { left: 44.52%; top: -29.76%; width: 58%; height: 162%; animation-name: cta-melt-3; }
+  .cta-melt > :nth-child(1) { left: -2.52%; top: -21%; width: 58%; height: 150%; animation-name: cta-melt-1; }
+  .cta-melt > :nth-child(2) { left: 18%; top: -17.4%; width: 64%; height: 130%; animation-name: cta-melt-2; }
+  .cta-melt > :nth-child(3) { left: 44.52%; top: -29.76%; width: 58%; height: 162%; animation-name: cta-melt-3; }
 
   .cta-drop:hover,
   .cta-drop:focus-visible { transform: scale(1.04); }
@@ -1329,7 +1340,7 @@
   @media (prefers-reduced-motion: reduce) {
     .cta-drop,
     .cta-glass,
-    .cta-glass > span { animation: none; transition: none; }
+    .cta-glass > span, .cta-melt, .cta-melt > span { animation: none; transition: none; }
   }
   /* Safari (every browser on an iPhone) leaves the SVG filter off any
      element moved by an animated transform: the spots, each on a layer of
@@ -1338,7 +1349,7 @@
      and the filter melts and lights them. (hanging-punctuation is Safari's
      alone.) */
   @supports (hanging-punctuation: first) {
-    .cta-glass > span { animation: none; }
+    .cta-glass > span, .cta-melt, .cta-melt > span { animation: none; }
   }
 
   /* ---- services ---------------------------------------------------
@@ -2386,6 +2397,18 @@
   }
   .faq-flow li { display: inline-flex; align-items: center; gap: 0.5rem; }
   .faq-flow li + li::before { content: "\2192"; color: var(--color-ash); }
+  /* Eight steps will not sit on a phone's line, and wrapped they broke
+     badly: an arrow would fall at the start of a line, cut from the step
+     it points at (user, 2026-10-26). Below the width where the bar folds,
+     the chain runs down the page instead, a step to a line, its arrows
+     turned to point the way it now goes and set in from the pills' left
+     so they read as the thread between them. */
+  @media (max-width: 639.98px) {
+    .faq-flow { display: grid; justify-items: start; gap: 0; }
+    .faq-flow li { display: grid; justify-items: start; gap: 0.2rem; }
+    .faq-flow li + li { margin-top: 0.2rem; }
+    .faq-flow li + li::before { content: "\2193"; margin-left: 1.15em; line-height: 1; }
+  }
   .faq-flow span {
     border: 1px solid rgb(0 0 0 / 0.2);
     border-radius: 999px;
