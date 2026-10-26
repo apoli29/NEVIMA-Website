@@ -135,6 +135,7 @@ export function InlineProposal() {
           answers: toAnswers(draft),
           contact,
           lang,
+          origin: "page",
           nickname: readTrap(),
           elapsedMs: Date.now() - openedAt.current,
         }),
