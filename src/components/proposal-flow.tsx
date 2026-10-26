@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  type RefObject,
   createContext,
   useCallback,
   useContext,
@@ -10,6 +11,7 @@ import {
   useState,
 } from "react";
 import dynamic from "next/dynamic";
+import { useMotionValue, useMotionValueEvent, type MotionValue } from "motion/react";
 
 /* ==================================================================
    The free proposal, opened out of the index: who may open it, and the
@@ -47,6 +49,9 @@ export function useProposalController() {
   /** On screen at all, opening, open or closing: the page is held. */
   const [present, setPresent] = useState(false);
   const origin = useRef<Origin | null>(null);
+  /** The run's one clock (0 shut, 1 open), owned by the overlay's animate()
+      and shared so the button it grows out of can follow it. */
+  const progress = useMotionValue(0);
 
   const show = useCallback((box: HTMLElement, focus: HTMLElement | null, index = true) => {
     origin.current = { box, focus, index };
@@ -64,7 +69,30 @@ export function useProposalController() {
     wasPresent.current = present;
   }, [present]);
 
-  return useMemo(() => ({ open, present, origin, show, hide, gone }), [open, present, show, hide, gone]);
+  return useMemo(
+    () => ({ open, present, origin, progress, show, hide, gone }),
+    [open, present, progress, show, hide, gone],
+  );
+}
+
+/** How far into the run the pane has come in: the button the form grows
+    out of is let go over the same stretch, and taken back over it on the
+    way home, so the two always overlap and no frame shows neither. Kept in
+    step with PANE in proposal-overlay.tsx. */
+const ORIGIN_OUT = 0.18;
+
+/** The button a form is grown out of, faded off the run's clock while the
+    form is out (it was hidden outright, which left a frame with nothing at
+    either end). Its place is kept; the page behind is out of reach. */
+export function useOriginFade(button: RefObject<HTMLElement | null>, progress: MotionValue<number> | undefined, launched: boolean) {
+  const apply = (v: number) => {
+    const el = button.current;
+    if (!el) return;
+    el.style.opacity = launched ? String(Math.max(0, 1 - v / ORIGIN_OUT)) : "";
+  };
+  const idle = useMotionValue(0);
+  useMotionValueEvent(progress ?? idle, "change", apply);
+  useEffect(() => apply(progress?.get() ?? 0), [launched]);
 }
 
 export type ProposalController = ReturnType<typeof useProposalController>;

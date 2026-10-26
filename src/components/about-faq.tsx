@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { useHref, useLang, useT } from "@/lib/use-lang";
 import { SlideIn } from "./enter";
 import { PassLink } from "./floating-nav";
-import { useProposal } from "./proposal-flow";
+import { useOriginFade, useProposal } from "./proposal-flow";
 import { Chevron, Illuminated, LIGHT_DELAY_MS, Stressed } from "./services";
 import { useSeen } from "./use-seen";
 import { Glass } from "./cta-glass";
@@ -519,6 +519,7 @@ function ProposalAsk({ label }: { label: string }) {
   useEffect(() => {
     if (!present) setLaunched(false);
   }, [present]);
+  useOriginFade(button, proposal?.progress, launched && present);
   const look = "cta-drop relative isolate inline-flex items-center justify-center text-[0.9375rem] leading-none whitespace-nowrap";
   if (!proposal) {
     return (
@@ -542,8 +543,7 @@ function ProposalAsk({ label }: { label: string }) {
         proposal.show(button.current, button.current, false);
       }}
       className={look}
-      style={{ visibility: launched && present ? "hidden" : undefined }}
-    >
+          >
       <Glass />
       <span className="btn-neu-face">
         <Arrowed>{label}</Arrowed>
