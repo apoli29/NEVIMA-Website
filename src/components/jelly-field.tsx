@@ -134,12 +134,27 @@ const SMALL_GROW = 1.45;
     SMALL_GROW as the screen gets taller (its height, in CSS pixels, from
     SHORT_H to TALL_H). And their margin from the words is narrower, though
     never under the 23px the glass is warped by as a drop moves. */
-const SHORT_GROW = 0.75;
-const SHORT_H = 680;
+const SHORT_GROW = 0.9;
+const SHORT_H = 620;
 const TALL_H = 820;
 const SMALL_CLEAR_MARGIN = 26;
 const SMALL_COUNT = 11;
 const SMALL_SPREAD = 1.2;
+/** A phone's water is two thin bands, and a big drop has to keep its own
+    reach plus SMALL_CLEAR_MARGIN off the words: in a band of about 90px
+    none of them fits, so every drop that landed was one of the small ones
+    and they all looked the same size (user, 2026-10-26). The sides carry
+    no words, so there a drop may hang this share of its body off the
+    screen — the big ones take the margins, the small ones the bands, and
+    the sizes read as mixed again. Only left and right: hanging off the
+    top or the foot would put a drop under the bar or the index. */
+const SMALL_SIDE_OVER = 0.5;
+/** And the sizes themselves are pushed apart on a phone: each drop's
+    share of the side is taken this far from the middle one's, so the big
+    ones grow and the small ones stay small, instead of the whole field
+    ending up at one size. Raising every drop instead only meant fewer of
+    them fitted. */
+const SMALL_MIX = 1.4;
 /** Two drops that come close pull together (see drops() in the shader),
     the big ones from further off: the field round each reaches this
     share of its radius past its body. Drops are spread, and roam, with
@@ -230,6 +245,14 @@ const EXTENT = DROPS.map((d) =>
     1.9,
   ),
 );
+/** The middle size of the drops a phone uses, which the others are
+    pushed away from there (see SMALL_MIX). */
+const MID_R = (() => {
+  const rs = DROPS.slice(0, SMALL_COUNT)
+    .map((d) => d.r)
+    .sort((a, b) => a - b);
+  return rs[Math.floor(rs.length / 2)];
+})();
 /** Three shapes to a drop. */
 const MAX_BLOBS = 24 * 3;
 
@@ -675,7 +698,14 @@ export function JellyField({
     const OVERHANG = 0.4;
     /** How far drop i keeps from the words. */
     const clearance = (i: number) =>
-      DROPS[i].r * dropSide() * CLEAR_REACH + (Math.min(w, h) < SMALL ? SMALL_CLEAR_MARGIN : CLEAR_MARGIN);
+      small()
+        ? // A phone's bands are thin, and CLEAR_REACH is a flat 2 where a
+          // drop's own reach is 1.4 to 1.6: asking every drop for the
+          // room of the longest-drawn one kept all but the smallest out
+          // of them. Each keeps its own reach instead, plus the margin
+          // the glass is warped by.
+          body(i) + SMALL_CLEAR_MARGIN
+        : DROPS[i].r * dropSide() * CLEAR_REACH + CLEAR_MARGIN;
     /** Whether a drop centred here, keeping clearance c, is too near a
         block: with the block's own extra room, unless asked to leave it
         out (the spreading does, see WARP_PAD). */
@@ -693,14 +723,25 @@ export function JellyField({
     // Where the floating bar sits over the field, in its CSS pixels.
     let bar: { left: number; right: number; bottom: number } | null = null;
 
+    /** The drop's size as a share of the side: on a phone, pushed away
+        from the middle one's so the sizes read as mixed (SMALL_MIX). */
+    const small = () => !flooded && Math.min(w, h) < SMALL;
+    const share = (i: number) =>
+      small() ? MID_R * (DROPS[i].r / MID_R) ** SMALL_MIX : DROPS[i].r;
     /** The drop's body, in CSS pixels, at its full size. */
-    const body = (i: number) => DROPS[i].r * dropSide() * EXTENT[i];
+    const body = (i: number) => share(i) * dropSide() * EXTENT[i];
+    /** How far a drop of body r may hang off the left or right edge
+        (see SMALL_SIDE_OVER): on a phone only, and never off the top or
+        the foot. */
+    const sideOver = (r: number) => (small() ? r * SMALL_SIDE_OVER : 0);
     /** How far a drop's pull on its neighbours reaches (see PULL). */
-    const pull = (i: number) => body(i) + PULL * DROPS[i].r * dropSide();
-    /** The box a drop's centre must stay in to be whole on the screen. */
+    const pull = (i: number) => body(i) + PULL * share(i) * dropSide();
+    /** The box a drop's centre must stay in to be whole on the screen —
+        on a phone, as far off the sides as it was laid out to go. */
     const within = (i: number, extra = 0) => {
       const e = flooded ? -body(i) * OVERHANG : body(i) + EDGE_MARGIN + extra;
-      return { x0: e, x1: w - e, y0: e, y1: h - e };
+      const side = e - sideOver(body(i));
+      return { x0: side, x1: w - side, y0: e, y1: h - e };
     };
     const underBar = (x: number, i: number) =>
       !flooded && !!bar && x + body(i) > bar.left - NAV_GAP && x - body(i) < bar.right + NAV_GAP;
@@ -799,7 +840,8 @@ export function JellyField({
           the edges, the words and the points given, edge to edge; below
           zero, not allowed (too near the words or off the screen). */
       const room = (i: number, r: number, c: number, x: number, y: number, pts: { x: number; y: number; r: number }[]) => {
-        const edge = Math.min(x - r, w - x - r, y - r - top, h - y - r) - EDGE_MARGIN;
+        const over = sideOver(r);
+        const edge = Math.min(x - r + over, w - x - r + over, y - r - top, h - y - r) - EDGE_MARGIN;
         if (edge < 0 || inWords(i, x, y, c, false)) return -Infinity;
         let gap = edge * 1.6;
         for (const b of wordsFor(i)) gap = Math.min(gap, toBox(b, x, y) - r);
@@ -936,10 +978,12 @@ export function JellyField({
          the spot is not allowed at all. */
       const openAt = (i: number, x: number, y: number, others: number[], at: { x: number; y: number }[]) => {
         const r = body(i);
-        // Flooded, a drop may hang off the screen by a share of itself.
+        // Flooded, a drop may hang off the screen by a share of itself; on
+        // a phone, off the sides alone (see SMALL_SIDE_OVER).
+        const over = sideOver(r);
         const edge = flooded
           ? Math.min(x, w - x, y, h - y) + r * OVERHANG
-          : Math.min(x - r, w - x - r, y - r - top, h - y - r) - EDGE_MARGIN;
+          : Math.min(x - r + over, w - x - r + over, y - r - top, h - y - r) - EDGE_MARGIN;
         if (edge < 0 || inWords(i, x, y, clearance(i), false)) return -Infinity;
         let gap = edge * 1.6;
         for (const b of wordsFor(i)) gap = Math.min(gap, toBox(b, x, y) - r);
@@ -1242,7 +1286,7 @@ export function JellyField({
         const g = grown(landSlot.get(i) ?? slot, now);
         if (g >= 1) down++;
         if (g > 0) struck.add(i);
-        const r = d.r * side * landing(g);
+        const r = share(i) * side * landing(g);
 
         const turn = i * 0.9 + slow * d.spin;
         dropData.set([x, y, r, d.aspect], blobs * 4);
