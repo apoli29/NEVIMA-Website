@@ -13,7 +13,6 @@ import {
   animate,
   cubicBezier,
   motion,
-  useMotionValue,
   useMotionValueEvent,
   useReducedMotion,
   useTransform,
@@ -205,7 +204,7 @@ function Panel({
   clear: () => void;
 }) {
   const reduce = useReducedMotion() ?? false;
-  const t = useMotionValue(0);
+  const t = ctl.progress;
   const lang = useLang();
   const say = useT();
 
@@ -218,8 +217,18 @@ function Panel({
   );
   const to = landing(view.w, view.h);
 
+  /* The screen is not re-read while the run is under way: on a phone the
+     browser's own bars come and go as the page is held, and a landing
+     moved mid-flight made the form jump. A change is kept and taken up the
+     moment the run comes to rest. */
+  const running = useRef(false);
+  const pending = useRef<{ w: number; h: number } | null>(null);
   useEffect(() => {
-    const onResize = () => setView({ w: window.innerWidth, h: window.innerHeight });
+    const onResize = () => {
+      const next = { w: window.innerWidth, h: window.innerHeight };
+      if (running.current) pending.current = next;
+      else setView(next);
+    };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
@@ -241,7 +250,9 @@ function Panel({
   const rows = useTransform(t, ROWS_OUT, plain ? [0, 0] : [1, 0]);
   const rowsX = useTransform(t, ROWS_OUT, [0, -10]);
   const labelOut = useTransform(t, LABEL_OUT, plain ? [0, 0] : [1, 0]);
-  const labelIn = useTransform(t, LABEL_IN, plain ? [1, 1] : [0, 1]);
+  // From a call to action the label comes in with the pane, rather than
+  // standing on the page behind before there is a pane to stand on.
+  const labelIn = useTransform(t, reduce ? LABEL_IN : fromIndex ? LABEL_IN : PANE, reduce ? [1, 1] : [0, 1]);
   // From a call to action the row was never "Get your free proposal" on
   // the index, so it does not carry that label into the form (user,
   // 2026-10-17: it showed in the growing pane): it waits at the foot and
@@ -272,6 +283,15 @@ function Panel({
     const room = Math.max(hv - 2 * pad - chrome.around, 0);
     return -room * (1 - down);
   });
+  /* The form is laid out once, at the size it lands at, and the growing
+     pane only uncovers it: laid out afresh at every frame's size, its
+     label broke over two lines and its rows reflowed as the pane grew.
+     The foot is the exception: it is one row, as wide as the pane at each
+     moment, held at the pane's foot (the form's own foot is the landing's,
+     lower down while the pane is smaller). */
+  const innerW = useTransform(width, (w) => Math.max(w - 2 * pad, 0));
+  const innerH = useTransform(height, (h) => Math.max(h - 2 * pad, 0));
+  const footLift = useTransform([footY, height], ([fy, hv]: number[]) => fy - (to.h - hv));
   const form = useTransform(t, reduce ? [0, 1] : FORM_IN, [0, 1]);
 
   /* --- the run -------------------------------------------------------- */
@@ -291,14 +311,23 @@ function Panel({
     const target = open ? 1 : 0;
     const full = reduce ? 0.2 : open ? OPEN_S : CLOSE_S;
     // From wherever it has got to: a run reversed halfway takes half as long.
+    running.current = true;
     const controls = animate(t, target, {
       duration: full * Math.abs(target - t.get()),
       ease: "linear",
       onComplete: () => {
+        running.current = false;
+        if (pending.current) {
+          setView(pending.current);
+          pending.current = null;
+        }
         if (!open) gone();
       },
     });
-    return () => controls.stop();
+    return () => {
+      running.current = false;
+      controls.stop();
+    };
   }, [open, reduce, t, gone, ctl.origin]);
 
   /* --- Esc, and focus --------------------------------------------------- */
@@ -501,11 +530,24 @@ function Panel({
         aria-labelledby="proposal-title"
         tabIndex={-1}
         className="pf-panel"
-        style={{ x, y, width, height, padding: pad, opacity: whole, pointerEvents: landed ? "auto" : "none" }}
+        style={{ x, y, width, height, opacity: whole, pointerEvents: landed ? "auto" : "none" }}
       >
         <motion.div aria-hidden="true" className="pf-pane" style={{ opacity: pane }} />
 
-        <form ref={formEl} noValidate onSubmit={onSubmit} aria-label={say("Get your free proposal", "Pedir proposta gratuita")} className="flex h-full min-h-0 flex-col">
+        {/* What the pane uncovers. Clipped only while it grows, so focus
+            rings at the form's edges are whole once it has landed. */}
+        <motion.div
+          className="absolute"
+          style={{ left: pad, top: pad, width: innerW, height: innerH, overflow: landed ? "visible" : "hidden" }}
+        >
+        <form
+          ref={formEl}
+          noValidate
+          onSubmit={onSubmit}
+          aria-label={say("Get your free proposal", "Pedir proposta gratuita")}
+          className="flex min-h-0 flex-col"
+          style={{ width: to.w - 2 * pad, height: to.h - 2 * pad }}
+        >
           {/* The index's label, which becomes the form's. */}
           <p className="mono-label mb-2.5 flex items-center justify-between text-ash-2">
             <span className="grid">
@@ -552,8 +594,8 @@ function Panel({
                 off. */}
             <motion.div
               aria-hidden="true"
-              className="absolute inset-x-0"
-              style={{ top: Math.max(chrome.foot - 1, 0), opacity: rows, x: rowsX }}
+              className="absolute left-0"
+              style={{ top: Math.max(chrome.foot - 1, 0), width: Math.max(from.w - 2 * pad, 0), opacity: rows, x: rowsX }}
             >
               {SECTION_LINKS.map((row) => (
                 <div key={row.href} className="relative">
@@ -634,7 +676,7 @@ function Panel({
           </div>
 
           {/* The row the index was opened from, which moves the form on. */}
-          <motion.div ref={footEl} className="relative z-10" style={{ y: footY, opacity: footShown }}>
+          <motion.div ref={footEl} className="relative z-10" style={{ y: footLift, width: innerW, opacity: footShown }}>
             <span aria-hidden="true" className="absolute inset-x-0 top-0 z-10 block h-px bg-ink" />
             <div className="flex">
               <AnimatePresence initial={false}>
@@ -687,6 +729,7 @@ function Panel({
             <span aria-hidden="true" className="block h-px bg-ink" />
           </motion.div>
         </form>
+        </motion.div>
       </motion.div>
     </>
   );

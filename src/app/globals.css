@@ -667,8 +667,17 @@
       inset 0 1px 0 rgb(255 255 255 / 0.7),
       0 2rem 4rem -2rem rgb(0 0 0 / 0.3);
   }
+  /* On a phone the pane is near-opaque and fills the screen, so its blur
+     showed almost nothing and cost a re-blur of the whole page behind at
+     every frame of the pane's growth, which is where the run stuttered. */
   @media (max-width: 767px) {
-    .pf-pane { border: 0; box-shadow: none; background: rgb(255 255 255 / 0.94); }
+    .pf-pane {
+      border: 0;
+      box-shadow: none;
+      background: rgb(255 255 255 / 0.96);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
   }
 
   /* How far along: a hairline under the label, filled from the left. */

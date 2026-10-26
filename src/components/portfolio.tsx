@@ -13,7 +13,7 @@ import {
 import { STILL_KEY } from "./footer";
 import { LiquidLens } from "./liquid-lens";
 import { ProjectReport } from "./project-report";
-import { ProposalOverlay, useProposalController } from "./proposal-flow";
+import { ProposalOverlay, useOriginFade, useProposalController } from "./proposal-flow";
 import { leavePortfolio } from "@/lib/return-spot";
 import { covered, fadeThen } from "./page-wipe";
 import { projectsIn, serviceLabel, shown, type Project } from "@/lib/work";
@@ -64,6 +64,7 @@ export function Portfolio() {
   const [open, setOpen] = useState<{ project: Project; from: HTMLElement } | null>(null);
   const proposal = useProposalController();
   const ask = useRef<HTMLButtonElement>(null);
+  useOriginFade(ask, proposal.progress, proposal.present);
   const away = open !== null || proposal.present;
   const t = useT();
 
@@ -201,7 +202,6 @@ export function Portfolio() {
             aria-expanded={proposal.open}
             onClick={() => ask.current && proposal.show(ask.current, ask.current, false)}
             className="cta-drop cta-drop-light inline-flex text-[0.9375rem] leading-none"
-            style={{ visibility: proposal.present ? "hidden" : undefined }}
           >
             <Glass />
             <span className="btn-neu-face">{t("Let’s work together", "Vamos trabalhar juntos")}</span>

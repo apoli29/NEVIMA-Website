@@ -12,7 +12,7 @@ import {
 } from "motion/react";
 import { basePath, type Copy } from "@/lib/i18n";
 import { useHref, useT } from "@/lib/use-lang";
-import { useProposal } from "./proposal-flow";
+import { useOriginFade, useProposal } from "./proposal-flow";
 import { Glass } from "./cta-glass";
 import { STILL_KEY } from "./footer";
 import { LiquidLens } from "./liquid-lens";
@@ -127,6 +127,7 @@ function ProposalAsk() {
   useEffect(() => {
     if (!present) setLaunched(false);
   }, [present]);
+  useOriginFade(button, proposal?.progress, launched && present);
 
   if (!proposal) {
     return (
@@ -148,8 +149,7 @@ function ProposalAsk() {
         proposal.show(button.current, button.current, false);
       }}
       className={`relative isolate ${ASK_CLASS}`}
-      style={{ visibility: launched && present ? "hidden" : undefined }}
-    >
+          >
       <AskLabel />
     </button>
   );
