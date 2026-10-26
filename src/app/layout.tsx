@@ -78,6 +78,8 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: LANG_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: OPENING_SCRIPT }} />
         <script dangerouslySetInnerHTML={{ __html: SCREEN_SCRIPT }} />
+        {/* DIAGNOSTIC ONLY (never merged): ?layers tints the suspect layers. */}
+        <script dangerouslySetInnerHTML={{ __html: `if(/[?&]layers/.test(location.search))document.documentElement.classList.add("dbg-layers")` }} />
       </head>
       <body className="antialiased">
         <HtmlLang />

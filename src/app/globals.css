@@ -3755,3 +3755,15 @@
   .ck-note { display: block; font-size: 0.875rem; color: var(--color-ash); }
   .ck-row input { width: 1.1rem; height: 1.1rem; accent-color: var(--color-ink); flex: none; margin-top: 0.2rem; }
 }
+
+/* DIAGNOSTIC ONLY (never merged): ?layers paints each suspect a colour of
+   its own, so a square on an iPhone says by its colour where it is from. */
+html.dbg-layers body { background: #ff00ff !important; }
+html.dbg-layers #studio { background: #d1c4e9 !important; }
+html.dbg-layers #services { background: #b9f6ca !important; }
+html.dbg-layers #how-we-work { background: #fff176 !important; }
+html.dbg-layers #prc-row { background: rgb(0 176 255 / 0.25) !important; }
+html.dbg-layers .prc-track { background: rgb(255 0 0 / 0.18) !important; outline: 3px solid red; outline-offset: -3px; }
+html.dbg-layers .cta-glass { outline: 2px dashed #2962ff; }
+html.dbg-layers #comparison .cmp-crit { background: rgb(0 230 118 / 0.6) !important; }
+html.dbg-layers main > div > section:first-child { background: #ffb74d !important; }
