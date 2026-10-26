@@ -388,6 +388,7 @@ function Panel({
           answers: toAnswers(draft),
           contact,
           lang,
+          origin: "overlay",
           nickname: readTrap(),
           elapsedMs: Date.now() - openedAt.current,
         }),

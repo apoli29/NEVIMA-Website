@@ -33,6 +33,7 @@ export async function POST(request: Request) {
 
   const lang = fields.lang === "pt" ? "pt" : "en";
   const delivered = await deliverRequest({
+    origin: fields.origin === "page" || fields.origin === "overlay" ? fields.origin : "other",
     at: new Date().toISOString(),
     lang,
     answers: answers.value,
