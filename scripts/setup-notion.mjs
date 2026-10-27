@@ -20,8 +20,10 @@
    ================================================================== */
 
 const token = process.env.NOTION_TOKEN;
-const parentRaw = process.env.NOTION_PARENT ?? "";
-const parent = parentRaw.replace(/-/g, "").match(/[0-9a-f]{32}(?=[^0-9a-f]*$)/i)?.[0];
+// The address as Notion copies it ends in "?source=copy_link": only the
+// path counts, and the page's id is the last 32 characters of it.
+const parentPath = (process.env.NOTION_PARENT ?? "").trim().split(/[?#]/)[0].replace(/-/g, "");
+const parent = parentPath.match(/[0-9a-f]{32}$/i)?.[0];
 
 if (!token || !parent) {
   console.error("Falta NOTION_TOKEN ou NOTION_PARENT (o endereço da página) no .env.local.");
