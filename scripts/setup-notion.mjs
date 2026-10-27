@@ -36,6 +36,13 @@ const states = [
   { name: "Perdido", color: "gray" },
 ];
 
+/* The options each choice starts with, as deliver.ts writes them (in
+   Portuguese, commas turned into semicolons: Notion options cannot hold
+   commas). Anything else a visitor types, such as another business, is
+   added by Notion as it arrives. */
+const options = (...names) => names.map((name) => ({ name }));
+const one = (...names) => ({ select: { options: options(...names) } });
+
 const common = {
   Nome: { title: {} },
   Estado: { select: { options: states } },
@@ -50,15 +57,25 @@ const databases = [
     title: "Pedidos",
     properties: {
       ...common,
-      "Serviços": { multi_select: {} },
-      Setor: { select: {} },
-      "País": { select: {} },
+      "Serviços": {
+        multi_select: { options: options("Web design", "Identidade visual", "Sessão fotográfica", "SEO", "GEO") },
+      },
+      Setor: one(
+        "Saúde e estética",
+        "Imobiliário",
+        "Restauração e hotelaria",
+        "Loja / comércio",
+        "Serviços profissionais",
+        "Uso pessoal",
+        "Outro",
+      ),
+      "País": one("Portugal", "Espanha", "Itália", "EUA", "Outro"),
       Estimativa: { rich_text: {} },
       "Mensal (€)": { number: { format: "euro" } },
       Prazo: { rich_text: {} },
       Mensagem: { rich_text: {} },
-      Idioma: { select: {} },
-      Origem: { select: {} },
+      Idioma: one("pt", "en"),
+      Origem: one("page", "overlay", "other"),
       Recebido: { date: {} },
     },
   },
@@ -67,18 +84,18 @@ const databases = [
     title: "Parceiros",
     properties: {
       ...common,
-      Projeto: { select: {} },
-      "Ecrãs": { select: {} },
+      Projeto: one("Website", "Plataforma", "Aplicação web"),
+      "Ecrãs": one("1–10", "11–20", "Mais de 20"),
       "Ecrãs (estimativa)": { rich_text: {} },
-      "Inspiração": { select: {} },
+      "Inspiração": one("Sim", "Não"),
       Link: { rich_text: {} },
-      "Início": { select: {} },
-      Entrega: { select: {} },
-      Modelo: { select: {} },
-      "Crédito": { select: {} },
+      "Início": one("Menos de uma semana", "1–2 semanas", "3–4 semanas", "Mais de 1 mês"),
+      Entrega: one("Menos de 2 semanas", "2–4 semanas", "1–2 meses", "Mais de 2 meses"),
+      Modelo: one("Um projeto fechado", "Trabalho contínuo"),
+      "Crédito": one("Sim; com crédito", "Não; sem crédito (white label)"),
       NDA: { checkbox: {} },
       Mensagem: { rich_text: {} },
-      Idioma: { select: {} },
+      Idioma: one("pt", "en"),
       Recebido: { date: {} },
     },
   },
