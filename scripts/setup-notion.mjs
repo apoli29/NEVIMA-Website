@@ -12,7 +12,7 @@
                    integration (••• > Connections > the integration)
 
    It makes "Pedidos" and "Parceiros" inside that page and prints their
-   ids: those go into Vercel as NOTION_PROPOSALS_DB and NOTION_PARTNERS_DB
+   ids: those go into Vercel as NOTION_FORM1_LEADS and NOTION_FORM2_LEADS
    (src/lib/proposal/deliver.ts). The names of the properties here are
    the ones deliver.ts writes: change them together.
 
@@ -55,7 +55,7 @@ const common = {
 
 const databases = [
   {
-    env: "NOTION_PROPOSALS_DB",
+    env: "NOTION_FORM1_LEADS",
     title: "Pedidos",
     properties: {
       ...common,
@@ -82,7 +82,7 @@ const databases = [
     },
   },
   {
-    env: "NOTION_PARTNERS_DB",
+    env: "NOTION_FORM2_LEADS",
     title: "Parceiros",
     properties: {
       ...common,
