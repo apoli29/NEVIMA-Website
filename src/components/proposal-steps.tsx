@@ -942,7 +942,16 @@ export function StepScreen({
               name="languages"
               options={list(LANGUAGES).map((l) => (l.id === "other" ? { ...l, label: `${l.label}*` } : l))}
               value={draft.languages}
-              onChange={(languages) => setDraft({ languages })}
+              onChange={(next) =>
+                // "Not sure" stands alone: choosing it clears the languages,
+                // and choosing a language clears it.
+                setDraft({
+                  languages:
+                    next.includes("unsure") && !draft.languages.includes("unsure")
+                      ? ["unsure"]
+                      : next.filter((language) => language !== "unsure"),
+                })
+              }
             />
             {draft.languages.includes("other") && (
               <Field

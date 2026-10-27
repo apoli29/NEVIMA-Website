@@ -58,6 +58,49 @@ function web(
   const others = a.languages.includes("other") ? countLanguages(a.languagesOther ?? "") : 0;
   if (others > 3) return { reason: t("More than three additional languages", "Mais de três línguas adicionais") };
 
+  // "Not sure" about the design, the texts or the languages (user,
+  // 2026-10-27): the range runs from the price with the cheaper answers
+  // to the price with the dearer ones, so it never passes what the dearer
+  // answer would have cost on its own.
+  const languagesUnsure = a.languages.includes("unsure");
+  if (a.design === "unsure" || a.texts === "unsure" || languagesUnsure) {
+    const cheap: typeof a = {
+      ...a,
+      design: a.design === "unsure" ? "essential" : a.design,
+      texts: a.texts === "unsure" ? "yes" : a.texts,
+      languages: languagesUnsure ? ["pt", "en"] : a.languages,
+    };
+    const dear: typeof a = {
+      ...a,
+      design: a.design === "unsure" ? "advanced" : a.design,
+      texts: a.texts === "unsure" ? "no" : a.texts,
+      languages: languagesUnsure ? ["pt", "en", "other"] : a.languages,
+      languagesOther: languagesUnsure ? "one more" : a.languagesOther,
+    };
+    const low = web(cheap, market, p, t, personal);
+    const high = web(dear, market, p, t, personal);
+    if (!("line" in low)) return low;
+    if (!("line" in high)) return high;
+    const what = [
+      a.design === "unsure" && t("the Advanced design level", "o nível de design Avançado"),
+      languagesUnsure && t("one more language", "mais uma língua"),
+      a.texts === "unsure" && t("writing the texts", "a escrita dos textos"),
+    ].filter(Boolean);
+    return {
+      line: {
+        amount: { min: low.line.amount.min, max: high.line.amount.max },
+        notes: [
+          ...low.line.notes,
+          t(
+            `Some answers are "not sure", so the upper end also allows for ${what.join(", ")}.`,
+            `Algumas respostas são "não sei", por isso o valor mais alto contempla também ${what.join(", ")}.`,
+          ),
+        ],
+        provisional: low.line.provisional || high.line.provisional,
+      },
+    };
+  }
+
   const design = a.design === "advanced" ? 1 + p.advancedPercent / 100 : 1;
   const [fewest, most] = p.pages[a.pages][market];
   const extras = others * p.perLanguage;
@@ -147,12 +190,18 @@ function features(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["we
   const has = (id: (typeof a.features)[number]) => a.features.includes(id);
   if (has("forms") && a.forms) {
     if (a.forms === "more") out.notes.push(t("More than 3 forms: quoted in your proposal.", "Mais de 3 formulários: orçamentados na proposta."));
+    // Not sure: from one form's floor to two forms' ceiling.
+    else if (a.forms === "unsure") add([p.features.forms["1"][0], p.features.forms["2"][1]], t("1 to 2 forms", "1 a 2 formulários"));
     else add(p.features.forms[a.forms], t(a.forms === "1" ? "1 form" : `${a.forms} forms`, a.forms === "1" ? "1 formulário" : `${a.forms} formulários`));
   }
   if (has("newsletter")) add(p.features.newsletter, t("a newsletter sign-up", "uma inscrição na newsletter"));
   if (has("emails") && a.emails) {
     if (a.emails === "more") {
       out.notes.push(t("More than 3 automatic emails: quoted in your proposal.", "Mais de 3 emails automáticos: orçamentados na proposta."));
+    } else if (a.emails === "unsure") {
+      // Not sure: from one email's floor to two emails' ceiling.
+      const [fl, fh] = p.features.emailFirst;
+      add([fl, fh + p.features.emailNext[1]], t("1 to 2 automatic emails", "1 a 2 emails automáticos"));
     } else {
       const n = Number(a.emails);
       const [fl, fh] = p.features.emailFirst;
@@ -182,6 +231,21 @@ function photo(a: NonNullable<Answers["photo"]>, country: Answers["country"], p:
     const region = labelOf(REGIONS, a.region, t<Lang>("en", "pt"));
     return { reason: t(`Shoot in ${region}`, a.region === "azores" ? `Sessão nos ${region}` : `Sessão na ${region}`) };
   }
+  // Not sure: from the first plan's price to the second's.
+  if (a.plan === "unsure") {
+    return {
+      line: {
+        amount: { min: p.photo.photos, max: p.photo["photos-video"] },
+        notes: [
+          t(
+            "Photos only or photos & video: the range runs from one to the other, and we settle it together.",
+            "Só fotografia ou fotografia e vídeo: o intervalo vai de uma à outra, e definimos em conjunto.",
+          ),
+          t(p.photoTravel),
+        ],
+      },
+    };
+  }
   return { line: { amount: fixed(p.photo[a.plan]), notes: [t(p.photoTravel)] } };
 }
 
@@ -205,6 +269,16 @@ function search(
       "Pontual: mais forte a curto prazo, o efeito vai-se perdendo a médio e longo prazo.",
     ),
   ];
+  // Not sure: priced as one-time, the monthly service beside it as an option.
+  if (plan === "unsure") {
+    notes.push(
+      t(
+        `The monthly service, which keeps the practices as effective as they can be, is optional: €${monthly} a month. We settle it together.`,
+        `O serviço mensal, que mantém as práticas o mais eficazes possível, é opcional: ${monthly} € por mês. Definimos em conjunto.`,
+      ),
+    );
+    return { line: { amount: fixed(first), notes, provisional: true } };
+  }
   if (plan === "monthly") {
     notes.push(
       t(
