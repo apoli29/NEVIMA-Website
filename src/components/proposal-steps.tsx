@@ -1521,9 +1521,26 @@ export function OfflineNote() {
   );
 }
 
+/** How long is left, rounded up to the minute: "3 h 20 min", "45 min".
+    The same in both languages. */
+function waitText(ms: number) {
+  const minutes = Math.max(1, Math.ceil(ms / 60_000));
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h === 0) return `${m} min`;
+  return m === 0 ? `${h} h` : `${h} h ${m} min`;
+}
+
 /** What a request that did not go through tells the visitor: by the
     server's answer, or "network" when the server was never reached. */
-export function sendError(status: number | "network", t: Translate) {
+export function sendError(status: number | "network", t: Translate, waitMs?: number) {
+  if (status === 409) {
+    const wait = waitText(waitMs ?? 0);
+    return t(
+      `We already received a request from this email in the last 24 hours. To send a new one, with changes, wait another ${wait}.`,
+      `Já recebemos um pedido deste email nas últimas 24 horas. Para enviar um novo pedido, com alterações, é preciso aguardar mais ${wait}.`,
+    );
+  }
   if (status === 429) {
     return t(
       "Too many requests from this connection. Try again in a few minutes.",

@@ -1,7 +1,7 @@
 import "server-only";
 import type { Lang } from "../i18n";
 import { confirmationHtml, confirmationSubject, confirmationText, STUDIO_EMAIL, summaryOf } from "./email";
-import { block, createPage, prop } from "./notion";
+import { block, createPage, lastRequestSince, prop } from "./notion";
 import {
   CREDITS,
   DELIVERIES,
@@ -34,6 +34,8 @@ import { SERVICES, labelOf, type Answers, type Contact, type Estimate, type Rang
    - NOTION_TOKEN         the integration's secret
    - NOTION_FORM1_LEADS   the proposals database's id (proposal requests)
    - NOTION_FORM2_LEADS   the partners database's id
+   - REPEAT_ALLOWED_EMAILS optional: addresses that may send more than
+                          one request in 24 hours (commas between them)
    - RESEND_API_KEY       optional: without it no email is sent
    - MAIL_FROM            optional, defaults to "nevima <ola@nevima.studio>"
    - NOTIFY_TO            optional, where the notices go (commas between
@@ -101,7 +103,7 @@ function proposalPage(request: ProposalRequest) {
     properties: {
       Nome: prop.title(contact.name),
       Estado: prop.select("Novo"),
-      Email: prop.email(contact.email),
+      Email: prop.email(contact.email.toLowerCase()),
       Telefone: prop.phone(contact.phone),
       Empresa: prop.text(contact.company),
       "Serviços": prop.multi(answers.services.map((id) => labelOf(SERVICES, id, "pt"))),
@@ -130,7 +132,7 @@ function partnerPage(request: PartnerRequest) {
     properties: {
       Nome: prop.title(contact.name),
       Estado: prop.select("Novo"),
-      Email: prop.email(contact.email),
+      Email: prop.email(contact.email.toLowerCase()),
       Telefone: prop.phone(contact.phone),
       Empresa: prop.text(contact.company),
       Projeto: prop.select(pt(PROJECT_TYPES, answers.project)),
@@ -192,6 +194,32 @@ function notify(subject: string, lines: string[], page: string, contact: Contact
       page ? `No Notion: ${page}` : "",
     ].join("\n"),
   });
+}
+
+/** One request per email address in this long, in each database (user,
+    2026-10-27): so a visitor who has just sent one is not asked to wait
+    for nothing, and a list of requests is not filled by one person. */
+const REPEAT_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+/** Addresses the limit does not apply to, for trying the forms out:
+    REPEAT_ALLOWED_EMAILS in Vercel, commas between them. Kept out of the
+    repository on purpose. */
+function exempt(email: string) {
+  return (process.env.REPEAT_ALLOWED_EMAILS ?? "")
+    .split(",")
+    .some((allowed) => allowed.trim().toLowerCase() === email);
+}
+
+/** How long, in milliseconds, this email must still wait before it may
+    send another request of this kind; 0 when it may send one now. */
+export async function waitBefore(kind: "proposal" | "partner", email: string): Promise<number> {
+  const address = email.trim().toLowerCase();
+  if (exempt(address)) return 0;
+  const database = kind === "proposal" ? process.env.NOTION_FORM1_LEADS : process.env.NOTION_FORM2_LEADS;
+  const since = new Date(Date.now() - REPEAT_WINDOW_MS).toISOString();
+  const last = await lastRequestSince(database, address, since);
+  if (!last) return 0;
+  return Math.max(0, new Date(last).getTime() + REPEAT_WINDOW_MS - Date.now());
 }
 
 /** True once the request has reached the studio. */

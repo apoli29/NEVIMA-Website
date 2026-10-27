@@ -428,7 +428,8 @@ function Panel({
       } else if (res.status === 503) {
         setSend({ status: "offline" });
       } else {
-        setSend({ status: "error", message: sendError(res.status, say) });
+        const why = (await res.json().catch(() => ({}))) as { waitMs?: number };
+        setSend({ status: "error", message: sendError(res.status, say, why.waitMs) });
       }
     } catch {
       setSend({ status: "error", message: sendError("network", say) });

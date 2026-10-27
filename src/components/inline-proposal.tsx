@@ -146,7 +146,8 @@ export function InlineProposal() {
       } else if (res.status === 503) {
         setSend({ status: "offline" });
       } else {
-        setSend({ status: "error", message: sendError(res.status, t) });
+        const why = (await res.json().catch(() => ({}))) as { waitMs?: number };
+        setSend({ status: "error", message: sendError(res.status, t, why.waitMs) });
       }
     } catch {
       setSend({ status: "error", message: sendError("network", t) });
