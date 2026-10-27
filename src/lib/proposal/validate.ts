@@ -109,6 +109,8 @@ export function readAnswers(raw: unknown): Result<Answers> {
     if (!design || !pages || !languages || !texts || !domain || !urgent) {
       return { ok: false, error: "web" };
     }
+    // "Not sure" stands alone: it does not go with any language.
+    if (languages.includes("unsure") && languages.length > 1) return { ok: false, error: "languages" };
     // The second level: any of its items, none included. A count comes
     // with forms and with automatic emails, which only go with forms or
     // the newsletter.

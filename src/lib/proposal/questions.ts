@@ -102,6 +102,9 @@ export const LANGUAGES = [
   { id: "pt", label: "Portuguese", pt: "Português" },
   { id: "en", label: "English", pt: "Inglês" },
   { id: "other", label: "Other", pt: "Outras" },
+  /** Chosen on its own (user, 2026-10-27): priced for Portuguese and
+      English, with room for one more language. */
+  { id: "unsure", label: "Not sure", pt: "Não sei" },
 ] as const;
 export type LanguageId = (typeof LANGUAGES)[number]["id"];
 
@@ -149,6 +152,8 @@ export const COUNTS = [
   { id: "2", label: "2", pt: "2" },
   { id: "3", label: "3", pt: "3" },
   { id: "more", label: "More than 3", pt: "Mais de 3" },
+  /** Priced as 1 to 2 (user, 2026-10-27). */
+  { id: "unsure", label: "Not sure", pt: "Não sei" },
 ] as const;
 export type CountId = (typeof COUNTS)[number]["id"];
 
@@ -188,6 +193,8 @@ export const DESIGN = [
     note: "Richer layouts and animation, designed around your brand",
     notePt: "Composições e animações mais ricas, desenhadas à volta da marca",
   },
+  /** Priced from Essential+ up to Advanced (user, 2026-10-27). */
+  { id: "unsure", label: "Not sure", pt: "Não sei" },
 ] as const;
 export type DesignId = (typeof DESIGN)[number]["id"];
 
@@ -196,6 +203,9 @@ export type DesignId = (typeof DESIGN)[number]["id"];
 export const TEXTS = [
   { id: "yes", label: "Yes", pt: "Sim" },
   { id: "no", label: "No", pt: "Não" },
+  /** Priced as ready, with writing them added to the upper end (user,
+      2026-10-27). */
+  { id: "unsure", label: "Not sure", pt: "Não sei" },
 ] as const;
 export type TextsId = (typeof TEXTS)[number]["id"];
 
@@ -220,6 +230,8 @@ export const PHOTO_PLANS = [
     note: "4-hour shoot, 30–40 edited photos, video up to 1 min",
     notePt: "Sessão de 4 horas, 30–40 fotografias editadas, vídeo até 1 min",
   },
+  /** Priced from the first plan up to the second (user, 2026-10-27). */
+  { id: "unsure", label: "Not sure", pt: "Não sei" },
 ] as const;
 export type PhotoPlanId = (typeof PHOTO_PLANS)[number]["id"];
 
@@ -248,6 +260,9 @@ export const SEARCH_PLANS = [
     note: "Adds monthly work to keep those practices as effective as they can be",
     notePt: "Junta um trabalho mensal que mantém essas práticas o mais eficazes possível",
   },
+  /** Priced as one-time, the monthly service shown beside it as optional
+      (user, 2026-10-27). */
+  { id: "unsure", label: "Not sure", pt: "Não sei" },
 ] as const;
 export type SearchPlanId = (typeof SEARCH_PLANS)[number]["id"];
 
