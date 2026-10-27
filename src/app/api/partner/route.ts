@@ -1,4 +1,4 @@
-import { deliverPartner } from "@/lib/proposal/deliver";
+import { deliverPartner, waitBefore } from "@/lib/proposal/deliver";
 import { allow, caught, clientIp, json, readJson } from "@/lib/proposal/guard";
 import { readContact, readPartner } from "@/lib/proposal/validate";
 
@@ -29,6 +29,10 @@ export async function POST(request: Request) {
   if (!answers.ok) return json({ error: "invalid", field: answers.error }, 422);
   const contact = readContact(fields.contact);
   if (!contact.ok) return json({ error: "invalid", field: contact.error }, 422);
+
+  // One request per email in 24 hours, bar the studio's own test addresses.
+  const wait = await waitBefore("partner", contact.value.email);
+  if (wait > 0) return json({ error: "already_sent", waitMs: wait }, 409);
 
   const delivered = await deliverPartner({
     at: new Date().toISOString(),

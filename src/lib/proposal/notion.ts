@@ -101,3 +101,48 @@ export async function createPage(
     return null;
   }
 }
+
+/** When this email last sent a request to the database, if that was
+    since `sinceIso`; null when it did not. Also null when Notion cannot
+    say: a visitor is let through rather than turned away over a fault
+    that is ours. Relies on the databases' "Email" (stored in lower case)
+    and "Recebido" properties. */
+export async function lastRequestSince(
+  databaseId: string | undefined,
+  email: string,
+  sinceIso: string,
+): Promise<string | null> {
+  const token = process.env.NOTION_TOKEN;
+  if (!token || !databaseId) return null;
+  try {
+    const res = await fetch(`${API}/databases/${databaseId}/query`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "Notion-Version": VERSION,
+      },
+      body: JSON.stringify({
+        filter: {
+          and: [
+            { property: "Email", email: { equals: email } },
+            { property: "Recebido", date: { on_or_after: sinceIso } },
+          ],
+        },
+        sorts: [{ property: "Recebido", direction: "descending" }],
+        page_size: 1,
+      }),
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+    if (!res.ok) {
+      const why = (await res.json().catch(() => ({}))) as { code?: string; message?: string };
+      console.error("[nevima:notion] query status", res.status, why.code ?? "", clip(why.message ?? "", 200));
+      return null;
+    }
+    const found = (await res.json()) as { results?: { properties?: { Recebido?: { date?: { start?: string } } } }[] };
+    return found.results?.[0]?.properties?.Recebido?.date?.start ?? null;
+  } catch (error) {
+    console.error("[nevima:notion] query failed", error instanceof Error ? error.name : "error");
+    return null;
+  }
+}
