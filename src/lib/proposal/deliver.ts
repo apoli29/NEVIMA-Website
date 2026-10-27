@@ -34,7 +34,7 @@ import { SERVICES, labelOf, type Answers, type Contact, type Estimate, type Rang
    - NOTION_TOKEN         the integration's secret
    - NOTION_FORM1_LEADS   the proposals database's id (proposal requests)
    - NOTION_FORM2_LEADS   the partners database's id
-   - REPEAT_ALLOWED_EMAILS optional: addresses that may send more than
+   - REPEAT_ALLOWED_EMAILS_FORMS optional: addresses that may send more than
                           one request in 24 hours (commas between them)
    - RESEND_API_KEY       optional: without it no email is sent
    - MAIL_FROM            optional, defaults to "nevima <ola@nevima.studio>"
@@ -202,10 +202,10 @@ function notify(subject: string, lines: string[], page: string, contact: Contact
 const REPEAT_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 /** Addresses the limit does not apply to, for trying the forms out:
-    REPEAT_ALLOWED_EMAILS in Vercel, commas between them. Kept out of the
+    REPEAT_ALLOWED_EMAILS_FORMS in Vercel, commas between them. Kept out of the
     repository on purpose. */
 function exempt(email: string) {
-  return (process.env.REPEAT_ALLOWED_EMAILS ?? "")
+  return (process.env.REPEAT_ALLOWED_EMAILS_FORMS ?? "")
     .split(",")
     .some((allowed) => allowed.trim().toLowerCase() === email);
 }
