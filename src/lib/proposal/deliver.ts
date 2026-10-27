@@ -32,8 +32,8 @@ import { SERVICES, labelOf, type Answers, type Contact, type Estimate, type Rang
 
    Environment variables (set in Vercel, never in the repository):
    - NOTION_TOKEN         the integration's secret
-   - NOTION_PROPOSALS_DB  the proposals database's id
-   - NOTION_PARTNERS_DB   the partners database's id
+   - NOTION_FORM1_LEADS   the proposals database's id (proposal requests)
+   - NOTION_FORM2_LEADS   the partners database's id
    - RESEND_API_KEY       optional: without it no email is sent
    - MAIL_FROM            optional, defaults to "nevima <ola@nevima.studio>"
    - NOTIFY_TO            optional, where the notices go (commas between
@@ -197,7 +197,7 @@ function notify(subject: string, lines: string[], page: string, contact: Contact
 /** True once the request has reached the studio. */
 export async function deliverRequest(request: ProposalRequest): Promise<boolean> {
   const { properties, children } = proposalPage(request);
-  const page = await createPage(process.env.NOTION_PROPOSALS_DB, properties, children);
+  const page = await createPage(process.env.NOTION_FORM1_LEADS, properties, children);
   if (page === null) {
     // Logged without the contact details: the logs are not the inbox.
     console.info(
@@ -238,7 +238,7 @@ export async function deliverRequest(request: ProposalRequest): Promise<boolean>
     to a partner: we get in touch ourselves. */
 export async function deliverPartner(request: PartnerRequest): Promise<boolean> {
   const { properties, children } = partnerPage(request);
-  const page = await createPage(process.env.NOTION_PARTNERS_DB, properties, children);
+  const page = await createPage(process.env.NOTION_FORM2_LEADS, properties, children);
   if (page === null) {
     console.info(
       "[nevima:partner:undelivered]",

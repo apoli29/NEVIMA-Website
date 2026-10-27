@@ -14,7 +14,7 @@ Decided 2026-10-26, changed 2026-10-27 (user), free tools only.
 1. notion.so/my-integrations: a new internal integration; its secret is `NOTION_TOKEN`.
 2. An empty Notion page, shared with the integration (••• > Connections).
 3. `.env.local` (never committed): `NOTION_TOKEN` and `NOTION_PARENT` (the page's address). Then `node --env-file=.env.local scripts/setup-notion.mjs` makes the two databases and prints their ids. Run it once: twice makes them twice.
-4. Vercel, Production: `NOTION_TOKEN`, `NOTION_PROPOSALS_DB`, `NOTION_PARTNERS_DB`, `RESEND_API_KEY`; optional `MAIL_FROM` (default `nevima <ola@nevima.studio>`), `NOTIFY_TO` (commas between addresses), `SITE_URL` (default `https://nevima.studio`, where the email's wordmark loads from: `public/email/wordmark.png`). Then redeploy.
+4. Vercel, Production: `NOTION_TOKEN`, `NOTION_FORM1_LEADS` (proposal requests: "Pedidos"), `NOTION_FORM2_LEADS` (partners: "Parceiros"), `RESEND_API_KEY`; optional `MAIL_FROM` (default `nevima <ola@nevima.studio>`), `NOTIFY_TO` (commas between addresses), `SITE_URL` (default `https://nevima.studio`, where the email's wordmark loads from: `public/email/wordmark.png`). Then redeploy.
 
 The properties' names are in two places that must change together: `scripts/setup-notion.mjs` and `deliver.ts`.
 
