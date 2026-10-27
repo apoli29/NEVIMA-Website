@@ -38,5 +38,5 @@ The properties' names are in two places that must change together: `scripts/setu
 
 - A visitor whose email already sent a request in the last 24 hours is refused (409 `already_sent`) with the time left: "We already received a request from this email in the last 24 hours. To send a new one, with changes, wait another 3 h 20 min." (the Portuguese is recast impersonally, as the site never addresses the reader). It holds for both forms, each against its own database: a proposal request and a partner request do not count against each other.
 - Checked by asking Notion (`lastRequestSince` in `notion.ts`) for a page with that email, stored in lower case, and a "Recebido" within 24 hours. If Notion cannot answer, the visitor is let through.
-- The studio's own test addresses are exempt: `REPEAT_ALLOWED_EMAILS` in Vercel, commas between them, kept out of the repository.
+- The studio's own test addresses are exempt: `REPEAT_ALLOWED_EMAILS_FORMS` in Vercel, commas between them, kept out of the repository.
 - It does not stop someone using another address (or `+tags` on one); the per-IP limit in `guard.ts` is what covers that.
