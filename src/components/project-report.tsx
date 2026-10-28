@@ -183,13 +183,44 @@ function BeforeAfter({ before, after, name }: { before: string | null; after: st
   const frame = useRef(0);
   const last = useRef(0);
   const touched = useRef(false);
+  /** The card as it was last measured: where it starts, how wide it is,
+      and how much room the handle needs to stay whole at the edges.
+      Kept here so that nothing in the way of the hand has to ask the
+      browser for a layout. */
+  const box = useRef({ left: 0, width: 0, pad: 24 });
+
+  const measure = useCallback(() => {
+    const el = card.current;
+    if (!el) return;
+    const b = el.getBoundingClientRect();
+    if (!b.width) return;
+    box.current = { left: b.left, width: b.width, pad: (handle.current?.offsetWidth ?? 42) / 2 };
+  }, []);
+
+  // Its width changes with the page, not with the hand.
+  useEffect(() => {
+    const el = card.current;
+    if (!el) return;
+    measure();
+    const size = new ResizeObserver(measure);
+    size.observe(el);
+    return () => size.disconnect();
+  }, [measure]);
 
   const paint = useCallback((raw: number) => {
     const v = Math.min(100, Math.max(0, raw));
+    const w = box.current.width;
+    const pad = box.current.pad;
     if (top.current) top.current.style.clipPath = `inset(0 ${100 - v}% 0 0)`;
-    if (line.current) line.current.style.transform = `translateX(${v}cqw)`;
+    // In pixels off the card's own width: a container unit would have the
+    // browser resolve it against the card again on every frame.
+    if (line.current) line.current.style.transform = w ? `translateX(${(v / 100) * w}px)` : `translateX(${v}cqw)`;
     // The handle stays whole inside the card, even at its edges.
-    if (handle.current) handle.current.style.transform = `translate(clamp(1.5rem, ${v}cqw, calc(100cqw - 1.5rem)), 0) translate(-50%, -50%)`;
+    if (handle.current) {
+      handle.current.style.transform = w
+        ? `translate(${Math.min(Math.max((v / 100) * w, pad), w - pad)}px, 0) translate(-50%, -50%)`
+        : `translate(clamp(1.5rem, ${v}cqw, calc(100cqw - 1.5rem)), 0) translate(-50%, -50%)`;
+    }
     if (beforeTag.current) beforeTag.current.style.opacity = String(Math.min(1, (100 - v) / 25));
     // At rest on after, the handle pulses to say it can be moved.
     if (card.current) {
@@ -263,10 +294,10 @@ function BeforeAfter({ before, after, name }: { before: string | null; after: st
   }, [reduce, run]);
 
   const follow = (clientX: number) => {
-    const box = card.current?.getBoundingClientRect();
-    if (!box || !box.width) return;
+    const { left, width } = box.current;
+    if (!width) return;
     touched.current = true;
-    const f = (clientX - box.left) / box.width;
+    const f = (clientX - left) / width;
     // One to one with the hand, with a sliver at either side that counts
     // as the end, so a sweep always finishes.
     const v = f <= BA_EDGE ? 0 : f >= 1 - BA_EDGE ? 100 : f * 100;
@@ -302,8 +333,12 @@ function BeforeAfter({ before, after, name }: { before: string | null; after: st
           if (e.pointerType !== "mouse" && e.buttons === 0) return;
           follow(e.clientX);
         }}
+        // Where the card sits is read once as the hand arrives, never
+        // while it moves.
+        onPointerEnter={measure}
         // The finger keeps the cut even once it leaves the card.
         onPointerDown={(e) => {
+          measure();
           if (e.pointerType !== "mouse") e.currentTarget.setPointerCapture?.(e.pointerId);
           follow(e.clientX);
         }}
