@@ -155,11 +155,13 @@ function ServiceChapter({
     can be moved. From the keyboard it is a slider; on a touch screen it
     follows the finger.
 
-    The cut trails the hand on its own clock, eased every frame and set
-    straight on the elements, so the card is never drawn again by React
-    while the hand moves. The last tenth of the card at either side
-    counts as the end, so a sweep always finishes. */
-const BA_EDGE = 0.1;
+    Under the hand the cut is the hand: it goes straight to where the
+    pointer is, one to one, set on the elements so React never draws the
+    card again while it moves. The easing is kept for what the hand is
+    not doing itself — the first peek, the keyboard, and after closing
+    back over when the hand leaves. A sliver at either side counts as
+    the end, so a sweep always finishes. */
+const BA_EDGE = 0.03;
 const BA_FOLLOW = 14;
 /** How far the first peek uncovers before, and for how long. */
 const BA_PEEK = 72;
@@ -198,8 +200,21 @@ function BeforeAfter({ before, after, name }: { before: string | null; after: st
     card.current?.setAttribute("aria-valuetext", v < 50 ? words.current.before : words.current.after);
   }, []);
 
+  /** Straight there, no clock: what the hand itself moves. */
+  const jump = useCallback(
+    (v: number) => {
+      cancelAnimationFrame(frame.current);
+      frame.current = 0;
+      aim.current = v;
+      at.current = v;
+      paint(v);
+    },
+    [paint],
+  );
+
   const run = useCallback(() => {
     cancelAnimationFrame(frame.current);
+    frame.current = 0;
     if (reduce) {
       at.current = aim.current;
       paint(at.current);
@@ -213,6 +228,7 @@ function BeforeAfter({ before, after, name }: { before: string | null; after: st
       if (Math.abs(aim.current - at.current) < 0.05) at.current = aim.current;
       paint(at.current);
       if (at.current !== aim.current) frame.current = requestAnimationFrame(step);
+      else frame.current = 0;
     };
     frame.current = requestAnimationFrame(step);
   }, [paint, reduce]);
@@ -251,8 +267,10 @@ function BeforeAfter({ before, after, name }: { before: string | null; after: st
     if (!box || !box.width) return;
     touched.current = true;
     const f = (clientX - box.left) / box.width;
-    aim.current = Math.min(100, Math.max(0, ((f - BA_EDGE) / (1 - 2 * BA_EDGE)) * 100));
-    run();
+    // One to one with the hand, with a sliver at either side that counts
+    // as the end, so a sweep always finishes.
+    const v = f <= BA_EDGE ? 0 : f >= 1 - BA_EDGE ? 100 : f * 100;
+    jump(v);
   };
 
   const face = (src: string | null, dark: boolean) =>
@@ -278,8 +296,17 @@ function BeforeAfter({ before, after, name }: { before: string | null; after: st
         aria-valuenow={100}
         aria-valuetext={more.after}
         data-rest=""
-        onPointerMove={(e) => follow(e.clientX)}
-        onPointerDown={(e) => follow(e.clientX)}
+        onPointerMove={(e) => {
+          // A finger only moves the cut while it is down; a mouse moves
+          // it by hovering.
+          if (e.pointerType !== "mouse" && e.buttons === 0) return;
+          follow(e.clientX);
+        }}
+        // The finger keeps the cut even once it leaves the card.
+        onPointerDown={(e) => {
+          if (e.pointerType !== "mouse") e.currentTarget.setPointerCapture?.(e.pointerId);
+          follow(e.clientX);
+        }}
         // At rest it shows after: the hand gone, after closes back over.
         onPointerLeave={(e) => {
           if (e.pointerType !== "mouse") return;
