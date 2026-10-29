@@ -1,6 +1,6 @@
 import type { Lang } from "../i18n";
 import { firstName } from "./email";
-import { hello, phoneChips, PHONES, plain, prose, shell, signoff, slotBlock, slotButton, STUDIO_EMAIL } from "./mail";
+import { phoneChips, PHONES, plain, prose, shell, signoff, slotBlock, slotButton, STUDIO_EMAIL } from "./mail";
 import { lisbonTime, slotDay, slotSentence, slotTime } from "./slots";
 
 /* ==================================================================
@@ -76,10 +76,10 @@ export function inviteHtml({ lang, name, company, slots, links, siteUrl }: Invit
     subject: w.subject,
     preheader: w.preheader,
     tag: w.tag,
+    greeting: w.hi(firstName(name)),
     why: w.why,
     siteUrl,
     body: [
-      hello(w.hi(firstName(name))),
       prose([w.ready, w.call(company.trim()), w.pick].join("\n\n")),
       slotBlock(buttons, w.caption(lisbonTime(lang))),
       prose(w.other),
