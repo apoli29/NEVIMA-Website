@@ -118,6 +118,16 @@ function proposalPage(request: ProposalRequest) {
       Recebido: prop.date(request.at),
     },
     children: [
+      // Where the studio writes up the business before the call, and what
+      // it will bring to it (user, 2026-10-27): the three things the call
+      // goes over. The values X and Y are properties above.
+      block.heading("Preparação da reunião"),
+      block.subheading("O negócio do cliente"),
+      block.blank(),
+      block.subheading("Escolhas a rever (podem ser desnecessárias)"),
+      block.blank(),
+      block.subheading("O que não escolheu e pode fazer sentido"),
+      block.blank(),
       ...(lines.length ? [block.heading("Estimativa mostrada"), ...lines.map(block.bullet)] : []),
       block.heading("Respostas"),
       block.json(JSON.stringify(answers, null, 2)),
