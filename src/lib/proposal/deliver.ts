@@ -41,7 +41,11 @@ import { SERVICES, labelOf, type Answers, type Contact, type Estimate, type Rang
    - NOTIFY_TO            optional, where the notices go (commas between
                           addresses), defaults to ola@nevima.studio
    - SITE_URL             optional, defaults to https://nevima.studio; the
-                          confirmation loads the wordmark from it
+                          emails load their images from it, and the
+                          invitation's links point at it
+   - STUDIO_KEY           the key to the studio's composer, /interno
+                          (src/lib/proposal/studio.ts)
+   - LINKS_SECRET         signs the invitation's time links (meeting.ts)
 
    Notion is the studio's own, read in Portuguese: its values are written
    in Portuguese whatever the visitor's language, which has a property of
@@ -163,9 +167,21 @@ function partnerPage(request: PartnerRequest) {
   };
 }
 
-async function sendEmail(mail: { to: string[]; reply_to?: string; subject: string; text: string; html?: string }) {
+export type Mail = {
+  to: string[];
+  bcc?: string[];
+  reply_to?: string;
+  subject: string;
+  text: string;
+  html?: string;
+  /** Files, their content in base64. */
+  attachments?: { filename: string; content: string }[];
+};
+
+/** Sends through Resend. True once Resend took it. */
+export async function sendEmail(mail: Mail): Promise<boolean> {
   const key = process.env.RESEND_API_KEY;
-  if (!key) return;
+  if (!key) return false;
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -174,20 +190,27 @@ async function sendEmail(mail: { to: string[]; reply_to?: string; subject: strin
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
     if (!res.ok) console.error("[nevima:email] status", res.status);
+    return res.ok;
   } catch (error) {
     console.error("[nevima:email] failed", error instanceof Error ? error.name : "error");
+    return false;
   }
 }
+
+/** Where the studio's notices go: NOTIFY_TO, or the studio's address. */
+export const studioInbox = () =>
+  (process.env.NOTIFY_TO ?? STUDIO_EMAIL)
+    .split(",")
+    .map((address) => address.trim())
+    .filter(Boolean);
+
+export const siteUrl = () => (process.env.SITE_URL ?? "https://nevima.studio").replace(/\/$/, "");
 
 /** The notice to the studio: who wrote, and the page in Notion. Replying
     to it answers the visitor. */
 function notify(subject: string, lines: string[], page: string, contact: Contact) {
-  const to = (process.env.NOTIFY_TO ?? STUDIO_EMAIL)
-    .split(",")
-    .map((address) => address.trim())
-    .filter(Boolean);
   return sendEmail({
-    to,
+    to: studioInbox(),
     reply_to: contact.email,
     subject,
     text: [
@@ -247,7 +270,6 @@ export async function deliverRequest(request: ProposalRequest): Promise<boolean>
 
   const { answers, contact, estimate } = request;
   const [services, who, country] = summaryOf(answers, "pt");
-  const siteUrl = (process.env.SITE_URL ?? "https://nevima.studio").replace(/\/$/, "");
   await Promise.all([
     notify(
       `Novo pedido: ${contact.name}${contact.company ? ` (${contact.company})` : ""}`,
@@ -265,8 +287,8 @@ export async function deliverRequest(request: ProposalRequest): Promise<boolean>
       to: [contact.email],
       reply_to: STUDIO_EMAIL,
       subject: confirmationSubject(request.lang),
-      html: confirmationHtml(answers, contact, request.lang, siteUrl),
-      text: confirmationText(answers, contact, request.lang),
+      html: confirmationHtml(contact, request.lang, siteUrl()),
+      text: confirmationText(contact, request.lang),
     }),
   ]);
   return true;

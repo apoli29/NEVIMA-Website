@@ -43,6 +43,8 @@ export const prop = {
   phone: (value: string) => (value ? { phone_number: value } : undefined),
   number: (value: number | null) => (value === null || !Number.isFinite(value) ? undefined : { number: value }),
   date: (iso: string) => ({ date: { start: iso } }),
+  /** A time on a clock, "2026-11-06T15:00", in a time zone. */
+  localDate: (local: string, zone: string) => ({ date: { start: `${local}:00`, time_zone: zone } }),
   checkbox: (value: boolean) => ({ checkbox: value }),
 };
 
@@ -155,5 +157,115 @@ export async function lastRequestSince(
   } catch (error) {
     console.error("[nevima:notion] query failed", error instanceof Error ? error.name : "error");
     return null;
+  }
+}
+
+const headers = (token: string) => ({
+  Authorization: `Bearer ${token}`,
+  "Content-Type": "application/json",
+  "Notion-Version": VERSION,
+});
+
+/** A request as the studio's composer and the meeting page need it. */
+export type RequestPage = {
+  id: string;
+  url: string;
+  name: string;
+  email: string;
+  company: string;
+  lang: "en" | "pt";
+  state: string;
+  received: string;
+  meeting: string;
+};
+
+type RawPage = { id?: string; url?: string; properties?: Record<string, Record<string, unknown>> };
+
+function readPage(page: RawPage): RequestPage | null {
+  if (!page.id) return null;
+  const p = page.properties ?? {};
+  const text = (key: string, kind: "title" | "rich_text") =>
+    ((p[key]?.[kind] as { plain_text?: string }[] | undefined) ?? []).map((t) => t.plain_text ?? "").join("");
+  const select = (key: string) => (p[key]?.select as { name?: string } | null | undefined)?.name ?? "";
+  const date = (key: string) => (p[key]?.date as { start?: string } | null | undefined)?.start ?? "";
+  return {
+    id: page.id,
+    url: page.url ?? "",
+    name: text("Nome", "title"),
+    email: (p.Email?.email as string | null | undefined) ?? "",
+    company: text("Empresa", "rich_text"),
+    lang: select("Idioma") === "pt" ? "pt" : "en",
+    state: select("Estado"),
+    received: date("Recebido"),
+    meeting: date("Reunião"),
+  };
+}
+
+/** The latest request this email sent to the database, or null. */
+export async function findRequest(databaseId: string | undefined, email: string): Promise<RequestPage | null> {
+  const token = process.env.NOTION_TOKEN;
+  if (!token || !databaseId) return null;
+  try {
+    const res = await fetch(`${API}/databases/${databaseId}/query`, {
+      method: "POST",
+      headers: headers(token),
+      body: JSON.stringify({
+        filter: { property: "Email", email: { equals: email.trim().toLowerCase() } },
+        sorts: [{ property: "Recebido", direction: "descending" }],
+        page_size: 1,
+      }),
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+    if (!res.ok) {
+      console.error("[nevima:notion] find status", res.status);
+      return null;
+    }
+    const found = (await res.json()) as { results?: RawPage[] };
+    return found.results?.[0] ? readPage(found.results[0]) : null;
+  } catch (error) {
+    console.error("[nevima:notion] find failed", error instanceof Error ? error.name : "error");
+    return null;
+  }
+}
+
+/** A request's page, or null when it cannot be read. */
+export async function getRequest(pageId: string): Promise<RequestPage | null> {
+  const token = process.env.NOTION_TOKEN;
+  if (!token) return null;
+  try {
+    const res = await fetch(`${API}/pages/${pageId}`, { headers: headers(token), signal: AbortSignal.timeout(TIMEOUT_MS) });
+    if (!res.ok) {
+      console.error("[nevima:notion] get status", res.status);
+      return null;
+    }
+    return readPage((await res.json()) as RawPage);
+  } catch (error) {
+    console.error("[nevima:notion] get failed", error instanceof Error ? error.name : "error");
+    return null;
+  }
+}
+
+/** True once the page's properties were changed. */
+export async function updatePage(pageId: string, properties: Record<string, unknown>): Promise<boolean> {
+  const token = process.env.NOTION_TOKEN;
+  if (!token) return false;
+  try {
+    const res = await fetch(`${API}/pages/${pageId}`, {
+      method: "PATCH",
+      headers: headers(token),
+      body: JSON.stringify({
+        properties: Object.fromEntries(Object.entries(properties).filter(([, v]) => v !== undefined)),
+      }),
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+    if (!res.ok) {
+      const why = (await res.json().catch(() => ({}))) as { code?: string; message?: string };
+      console.error("[nevima:notion] update status", res.status, why.code ?? "", clip(why.message ?? "", 200));
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error("[nevima:notion] update failed", error instanceof Error ? error.name : "error");
+    return false;
   }
 }
