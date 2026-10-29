@@ -24,7 +24,7 @@ The properties' names are in two places that must change together: `scripts/setu
 - The first plan was a Google Sheet through an Apps Script web app; it was replaced by Notion (user, 2026-10-27) for the cleaner layout and the board by state (Novo, Contactado, Proposta enviada, Ganho, Perdido).
 - The notice to the studio goes by Resend, so there is one place that sends email.
 - The confirmation promises no reply time: none is fixed. When one is, add it after the first paragraph, in both languages (`WORDS` in `email.ts`).
-- The proposal, follow-ups and outreach are written and sent by hand from Gmail templates; they are not part of the site.
+- The proposal and the invitation to the call are written in the studio's composer (`/interno`, below) since 2026-10-29. Follow-ups and outreach are still written by hand from Gmail.
 - Logs never carry name, email, phone or message: the logs are not the inbox.
 - Notion select options cannot hold commas: they become semicolons.
 
@@ -52,4 +52,40 @@ In Notion, to match:
 - Each new page in "Pedidos" opens with "Preparação da reunião": three headings to write under (the business; choices to review; what was not chosen and may make sense). Written notes read better in the page than in a cell. Pages made before this have no such headings.
 - `scripts/setup-notion.mjs` now also updates a database whose id is in `.env.local`: adds the properties it lacks and puts the states in order, keeping their ids and any option made by hand. Nothing is removed and no request is touched.
 
-Still open: the confirmation email still says the proposal comes to the visitor's address, and the form's wording still promises "a final proposal"; both to be changed to the meeting.
+Still open: the form's wording still promises "a final proposal"; to be changed to the meeting. (The confirmation email no longer promises the proposal by email: it was rewritten on 2026-10-29.)
+
+## The studio's emails (user, 2026-10-29)
+
+Three emails, one look (`src/lib/proposal/mail.ts`): a black band with the wordmark and a mono label in a hairline box, the greeting set large, the bar's crate as buttons (black, the arrow in a white key), phones as boxed mono chips that call, and a black foot with the wordmark across it, as the site's footer. Tables and inline styles only; Satoshi, Instrument Sans and Geist Mono where the mail app loads web fonts (Apple Mail, iOS), Helvetica and the system's monospace elsewhere (Gmail). The images are PNGs in `public/email/`, loaded from `SITE_URL`. Every email has a plain-text version and both languages.
+
+1. **Confirmation** (`email.ts`): automatic, always the same, sent the moment a request is in Notion. The studio's words, with two sentences that repeated each other merged into one. It no longer lists the answers: the studio's text is the whole email.
+2. **Invitation to the call** (`invite.ts`): "we have a proposal", a call of 20 to 30 minutes, and two times as buttons, in Lisbon time. A click opens the meeting page (`/meeting`, `/pt/meeting`, `src/components/meeting.tsx`), which shows the time and asks for one more click to book it, so a mail scanner opening the link books nothing. Booking sets "Reunião" (Lisbon time) and "Reunião marcada" in Notion and sends the studio a notice; choosing again moves it, and the studio is told. Once booked, the page offers a calendar file. Without a company (personal use) the call is only "to get to know each other".
+3. **Final proposal and contract** (`offer.ts`): after the call. The proposal's paragraph is written each time in the composer; the final value (and a monthly one) is set large with the VAT note ("Isento de IVA (art. 53.º do Código do IVA)", as the contract says it), and the contract goes as a PDF attachment, named in the email. **Its frame is a draft for the partners to approve.**
+
+The meeting page is a single screen like the portfolio: it is reached only from the email, so it has no bar, no `WorkTogether` and no footer, only a black foot with the wordmark. It keeps the site's rule and never addresses the reader.
+
+### The composer: `/interno`
+
+Not linked from anywhere, out of search engines, Portuguese only. One key for both partners (`STUDIO_KEY`); the cookie holds a hash of it for 30 days. The client's email finds the latest request in "Pedidos" and fills the name, company and language (all editable); a Notion page link can be pasted instead. The preview is the email itself, drawn from the same code the server sends.
+
+- **Enviar** sends it through Resend from `MAIL_FROM`, to the client, with a hidden copy to `NOTIFY_TO` (so it is in Gmail too, where the reply lands) and replies to `ola@nevima.studio`. Then Notion: the invitation moves "Novo" to "Contactado"; the proposal sets "Proposta enviada", "Valor final" and, with a contract attached, "Contrato enviado".
+- **Copiar para o Gmail** copies the finished email, links signed, to paste into a new Gmail message. Notion is then updated by hand.
+
+Limits:
+
+- Resend's free plan: 100 emails a day, 3000 a month, counting the automatic confirmations and notices.
+- Sending from `ola@nevima.studio` needs the domain verified in Resend (DNS records at Hostinger). Until then Resend refuses, and "Copiar para o Gmail" is the way.
+- What is sent from the composer is not in Gmail's "Sent": the hidden copy in the inbox stands for it.
+- The contract: one PDF of at most 4 MB (Vercel takes no larger request).
+- One shared key, no accounts: it keeps out the curious. Changing `STUDIO_KEY` closes every session.
+- The time links are signed with `LINKS_SECRET` and carry only the Notion page's id and the two times, never a name or an address. Changing `LINKS_SECRET` breaks every link already sent.
+- The page does not stop two clients from taking the same time: the studio offers each one its own times.
+
+Vercel, Production, to add: `STUDIO_KEY` (long), `LINKS_SECRET` (long and random), and `SITE_URL` set to the address the site is really on (while nevima.studio is parked, the Vercel address, or the emails' images and links do not load). Locally, the `nevima-dev-emails` launch configuration runs the site with test keys and no Resend key, so nothing is sent.
+
+Still open:
+
+- The final proposal's frame (subject, opening, how the contract is signed and returned), to be approved by the partners.
+- Whether the client should also get an email once the call is booked; for now the page confirms it and the studio sends the call's link by hand.
+- At the end of the form, "Contact us now?" with the two phones (asked 2026-10-29, not built).
+- Outreach emails to potential clients, for leads (asked 2026-10-29, not built).

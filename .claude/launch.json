@@ -7,6 +7,18 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000
+    },
+    {
+      "name": "nevima-dev-emails",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 3000,
+      "env": {
+        "STUDIO_KEY": "local-test-key",
+        "LINKS_SECRET": "local-test-secret",
+        "RESEND_API_KEY": "",
+        "SITE_URL": "http://localhost:3000"
+      }
     }
   ]
 }

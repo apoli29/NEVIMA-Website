@@ -31,7 +31,7 @@ The original brief is imported below. Parts of it were written before the build 
 ## Copy and imagery
 
 - Copy the user gives in Portuguese keeps its content exactly; only the writing is adapted so it reads naturally in English, the way the user adapts "more for your money" to "e mais dinheiro para ti" in Portuguese. Never change what it says, never translate word for word (user, 2026-10-16).
-- Portuguese copy never addresses the reader: no "tu", no "você" or "o senhor". Recast the sentence instead (impersonal, the studio's side, "o cliente", buttons in the infinitive), meaning unchanged (user, 2026-10-18; see `docs/language-decisions.md`).
+- Portuguese copy never addresses the reader: no "tu", no "você" or "o senhor". Recast the sentence instead (impersonal, the studio's side, "o cliente", buttons in the infinitive), meaning unchanged (user, 2026-10-18; see `docs/language-decisions.md`). The studio's emails to clients are the exception: they address the reader formally ("consigo", "esteja à vontade"), as the studio wrote them (user, 2026-10-29).
 - Fix the studio's copy (grammar, spelling) but keep its voice. Shorten only if every piece of information survives; otherwise keep the information and accept the length. Never cut a clause to make a layout or animation fit; make the layout fit the copy.
 - Photos are in colour and never generic stock (no handshake, laptop or lightbulb clichés). Prefer close-up, single-subject, metaphorical shots with a strong colour.
 - Present image candidates (source, photographer, size) before downloading anything. Unsplash results include paid Unsplash+ images; only use ones whose page says free.
