@@ -40,3 +40,16 @@ The properties' names are in two places that must change together: `scripts/setu
 - Checked by asking Notion (`lastRequestSince` in `notion.ts`) for a page with that email, stored in lower case, and a "Recebido" within 24 hours. If Notion cannot answer, the visitor is let through.
 - The studio's own test addresses are exempt: `REPEAT_ALLOWED_EMAILS_FORMS` in Vercel, commas between them, kept out of the repository.
 - It does not stop someone using another address (or `+tags` on one); the per-IP limit in `guard.ts` is what covers that.
+
+## The meeting before the proposal (user, 2026-10-27)
+
+The studio books a call as soon as a request arrives. Before it, the two partners explore the client's business; on it they go over the choices made: which may be unnecessary, and what was not chosen but could make sense. They arrive with two prices: X (if the client accepts the studio's suggestions) and Y (what the form's answers come to). After the call an email confirms the value, with the contract attached (written and sent by hand from Gmail).
+
+In Notion, to match:
+
+- States, in this order, in both databases: Novo, Contactado, Reunião marcada, Reunião feita, Proposta enviada, Ganho, Perdido.
+- "Reunião" (date and time) in both. In "Pedidos" only: "Valor Y (cliente)", "Valor X (sugestões)", "Valor final" (euros) and "Contrato enviado" (a tick). "Estimativa", filled by the site, stays beside them as what the client was shown.
+- Each new page in "Pedidos" opens with "Preparação da reunião": three headings to write under (the business; choices to review; what was not chosen and may make sense). Written notes read better in the page than in a cell. Pages made before this have no such headings.
+- `scripts/setup-notion.mjs` now also updates a database whose id is in `.env.local`: adds the properties it lacks and puts the states in order, keeping their ids and any option made by hand. Nothing is removed and no request is touched.
+
+Still open: the confirmation email still says the proposal comes to the visitor's address, and the form's wording still promises "a final proposal"; both to be changed to the meeting.

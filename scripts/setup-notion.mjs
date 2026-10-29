@@ -1,22 +1,30 @@
 /* ==================================================================
-   Makes the two Notion databases the requests go to
+   Makes, or brings up to date, the two Notion databases the requests
+   go to
 
-   Run once, from the project's folder:
+   From the project's folder:
 
      node --env-file=.env.local scripts/setup-notion.mjs
 
-   .env.local (never committed) needs two lines:
+   .env.local (never committed) holds:
 
      NOTION_TOKEN=the integration's secret
      NOTION_PARENT=the address of an empty Notion page, shared with the
                    integration (••• > Connections > the integration)
+                   (needed only to make a database)
+     NOTION_FORM1_LEADS, NOTION_FORM2_LEADS=the databases' ids, once
+                   they exist (needed only to update them)
 
-   It makes "Pedidos" and "Parceiros" inside that page and prints their
-   ids: those go into Vercel as NOTION_FORM1_LEADS and NOTION_FORM2_LEADS
+   A database whose id is in .env.local is updated: the properties it
+   lacks are added, and the states are put in order with any new one
+   (nothing is removed, and no request is touched). One whose id is not
+   is made inside NOTION_PARENT, and its id is printed: that goes into
+   Vercel as NOTION_FORM1_LEADS or NOTION_FORM2_LEADS
    (src/lib/proposal/deliver.ts). The names of the properties here are
    the ones deliver.ts writes: change them together.
 
-   Running it twice makes the databases twice.
+   Running it twice is harmless once the ids are in .env.local; before
+   that, it makes the databases twice.
    ================================================================== */
 
 const token = process.env.NOTION_TOKEN;
@@ -25,14 +33,19 @@ const token = process.env.NOTION_TOKEN;
 const parentPath = (process.env.NOTION_PARENT ?? "").trim().split(/[?#]/)[0].replace(/-/g, "");
 const parent = parentPath.match(/[0-9a-f]{32}$/i)?.[0];
 
-if (!token || !parent) {
-  console.error("Falta NOTION_TOKEN ou NOTION_PARENT (o endereço da página) no .env.local.");
+if (!token) {
+  console.error("Falta NOTION_TOKEN no .env.local.");
   process.exit(1);
 }
 
+/* The states a request goes through, in order. The meeting comes before
+   the proposal (user, 2026-10-27): the form is the preparation for a
+   call, and the final proposal comes out of it. */
 const states = [
   { name: "Novo", color: "blue" },
   { name: "Contactado", color: "yellow" },
+  { name: "Reunião marcada", color: "purple" },
+  { name: "Reunião feita", color: "pink" },
   { name: "Proposta enviada", color: "orange" },
   { name: "Ganho", color: "green" },
   { name: "Perdido", color: "gray" },
@@ -44,6 +57,7 @@ const states = [
    added by Notion as it arrives. */
 const options = (...names) => names.map((name) => ({ name }));
 const one = (...names) => ({ select: { options: options(...names) } });
+const euro = { number: { format: "euro" } };
 
 const common = {
   Nome: { title: {} },
@@ -51,6 +65,7 @@ const common = {
   Email: { email: {} },
   Telefone: { phone_number: {} },
   Empresa: { rich_text: {} },
+  "Reunião": { date: {} },
 };
 
 const databases = [
@@ -73,8 +88,15 @@ const databases = [
       ),
       "País": one("Portugal", "Espanha", "Itália", "EUA", "Outro"),
       Estimativa: { rich_text: {} },
-      "Mensal (€)": { number: { format: "euro" } },
+      "Mensal (€)": euro,
       Prazo: { rich_text: {} },
+      // What the studio works out for the call: the price with what the
+      // client chose (Y), with what the studio suggests (X), and what is
+      // agreed. The notes for the call are in each page's body.
+      "Valor Y (cliente)": euro,
+      "Valor X (sugestões)": euro,
+      "Valor final": euro,
+      "Contrato enviado": { checkbox: {} },
       Mensagem: { rich_text: {} },
       Idioma: one("pt", "en"),
       Origem: one("page", "overlay", "other"),
@@ -103,27 +125,63 @@ const databases = [
   },
 ];
 
-for (const db of databases) {
-  const res = await fetch("https://api.notion.com/v1/databases", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-      "Notion-Version": "2022-06-28",
-    },
-    body: JSON.stringify({
-      parent: { type: "page_id", page_id: parent },
-      title: [{ type: "text", text: { content: db.title } }],
-      properties: db.properties,
-    }),
+const headers = {
+  Authorization: `Bearer ${token}`,
+  "Content-Type": "application/json",
+  "Notion-Version": "2022-06-28",
+};
+
+async function call(path, method, body) {
+  const res = await fetch(`https://api.notion.com/v1${path}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
   });
-  const body = await res.json();
+  const data = await res.json();
   if (!res.ok) {
-    console.error(`Não consegui criar "${db.title}":`, body.code, body.message);
+    console.error(`Falhou (${method} ${path.split("/")[1]}):`, data.code, data.message);
     console.error("Confirma que a página está partilhada com a integração (••• > Ligações).");
     process.exit(1);
   }
-  console.log(`${db.env}=${body.id.replace(/-/g, "")}`);
+  return data;
 }
 
-console.log("\nCopia estas duas linhas para as variáveis do Vercel (e do .env.local, se testares em local).");
+/** What to send to bring a database up to date: the properties it lacks,
+    and the states in order, each keeping the id Notion gave it, with any
+    other option it has (one Notion made) kept after them. */
+function updateFor(current, wanted) {
+  const properties = {};
+  for (const [name, definition] of Object.entries(wanted)) {
+    if (!current[name]) properties[name] = definition;
+  }
+  const have = current.Estado?.select?.options ?? [];
+  const known = new Map(have.map((option) => [option.name, option]));
+  const ordered = states.map((state) => ({ ...(known.get(state.name) ?? {}), ...state, color: known.get(state.name)?.color ?? state.color }));
+  const extra = have.filter((option) => !states.some((state) => state.name === option.name));
+  properties.Estado = { select: { options: [...ordered, ...extra] } };
+  return properties;
+}
+
+for (const db of databases) {
+  const id = (process.env[db.env] ?? "").replace(/-/g, "");
+  if (id) {
+    const current = await call(`/databases/${id}`, "GET");
+    const properties = updateFor(current.properties, db.properties);
+    const added = Object.keys(properties).filter((name) => name !== "Estado");
+    await call(`/databases/${id}`, "PATCH", { properties });
+    console.log(`${db.title}: atualizada. Novas colunas: ${added.length ? added.join(", ") : "nenhuma"}. Estados em ordem.`);
+    continue;
+  }
+  if (!parent) {
+    console.error(`Falta ${db.env} (para atualizar) ou NOTION_PARENT (para criar) no .env.local.`);
+    process.exit(1);
+  }
+  const made = await call("/databases", "POST", {
+    parent: { type: "page_id", page_id: parent },
+    title: [{ type: "text", text: { content: db.title } }],
+    properties: db.properties,
+  });
+  console.log(`${db.env}=${made.id.replace(/-/g, "")}`);
+}
+
+console.log("\nSe foram criadas bases novas, copia as linhas acima para as variáveis do Vercel e do .env.local.");

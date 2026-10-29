@@ -52,6 +52,17 @@ export const block = {
     type: "heading_2",
     heading_2: { rich_text: pieces(value) },
   }),
+  subheading: (value: string) => ({
+    object: "block",
+    type: "heading_3",
+    heading_3: { rich_text: pieces(value) },
+  }),
+  /** A line left blank, for the studio to write in. */
+  blank: () => ({
+    object: "block",
+    type: "paragraph",
+    paragraph: { rich_text: [] },
+  }),
   bullet: (value: string) => ({
     object: "block",
     type: "bulleted_list_item",
