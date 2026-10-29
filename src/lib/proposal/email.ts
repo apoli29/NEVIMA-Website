@@ -1,5 +1,5 @@
 import type { Lang } from "../i18n";
-import { hello, plain, prose, shell, signoff, STUDIO_EMAIL } from "./mail";
+import { plain, prose, shell, signoff, STUDIO_EMAIL } from "./mail";
 import { AUDIENCES, COUNTRIES, SECTORS, SERVICES, labelOf, type Answers, type Contact } from "./questions";
 
 /* ==================================================================
@@ -112,6 +112,7 @@ export function confirmationHtml(contact: Pick<Contact, "name">, lang: Lang, sit
     tag: w.tag,
     why: w.why,
     siteUrl,
-    body: [hello(w.hi(firstName(contact.name))), prose(`${w.body}\n\n${w.thanks}`), signoff(w.regards, siteUrl)].join(""),
+    greeting: w.hi(firstName(contact.name)),
+    body: [prose(`${w.body}\n\n${w.thanks}`), signoff(w.regards, siteUrl)].join(""),
   });
 }

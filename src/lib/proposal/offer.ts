@@ -1,6 +1,6 @@
 import type { Lang } from "../i18n";
 import { firstName } from "./email";
-import { attachment, figure, hello, PHONES, phoneChips, plain, prose, shell, signoff, STUDIO_EMAIL } from "./mail";
+import { attachment, figure, PHONES, phoneChips, plain, prose, shell, signoff, STUDIO_EMAIL } from "./mail";
 
 /* ==================================================================
    After the call: the final proposal, with the contract attached
@@ -92,10 +92,10 @@ export function offerHtml({ lang, name, text, total, monthly, note, file, siteUr
     subject: w.subject,
     preheader: w.preheader,
     tag: w.tag,
+    greeting: w.hi(firstName(name)),
     why: w.why,
     siteUrl,
     body: [
-      hello(w.hi(firstName(name))),
       prose([w.intro, text].join("\n\n")),
       total.trim() ? figure(w.value, totalText(total), monthlyText(monthly, lang), note.trim()) : "",
       file ? attachment(w.file, file) : "",
