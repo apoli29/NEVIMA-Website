@@ -6,6 +6,7 @@ import { confirmationHtml, confirmationSubject } from "@/lib/proposal/email";
 import { inviteHtml, inviteSubject } from "@/lib/proposal/invite";
 import { offerDefaults, offerHtml, offerSubject } from "@/lib/proposal/offer";
 import { isSlot, slotSentence } from "@/lib/proposal/slots";
+import { StudioGuide } from "./studio-guide";
 import { Wordmark } from "./wordmark";
 
 /* ==================================================================
@@ -24,13 +25,20 @@ import { Wordmark } from "./wordmark";
    studio, which also moves the request on in Notion; or "Copiar para o
    Gmail", the finished email with its links signed, to paste into a
    new message there (Notion is then updated by hand).
+
+   The first tab, "Como funciona", is the whole process explained
+   (studio-guide.tsx): a partner opening this page for the first time
+   lands on it; after that, the page opens on the invitation.
    ================================================================== */
 
 type Kind = "invite" | "offer" | "confirmation";
 
 type Found = { id: string; url: string; name: string; company: string; lang: Lang; state: string; received: string };
 
-const KINDS: { id: Kind; label: string }[] = [
+type View = Kind | "guide";
+
+const KINDS: { id: View; label: string }[] = [
+  { id: "guide", label: "Como funciona" },
   { id: "invite", label: "Convite para chamada" },
   { id: "offer", label: "Proposta final" },
   { id: "confirmation", label: "Confirmação automática" },
@@ -109,8 +117,12 @@ export function StudioLogin() {
   );
 }
 
+/** Remembers, in this browser, that the guide has been seen. */
+const GUIDE_SEEN = "nevima:interno-guide";
+
 export function StudioComposer() {
-  const [kind, setKind] = useState<Kind>("invite");
+  const [view, setView] = useState<View>("invite");
+  const kind: Kind = view === "guide" ? "invite" : view;
   const [email, setEmail] = useState("");
   const [found, setFound] = useState<Found | null>(null);
   const [pageLink, setPageLink] = useState("");
@@ -130,6 +142,17 @@ export function StudioComposer() {
   const fileInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => setOrigin(window.location.origin), []);
+
+  useEffect(() => {
+    try {
+      if (!window.localStorage.getItem(GUIDE_SEEN)) {
+        setView("guide");
+        window.localStorage.setItem(GUIDE_SEEN, "1");
+      }
+    } catch {
+      // No storage: the page opens on the invitation, and the guide is a tab away.
+    }
+  }, []);
 
   // The defaults follow the language until the studio writes its own.
   function switchLang(next: Lang) {
@@ -250,17 +273,17 @@ export function StudioComposer() {
             <Wordmark className="block h-auto w-24" />
             <span className="mono-label border border-paper/30 px-2 py-1">Interno</span>
           </div>
-          <nav className="flex flex-wrap gap-1" aria-label="Email">
+          <nav className="flex flex-wrap gap-1" aria-label="Secções">
             {KINDS.map((k) => (
               <button
                 key={k.id}
                 type="button"
                 onClick={() => {
-                  setKind(k.id);
+                  setView(k.id);
                   setStatus(null);
                 }}
-                aria-pressed={kind === k.id}
-                className={`mono-label border px-3 py-2 ${kind === k.id ? "border-paper bg-paper text-ink" : "border-paper/30 text-paper"}`}
+                aria-pressed={view === k.id}
+                className={`mono-label border px-3 py-2 ${view === k.id ? "border-paper bg-paper text-ink" : "border-paper/30 text-paper"}`}
               >
                 {k.label}
               </button>
@@ -269,6 +292,9 @@ export function StudioComposer() {
         </div>
       </header>
 
+      {view === "guide" ? (
+        <StudioGuide onStart={() => setView("invite")} />
+      ) : (
       <div className="shell grid gap-10 py-10 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
         <section className="flex flex-col gap-6">
           {kind === "confirmation" ? (
@@ -429,6 +455,7 @@ export function StudioComposer() {
           <iframe title="Pré-visualização do email" srcDoc={html} className="mt-3 h-[min(78rem,calc(var(--screen)*1.4))] w-full border border-hair" />
         </section>
       </div>
+      )}
     </main>
   );
 }
