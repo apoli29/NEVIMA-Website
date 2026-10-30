@@ -106,11 +106,14 @@ function web(
   // The pages' range (the same share over the floor for every size).
   // Advanced costs more than Essential+ at both ends alike (user,
   // 2026-10-30).
-  const design = a.design === "advanced" ? 1 + p.advancedPercent / 100 : 1;
+  const advanced = a.design === "advanced";
+  const design = advanced ? 1 + p.advancedPercent / 100 : 1;
   const [fewest, most] = p.pages[a.pages][market];
   const extras = others * p.perLanguage;
-  let min = fewest * design + extras;
-  let max = most * design + extras;
+  // The landing page is a fixed price for each design level, with no range.
+  const landing = a.pages === "landing" ? (advanced ? p.landingAdvanced[market] : fewest) : null;
+  let min = (landing ?? fewest * design) + extras;
+  let max = (landing ?? most * design) + extras;
 
   // Writing the texts the client does not have, by the site's size.
   if (a.texts === "no") {
@@ -155,7 +158,8 @@ function web(
       ),
     );
   }
-  const floor = down10(min);
+  // A fixed price (the landing page) is not rounded down.
+  const floor = min === max ? min : down10(min);
   const ceiling = up5(max);
 
   // What the website receives from its visitors (the second level), each
@@ -167,10 +171,14 @@ function web(
     notes.push(t(`Includes ${f.listed.join(", ")}.`, `Inclui ${f.listed.join(", ")}.`));
   }
   notes.push(...f.notes);
+  const lo = floor + f.min * rush;
+  const hi = ceiling + f.max * rush;
+  // With no range there is no upper end to explain.
+  const kept = lo === hi ? notes.filter((n) => n !== t(p.marginNote)) : notes;
   return {
     line: {
-      amount: { min: down10(floor + f.min * rush), max: up5(ceiling + f.max * rush) },
-      notes,
+      amount: lo === hi ? { min: up5(lo), max: up5(hi) } : { min: down10(lo), max: up5(hi) },
+      notes: kept,
       provisional: a.texts === "no",
     },
   };

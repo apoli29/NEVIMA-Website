@@ -42,13 +42,20 @@ export const PRICING = {
         Portugal 290; 380; 580 (Essential+). Spain and Italy, and the USA,
         keep the ratio the old single prices had to Portugal's. */
     pages: {
-      landing: upTo({ pt: 290, "es-it": 335, us: 510 }),
+      /** A landing page has no range: a fixed price for each design level
+          (user, 2026-10-30: 290 and 420). This is Essential+; Advanced is
+          landingAdvanced. */
+      landing: { pt: [290, 290], "es-it": [335, 335], us: [510, 510] },
       "4-6": upTo({ pt: 380, "es-it": 440, us: 665 }),
       "7-10": upTo({ pt: 580, "es-it": 670, us: 1015 }),
       /** "Not sure": from 2 pages (340 in Portugal, user, 2026-10-29) to
           7, which is where 7–10 starts. Its own range, not a spread. */
       unsure: { pt: [340, 580], "es-it": [395, 670], us: [595, 1015] },
     } satisfies Record<Size, Record<Market, [number, number]>>,
+    /** The landing page with the Advanced design (not Essential+ ×1.35:
+        a price of its own). Spain, Italy and the USA keep Portugal's
+        ratio to Essential+. */
+    landingAdvanced: { pt: 420, "es-it": 485, us: 740 } satisfies ByMarket,
     /** The ceiling of each size over its floor, and the whole website's
         range with it: the design level raises both ends alike and adds
         no range of its own (user, 2026-10-30: 30%). */
