@@ -74,6 +74,9 @@ export type PartnerRequest = { at: string; lang: Lang; answers: PartnerAnswers; 
 
 const TIMEOUT_MS = 10_000;
 
+/** The language picked for the reply, as the studio reads it in a notice. */
+const REPLY_IN: Record<Lang, string> = { pt: "português", en: "inglês" };
+
 export async function recordSimulation(simulation: Simulation) {
   console.info("[nevima:simulation]", JSON.stringify(simulation));
 }
@@ -284,7 +287,7 @@ export async function deliverRequest(request: ProposalRequest): Promise<boolean>
         `${who.label}: ${who.value} · ${country.label}: ${country.value}`,
         `Estimativa: ${totalText(estimate)} €${estimate.monthly ? ` + ${estimate.monthly} €/mês` : ""}`,
         `Prazo: ${timelineText(estimate)}`,
-        `Origem: ${request.origin} · Idioma: ${request.lang}`,
+        `Origem: ${request.origin} · Responder em: ${REPLY_IN[request.lang]}`,
       ],
       page,
       contact,
@@ -321,7 +324,7 @@ export async function deliverPartner(request: PartnerRequest): Promise<boolean> 
       `Projeto: ${pt(PROJECT_TYPES, answers.project)} · Ecrãs: ${pt(SCREENS, answers.screens)}`,
       `Início: ${pt(STARTS, answers.start)} · Entrega: ${pt(DELIVERIES, answers.delivery)}`,
       `Modelo: ${pt(MODELS, answers.model)} · Crédito: ${pt(CREDITS, answers.credit)} · NDA: ${answers.nda ? "Sim" : "Não"}`,
-      `Idioma: ${request.lang}`,
+      `Responder em: ${REPLY_IN[request.lang]}`,
     ],
     page,
     contact,
