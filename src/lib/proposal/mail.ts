@@ -5,10 +5,12 @@ import type { Lang } from "../i18n";
 
    Black, as the site's footer (user, 2026-10-29): the whole email is
    set on it, white type, ash for what is secondary, dark hairlines.
-   The footer's drifting light is held still in two images
+   The footer's drifting light is held still in two pictures
    (scripts/email-light.mjs): behind the top, where the wordmark, a
    mono label in a hairline box and the greeting sit, and behind the
-   foot, where the wordmark runs across the whole width. The light is
+   foot, where the wordmark is painted into the light (one image, so it
+   sits in it rather than on it, and shows even where background images
+   do not). The light is
    kept low behind the words, as on the site; the middle, where the
    letter is read, is plain black. A mail app that blocks images, or
    draws no background images (Outlook on Windows), shows plain black.
@@ -208,11 +210,11 @@ export function shell({ lang, subject, preheader, tag, greeting, body, why, site
       )}
       ${row("", `8px ${PAD} 0`)}
       ${body}
-      ${lit(
-        `${siteUrl}/email/light-foot.jpg`,
-        `120px ${PAD} 26px`,
-        `<img src="${siteUrl}/email/wordmark-foot.png" width="536" alt="nevima" style="display:block;border:0;width:100%;max-width:536px;height:auto;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:26px;border-top:1px solid ${HAIR_STRONG};"><tr>
+      <tr><td bgcolor="${INK}" style="padding:24px 0 0;background:${INK};font-size:0;line-height:0;">
+        <img src="${siteUrl}/email/foot.jpg" width="600" alt="nevima" style="display:block;border:0;width:100%;max-width:600px;height:auto;">
+      </td></tr>
+      ${row(
+        `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid ${HAIR_STRONG};"><tr>
           <td style="padding-top:14px;vertical-align:top;">
             <a href="mailto:${STUDIO_EMAIL}" style="text-decoration:none;">${label(STUDIO_EMAIL, PAPER)}</a>
           </td>
@@ -221,6 +223,7 @@ export function shell({ lang, subject, preheader, tag, greeting, body, why, site
           </td>
         </tr></table>
         <p style="margin:14px 0 0;font-family:${READ};font-size:12px;line-height:1.5;color:${ASH};">${escapeHtml(why)}</p>`,
+        `0 ${PAD} 26px`,
       )}
     </table>
   </td></tr>
