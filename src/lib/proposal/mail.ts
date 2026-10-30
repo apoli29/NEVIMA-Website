@@ -3,16 +3,17 @@ import type { Lang } from "../i18n";
 /* ==================================================================
    The look the studio's emails share
 
-   Black, as the site's footer (user, 2026-10-29): the whole email is
-   set on it, white type, ash for what is secondary, dark hairlines.
-   The footer's drifting light is held still in two pictures
-   (scripts/email-light.mjs): behind the top, where the wordmark, a
-   mono label in a hairline box and the greeting sit, and behind the
-   foot, where the wordmark is painted into the light (one image, so it
-   sits in it rather than on it, and shows even where background images
-   do not). The light is
-   kept low behind the words, as on the site; the middle, where the
-   letter is read, is plain black. A mail app that blocks images, or
+   Black, as the site's footer (user, 2026-10-29): white type, ash for
+   what is secondary, dark hairlines. The footer's drifting light is
+   held still in two wide pictures (scripts/email-light.mjs) laid on
+   the email's whole black background, not inside its 600px column
+   (user, 2026-10-30): the column is transparent, so the light reaches
+   out on both sides of it and fades into the black before any edge,
+   and nothing shows where a block ends. One is behind the top (the
+   wordmark, a mono label in a hairline box, the greeting), one behind
+   the foot, where the wordmark, with a glow of its own, sits in it.
+   The light is kept low behind the words, as on the site; the letter
+   between is read on plain black. A mail app that blocks images, or
    draws no background images (Outlook on Windows), shows plain black.
 
    On black the bar's crate is turned inside out, as it turns when it
@@ -55,9 +56,8 @@ export const escapeHtml = (value: string) =>
 
 const PAD = "32px";
 
-/** A row of the column. */
-const row = (inner: string, padding = `0 ${PAD}`) =>
-  `<tr><td class="nv-pad" bgcolor="${INK}" style="padding:${padding};background:${INK};">${inner}</td></tr>`;
+/** A row of the column: transparent, so the background's light shows. */
+const row = (inner: string, padding = `0 ${PAD}`) => `<tr><td class="nv-pad" style="padding:${padding};">${inner}</td></tr>`;
 
 const P = `margin:0 0 18px;font-family:${READ};font-size:16px;line-height:1.6;color:${PAPER};`;
 
@@ -165,13 +165,44 @@ type Shell = {
   siteUrl: string;
 };
 
-/** A block with the footer's light behind it, plain black where images are off.
-    Held to the right, where the light gathers, so a narrow screen keeps it. */
-const lit = (image: string, padding: string, inner: string) =>
-  `<tr><td class="nv-pad" bgcolor="${INK}" background="${image}" style="padding:${padding};background-color:${INK};background-image:url('${image}');background-size:cover;background-position:right top;background-repeat:no-repeat;">${inner}</td></tr>`;
+/** A full-width band of the page with one of the light pictures behind
+    it, centred on the column at its real size (1600px), and the column
+    inside. Plain black where background images are not drawn. */
+const band = (image: string, position: string, column: string) =>
+  `<tr><td align="center" bgcolor="${INK}" background="${image}" style="padding:0;background-color:${INK};background-image:url('${image}');background-repeat:no-repeat;background-position:${position};background-size:1600px auto;">
+    <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;">${column}</table>
+  </td></tr>`;
 
 export function shell({ lang, subject, preheader, tag, greeting, body, why, siteUrl }: Shell) {
   const site = siteUrl.replace(/^https?:\/\//, "");
+  const top = row(
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+          <td style="vertical-align:middle;"><img src="${siteUrl}/email/wordmark.png" width="104" alt="nevima" style="display:block;border:0;width:104px;height:auto;"></td>
+          <td align="right" style="vertical-align:middle;">
+            <span style="display:inline-block;padding:6px 9px;border:1px solid ${HAIR_STRONG};">${label(tag, PAPER)}</span>
+          </td>
+        </tr></table>
+        <h1 style="margin:128px 0 0;font-family:${TITLE};font-size:34px;line-height:1.12;font-weight:500;letter-spacing:-0.025em;color:${PAPER};">${escapeHtml(greeting)}</h1>`,
+    `30px ${PAD} 42px`,
+  );
+  // The mark's picture carries its glow round it, 32px on each side and
+  // fading to nothing at its edge, so it fills the column and the letters
+  // line up with the text above.
+  const foot = `<tr><td style="padding:96px 0 0;font-size:0;line-height:0;">
+        <img src="${siteUrl}/email/wordmark-glow.png" width="600" alt="nevima" style="display:block;border:0;width:100%;max-width:600px;height:auto;">
+      </td></tr>
+      ${row(
+        `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid ${HAIR_STRONG};"><tr>
+          <td style="padding-top:14px;vertical-align:top;">
+            <a href="mailto:${STUDIO_EMAIL}" style="text-decoration:none;">${label(STUDIO_EMAIL, PAPER)}</a>
+          </td>
+          <td align="right" style="padding-top:14px;vertical-align:top;">
+            <a href="${siteUrl}${lang === "pt" ? "/pt" : ""}" style="text-decoration:none;">${label(site, PAPER)}</a>
+          </td>
+        </tr></table>
+        <p style="margin:14px 0 0;font-family:${READ};font-size:12px;line-height:1.5;color:${ASH};">${escapeHtml(why)}</p>`,
+        `2px ${PAD} 30px`,
+      )}`;
   return `<!doctype html>
 <html lang="${lang === "pt" ? "pt-PT" : "en"}" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -195,38 +226,8 @@ export function shell({ lang, subject, preheader, tag, greeting, body, why, site
 <body bgcolor="${INK}" style="margin:0;padding:0;background:${INK};">
 <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${INK};">${escapeHtml(preheader)}&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${INK}" style="background:${INK};">
-  <tr><td align="center" style="padding:0;">
-    <table role="presentation" width="600" cellpadding="0" cellspacing="0" bgcolor="${INK}" style="width:100%;max-width:600px;background:${INK};">
-      ${lit(
-        `${siteUrl}/email/light-top.jpg`,
-        `30px ${PAD} 34px`,
-        `<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
-          <td style="vertical-align:middle;"><img src="${siteUrl}/email/wordmark.png" width="104" alt="nevima" style="display:block;border:0;width:104px;height:auto;"></td>
-          <td align="right" style="vertical-align:middle;">
-            <span style="display:inline-block;padding:6px 9px;border:1px solid ${HAIR_STRONG};">${label(tag, PAPER)}</span>
-          </td>
-        </tr></table>
-        <h1 style="margin:128px 0 0;font-family:${TITLE};font-size:34px;line-height:1.12;font-weight:500;letter-spacing:-0.025em;color:${PAPER};">${escapeHtml(greeting)}</h1>`,
-      )}
-      ${row("", `8px ${PAD} 0`)}
-      ${body}
-      <tr><td bgcolor="${INK}" style="padding:24px 0 0;background:${INK};font-size:0;line-height:0;">
-        <img src="${siteUrl}/email/foot.jpg" width="600" alt="nevima" style="display:block;border:0;width:100%;max-width:600px;height:auto;">
-      </td></tr>
-      ${row(
-        `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid ${HAIR_STRONG};"><tr>
-          <td style="padding-top:14px;vertical-align:top;">
-            <a href="mailto:${STUDIO_EMAIL}" style="text-decoration:none;">${label(STUDIO_EMAIL, PAPER)}</a>
-          </td>
-          <td align="right" style="padding-top:14px;vertical-align:top;">
-            <a href="${siteUrl}${lang === "pt" ? "/pt" : ""}" style="text-decoration:none;">${label(site, PAPER)}</a>
-          </td>
-        </tr></table>
-        <p style="margin:14px 0 0;font-family:${READ};font-size:12px;line-height:1.5;color:${ASH};">${escapeHtml(why)}</p>`,
-        `0 ${PAD} 26px`,
-      )}
-    </table>
-  </td></tr>
+  ${band(`${siteUrl}/email/light-head.jpg`, "center top", top + body)}
+  ${band(`${siteUrl}/email/light-foot.jpg`, "center top", foot)}
 </table>
 </body>
 </html>`;

@@ -4,12 +4,14 @@
    Mail apps run no WebGL, so the light that drifts behind the site's
    footer (BACKDROP in src/components/liquid-lens.tsx) is drawn here
    once, pixel by pixel, with the same field, the same lighting and the
-   same "calm" that keeps it low behind the words, and saved as two
-   images in public/email/: one behind the top of every email (the
-   wordmark, the label and the greeting), one behind its foot (the
-   wordmark across it).
+   same "calm" that keeps it low behind the words. Two wide pictures in
+   public/email/ sit on the email's whole black background, not inside
+   its column (user, 2026-10-30): one behind the top (the wordmark, the
+   label and the greeting), one behind the foot. The foot's wordmark is
+   a picture of its own, with a glow, laid in that light.
 
    Run after changing the light: node scripts/email-light.mjs
+   (with --mark, only the foot's wordmark is drawn again)
    ================================================================== */
 
 import sharp from "sharp";
@@ -98,11 +100,11 @@ function calm(px, py, boxes, depth, soft = 0.07) {
   return 1 - depth * q;
 }
 
-/* The image is a window onto a footer-sized field, `zoom` of its height
-   tall: the site's pools are sized for a footer a screen tall, and the
-   email's bands are much lower. Pools and boxes are given as shares of
-   the image (0 to 1 across, 0 to 1 up) and placed in that window. */
-async function render(file, { width, height, t, zoom, pools: share, boxes: shareBoxes = [], soft, depth = 0.85, fade, mark }) {
+/* An image is a window onto the field, `zoom` of its height tall, so a
+   pool keeps the size it has on the site whatever the image's shape
+   (about 580 email pixels to one unit). Pools and boxes are given as
+   shares of the image: 0 to 1 across, 0 to 1 up. */
+async function render(file, { width, height, t, zoom, pools: share, boxes: shareBoxes = [], soft = 0.07, depth = 0.85, fade }) {
   // Drawn at twice the size and averaged down, so the thin streaks of
   // gloss come out smooth rather than as a pixel staircase.
   const SS = 2;
@@ -113,36 +115,11 @@ async function render(file, { width, height, t, zoom, pools: share, boxes: share
   const boxes = shareBoxes.map(([u0, v0, u1, v1]) => [u0 * aspect, v0 * zoom, u1 * aspect, v1 * zoom]);
   const big = new Float32Array(W * Hh);
   for (let row = 0; row < Hh; row++) {
-    const v = 1 - (row + 0.5) / Hh;
-    const py = v * zoom;
+    const py = (1 - (row + 0.5) / Hh) * zoom;
     for (let col = 0; col < W; col++) {
       const px = ((col + 0.5) / W) * aspect;
       big[row * W + col] = backdrop(px, py, t, aspect, pools) * calm(px, py, boxes, depth, soft);
     }
-  }
-  const light = new Float32Array(width * height);
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      let sum = 0;
-      for (let dy = 0; dy < SS; dy++) for (let dx = 0; dx < SS; dx++) sum += big[(y * SS + dy) * W + x * SS + dx];
-      light[y * width + x] = sum / (SS * SS);
-    }
-  }
-
-  // The wordmark, painted into the light rather than laid on it: a soft
-  // glow of its own spreads into the light round it, so it sits in the
-  // same air as the footer's mark does.
-  let ink = null;
-  let halo = null;
-  if (mark) {
-    const glyphs = await sharp(mark.svg, { density: 600 }).resize({ width: mark.width }).png().toBuffer();
-    const { data, info } = await sharp({ create: { width, height, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
-      .composite([{ input: glyphs, left: mark.x, top: mark.y }])
-      .extractChannel("alpha")
-      .raw()
-      .toBuffer({ resolveWithObject: true });
-    ink = data;
-    halo = await sharp(data, { raw: { width: info.width, height: info.height, channels: 1 } }).blur(mark.glow).raw().toBuffer();
   }
 
   // A grain finer than a pixel can show, so the long dark gradients do
@@ -155,19 +132,16 @@ async function render(file, { width, height, t, zoom, pools: share, boxes: share
   const out = Buffer.alloc(width * height);
   for (let y = 0; y < height; y++) {
     const v = 1 - (y + 0.5) / height;
-    // Into black where the email's black meets it.
-    const edge =
-      (fade.includes("bottom") ? smoothstep(0, fade.reach ?? 0.3, v) : 1) *
-      (fade.includes("top") ? smoothstep(0, fade.reach ?? 0.3, 1 - v) : 1);
+    // Into black on every side, so the picture has no edge anywhere on
+    // the email's black.
+    const edgeY = smoothstep(0, fade.bottom, v) * smoothstep(0, fade.top, 1 - v);
     for (let x = 0; x < width; x++) {
-      const i = y * width + x;
-      let c = light[i] * edge;
-      if (ink) {
-        c = Math.min(c + (halo[i] / 255) * 0.16 * edge, 1);
-        const a = ink[i] / 255;
-        c = c * (1 - a) + a;
-      }
-      out[i] = Math.max(0, Math.min(255, Math.round(c * 255 + grain() * 1.6)));
+      const u = (x + 0.5) / width;
+      const edge = edgeY * smoothstep(0, fade.sides, u) * smoothstep(0, fade.sides, 1 - u);
+      let sum = 0;
+      for (let dy = 0; dy < SS; dy++) for (let dx = 0; dx < SS; dx++) sum += big[(y * SS + dy) * W + x * SS + dx];
+      const c = (sum / (SS * SS)) * edge;
+      out[y * width + x] = Math.max(0, Math.min(255, Math.round(c * 255 + grain() * 1.6)));
     }
   }
   await sharp(out, { raw: { width, height, channels: 1 } })
@@ -177,56 +151,104 @@ async function render(file, { width, height, t, zoom, pools: share, boxes: share
   console.log(file, width, height);
 }
 
-// Twice the email's 600px column. The top: 600 x 290, the wordmark and
-// the label along its top, the greeting low on the left. The light runs
-// across the whole width, kept low behind those three.
-const top = ["bottom"];
-top.reach = 0.35;
-await render("public/email/light-top.jpg", {
-  width: 1200,
-  height: 580,
+/* The wordmark for the foot, on nothing, with a soft glow of its own
+   spreading out from it, so it sits in the light behind it rather than
+   looking cut out and laid on it. */
+async function glowingMark(file, { svg, width, pad, glow, strength }) {
+  const glyphs = await sharp(svg, { density: 600 }).resize({ width }).png().toBuffer();
+  const meta = await sharp(glyphs).metadata();
+  const w = width + pad * 2;
+  const h = meta.height + pad * 2;
+  const alpha = await sharp({ create: { width: w, height: h, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+    .composite([{ input: glyphs, left: pad, top: pad }])
+    .extractChannel("alpha")
+    .raw()
+    .toBuffer();
+  const halo = await sharp(alpha, { raw: { width: w, height: h, channels: 1 } }).blur(glow).raw().toBuffer();
+  // Clear at its very edge, so the picture never shows as a box.
+  const clear = (n, size) => smoothstep(0, pad * 0.75, Math.min(n, size - 1 - n));
+  const rgba = Buffer.alloc(w * h * 4, 255);
+  for (let i = 0; i < w * h; i++) {
+    const glowing = Math.round(halo[i] * strength * clear(i % w, w) * clear(Math.floor(i / w), h));
+    rgba[i * 4 + 3] = Math.max(alpha[i], glowing);
+  }
+  await sharp(rgba, { raw: { width: w, height: h, channels: 4 } }).png({ compressionLevel: 9 }).toFile(file);
+  console.log(file, w, h);
+}
+
+/* The email's column is 600px wide in the middle of a black page; the
+   pictures are 1600px wide, centred behind it (drawn at twice that), so
+   the light reaches out over the black on both sides and fades before
+   any edge. In shares of 1600: the column runs 0.3125 to 0.6875, its
+   text 0.3325 to 0.6675. */
+
+// Behind the top, 1600 x 520: the wordmark and the label along the top
+// of the column, the greeting below them, then the letter, where the
+// light is held low.
+if (!process.argv.includes("--mark")) await render("public/email/light-head.jpg", {
+  width: 3200,
+  height: 1040,
   t: 38,
-  zoom: 0.5,
-  soft: 0.16,
-  depth: 0.75,
-  fade: top,
+  zoom: 0.62,
+  soft: 0.14,
+  depth: 0.82,
+  fade: { top: 0.08, bottom: 0.4, sides: 0.14 },
   pools: [
-    [0.08, 0.7, 0.8],
-    [0.3, 0.92, 0.7],
-    [0.5, 0.62, 1],
-    [0.66, 0.9, 0.7],
-    [0.78, 0.55, 1],
-    [0.95, 0.35, 0.8],
-    [0.88, 0.85, 0.6],
-    [0.62, 0.3, 0.6],
+    [0.080, 0.55, 1],
+    [0.145, 0.78, 0.8],
+    [0.210, 0.42, 0.9],
+    [0.275, 0.88, 0.7],
+    [0.340, 0.66, 1],
+    [0.405, 0.5, 0.8],
+    [0.470, 0.55, 0.9],
+    [0.535, 0.78, 0.7],
+    [0.600, 0.42, 1],
+    [0.665, 0.88, 0.8],
+    [0.730, 0.66, 0.9],
+    [0.795, 0.5, 0.7],
+    [0.860, 0.55, 1],
+    [0.925, 0.78, 0.8],
   ],
   boxes: [
-    [0.04, 0.8, 0.24, 0.96],
-    [0.8, 0.82, 0.97, 0.95],
-    [0.04, 0.08, 0.42, 0.3],
+    [0.325, 0.85, 0.41, 0.97],
+    [0.615, 0.85, 0.675, 0.97],
+    [0.325, 0.5, 0.56, 0.68],
+    [0.31, 0, 0.69, 0.46],
   ],
 });
 
-// The foot, as one picture: 600 x 380, the light spread across it and
-// the wordmark painted in, 32px in from each side as the email's text.
-const foot = ["top", "bottom"];
-foot.reach = 0.22;
-await render("public/email/foot.jpg", {
-  width: 1200,
-  height: 760,
+// Behind the foot, 1600 x 360: the wordmark across the column, the
+// small print along its bottom.
+if (!process.argv.includes("--mark")) await render("public/email/light-foot.jpg", {
+  width: 3200,
+  height: 720,
   t: 71,
-  zoom: 0.5,
-  fade: foot,
+  zoom: 0.45,
+  soft: 0.1,
+  fade: { top: 0.3, bottom: 0.12, sides: 0.14 },
   pools: [
-    [0.05, 0.55, 0.9],
-    [0.22, 0.72, 1],
-    [0.4, 0.45, 0.8],
-    [0.55, 0.78, 0.9],
-    [0.7, 0.4, 1],
-    [0.86, 0.68, 0.9],
-    [0.98, 0.45, 0.7],
-    [0.32, 0.25, 0.6],
-    [0.8, 0.22, 0.6],
+    [0.080, 0.5, 1],
+    [0.145, 0.7, 0.8],
+    [0.210, 0.38, 0.9],
+    [0.275, 0.62, 0.7],
+    [0.340, 0.8, 1],
+    [0.405, 0.45, 0.8],
+    [0.470, 0.5, 0.9],
+    [0.535, 0.7, 0.7],
+    [0.600, 0.38, 1],
+    [0.665, 0.62, 0.8],
+    [0.730, 0.8, 0.9],
+    [0.795, 0.45, 0.7],
+    [0.860, 0.5, 1],
+    [0.925, 0.7, 0.8],
   ],
-  mark: { svg: "public/nevima-wordmark-white.svg", width: 1072, x: 64, y: 380, glow: 22 },
+  boxes: [[0.32, 0, 0.68, 0.24]],
+});
+
+await glowingMark("public/email/wordmark-glow.png", {
+  svg: "public/nevima-wordmark-white.svg",
+  width: 1072,
+  pad: 64,
+  glow: 13,
+  strength: 0.34,
 });
