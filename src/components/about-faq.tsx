@@ -60,11 +60,11 @@ const QUESTIONS: readonly Question[] = [
     a: "When a client comes to us, we bring total rigor and organization, to guarantee a top-tier service that is never held back by setbacks that cause extremely long waits. Here’s the process, in short:",
     flow: [
       "Form and estimate",
-      "Exact price",
+      "Proposal call",
       "Contract",
       "Your materials",
       "Production",
-      "Feedback call",
+      "Feedback call (optional)",
       "Final approval",
       "Launch",
     ],
@@ -85,13 +85,13 @@ const QUESTIONS: readonly Question[] = [
   {
     id: "cost",
     q: "How much does a website cost?",
-    a: "It depends on the project: its size, its languages, the number of forms, the additional services chosen and several other factors. Our form calculates an accurate estimate for your project, and we always reply to every form sent within a few hours, with the exact price.",
+    a: "It depends on the project: its size, its languages, the number of forms, the additional services chosen and several other factors. Our form calculates an accurate estimate for your project, and we always reply to every form sent within a few hours, to present the exact price on a short call.",
     link: { label: "Get your free proposal", proposal: true },
   },
   {
     id: "reply",
     q: "How soon will you reply after I fill in the form?",
-    a: "Within a few hours. We go through your answers and send you the exact price for your project, along with the reasoning behind it.",
+    a: "Within a few hours. We go through your answers and suggest two times for a short call, where we present the exact price for your project, along with the reasoning behind it.",
   },
   {
     id: "time",
@@ -185,11 +185,11 @@ const PT_QUESTIONS: Record<string, Words> = {
     a: "Quando um cliente recorre aos nossos serviços, apresentamos um nível total de rigor e organização, de forma a garantir um serviço de topo, que não é prejudicado por inconvenientes que provoquem tempos de espera altíssimos. Eis o processo, de forma resumida:",
     flow: [
       "Formulário e estimativa",
-      "Preço exato",
+      "Chamada da proposta",
       "Contrato",
       "Os materiais",
       "Produção",
-      "Chamada de acompanhamento",
+      "Chamada de acompanhamento (opcional)",
       "Aprovação final",
       "Lançamento",
     ],
@@ -208,12 +208,12 @@ const PT_QUESTIONS: Record<string, Words> = {
   },
   cost: {
     q: "Quanto custa um website?",
-    a: "Depende do projeto: do tamanho, dos idiomas, do número de formulários, dos serviços adicionais escolhidos e de vários outros fatores. Temos um formulário que calcula uma estimativa precisa para o projeto do cliente, e respondemos sempre aos formulários submetidos em poucas horas, com o preço exato.",
+    a: "Depende do projeto: do tamanho, dos idiomas, do número de formulários, dos serviços adicionais escolhidos e de vários outros fatores. Temos um formulário que calcula uma estimativa precisa para o projeto do cliente, e respondemos sempre aos formulários submetidos em poucas horas, para apresentar o preço exato numa breve chamada.",
     link: "Pedir proposta gratuita",
   },
   reply: {
     q: "Quanto tempo demoram a responder depois de preencher o formulário?",
-    a: "Poucas horas. Analisamos as respostas e enviamos o preço exato do projeto, com a respetiva justificação.",
+    a: "Poucas horas. Analisamos as respostas e propomos dois horários para uma breve chamada, onde apresentamos o preço exato do projeto, com a respetiva justificação.",
   },
   time: {
     q: "Quanto tempo demora um website?",

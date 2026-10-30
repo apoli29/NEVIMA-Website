@@ -124,19 +124,19 @@ const PT_STEPS: Record<string, Pick<Step, "name" | "principle" | "text"> & { cta
     text: "Fornecemos um formulário que, quando preenchido, apresenta uma estimativa para o projeto, com base nas respostas fornecidas.",
   },
   analysis: {
-    name: "Definimos o preço exato",
-    principle: "Enviamos o orçamento real.",
-    text: "Analisamos as respostas e, em poucas horas, enviamos o preço exato do projeto, sempre com a respetiva justificação.",
+    name: "Apresentamos a proposta",
+    principle: "A proposta, numa breve chamada.",
+    text: "Analisamos as respostas e, em poucas horas, propomos dois horários para uma breve chamada de 20 a 30 minutos, onde apresentamos a proposta, sempre com a respetiva justificação, e ficamos a conhecer melhor o projeto.",
   },
   contract: {
     name: "O contrato",
     principle: "Tudo acordado por escrito.",
-    text: "Assim que recebemos resposta ao orçamento, enviamos o contrato, com todas as condições do trabalho definidas por escrito.",
+    text: "Depois da chamada, enviamos a proposta final e o contrato, com todas as condições do trabalho definidas por escrito.",
   },
   materials: {
     name: "Os materiais",
     principle: "O prazo começa com a entrega dos materiais.",
-    text: "Com o contrato, pedimos tudo aquilo de que precisamos: as fotografias já existentes do negócio, o logótipo e o símbolo, e o que mais o projeto exigir. O trabalho começa assim que tivermos tudo.",
+    text: "Na chamada, indicamos tudo aquilo de que precisamos: as fotografias já existentes do negócio, o logótipo e o símbolo, e o que mais o projeto exigir. O trabalho começa assim que tivermos tudo.",
   },
   photo: {
     name: "A sessão fotográfica",
@@ -217,7 +217,7 @@ const PHASES: Phase[] = [
     id: "proposal",
     name: "Proposal and contract",
     intro:
-      "You get an estimate, we reply with the exact price, and we only start once the contract is signed and your materials are in.",
+      "You get an estimate, we present the proposal on a call, and we only start once the contract is signed and your materials are in.",
     steps: [
       {
         id: "estimate",
@@ -229,23 +229,23 @@ const PHASES: Phase[] = [
       },
       {
         id: "analysis",
-        name: "We set the exact price",
-        principle: "We send you the real quote.",
-        text: "We read through your answers and come back with the exact price for your project within a few hours, always with the reasoning behind it.",
-        who: "Us",
+        name: "We present the proposal",
+        principle: "The proposal, on a short call.",
+        text: "We read through your answers and, within a few hours, suggest two times for a short 20 to 30 minute call, where we present our proposal, always with the reasoning behind it, and get to know your project better.",
+        who: "You and us",
       },
       {
         id: "contract",
         name: "The contract",
         principle: "Everything agreed in writing.",
-        text: "As soon as you reply to the quote, we send over the contract, with every term of the work set out in writing.",
+        text: "After the call, we send over the final proposal and the contract, with every term of the work set out in writing.",
         who: "You and us",
       },
       {
         id: "materials",
         name: "Your materials",
         principle: "The clock starts with you.",
-        text: "With the contract, we ask for everything we need from you: photos you already have of your business, your logo and symbol, and anything else the project calls for. Work begins the moment we have everything.",
+        text: "On the call, we go through everything we need from you: photos you already have of your business, your logo and symbol, and anything else the project calls for. Work begins the moment we have everything.",
         who: "You",
       },
     ],

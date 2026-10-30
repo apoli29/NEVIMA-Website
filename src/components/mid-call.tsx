@@ -40,10 +40,10 @@ const copy = {
     help: "Any questions:",
   },
   pt: {
-    tag: "Reunião a meio do projeto",
+    tag: "Chamada a meio do projeto",
     chosen: "Resposta escolhida",
-    yes: "Com reunião a meio do projeto.",
-    no: "Sem reunião a meio do projeto.",
+    yes: "Com chamada a meio do projeto.",
+    no: "Sem chamada a meio do projeto.",
     confirm: "Confirmar esta resposta",
     sending: "A guardar…",
     saved: "Resposta guardada.",

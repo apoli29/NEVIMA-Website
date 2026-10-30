@@ -26,11 +26,11 @@ export async function POST(request: Request) {
   const told = await sendEmail({
     to: studioInbox(),
     reply_to: page.email || undefined,
-    subject: `Reunião a meio do projeto: ${answer.toLowerCase()} (${page.name}${page.company ? `, ${page.company}` : ""})`,
+    subject: `Chamada a meio do projeto: ${answer.toLowerCase()} (${page.name}${page.company ? `, ${page.company}` : ""})`,
     text: [
       yes
-        ? `${page.name} quer a reunião a meio do projeto. Falta enviar um email para marcar a data.`
-        : `${page.name} não quer a reunião a meio do projeto.`,
+        ? `${page.name} quer a chamada a meio do projeto. Falta enviar um email para marcar a data.`
+        : `${page.name} não quer a chamada a meio do projeto.`,
       "",
       `Email: ${page.email}`,
       `Idioma: ${page.lang}`,
