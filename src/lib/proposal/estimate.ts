@@ -406,15 +406,11 @@ export function estimate(answers: Answers, pricing: Pricing = PRICING, lang: Lan
   }
 
   // Forms with no price yet (user, 2026-10-29): complex ones, and more than
-  // three simple ones. Listed apart, so the total says "plus the items on
-  // request" and the visitor knows the price comes later.
+  // three simple ones. They are named under the total, so the visitor knows
+  // the price comes later and on top of it.
   if (webAnswers?.features.includes("forms") && out.lines.some((l) => l.id === "web")) {
-    const later = t("Price to be defined later, in your proposal", "Preço a definir depois, na proposta");
-    if (webAnswers.formKind === "complex") {
-      out.onRequest.push({ id: "forms", label: t("Complex forms", "Formulários complexos"), reason: later });
-    } else if (webAnswers.forms === "more") {
-      out.onRequest.push({ id: "forms", label: t("More than 3 forms", "Mais de 3 formulários"), reason: later });
-    }
+    if (webAnswers.formKind === "complex") out.later = [t("Complex forms", "Formulários complexos")];
+    else if (webAnswers.forms === "more") out.later = [t("More than 3 forms", "Mais de 3 formulários")];
   }
 
   if (out.lines.length) {

@@ -355,6 +355,10 @@ export type Estimate = {
     provisional?: boolean;
   }[];
   onRequest: { id: string; label: string; reason: string }[];
+  /** Forms with no price yet (complex ones, or more than three): named
+      under the total, which they are understood to be on top of (user,
+      2026-10-30). */
+  later?: string[];
   /** The sum paid up front, or null when nothing could be priced. */
   total: Range | null;
   /** The sum paid each month after the first, when there is any. */
