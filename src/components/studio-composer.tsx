@@ -92,7 +92,7 @@ export function StudioLogin() {
     else
       setError(
         res.status === 429
-          ? "Demasiadas tentativas. Esperar 15 minutos."
+          ? "Demasiadas tentativas. Esperar 1 minuto."
           : res.status === 503
             ? "Este site ainda não tem chave: falta STUDIO_KEY na Vercel (em Production), e publicar de novo depois de a acrescentar."
             : "Chave errada.",
