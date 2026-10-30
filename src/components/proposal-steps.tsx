@@ -422,6 +422,7 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
     for (const l of estimate.lines) {
       const then = l.monthly !== undefined ? t(`, then ${money(l.monthly)}/month`, `, depois ${money(l.monthly)}/mês`) : "";
       lines.push(`${l.label}: ${span(l.amount)}${then}`);
+      for (const part of l.parts ?? []) lines.push(`  ${part.label}: ${span(part.amount)}`);
     }
     for (const r of estimate.onRequest) lines.push(`${r.label}: ${t("on request", "sob consulta")} (${r.reason})`);
     if (estimate.total !== null) lines.push(`Total: ${span(estimate.total)}`);
@@ -1269,28 +1270,40 @@ function EstimateScreen({
     <div aria-live="polite">
     <div className="pf-rows">
       {estimate.lines.map((line) => (
-        <motion.div key={line.id} variants={ROW} className="pf-line">
-          <span>
-            <span className="pf-line-name block">{line.label}</span>
-            {line.notes.map((note) => (
-              <span key={note} className="pf-footnote mt-1.5 block max-w-[38em]">
-                {note}
-              </span>
-            ))}
-          </span>
-          <span className="text-right">
-            <span
-              className={`pf-line-value block ${review && line.provisional ? "pf-provisional" : ""}`}
-              title={review && line.provisional ? t("Provisional prices", "Preços provisórios") : undefined}
-            >
-              {span(line.amount)}
+        <motion.div key={line.id} variants={ROW}>
+          <div className="pf-line">
+            <span>
+              <span className="pf-line-name block">{line.label}</span>
+              {line.notes.map((note) => (
+                <span key={note} className="pf-footnote mt-1.5 block max-w-[38em]">
+                  {note}
+                </span>
+              ))}
             </span>
-            {line.monthly !== undefined && (
-              <span className="mono-label mt-1 block text-ash-2">
-                {t(`One-time, then ${money(line.monthly)}/mo`, `Pontual, depois ${money(line.monthly)}/mês`)}
+            <span className="text-right">
+              <span
+                className={`pf-line-value block ${review && line.provisional ? "pf-provisional" : ""}`}
+                title={review && line.provisional ? t("Provisional prices", "Preços provisórios") : undefined}
+              >
+                {span(line.amount)}
               </span>
-            )}
-          </span>
+              {line.monthly !== undefined && (
+                <span className="mono-label mt-1 block text-ash-2">
+                  {t(`One-time, then ${money(line.monthly)}/mo`, `Pontual, depois ${money(line.monthly)}/mês`)}
+                </span>
+              )}
+            </span>
+          </div>
+          {/* The website's price in two parts, when it has a back end. */}
+          {line.parts?.map((part) => (
+            <div key={part.id} className="pf-part">
+              <span>
+                <span className="pf-line-name block">{part.label}</span>
+                <span className="pf-footnote mt-1 block max-w-[38em]">{part.detail}</span>
+              </span>
+              <span className="pf-line-value">{span(part.amount)}</span>
+            </div>
+          ))}
         </motion.div>
       ))}
       {estimate.onRequest.map((item) => (

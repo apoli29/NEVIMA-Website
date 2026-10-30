@@ -346,6 +346,10 @@ export type Estimate = {
     monthly?: number;
     /** Shown under the line: what it includes, what it assumes. */
     notes: string[];
+    /** The website's price in two parts, when it has a back end (forms or
+        a newsletter): what visitors see, and what works behind it. They
+        add up to `amount` (user, 2026-10-30). */
+    parts?: { id: "frontend" | "backend"; label: string; detail: string; amount: Range }[];
     /** The figure rests on prices the studio has not confirmed yet:
         underlined in orange when the form is opened with ?revisao. */
     provisional?: boolean;

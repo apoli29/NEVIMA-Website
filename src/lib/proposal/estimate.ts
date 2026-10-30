@@ -88,9 +88,21 @@ function web(
       languagesUnsure && t("one more language", "mais uma língua"),
       a.texts === "unsure" && t("writing the texts", "a escrita dos textos"),
     ].filter(Boolean);
+    // The two parts follow the same ends as the line, with the sentences
+    // written from the answers as given.
+    const [lf, lb] = low.line.parts ?? [];
+    const [hf, hb] = high.line.parts ?? [];
+    const parts: Line["parts"] =
+      lf && lb && hf && hb
+        ? [
+            { ...lf, detail: `${t("What visitors see: ", "O que os visitantes veem: ")}${frontDetail(a, others, t)}.`, amount: { min: lf.amount.min, max: hf.amount.max } },
+            { ...lb, amount: { min: lb.amount.min, max: hb.amount.max } },
+          ]
+        : undefined;
     return {
       line: {
         amount: { min: low.line.amount.min, max: high.line.amount.max },
+        parts,
         notes: [
           ...low.line.notes,
           t(
@@ -162,28 +174,77 @@ function web(
   }
   // A fixed price (the landing page) is not rounded down.
   const floor = min === max ? min : down10(min);
-  const ceiling = up5(max);
+  const ceiling = min === max ? max : up5(max);
 
   // What the website receives from its visitors (the second level), each
   // item a range of its own, carried whole: added after the cap, raised
   // with the rest on an urgent deadline.
   const f = features(a, market, p, t);
   const rush = a.urgent === "yes" ? 1 + p.urgentPercent / 100 : 1;
-  if (f.listed.length) {
-    notes.push(t(`Includes ${f.listed.join(", ")}.`, `Inclui ${f.listed.join(", ")}.`));
-  }
   notes.push(...f.notes);
   const lo = floor + f.min * rush;
   const hi = ceiling + f.max * rush;
   // With no range there is no upper end to explain.
   const kept = lo === hi ? notes.filter((n) => n !== t(p.marginNote)) : notes;
-  return {
-    line: {
-      amount: lo === hi ? { min: up5(lo), max: up5(hi) } : { min: down10(lo), max: up5(hi) },
-      notes: kept,
-      provisional: a.texts === "no",
-    },
-  };
+  const amount = lo === hi ? { min: up5(lo), max: up5(hi) } : { min: down10(lo), max: up5(hi) };
+
+  // With a back end the price shows in two parts that add up to the line:
+  // the front end is the website itself, the back end what its forms and
+  // newsletter do behind it (user, 2026-10-30).
+  let parts: Line["parts"];
+  if (f.listed.length) {
+    const front = lo === hi ? { min: up5(floor), max: up5(floor) } : { min: floor, max: ceiling };
+    parts = [
+      {
+        id: "frontend",
+        label: "Front end",
+        detail: `${t("What visitors see: ", "O que os visitantes veem: ")}${frontDetail(a, others, t)}.`,
+        amount: front,
+      },
+      {
+        id: "backend",
+        label: "Back end",
+        detail: t(
+          `What works behind it: ${f.listed.join(", ")}, plus the automatic emails and the database that saves the answers.`,
+          `O que funciona por trás: ${f.listed.join(", ")}, mais os emails automáticos e a base de dados que guarda as respostas.`,
+        ),
+        amount: { min: amount.min - front.min, max: amount.max - front.max },
+      },
+    ];
+  }
+  return { line: { amount, notes: kept, parts, provisional: a.texts === "no" } };
+}
+
+/** What the front end is made of, as a phrase: the size, the design level,
+    the languages, the texts when they are written for the client, and an
+    urgent deadline. "Not sure" answers are said as they are. */
+function frontDetail(a: NonNullable<Answers["web"]>, others: number, t: Translate) {
+  const pages = {
+    landing: t("a landing page", "uma landing page"),
+    "4-6": t("4–6 pages", "4–6 páginas"),
+    "7-10": t("7–10 pages", "7–10 páginas"),
+    unsure: t("2 to 7 pages", "2 a 7 páginas"),
+    "10+": "",
+  }[a.pages];
+  const design = {
+    essential: t("Essential+ design", "design Essencial+"),
+    advanced: t("Advanced design", "design Avançado"),
+    unsure: t("Essential+ or Advanced design", "design Essencial+ ou Avançado"),
+  }[a.design];
+  const languages = a.languages.includes("unsure")
+    ? t("Portuguese, English and possibly one more language", "português, inglês e possivelmente mais uma língua")
+    : others > 0
+      ? t(`Portuguese, English and ${others} more`, `português, inglês e mais ${others}`)
+      : t("Portuguese and English", "português e inglês");
+  const items = [
+    pages,
+    design,
+    languages,
+    a.texts === "no" && t("writing the texts", "a escrita dos textos"),
+    a.texts === "unsure" && t("writing the texts, if needed", "a escrita dos textos, se necessária"),
+    a.urgent === "yes" && t("an urgent deadline", "prazo urgente"),
+  ].filter(Boolean) as string[];
+  return items.join(", ");
 }
 
 /** The second level's items, priced by the market: their range, how
