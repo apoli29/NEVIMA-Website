@@ -16,8 +16,7 @@
       "env": {
         "STUDIO_KEY": "local-test-key",
         "LINKS_SECRET": "local-test-secret",
-        "RESEND_API_KEY": "",
-        "SITE_URL": "http://localhost:3000"
+        "RESEND_API_KEY": ""
       }
     }
   ]
