@@ -43,6 +43,8 @@ type Priced = { line: Omit<Line, "id" | "label"> } | { reason: string };
 const fixed = (n: number): Range => ({ min: n, max: n });
 const down10 = (n: number) => Math.floor(n / 10) * 10;
 const up10 = (n: number) => Math.ceil(n / 10) * 10;
+/** Ceilings round up to 5, so 380 + 30% reads 495 and not 500. */
+const up5 = (n: number) => Math.ceil(n / 5) * 5;
 
 function web(
   a: NonNullable<Answers["web"]>,
@@ -101,15 +103,14 @@ function web(
     };
   }
 
-  // The pages' range (the same share over the floor for every size), and
-  // the design level's own range on top of it: Advanced costs more than
-  // Essential+ at both ends, and each level is a range of its own
-  // (user, 2026-10-30).
+  // The pages' range (the same share over the floor for every size).
+  // Advanced costs more than Essential+ at both ends alike (user,
+  // 2026-10-30).
   const design = a.design === "advanced" ? 1 + p.advancedPercent / 100 : 1;
   const [fewest, most] = p.pages[a.pages][market];
   const extras = others * p.perLanguage;
   let min = fewest * design + extras;
-  let max = most * design * (1 + p.designSpreadPercent / 100) + extras;
+  let max = most * design + extras;
 
   // Writing the texts the client does not have, by the site's size.
   if (a.texts === "no") {
@@ -155,7 +156,7 @@ function web(
     );
   }
   const floor = down10(min);
-  const ceiling = up10(max);
+  const ceiling = up5(max);
 
   // What the website receives from its visitors (the second level), each
   // item a range of its own, carried whole: added after the cap, raised
@@ -168,7 +169,7 @@ function web(
   notes.push(...f.notes);
   return {
     line: {
-      amount: { min: down10(floor + f.min * rush), max: up10(ceiling + f.max * rush) },
+      amount: { min: down10(floor + f.min * rush), max: up5(ceiling + f.max * rush) },
       notes,
       provisional: a.texts === "no",
     },

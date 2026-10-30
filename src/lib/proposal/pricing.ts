@@ -26,7 +26,7 @@ type SearchTable = Record<
 export const MARKET = { PT: "pt", ES: "es-it", IT: "es-it", US: "us" } as const;
 
 /** Every size's ceiling over its floor, in percent. */
-const PAGES_SPREAD = 25;
+const PAGES_SPREAD = 30;
 /** A size's floor by market, as its [floor, ceiling] by market. */
 const upTo = (floors: ByMarket): Record<Market, [number, number]> => ({
   pt: [floors.pt, floors.pt * (1 + PAGES_SPREAD / 100)],
@@ -49,11 +49,10 @@ export const PRICING = {
           7, which is where 7–10 starts. Its own range, not a spread. */
       unsure: { pt: [340, 580], "es-it": [395, 670], us: [595, 1015] },
     } satisfies Record<Size, Record<Market, [number, number]>>,
-    /** The ceiling of each size over its floor (user, 2026-10-30). */
+    /** The ceiling of each size over its floor, and the whole website's
+        range with it: the design level raises both ends alike and adds
+        no range of its own (user, 2026-10-30: 30%). */
     pagesSpreadPercent: PAGES_SPREAD,
-    /** Each design level is a range of its own: its ceiling is this much
-        over its floor (user, 2026-10-30). It stacks with the pages' range. */
-    designSpreadPercent: 15,
     /** How long the site takes, in working days, by size. */
     days: {
       landing: [4, 7],
