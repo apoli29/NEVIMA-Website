@@ -77,14 +77,14 @@ export const PRICING = {
     /** What every website comes with, shown under its line. Kept in
         step with the contract (clauses 11 and 12). */
     includes: {
-      en: "Includes optimised images, a review of the texts you send, free hosting for the first year (then renewed every 6 months) and, if you would like it, a free call once part of the website is built.",
-      pt: "Inclui imagens otimizadas, a revisão dos textos enviados, alojamento gratuito no primeiro ano (depois renovado de 6 em 6 meses) e, se for pedida, uma chamada gratuita quando parte do website já estiver construída.",
+      en: "Includes optimised images, review of your texts, free hosting (first year, then every 6 months) and, if you wish, a free call once part of the site is built.",
+      pt: "Inclui imagens otimizadas, revisão dos textos, alojamento gratuito (1.º ano, depois de 6 em 6 meses) e, se pedida, uma chamada gratuita com parte do site construída.",
     } satisfies Copy,
 
     /** What the upper end allows for, shown under the website's line. */
     marginNote: {
-      en: "The upper end allows for what a form can't foresee: how much content there is to organise, connecting tools you already use (booking, maps, social media), special design requests such as custom illustrations or complex animations, and moving content over from an existing site.",
-      pt: "O valor mais alto dá margem para o que um formulário não consegue prever: a quantidade de conteúdo a organizar, a ligação a ferramentas já usadas (marcações, mapas, redes sociais), pedidos especiais de design, como ilustrações personalizadas ou animações complexas, e a passagem de conteúdo de um site que já exista.",
+      en: "The upper end covers the unforeseen: content volume, connected tools (booking, maps, social media), special design (illustrations, animations), site migration.",
+      pt: "O valor mais alto cobre o imprevisto: conteúdo, ferramentas (marcações, mapas, redes sociais), design especial (ilustrações, animações) e migração de site.",
     } satisfies Copy,
     /** The Advanced design level costs this much more than Essential+
         (user, 2026-10-29, was 25). The page prices above are Essential+. */

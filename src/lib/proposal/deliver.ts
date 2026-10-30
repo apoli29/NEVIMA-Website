@@ -99,7 +99,8 @@ function estimateLines(estimate: Estimate) {
     (line) => `${line.label}: ${range(line.amount)} €${line.monthly ? ` + ${line.monthly} €/mês` : ""}`,
   );
   const onRequest = estimate.onRequest.map((item) => `Sob consulta: ${item.label}`);
-  return [...lines, ...onRequest];
+  const later = (estimate.later ?? []).map((label) => `Sob consulta: ${label}`);
+  return [...lines, ...onRequest, ...later];
 }
 
 function proposalPage(request: ProposalRequest) {

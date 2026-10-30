@@ -426,6 +426,7 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
     }
     for (const r of estimate.onRequest) lines.push(`${r.label}: ${t("on request", "sob consulta")} (${r.reason})`);
     if (estimate.total !== null) lines.push(`Total: ${span(estimate.total)}`);
+    if (estimate.later?.length) lines.push(`+ ${estimate.later.join(", ")} (${t("price to be defined", "preço a definir")})`);
     if (estimate.monthly !== null) lines.push(`${t("Then monthly", "Depois, por mês")}: ${money(estimate.monthly)}`);
   }
   if (contact.message.trim()) lines.push("", t("Tell us more:", "Informações adicionais:"), contact.message.trim());
@@ -1316,6 +1317,12 @@ function EstimateScreen({
       <motion.div variants={ROW} className="pf-line pf-total">
         <span>
           <span className="pf-line-name block">Total</span>
+          {/* Forms with no price yet, named as part of the total. */}
+          {estimate.total !== null && estimate.later?.length ? (
+            <span className="mono-label mt-1 block text-white/70">
+              {`+ ${estimate.later.join(", ")} · ${t("price to be defined", "preço a definir")}`}
+            </span>
+          ) : null}
           {someOnRequest && estimate.total !== null && (
             <span className="mono-label mt-1 block text-white/70">
               {t("Plus the items on request", "Mais os itens sob consulta")}
