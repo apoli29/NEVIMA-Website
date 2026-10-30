@@ -26,7 +26,7 @@ type SearchTable = Record<
 export const MARKET = { PT: "pt", ES: "es-it", IT: "es-it", US: "us" } as const;
 
 /** Every size's ceiling over its floor, in percent. */
-const PAGES_SPREAD = 25;
+const PAGES_SPREAD = 22.5;
 /** A size's floor by market, as its [floor, ceiling] by market. */
 const upTo = (floors: ByMarket): Record<Market, [number, number]> => ({
   pt: [floors.pt, floors.pt * (1 + PAGES_SPREAD / 100)],
