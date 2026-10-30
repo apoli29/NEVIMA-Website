@@ -386,6 +386,9 @@ export type Contact = {
   phone: string;
   company: string;
   message: string;
+  /** The language the visitor wants the reply in, picked at the end of
+      the form; the site's language when not picked. */
+  reply?: "en" | "pt";
 };
 
 /** Limits on free text, shared so the fields and the server agree. */

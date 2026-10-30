@@ -202,7 +202,8 @@ export function readContact(raw: unknown, { company: needsCompany = true } = {})
   if (!phone || !PHONE.test(phone)) return { ok: false, error: "phone" };
   if (company === null || (needsCompany && !company)) return { ok: false, error: "company" };
   if (message === null || message.length > MAX.message) return { ok: false, error: "message" };
-  return { ok: true, value: { name, email, phone, company, message } };
+  const reply = raw.reply === "pt" || raw.reply === "en" ? raw.reply : undefined;
+  return { ok: true, value: { name, email, phone, company, message, ...(reply ? { reply } : {}) } };
 }
 
 /** The partners' answers (development companies): every pick from its

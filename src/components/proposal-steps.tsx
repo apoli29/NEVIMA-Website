@@ -1357,6 +1357,12 @@ function EstimateScreen({
   );
 }
 
+/** Each language named in itself, as a switch of languages is. */
+const REPLY_LANGS = [
+  { id: "pt", label: "Português" },
+  { id: "en", label: "English" },
+] as const;
+
 export function ContactScreen({
   contact,
   setContact,
@@ -1376,6 +1382,7 @@ export function ContactScreen({
   audience?: AudienceId | "";
 }) {
   const t = useT();
+  const lang = useLang();
   const href = useHref();
   const all = [
     { key: "name", label: t("Name", "Nome"), type: "text", autoComplete: "name", placeholder: t("Your name", "Nome") },
@@ -1475,6 +1482,24 @@ export function ContactScreen({
             </p>
           )}
         </motion.div>
+        {/* The language of the reply, right above sending (user,
+            2026-10-30): already set to the site's, so nothing is asked of
+            whoever is happy with it, and one click for whoever is not. It
+            is the language of the confirmation, of the studio's emails
+            after it, and so of the call ("Idioma" in Notion). */}
+        <motion.fieldset variants={ROW} className="prop-row prop-row-plain">
+          <legend className="sr-only">{t("Language of our reply", "Língua da resposta")}</legend>
+          <span id="reply-q" aria-hidden="true" className="mono-label prop-label">
+            {t("Reply in", "Resposta em")}
+          </span>
+          <Segmented
+            name="reply"
+            labelledBy="reply-q"
+            options={REPLY_LANGS}
+            value={contact.reply ?? lang}
+            onChange={(reply) => setContact({ reply })}
+          />
+        </motion.fieldset>
         {/* What the details are for, said where they are given (GDPR,
             art. 13). No box to tick: answering a request for a proposal
             needs no consent (art. 6(1)(b)), and a consent made a

@@ -35,13 +35,15 @@ export async function POST(request: Request) {
   const wait = await waitBefore("proposal", contact.value.email);
   if (wait > 0) return json({ error: "already_sent", waitMs: wait }, 409);
 
-  const lang = fields.lang === "pt" ? "pt" : "en";
+  // The estimate in the words the visitor read it in; the reply, and the
+  // studio's later emails, in the language picked for it (user, 2026-10-30).
+  const siteLang = fields.lang === "pt" ? "pt" : "en";
   const delivered = await deliverRequest({
     origin: fields.origin === "page" || fields.origin === "overlay" ? fields.origin : "other",
     at: new Date().toISOString(),
-    lang,
+    lang: contact.value.reply ?? siteLang,
     answers: answers.value,
-    estimate: estimate(answers.value, undefined, lang),
+    estimate: estimate(answers.value, undefined, siteLang),
     contact: contact.value,
   });
   if (!delivered) return json({ error: "not_configured" }, 503);

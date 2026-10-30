@@ -21,6 +21,7 @@ The properties' names are in two places that must change together: `scripts/setu
 ## Decisions
 
 - The databases are the studio's, read in Portuguese: values are written in Portuguese whatever the visitor's language; a property holds the language.
+- The language of the reply is picked at the end of the form (user, 2026-10-30): "Reply in / Resposta em", Português or English, right above sending, already set to the site's language so nobody has to answer it. It is not a question: one click for the few who want the other language. It decides the confirmation's language, "Idioma" in Notion (both databases), and so the language the composer writes the invitation and the proposal in, and the call's. The estimate stays in the words the visitor read it in. The studio's notice says it as "Responder em: português / inglês".
 - The first plan was a Google Sheet through an Apps Script web app; it was replaced by Notion (user, 2026-10-27) for the cleaner layout and the board by state (Novo, Contactado, Proposta enviada, Ganho, Perdido).
 - The notice to the studio goes by Resend, so there is one place that sends email.
 - The confirmation promises no reply time: none is fixed. When one is, add it after the first paragraph, in both languages (`WORDS` in `email.ts`).

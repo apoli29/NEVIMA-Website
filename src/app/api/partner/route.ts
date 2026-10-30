@@ -36,7 +36,8 @@ export async function POST(request: Request) {
 
   const delivered = await deliverPartner({
     at: new Date().toISOString(),
-    lang: fields.lang === "pt" ? "pt" : "en",
+    // The language picked for the reply, else the site's (user, 2026-10-30).
+    lang: contact.value.reply ?? (fields.lang === "pt" ? "pt" : "en"),
     answers: answers.value,
     contact: contact.value,
   });
