@@ -10,6 +10,8 @@ import {
   COUNTS,
   DESIGN,
   FEATURES,
+  FORM_KINDS,
+  FORM_KIND_NOTE,
   OUT_OF_SCOPE,
   LANGUAGES,
   MAX,
@@ -36,6 +38,7 @@ import {
   type Estimate,
   type CountId,
   type FeatureId,
+  type FormKindId,
   type LanguageId,
   type PagesId,
   type PhotoPlanId,
@@ -80,8 +83,8 @@ export type Draft = {
   languagesOther: string;
   /** The second level of what the website does (see FEATURES). */
   features: FeatureId[];
+  formKind: FormKindId | "";
   forms: CountId | "";
-  emails: CountId | "";
   /** The third level: a project we do not take on for now. */
   complex: boolean;
   texts: TextsId | "";
@@ -114,8 +117,8 @@ export const EMPTY_DRAFT: Draft = {
   languages: [],
   languagesOther: "",
   features: [],
+  formKind: "",
   forms: "",
-  emails: "",
   complex: false,
   texts: "",
   reference1: "",
@@ -218,8 +221,8 @@ const DOMAIN_NOTE_PERSONAL: Copy = {
   pt: "Sem domínio, o registo é feito em nome próprio e pago diretamente, com o nosso acompanhamento em todos os passos. Com um domínio já existente, não há nada a acrescentar.",
 };
 const PAGES_NOTE: Copy = {
-  en: "Not sure? We estimate for 3 to 8 pages, so the range of your final estimate can be a little wider than with a set number.",
-  pt: "Sem um número definido, estimamos para 3 a 8 páginas, por isso o intervalo da estimativa final pode ser um pouco mais largo.",
+  en: "Not sure? We estimate for 2 to 7 pages, so the range of your final estimate can be a little wider than with a set number.",
+  pt: "Sem um número definido, estimamos para 2 a 7 páginas, por isso o intervalo da estimativa final pode ser um pouco mais largo.",
 };
 const TEXTS_NOTE: Copy = {
   en: "If you don't, writing them is added to the price, as a range set by your website's size.",
@@ -262,8 +265,8 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
     if (personalAbroad(draft)) e.country = t(PERSONAL_ABROAD);
     // A project beyond what we take on needs nothing more answered.
     if (web && !draft.complex) {
-      if (draft.features.includes("forms") && !draft.forms) e.forms = PICK_ONE;
-      if (draft.features.includes("emails") && !draft.emails) e.emails = PICK_ONE;
+      if (draft.features.includes("forms") && !draft.formKind) e.formKind = PICK_ONE;
+      if (draft.features.includes("forms") && draft.formKind === "simple" && !draft.forms) e.forms = PICK_ONE;
       if (!draft.design) e.design = PICK_ONE;
       if (!draft.pages) e.pages = PICK_ONE;
     }
@@ -336,8 +339,10 @@ export function toAnswers(draft: Draft): Answers {
       urgent: draft.urgent as YesNo,
     };
     if (draft.languages.includes("other")) answers.web.languagesOther = draft.languagesOther.trim();
-    if (draft.features.includes("forms") && draft.forms) answers.web.forms = draft.forms;
-    if (draft.features.includes("emails") && draft.emails) answers.web.emails = draft.emails;
+    if (draft.features.includes("forms") && draft.formKind) {
+      answers.web.formKind = draft.formKind;
+      if (draft.formKind === "simple" && draft.forms) answers.web.forms = draft.forms;
+    }
     if (draft.complex) answers.web.complex = true;
     if (!references.length) answers.web.noReferences = true;
   }
@@ -385,8 +390,9 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
         t("presents the business", "apresenta o negócio"),
         ...a.web.features.map((f) => {
           const name = label(FEATURES, f).toLowerCase();
-          const count = f === "forms" ? a.web?.forms : f === "emails" ? a.web?.emails : undefined;
-          return count ? `${name} (${label(COUNTS, count)})` : name;
+          if (f !== "forms" || !a.web?.formKind) return name;
+          const kind = label(FORM_KINDS, a.web.formKind).toLowerCase();
+          return a.web.forms ? `${name} (${kind}, ${label(COUNTS, a.web.forms)})` : `${name} (${kind})`;
         }),
         ...(a.web.complex ? [t("complex systems (beyond what we take on now)", "sistemas complexos (fora do que fazemos agora)")] : []),
       ].join(", ")}`,
@@ -836,13 +842,7 @@ export function StepScreen({
                   name="features"
                   options={list(FEATURES).map((o) => (personal ? { ...o, note: t(PERSONAL_FEATURE_NOTES[o.id]) } : o))}
                   value={draft.features}
-                  // Automatic emails are what the forms and the newsletter
-                  // send: without either, there is nothing to send them.
-                  off={draft.features.includes("forms") || draft.features.includes("newsletter") ? [] : ["emails"]}
-                  onChange={(features) => {
-                    const withEmails = features.includes("forms") || features.includes("newsletter");
-                    setDraft({ features: withEmails ? features : features.filter((f) => f !== "emails") });
-                  }}
+                  onChange={(features) => setDraft({ features })}
                 />
                 {/* The platforms behind these, said plainly (user,
                     2026-10-19): the client's own free account, set up
@@ -850,12 +850,12 @@ export function StepScreen({
                 <p className="pf-footnote">
                   {personal
                     ? t(
-                        "For these, we help you open a free account on an email or booking platform, in your own name, and assist you all the way.",
-                        "Para isto, criamos em conjunto uma conta gratuita numa plataforma de email ou de marcações, em nome próprio, com acompanhamento total.",
+                        "For these, we help you open a free account on an email platform, in your own name, and assist you all the way.",
+                        "Para isto, criamos em conjunto uma conta gratuita numa plataforma de email, em nome próprio, com acompanhamento total.",
                       )
                     : t(
-                        "For these, we help you open a free account on an email or booking platform, in your business's name, and assist you all the way.",
-                        "Para isto, criamos em conjunto uma conta gratuita numa plataforma de email ou de marcações, em nome do negócio, com acompanhamento total.",
+                        "For these, we help you open a free account on an email platform, in your business's name, and assist you all the way.",
+                        "Para isto, criamos em conjunto uma conta gratuita numa plataforma de email, em nome do negócio, com acompanhamento total.",
                       )}
                 </p>
               </div>
@@ -878,29 +878,29 @@ export function StepScreen({
             </div>
           </Question>
           {!draft.complex && draft.features.includes("forms") && (
-            <Question id="forms" label={t("How many forms?", "Quantos formulários?")} error={errors.forms}>
+            <Question
+              id="formKind"
+              label={t("What kind of forms?", "Que tipo de formulários?")}
+              error={errors.formKind}
+              footnote={t(FORM_KIND_NOTE)}
+            >
+              <Segmented
+                name="formKind"
+                options={list(FORM_KINDS)}
+                value={draft.formKind}
+                onChange={(formKind) => setDraft({ formKind })}
+                labelledBy="formKind-q"
+              />
+            </Question>
+          )}
+          {!draft.complex && draft.features.includes("forms") && draft.formKind === "simple" && (
+            <Question id="forms" label={t("How many simple forms?", "Quantos formulários simples?")} error={errors.forms}>
               <Segmented
                 name="forms"
                 options={list(COUNTS)}
                 value={draft.forms}
                 onChange={(forms) => setDraft({ forms })}
                 labelledBy="forms-q"
-              />
-            </Question>
-          )}
-          {!draft.complex && draft.features.includes("emails") && (
-            <Question
-              id="emails"
-              label={t("How many different automatic emails?", "Quantos emails automáticos diferentes?")}
-              hint={t("One for each form or sign-up that sends one", "Um por cada formulário ou inscrição que envie um")}
-              error={errors.emails}
-            >
-              <Segmented
-                name="emails"
-                options={list(COUNTS)}
-                value={draft.emails}
-                onChange={(emails) => setDraft({ emails })}
-                labelledBy="emails-q"
               />
             </Question>
           )}
