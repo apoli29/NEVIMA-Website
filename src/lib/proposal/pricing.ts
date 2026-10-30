@@ -25,21 +25,35 @@ type SearchTable = Record<
 
 export const MARKET = { PT: "pt", ES: "es-it", IT: "es-it", US: "us" } as const;
 
+/** Every size's ceiling over its floor, in percent. */
+const PAGES_SPREAD = 25;
+/** A size's floor by market, as its [floor, ceiling] by market. */
+const upTo = (floors: ByMarket): Record<Market, [number, number]> => ({
+  pt: [floors.pt, floors.pt * (1 + PAGES_SPREAD / 100)],
+  "es-it": [floors["es-it"], floors["es-it"] * (1 + PAGES_SPREAD / 100)],
+  us: [floors.us, floors.us * (1 + PAGES_SPREAD / 100)],
+});
+
 export const PRICING = {
   web: {
-    /** The site by its size. "More than 10" is always on request. */
-    /** Each size is a range, from its fewest pages to its most (user,
-        2026-10-17: Portugal 290; 420–540; 580–740). Spain and Italy, and
-        the USA, keep the ratio the old single prices had to Portugal's. */
+    /** The site by its size. "More than 10" is always on request.
+        Each size is a floor, and its ceiling is that floor plus
+        pagesSpreadPercent, the same for every size (user, 2026-10-30).
+        Portugal 290; 380; 580 (Essential+). Spain and Italy, and the USA,
+        keep the ratio the old single prices had to Portugal's. */
     pages: {
-      landing: { pt: [290, 290], "es-it": [335, 335], us: [510, 510] },
-      /** The floor is 380 in Portugal (user, 2026-10-29, was 420). */
-      "4-6": { pt: [380, 540], "es-it": [440, 620], us: [665, 945] },
-      "7-10": { pt: [580, 740], "es-it": [670, 850], us: [1015, 1295] },
+      landing: upTo({ pt: 290, "es-it": 335, us: 510 }),
+      "4-6": upTo({ pt: 380, "es-it": 440, us: 665 }),
+      "7-10": upTo({ pt: 580, "es-it": 670, us: 1015 }),
       /** "Not sure": from 2 pages (340 in Portugal, user, 2026-10-29) to
-          7, which is where 7–10 starts. */
+          7, which is where 7–10 starts. Its own range, not a spread. */
       unsure: { pt: [340, 580], "es-it": [395, 670], us: [595, 1015] },
     } satisfies Record<Size, Record<Market, [number, number]>>,
+    /** The ceiling of each size over its floor (user, 2026-10-30). */
+    pagesSpreadPercent: PAGES_SPREAD,
+    /** Each design level is a range of its own: its ceiling is this much
+        over its floor (user, 2026-10-30). It stacks with the pages' range. */
+    designSpreadPercent: 15,
     /** How long the site takes, in working days, by size. */
     days: {
       landing: [4, 7],
@@ -54,19 +68,7 @@ export const PRICING = {
       pt: "Inclui imagens otimizadas, a revisão dos textos enviados, alojamento gratuito no primeiro ano (depois renovado de 6 em 6 meses) e uma chamada gratuita quando parte do website já estiver construída.",
     } satisfies Copy,
 
-    /** On top of the pages' own range, the ceiling carries this margin
-        for what the form does not ask (user, 2026-10-17: 10 points more
-        than the first 20%). */
-    rangePercent: 30,
-    /** However the ceiling is built, the range is never wider than this
-        share of its floor (user, 2026-10-17). */
-    maxSpreadPercent: 22.5,
-    /** The same cap when the client is not sure how many pages they need.
-        It has to let the range reach the price of 7 pages (user,
-        2026-10-29: the old 35% stopped it well short of its own upper
-        end). */
-    unsureSpreadPercent: 75,
-    /** What that margin allows for, shown under the website's line. */
+    /** What the upper end allows for, shown under the website's line. */
     marginNote: {
       en: "The upper end allows for what a form can't foresee: how much content there is to organise, connecting tools you already use (booking, maps, social media), special design requests such as custom illustrations or complex animations, and moving content over from an existing site.",
       pt: "O valor mais alto dá margem para o que um formulário não consegue prever: a quantidade de conteúdo a organizar, a ligação a ferramentas já usadas (marcações, mapas, redes sociais), pedidos especiais de design, como ilustrações personalizadas ou animações complexas, e a passagem de conteúdo de um site que já exista.",

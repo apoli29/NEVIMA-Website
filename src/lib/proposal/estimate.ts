@@ -101,14 +101,15 @@ function web(
     };
   }
 
+  // The pages' range (the same share over the floor for every size), and
+  // the design level's own range on top of it: Advanced costs more than
+  // Essential+ at both ends, and each level is a range of its own
+  // (user, 2026-10-30).
   const design = a.design === "advanced" ? 1 + p.advancedPercent / 100 : 1;
   const [fewest, most] = p.pages[a.pages][market];
   const extras = others * p.perLanguage;
-
-  // The pages' range, and on its ceiling the margin for what the form
-  // does not ask.
   let min = fewest * design + extras;
-  let max = (most * design + extras) * (1 + p.rangePercent / 100);
+  let max = most * design * (1 + p.designSpreadPercent / 100) + extras;
 
   // Writing the texts the client does not have, by the site's size.
   if (a.texts === "no") {
@@ -145,9 +146,6 @@ function web(
     );
   }
 
-  // The range is never wider than maxSpreadPercent of its floor (user,
-  // 2026-10-17), whatever the margin and the extras add up to.
-  const spread = a.pages === "unsure" ? p.unsureSpreadPercent : p.maxSpreadPercent;
   if (a.pages === "unsure") {
     notes.push(
       t(
@@ -157,7 +155,7 @@ function web(
     );
   }
   const floor = down10(min);
-  const ceiling = Math.min(up10(max), down10(floor * (1 + spread / 100)));
+  const ceiling = up10(max);
 
   // What the website receives from its visitors (the second level), each
   // item a range of its own, carried whole: added after the cap, raised
