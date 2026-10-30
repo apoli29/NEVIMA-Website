@@ -89,7 +89,14 @@ export function StudioLogin() {
       body: JSON.stringify({ key }),
     });
     if (res.ok) window.location.reload();
-    else setError(res.status === 429 ? "Demasiadas tentativas. Esperar 15 minutos." : "Chave errada.");
+    else
+      setError(
+        res.status === 429
+          ? "Demasiadas tentativas. Esperar 15 minutos."
+          : res.status === 503
+            ? "Este site ainda não tem chave: falta STUDIO_KEY na Vercel (em Production), e publicar de novo depois de a acrescentar."
+            : "Chave errada.",
+      );
   }
   return (
     <main className="flex min-h-[var(--screen)] flex-col bg-ink text-paper">
