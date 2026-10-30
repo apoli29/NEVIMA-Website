@@ -913,6 +913,18 @@
   }
   .pf-line-value { font-feature-settings: "lnum" 1, "tnum" 1; text-align: right; white-space: nowrap; }
   .pf-line-quiet { color: var(--color-ash); }
+  /* The website's price in its two parts, indented under its line: they
+     add up to it. */
+  .pf-part {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    column-gap: 1.5rem;
+    padding: 0.7rem 0.75rem 0.75rem 1.75rem;
+    border-top: 1px solid rgb(0 0 0 / 0.18);
+  }
+  .pf-part .pf-line-name,
+  .pf-part .pf-line-value { font-size: 1rem; }
   /* Review mode (?revisao): figures on unconfirmed prices. */
   .pf-provisional {
     text-decoration: underline;
