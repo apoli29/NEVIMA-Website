@@ -26,7 +26,7 @@ type SearchTable = Record<
 export const MARKET = { PT: "pt", ES: "es-it", IT: "es-it", US: "us" } as const;
 
 /** Every size's ceiling over its floor, in percent. */
-const PAGES_SPREAD = 30;
+const PAGES_SPREAD = 35;
 /** A size's floor by market, as its [floor, ceiling] by market. */
 const upTo = (floors: ByMarket): Record<Market, [number, number]> => ({
   pt: [floors.pt, floors.pt * (1 + PAGES_SPREAD / 100)],
@@ -46,16 +46,23 @@ export const PRICING = {
           (user, 2026-10-30: 290 and 420). This is Essential+; Advanced is
           landingAdvanced. */
       landing: { pt: [290, 290], "es-it": [335, 335], us: [510, 510] },
-      "4-6": upTo({ pt: 380, "es-it": 440, us: 665 }),
+      /** 420 in Portugal with Essential+ (user, 2026-10-30); Advanced
+          starts at 560 (advancedFloors). */
+      "4-6": upTo({ pt: 420, "es-it": 485, us: 735 }),
       "7-10": upTo({ pt: 580, "es-it": 670, us: 1015 }),
       /** "Not sure": from 2 pages (340 in Portugal, user, 2026-10-29) to
           7, which is where 7–10 starts. Its own range, not a spread. */
       unsure: { pt: [340, 580], "es-it": [395, 670], us: [595, 1015] },
     } satisfies Record<Size, Record<Market, [number, number]>>,
-    /** The landing page with the Advanced design (not Essential+ ×1.35:
-        a price of its own). Spain, Italy and the USA keep Portugal's
-        ratio to Essential+. */
-    landingAdvanced: { pt: 420, "es-it": 485, us: 740 } satisfies ByMarket,
+    /** The floor with the Advanced design where it is a price of its own
+        and not Essential+ ×1.35 (user, 2026-10-30): the landing page 420
+        and 4–6 pages 560 in Portugal. Its ceiling keeps the size's share
+        over its floor. Spain, Italy and the USA keep Portugal's ratio to
+        Essential+ (assumed). */
+    advancedFloors: {
+      landing: { pt: 420, "es-it": 485, us: 740 },
+      "4-6": { pt: 560, "es-it": 645, us: 980 },
+    } as Partial<Record<Size, ByMarket>>,
     /** The ceiling of each size over its floor, and the whole website's
         range with it: the design level raises both ends alike and adds
         no range of its own (user, 2026-10-30: 30%). */
