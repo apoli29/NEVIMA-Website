@@ -47,22 +47,14 @@ export const PERSONAL_ABROAD: Copy = {
 
 /** The second level's notes for personal use: visitors rather than a
     business's clients (user, 2026-10-19). */
-export const PERSONAL_FEATURE_NOTES: Record<"forms" | "newsletter" | "emails" | "bookings", Copy> = {
+export const PERSONAL_FEATURE_NOTES: Record<"forms" | "newsletter", Copy> = {
   forms: {
-    en: "Visitors fill in a form. You get their answers by email and reply yourself.",
-    pt: "Os visitantes preenchem um formulário. As respostas chegam por email, para serem respondidas diretamente.",
+    en: "Visitors fill in a form, and you receive their answers.",
+    pt: "Os visitantes preenchem um formulário, e as respostas chegam ao projeto.",
   },
   newsletter: {
-    en: "Visitors sign up with their email. You get each sign-up by email and follow up yourself.",
-    pt: "Os visitantes inscrevem-se com o email. Cada inscrição chega por email, para lhe ser dado seguimento diretamente.",
-  },
-  emails: {
-    en: "Automatic emails, ready to go out in reply to forms or newsletter sign-ups. Designed with a look of their own, in keeping with the website.",
-    pt: "Emails automáticos já preparados para enviar como resposta a formulários ou a newsletters. Produzidos com uma estética personalizada, coesa com o website.",
-  },
-  bookings: {
-    en: "Visitors book a time themselves, straight into your calendar.",
-    pt: "Os visitantes marcam diretamente uma hora no calendário.",
+    en: "Visitors sign up with their email. A welcome email goes out automatically, and each sign-up is saved in a database.",
+    pt: "Os visitantes inscrevem-se com o email. É enviado automaticamente um email de boas-vindas, e cada inscrição fica registada numa base de dados.",
   },
 };
 
@@ -93,7 +85,7 @@ export const PAGES = [
   { id: "4-6", label: "4–6", pt: "4–6" },
   { id: "7-10", label: "7–10", pt: "7–10" },
   { id: "10+", label: "More than 10", pt: "Mais de 10" },
-  /** Estimated for 3 to 8 pages, with a wider range (user, 2026-10-17). */
+  /** Estimated for 2 to 7 pages, with a wider range (user, 2026-10-29). */
   { id: "unsure", label: "Not sure", pt: "Não sei" },
 ] as const;
 export type PagesId = (typeof PAGES)[number]["id"];
@@ -118,44 +110,57 @@ export const FEATURES = [
     id: "forms",
     label: "Forms",
     pt: "Formulários",
-    note: "Your clients fill in a form. You get their answers by email and reply yourself.",
-    notePt: "Os clientes do negócio preenchem um formulário. As respostas chegam por email e a resposta é dada diretamente pelo negócio.",
+    note: "Your clients fill in a form, and you receive their answers.",
+    notePt: "Os clientes do negócio preenchem um formulário, e as respostas chegam ao negócio.",
   },
   {
     id: "newsletter",
     label: "Newsletter sign-up",
     pt: "Inscrição na newsletter",
-    note: "Your clients sign up with their email. You get each sign-up by email and follow up yourself.",
-    notePt: "Os clientes do negócio inscrevem-se com o email. Cada inscrição chega por email, para lhe ser dado seguimento diretamente.",
-  },
-  {
-    id: "emails",
-    label: "Automatic emails",
-    pt: "Emails automáticos",
-    note: "Automatic emails, ready to go out in reply to forms or newsletter sign-ups. Designed with a look of their own, in keeping with the website and the business.",
-    notePt: "Emails automáticos já preparados para enviar como resposta a formulários ou a newsletters. Produzidos com uma estética personalizada, coesa com o website e o negócio.",
-  },
-  {
-    id: "bookings",
-    label: "Bookings",
-    pt: "Marcações",
-    note: "Your clients book a time themselves, straight into your calendar.",
-    notePt: "Os clientes do negócio marcam diretamente uma hora no calendário.",
+    note: "Your clients sign up with their email. A welcome email goes out automatically, and each sign-up is saved in a database.",
+    notePt: "Os clientes do negócio inscrevem-se com o email. É enviado automaticamente um email de boas-vindas, e cada inscrição fica registada numa base de dados.",
   },
 ] as const;
 export type FeatureId = (typeof FEATURES)[number]["id"];
 
-/** How many forms, or how many different automatic emails. More than
-    three is quoted in the proposal. */
+/** How many forms. More than three has no price yet (user, 2026-10-29):
+    the estimate says so. */
 export const COUNTS = [
   { id: "1", label: "1", pt: "1" },
   { id: "2", label: "2", pt: "2" },
   { id: "3", label: "3", pt: "3" },
   { id: "more", label: "More than 3", pt: "Mais de 3" },
-  /** Priced as 1 to 2 (user, 2026-10-27). */
+  /** Priced from 1 form up to 3 (user, 2026-10-29: both ends). */
   { id: "unsure", label: "Not sure", pt: "Não sei" },
 ] as const;
 export type CountId = (typeof COUNTS)[number]["id"];
+
+/** What kind of forms (user, 2026-10-29). A simple one is a form with one
+    automatic email and its answers saved in a database; from there the
+    process is manual. Any other scenario is a complex one, whose price is
+    set later. */
+export const FORM_KINDS = [
+  {
+    id: "simple",
+    label: "Simple",
+    pt: "Simples",
+    note: "One automatic email, and the answers saved in a database. From there, the process is manual.",
+    notePt: "Um email automático e o registo das respostas numa base de dados. Daí em diante, o processo é manual.",
+  },
+  {
+    id: "complex",
+    label: "Complex",
+    pt: "Complexo",
+    note: "Any other scenario, such as several automatic emails or a booking calendar. Price set later.",
+    notePt: "Qualquer outro cenário, como vários emails automáticos ou um calendário de marcações. Preço a definir depois.",
+  },
+] as const;
+export type FormKindId = (typeof FORM_KINDS)[number]["id"];
+
+export const FORM_KIND_NOTE: Copy = {
+  en: "A form where visitors ask for a date or time, which is then confirmed by hand, is also a simple form.",
+  pt: "Um formulário em que se pede uma data ou hora, confirmada depois manualmente, também é um formulário simples.",
+};
 
 /** The third level, as one key. */
 export const COMPLEX = [
@@ -177,7 +182,7 @@ export const OUT_OF_SCOPE: Copy = {
   pt: "Projetos assim estão, por agora, fora do que fazemos. Preferimos dizê-lo com honestidade a entregar menos do que o nosso melhor.",
 };
 
-/** Two design levels for now (user, 2026-10-17), 25% apart. */
+/** Two design levels for now (user, 2026-10-17), 35% apart (2026-10-29). */
 export const DESIGN = [
   {
     id: "essential",
@@ -290,11 +295,10 @@ export type Answers = {
     languagesOther?: string;
     /** The second level's items, in the list's order (none is fine). */
     features: FeatureId[];
-    /** With forms ticked. */
+    /** With forms ticked: simple or complex. */
+    formKind?: FormKindId;
+    /** With simple forms: how many. */
     forms?: CountId;
-    /** With automatic emails ticked (only offered with forms or the
-        newsletter): how many different emails. */
-    emails?: CountId;
     /** The third level: an online shop, logins, payments, internal
         software. Such a project is not priced. */
     complex?: true;

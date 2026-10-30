@@ -151,8 +151,8 @@ function web(
   if (a.pages === "unsure") {
     notes.push(
       t(
-        "Estimated for 3 to 8 pages, so the range is wider than with a set number of pages.",
-        "Estimado para 3 a 8 páginas, por isso o intervalo é mais largo do que com um número de páginas definido.",
+        "Estimated for 2 to 7 pages, so the range is wider than with a set number of pages.",
+        "Estimado para 2 a 7 páginas, por isso o intervalo é mais largo do que com um número de páginas definido.",
       ),
     );
   }
@@ -188,28 +188,23 @@ function features(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["we
     out.listed.push(what);
   };
   const has = (id: (typeof a.features)[number]) => a.features.includes(id);
-  if (has("forms") && a.forms) {
-    if (a.forms === "more") out.notes.push(t("More than 3 forms: quoted in your proposal.", "Mais de 3 formulários: orçamentados na proposta."));
-    // Not sure: from one form's floor to two forms' ceiling.
-    else if (a.forms === "unsure") add([p.features.forms["1"][0], p.features.forms["2"][1]], t("1 to 2 forms", "1 a 2 formulários"));
-    else add(p.features.forms[a.forms], t(a.forms === "1" ? "1 form" : `${a.forms} forms`, a.forms === "1" ? "1 formulário" : `${a.forms} formulários`));
+  const fixedPrice = (n: number): [number, number] => [n, n];
+  // Complex forms, and more than three, have no price yet: the estimate
+  // lists them apart (see estimate()).
+  if (has("forms") && a.formKind === "simple" && a.forms && a.forms !== "more") {
+    // Not sure: from one form to three, both ends.
+    if (a.forms === "unsure") add([p.features.forms["1"], p.features.forms["3"]], t("1 to 3 simple forms", "1 a 3 formulários simples"));
+    else add(fixedPrice(p.features.forms[a.forms]), t(a.forms === "1" ? "1 simple form" : `${a.forms} simple forms`, a.forms === "1" ? "1 formulário simples" : `${a.forms} formulários simples`));
+    out.notes.push(
+      t(
+        "A simple form has one automatic email and its answers saved in a database; from there, the process is manual.",
+        "Um formulário simples tem um email automático e o registo das respostas numa base de dados; daí em diante, o processo é manual.",
+      ),
+    );
   }
-  if (has("newsletter")) add(p.features.newsletter, t("a newsletter sign-up", "uma inscrição na newsletter"));
-  if (has("emails") && a.emails) {
-    if (a.emails === "more") {
-      out.notes.push(t("More than 3 automatic emails: quoted in your proposal.", "Mais de 3 emails automáticos: orçamentados na proposta."));
-    } else if (a.emails === "unsure") {
-      // Not sure: from one email's floor to two emails' ceiling.
-      const [fl, fh] = p.features.emailFirst;
-      add([fl, fh + p.features.emailNext[1]], t("1 to 2 automatic emails", "1 a 2 emails automáticos"));
-    } else {
-      const n = Number(a.emails);
-      const [fl, fh] = p.features.emailFirst;
-      const [nl, nh] = p.features.emailNext;
-      add([fl + nl * (n - 1), fh + nh * (n - 1)], t(n === 1 ? "1 automatic email" : `${n} automatic emails`, n === 1 ? "1 email automático" : `${n} emails automáticos`));
-    }
+  if (has("newsletter")) {
+    add(fixedPrice(p.features.newsletter), t("a newsletter sign-up with a welcome email", "uma inscrição na newsletter com email de boas-vindas"));
   }
-  if (has("bookings")) add(p.features.bookings, t("bookings", "marcações"));
   return out;
 }
 
@@ -337,6 +332,18 @@ export function estimate(answers: Answers, pricing: Pricing = PRICING, lang: Lan
       const pages = webAnswers?.pages ?? searchAnswers.pages;
       const plan = (id === "seo" ? searchAnswers.seoPlan : searchAnswers.geoPlan) ?? "once";
       add(id, (m) => search(id, plan, searchAnswers.reach, pages, m, pricing, t));
+    }
+  }
+
+  // Forms with no price yet (user, 2026-10-29): complex ones, and more than
+  // three simple ones. Listed apart, so the total says "plus the items on
+  // request" and the visitor knows the price comes later.
+  if (webAnswers?.features.includes("forms") && out.lines.some((l) => l.id === "web")) {
+    const later = t("Price to be defined later, in your proposal", "Preço a definir depois, na proposta");
+    if (webAnswers.formKind === "complex") {
+      out.onRequest.push({ id: "forms", label: t("Complex forms", "Formulários complexos"), reason: later });
+    } else if (webAnswers.forms === "more") {
+      out.onRequest.push({ id: "forms", label: t("More than 3 forms", "Mais de 3 formulários"), reason: later });
     }
   }
 

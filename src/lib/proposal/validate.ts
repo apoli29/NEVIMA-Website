@@ -5,6 +5,7 @@ import {
   COUNTS,
   DESIGN,
   FEATURES,
+  FORM_KINDS,
   LANGUAGES,
   MAX,
   PAGES,
@@ -111,19 +112,15 @@ export function readAnswers(raw: unknown): Result<Answers> {
     }
     // "Not sure" stands alone: it does not go with any language.
     if (languages.includes("unsure") && languages.length > 1) return { ok: false, error: "languages" };
-    // The second level: any of its items, none included. A count comes
-    // with forms and with automatic emails, which only go with forms or
-    // the newsletter.
+    // The second level: any of its items, none included. Forms come with
+    // their kind, and simple ones with how many.
     const rawFeatures = w.features === undefined ? [] : w.features;
     const features = Array.isArray(rawFeatures) && rawFeatures.length === 0 ? [] : many(FEATURES, rawFeatures);
     if (!features) return { ok: false, error: "features" };
-    const forms = features.includes("forms") ? one(COUNTS, w.forms) : undefined;
+    const formKind = features.includes("forms") ? one(FORM_KINDS, w.formKind) : undefined;
+    if (formKind === null) return { ok: false, error: "formKind" };
+    const forms = formKind === "simple" ? one(COUNTS, w.forms) : undefined;
     if (forms === null) return { ok: false, error: "forms" };
-    if (features.includes("emails") && !features.includes("forms") && !features.includes("newsletter")) {
-      return { ok: false, error: "emails" };
-    }
-    const emails = features.includes("emails") ? one(COUNTS, w.emails) : undefined;
-    if (emails === null) return { ok: false, error: "emails" };
     // Up to two references, or none when the visitor said they have none.
     const refs = Array.isArray(w.references) ? w.references : [];
     if (refs.length > 2) return { ok: false, error: "references" };
@@ -135,8 +132,8 @@ export function readAnswers(raw: unknown): Result<Answers> {
     }
     if (!references.length && w.noReferences !== true) return { ok: false, error: "references" };
     answers.web = { design, pages, languages, features, texts, references, domain, urgent };
+    if (formKind) answers.web.formKind = formKind;
     if (forms) answers.web.forms = forms;
-    if (emails) answers.web.emails = emails;
     if (w.complex === true) answers.web.complex = true;
     if (!references.length) answers.web.noReferences = true;
     if (languages.includes("other")) {

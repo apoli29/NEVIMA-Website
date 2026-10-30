@@ -33,11 +33,12 @@ export const PRICING = {
         the USA, keep the ratio the old single prices had to Portugal's. */
     pages: {
       landing: { pt: [290, 290], "es-it": [335, 335], us: [510, 510] },
-      "4-6": { pt: [420, 540], "es-it": [485, 620], us: [735, 945] },
+      /** The floor is 380 in Portugal (user, 2026-10-29, was 420). */
+      "4-6": { pt: [380, 540], "es-it": [440, 620], us: [665, 945] },
       "7-10": { pt: [580, 740], "es-it": [670, 850], us: [1015, 1295] },
-      /** "Not sure": from 3 pages (one page below 4–6's floor, at 4–6's
-          price per page) to 8 (7–10's price per page). */
-      unsure: { pt: [360, 635], "es-it": [415, 730], us: [630, 1110] },
+      /** "Not sure": from 2 pages (340 in Portugal, user, 2026-10-29) to
+          7, which is where 7–10 starts. */
+      unsure: { pt: [340, 580], "es-it": [395, 670], us: [595, 1015] },
     } satisfies Record<Size, Record<Market, [number, number]>>,
     /** How long the site takes, in working days, by size. */
     days: {
@@ -60,17 +61,19 @@ export const PRICING = {
     /** However the ceiling is built, the range is never wider than this
         share of its floor (user, 2026-10-17). */
     maxSpreadPercent: 22.5,
-    /** The same cap when the client is not sure how many pages they need
-        (user, 2026-10-17). */
-    unsureSpreadPercent: 35,
+    /** The same cap when the client is not sure how many pages they need.
+        It has to let the range reach the price of 7 pages (user,
+        2026-10-29: the old 35% stopped it well short of its own upper
+        end). */
+    unsureSpreadPercent: 75,
     /** What that margin allows for, shown under the website's line. */
     marginNote: {
       en: "The upper end allows for what a form can't foresee: how much content there is to organise, connecting tools you already use (booking, maps, social media), special design requests such as custom illustrations or complex animations, and moving content over from an existing site.",
       pt: "O valor mais alto dá margem para o que um formulário não consegue prever: a quantidade de conteúdo a organizar, a ligação a ferramentas já usadas (marcações, mapas, redes sociais), pedidos especiais de design, como ilustrações personalizadas ou animações complexas, e a passagem de conteúdo de um site que já exista.",
     } satisfies Copy,
     /** The Advanced design level costs this much more than Essential+
-        (user, 2026-10-17). The page prices above are Essential+. */
-    advancedPercent: 25,
+        (user, 2026-10-29, was 25). The page prices above are Essential+. */
+    advancedPercent: 35,
 
     /** The visual identity redesign (logo and symbol). */
     identity: { pt: 110, "es-it": 125, us: 195 } satisfies ByMarket,
@@ -86,17 +89,17 @@ export const PRICING = {
       [number, number]
     >,
     textsMarket: { pt: 1, "es-it": 1.15, us: 1.75 } satisfies Record<Market, number>,
-    /** The second level of what a website does (user, 2026-10-18), as
-        ranges for Portugal; other markets scaled by featuresMarket. */
+    /** The second level of what a website does (user, 2026-10-29), as
+        fixed prices for Portugal; other markets scaled by featuresMarket.
+        A simple form is one with a single automatic email and its answers
+        saved in a database; from there the process is manual. Anything
+        beyond that, and more than three forms, has no price yet: it is
+        said so in the estimate. */
     features: {
-      /** By how many forms; more than three is on request. */
-      forms: { "1": [25, 40], "2": [45, 70], "3": [65, 95] } as Record<"1" | "2" | "3", [number, number]>,
-      newsletter: [30, 50] as [number, number],
-      /** The first automatic email, which sets up sending from the
-          client's domain, and each different one after it. */
-      emailFirst: [35, 50] as [number, number],
-      emailNext: [15, 25] as [number, number],
-      bookings: [25, 40] as [number, number],
+      /** By how many simple forms. */
+      forms: { "1": 70, "2": 125, "3": 160 } as Record<"1" | "2" | "3", number>,
+      /** The sign-up, its welcome email and its record in the database. */
+      newsletter: 35,
     },
     featuresMarket: { pt: 1, "es-it": 1.15, us: 1.75 } satisfies Record<Market, number>,
     /** What a new domain costs a year, shown to a client without one as
