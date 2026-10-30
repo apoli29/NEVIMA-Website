@@ -68,7 +68,7 @@ const APPS: Record<AppId, App> = {
   },
 };
 
-/** The three circuits the apps make between them. */
+/** The circuits the apps make between them. */
 const FLOWS: { title: string; when: string; chain: { app: AppId; does: string }[] }[] = [
   {
     title: "Um pedido chega",
@@ -97,6 +97,16 @@ const FLOWS: { title: string; when: string; chain: { app: AppId; does: string }[
       { app: "mail", does: "O botão do horário abre o site." },
       { app: "site", does: "Mostra o horário e pede um clique para o confirmar." },
       { app: "notion", does: "Guarda a data em \"Reunião\" e muda o estado para Reunião marcada." },
+      { app: "resend", does: "Avisa o estúdio, que recebe o aviso no Gmail." },
+    ],
+  },
+  {
+    title: "O cliente responde sobre a reunião a meio do projeto",
+    when: "Clica em sim ou não no email da proposta final.",
+    chain: [
+      { app: "mail", does: "O botão abre o site." },
+      { app: "site", does: "Mostra a resposta e pede um clique para a confirmar." },
+      { app: "notion", does: "Guarda \"Sim\" ou \"Não\" em \"Reunião a meio\"." },
       { app: "resend", does: "Avisa o estúdio, que recebe o aviso no Gmail." },
     ],
   },
@@ -167,15 +177,23 @@ const STEPS: Step[] = [
     title: "Proposta final e contrato",
     who: "Estúdio",
     apps: ["site", "notion", "resend", "gmail"],
-    body: "Separador \"Proposta final\": procurar o cliente pelo email, escrever o texto da proposta (uma linha em branco começa um parágrafo novo), o valor final e, se houver, o valor mensal. Anexar o contrato em PDF, ver o email e carregar em Enviar.",
-    behind: "O contrato vai em anexo e o nome do ficheiro aparece no email, para o cliente o procurar. A nota de IVA por baixo do valor pode ser alterada.",
+    body: "Separador \"Proposta final\": procurar o cliente pelo email (sem pedido ligado, o email não sai, porque os botões precisam dele). Preencher o valor final e, se houver, o valor mensal; escrever os materiais em falta, que aparecem numa caixa; se for preciso, acrescentar um texto da proposta. Anexar o contrato em PDF, escolher quem assina, ver o email e carregar em Enviar.",
+    behind: "O contrato vai em anexo e o nome do ficheiro aparece no email, para o cliente o procurar. A nota de IVA por baixo do valor pode ser alterada. O email traz dois botões, sim e não, para o cliente dizer se quer a reunião a meio do projeto, que é opcional.",
     notion: "Estado Proposta enviada, \"Valor final\" preenchido e \"Contrato enviado\" assinalado.",
+  },
+  {
+    title: "O cliente responde sobre a reunião a meio do projeto",
+    who: "Cliente",
+    apps: ["mail", "site", "notion", "gmail"],
+    body: "O cliente clica em sim ou não no email. Abre-se uma página do site com a resposta e um botão para a confirmar. Se a resposta for sim, o estúdio envia depois, à mão, um email para marcar a data.",
+    behind: "Tal como nos horários, o clique no email só abre a página; a resposta só conta com o segundo clique. Se o cliente mudar de ideias, vale a última resposta e o estúdio é avisado de novo.",
+    notion: "\"Reunião a meio\" fica com Sim ou Não. O estúdio recebe no Gmail um aviso com a resposta.",
   },
   {
     title: "Fecho",
     who: "Estúdio",
     apps: ["gmail", "notion"],
-    body: "O cliente responde ao email com o contrato assinado; a resposta chega ao Gmail. À mão no Notion: estado Ganho, ou Perdido se não avançar.",
+    body: "O cliente responde ao email com o contrato assinado; a resposta chega ao Gmail. O projeto começa quando estiverem disponíveis todos os materiais. À mão no Notion: estado Ganho, ou Perdido se não avançar.",
   },
 ];
 
@@ -186,7 +204,7 @@ const WAYS = [
   },
   {
     title: "Copiar para o Gmail",
-    body: "Copia o email pronto, com os links dos horários já a funcionar. No Gmail: nova mensagem, colar no corpo, escrever o assunto (aparece por cima da pré-visualização) e, na proposta, anexar o contrato. O Notion fica por atualizar à mão.",
+    body: "Copia o email pronto, com os links dos botões já a funcionar. No Gmail: nova mensagem, colar no corpo, escrever o assunto (aparece por cima da pré-visualização) e, na proposta, anexar o contrato. O Notion fica por atualizar à mão.",
   },
 ];
 
@@ -195,7 +213,7 @@ const LIMITS = [
   "O plano gratuito do Resend envia 100 emails por dia e 3000 por mês, contando as confirmações e os avisos automáticos.",
   "O contrato vai num só PDF, até 4 MB.",
   "Uma só chave para os dois; mudá-la na Vercel fecha todas as sessões abertas. A sessão dura 30 dias em cada navegador.",
-  "Os links dos horários deixam de funcionar se a chave dos links (LINKS_SECRET) mudar na Vercel.",
+  "Os links dos botões (horários e reunião a meio do projeto) deixam de funcionar se a chave dos links (LINKS_SECRET) mudar na Vercel.",
   "A página não impede dois clientes de escolher o mesmo horário: oferecer horários diferentes a cada um.",
   "Nada do que se escreve aqui é guardado: só o que é enviado, e o que fica no Notion.",
 ];

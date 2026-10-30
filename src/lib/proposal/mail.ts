@@ -38,6 +38,9 @@ export const PHONES = [
   { label: "+351 917 861 347", tel: "+351917861347" },
 ];
 
+/** Who can sign the emails the studio writes. */
+export const SIGNERS = ["António Policarpo", "Emanuel Costa"];
+
 const INK = "#000000";
 const PAPER = "#ffffff";
 /** Ash, lifted for black: what is secondary. */
@@ -99,7 +102,7 @@ export function slotButton(href: string, day: string, time: string) {
 
 /** A block of slot buttons with its caption under them. */
 export const slotBlock = (buttons: string, caption: string) =>
-  row(`${buttons}<p style="margin:4px 0 26px;">${label(caption)}</p>`);
+  row(`${buttons}<p style="margin:4px 0 26px;">${caption ? label(caption) : ""}</p>`);
 
 /** The phones, each a box to tap that calls it. */
 export function phoneChips() {
@@ -140,10 +143,19 @@ export function attachment(caption: string, name: string) {
   );
 }
 
-/** The closing and the wordmark. */
-export function signoff(words: string, siteUrl: string) {
+/** What the studio wrote for this client, in a hairline box. */
+export function boxed(text: string) {
   return row(
-    `<p style="margin:8px 0 14px;font-family:${READ};font-size:16px;line-height:1.6;color:${PAPER};">${escapeHtml(words)}</p>
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:-4px 0 26px;"><tr>
+      <td style="padding:14px 16px;border:1px solid ${HAIR_STRONG};font-family:${READ};font-size:15px;line-height:1.6;color:${PAPER};">${escapeHtml(text.trim()).replace(/\n/g, "<br>")}</td>
+    </tr></table>`,
+  );
+}
+
+/** The closing, who signs it when a person does, and the wordmark. */
+export function signoff(words: string, siteUrl: string, signer = "") {
+  return row(
+    `<p style="margin:8px 0 14px;font-family:${READ};font-size:16px;line-height:1.6;color:${PAPER};">${escapeHtml(words)}${signer ? `<br>${escapeHtml(signer)}` : ""}</p>
     <img src="${siteUrl}/email/wordmark.png" width="96" alt="nevima" style="display:block;border:0;width:96px;height:auto;">`,
     `0 ${PAD} 8px`,
   );

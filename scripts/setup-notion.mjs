@@ -97,6 +97,8 @@ const databases = [
       "Valor X (sugestões)": euro,
       "Valor final": euro,
       "Contrato enviado": { checkbox: {} },
+      // The client's answer to the final proposal's two buttons.
+      "Reunião a meio": one("Sim", "Não"),
       Mensagem: { rich_text: {} },
       Idioma: one("pt", "en"),
       Origem: one("page", "overlay", "other"),

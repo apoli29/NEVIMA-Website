@@ -138,7 +138,7 @@ const QUESTIONS: readonly Question[] = [
     list: [
       { text: "Your first four small changes, of up to 15 minutes each, are free." },
     ],
-    after: "Even so, our process is already designed to avoid them: once part of your website is built, we book a free call to show you the direction it\u2019s taking, and we adjust whatever your feedback calls for. The result? A website made to your taste, which will hardly need any changes.",
+    after: "Even so, our process is already designed to avoid them: once part of your website is built, and if you would like it, we book a free call to show you the direction it\u2019s taking, and we adjust whatever your feedback calls for. The result? A website made to your taste, which will hardly need any changes.",
     link: { label: "See it in How we work", href: "/#process-strategy" },
   },
   {
@@ -253,7 +253,7 @@ const PT_QUESTIONS: Record<string, Words> = {
     list: [
       { text: "As primeiras quatro alterações pequenas, de até 15 minutos cada, não são cobradas." },
     ],
-    after: "No entanto, o nosso processo já foi pensado para as evitar: quando parte do website estiver construída, marcamos uma chamada gratuita para mostrar a direção que está a tomar, e ajustamos o que for necessário com base no feedback. O resultado? Um website feito à medida do gosto do cliente, que dificilmente vai precisar de alterações.",
+    after: "No entanto, o nosso processo já foi pensado para as evitar: quando parte do website estiver construída, e se o cliente o pretender, marcamos uma chamada gratuita para mostrar a direção que está a tomar, e ajustamos o que for necessário com base no feedback. O resultado? Um website feito à medida do gosto do cliente, que dificilmente vai precisar de alterações.",
     link: "Ver como funciona em Como trabalhamos",
   },
   ai: {

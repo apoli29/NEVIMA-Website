@@ -77,8 +77,8 @@ export const PRICING = {
     /** What every website comes with, shown under its line. Kept in
         step with the contract (clauses 11 and 12). */
     includes: {
-      en: "Includes optimised images, a review of the texts you send, free hosting for the first year (then renewed every 6 months) and a free call once part of the website is built.",
-      pt: "Inclui imagens otimizadas, a revisão dos textos enviados, alojamento gratuito no primeiro ano (depois renovado de 6 em 6 meses) e uma chamada gratuita quando parte do website já estiver construída.",
+      en: "Includes optimised images, a review of the texts you send, free hosting for the first year (then renewed every 6 months) and, if you would like it, a free call once part of the website is built.",
+      pt: "Inclui imagens otimizadas, a revisão dos textos enviados, alojamento gratuito no primeiro ano (depois renovado de 6 em 6 meses) e, se for pedida, uma chamada gratuita quando parte do website já estiver construída.",
     } satisfies Copy,
 
     /** What the upper end allows for, shown under the website's line. */
