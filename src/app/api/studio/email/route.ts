@@ -2,8 +2,8 @@ import { confirmationHtml, confirmationSubject, confirmationText } from "@/lib/p
 import { sendEmail, siteUrl, studioInbox } from "@/lib/proposal/deliver";
 import { json } from "@/lib/proposal/guard";
 import { inviteHtml, inviteSubject, inviteText } from "@/lib/proposal/invite";
-import { meetingLink, signMeeting } from "@/lib/proposal/meeting";
-import { STUDIO_EMAIL } from "@/lib/proposal/mail";
+import { meetingLink, midCallLink, signMeeting, signMidCall } from "@/lib/proposal/meeting";
+import { SIGNERS, STUDIO_EMAIL } from "@/lib/proposal/mail";
 import { getRequest, prop, updatePage } from "@/lib/proposal/notion";
 import { offerHtml, offerSubject, offerText } from "@/lib/proposal/offer";
 import { isSlot } from "@/lib/proposal/slots";
@@ -41,6 +41,8 @@ type Fields = {
   total: string;
   monthly: string;
   note: string;
+  materials: string;
+  signer: string;
 };
 
 const str = (value: unknown, max = 5000) => (typeof value === "string" ? value.slice(0, max) : "");
@@ -61,6 +63,8 @@ function readFields(raw: unknown): Fields | null {
       total: str(f.total, 40),
       monthly: str(f.monthly, 40),
       note: str(f.note, 300),
+      materials: str(f.materials, 2000),
+      signer: SIGNERS.includes(str(f.signer, 80)) ? str(f.signer, 80) : SIGNERS[0],
     };
   } catch {
     return null;
@@ -109,12 +113,16 @@ export async function POST(request: Request) {
       company: f.company,
       slots: f.slots,
       links: [meetingLink(site, token, f.lang, 0), meetingLink(site, token, f.lang, 1)] as [string, string],
+      signer: f.signer,
       siteUrl: site,
     };
     subject = inviteSubject(f.lang);
     html = inviteHtml(invite);
     text = inviteText(invite);
   } else if (kind === "offer") {
+    if (!f.page) return json({ error: "invalid", field: "page" }, 422);
+    const token = signMidCall(f.page, f.lang);
+    if (!token) return json({ error: "not_configured", field: "LINKS_SECRET" }, 503);
     const file = form.get("file");
     let filename = "";
     if (file instanceof File && file.size > 0) {
@@ -127,7 +135,8 @@ export async function POST(request: Request) {
         attachments = [{ filename, content: Buffer.from(await file.arrayBuffer()).toString("base64") }];
       }
     }
-    const offer = { ...f, file: filename, siteUrl: site };
+    const links: [string, string] = [midCallLink(site, token, f.lang, "yes"), midCallLink(site, token, f.lang, "no")];
+    const offer = { ...f, file: filename, links, siteUrl: site };
     subject = offerSubject(f.lang);
     html = offerHtml(offer);
     text = offerText(offer);

@@ -61,7 +61,9 @@ Three emails, one look (`src/lib/proposal/mail.ts`), black as the site's footer 
 
 1. **Confirmation** (`email.ts`): automatic, always the same, sent the moment a request is in Notion. The studio's words, with two sentences that repeated each other merged into one. It no longer lists the answers: the studio's text is the whole email.
 2. **Invitation to the call** (`invite.ts`): "we have a proposal", a call of 20 to 30 minutes, and two times as buttons, in Lisbon time. A click opens the meeting page (`/meeting`, `/pt/meeting`, `src/components/meeting.tsx`), which shows the time and asks for one more click to book it, so a mail scanner opening the link books nothing. Booking sets "Reunião" (Lisbon time) and "Reunião marcada" in Notion and sends the studio a notice; choosing again moves it, and the studio is told. Once booked, the page offers a calendar file. Without a company (personal use) the call is only "to get to know each other".
-3. **Final proposal and contract** (`offer.ts`): after the call. The proposal's paragraph is written each time in the composer; the final value (and a monthly one) is set large with the VAT note ("Isento de IVA (art. 53.º do Código do IVA)", as the contract says it), and the contract goes as a PDF attachment, named in the email. **Its frame is a draft for the partners to approve.**
+3. **Final proposal and contract** (`offer.ts`): after the call, in the studio's words (user, 2026-10-30). An optional paragraph is written in the composer; the final value (and a monthly one) is set large with the VAT note ("Isento de IVA (art. 53.º do Código do IVA)", as the contract says it), the contract goes as a PDF attachment, named in the email, and the materials still to come go in a box the studio writes. Two buttons ask whether the client wants the call midway through the project, which is optional: they lead to `/mid-call` (`src/components/mid-call.tsx`), where one more click records "Sim" or "Não" in the Notion property "Reunião a meio" and tells the studio, who emails to set a date. The last answer holds. So this email now needs a linked Notion request and `LINKS_SECRET`.
+
+The invitation and the proposal are signed by one of the partners, chosen in the composer; the automatic confirmation by the studio. In the invitation the studio's "conhecermos o X melhor" was recast as "nos conhecermos melhor": the form does not ask for a gender, so the "o" or "a" before a name cannot be chosen safely.
 
 The meeting page is a single screen like the portfolio: it is reached only from the email, so it has no bar, no `WorkTogether` and no footer, only a black foot with the wordmark. It keeps the site's rule and never addresses the reader.
 
@@ -86,7 +88,6 @@ Vercel, Production, to add: `STUDIO_KEY` (long), `LINKS_SECRET` (long and random
 
 Still open:
 
-- The final proposal's frame (subject, opening, how the contract is signed and returned), to be approved by the partners.
 - Whether the client should also get an email once the call is booked; for now the page confirms it and the studio sends the call's link by hand.
 - At the end of the form, "Contact us now?" with the two phones (asked 2026-10-29, not built).
 - Outreach emails to potential clients, for leads (asked 2026-10-29, not built).

@@ -155,9 +155,9 @@ const PT_STEPS: Record<string, Pick<Step, "name" | "principle" | "text"> & { cta
     text: "Com a identidade pronta, marcamos uma reunião, incluída no preço, para registar a marca em conjunto com o cliente.",
   },
   strategy: {
-    name: "Uma chamada de acompanhamento",
+    name: "Uma chamada de acompanhamento (opcional)",
     principle: "Primeiro a estrutura, depois a conversa.",
-    text: "Quando parte do website estiver construída, marcamos uma chamada para mostrar a direção que está a tomar. Ajustamos o que for necessário com base no feedback, para que o resultado vá ao encontro do gosto do cliente e o website final dificilmente precise de alterações.",
+    text: "Esta chamada não é obrigatória: só acontece se o cliente disser que a pretende. Nesse caso, quando parte do website estiver construída, marcamos uma chamada para mostrar a direção que está a tomar. Ajustamos o que for necessário com base no feedback, para que o resultado vá ao encontro do gosto do cliente e o website final dificilmente precise de alterações.",
   },
   finish: {
     name: "Conclusão do website e SEO básico",
@@ -254,7 +254,7 @@ const PHASES: Phase[] = [
     id: "production",
     name: "Production",
     intro:
-      "We start with all your materials in hand, and once part of the site is built we have a call, to correct course early rather than at the end.",
+      "We start with all your materials in hand, and once part of the site is built we have a call if you would like one, to correct course early rather than at the end.",
     takes:
       "Varies by project, from 4 working days for a one-page site, counted from the day all your materials are in.",
     steps: [
@@ -286,9 +286,9 @@ const PHASES: Phase[] = [
       },
       {
         id: "strategy",
-        name: "A call for your feedback",
+        name: "A call for your feedback (optional)",
         principle: "Structure first, then we talk.",
-        text: "Once part of your website is built, we book a call to show you where it is heading. Whatever your feedback calls for, we adjust, so the result fits your taste and the finished website is far less likely to need changes.",
+        text: "This call is not mandatory: it only happens if you tell us you would like it. If so, once part of your website is built, we book a call to show you where it is heading. Whatever your feedback calls for, we adjust, so the result fits your taste and the finished website is far less likely to need changes.",
         who: "You and us",
         wide: true,
       },

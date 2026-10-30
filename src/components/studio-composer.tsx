@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Lang } from "@/lib/i18n";
 import { confirmationHtml, confirmationSubject } from "@/lib/proposal/email";
 import { inviteHtml, inviteSubject } from "@/lib/proposal/invite";
+import { SIGNERS } from "@/lib/proposal/mail";
 import { offerDefaults, offerHtml, offerSubject } from "@/lib/proposal/offer";
 import { isSlot, slotSentence } from "@/lib/proposal/slots";
 import { StudioGuide } from "./studio-guide";
@@ -51,7 +52,7 @@ const ERRORS: Record<string, string> = {
   email: "O email do cliente não é válido.",
   file: "O contrato tem de ser um PDF.",
   too_large: "O PDF tem mais de 4 MB.",
-  LINKS_SECRET: "Falta LINKS_SECRET na Vercel: sem ele os links dos horários não podem ser assinados.",
+  LINKS_SECRET: "Falta LINKS_SECRET na Vercel: sem ele os links dos botões não podem ser assinados.",
   RESEND_API_KEY: "Falta RESEND_API_KEY na Vercel.",
   not_sent: "O Resend recusou o envio. Ver os registos na Vercel.",
   forbidden: "A sessão terminou. Recarregar a página e entrar de novo.",
@@ -141,7 +142,9 @@ export function StudioComposer() {
   const [total, setTotal] = useState("");
   const [monthly, setMonthly] = useState("");
   const [note, setNote] = useState<string>(offerDefaults("pt").note);
-  const [text, setText] = useState<string>(offerDefaults("pt").text);
+  const [text, setText] = useState("");
+  const [materials, setMaterials] = useState("");
+  const [signer, setSigner] = useState(SIGNERS[0]);
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<{ tone: "ok" | "error"; words: string } | null>(null);
   const [busy, setBusy] = useState(false);
@@ -163,7 +166,6 @@ export function StudioComposer() {
 
   // The defaults follow the language until the studio writes its own.
   function switchLang(next: Lang) {
-    if (text === offerDefaults(lang).text) setText(offerDefaults(next).text);
     if (note === offerDefaults(lang).note) setNote(offerDefaults(next).note);
     setLang(next);
   }
@@ -208,24 +210,24 @@ export function StudioComposer() {
     if (kind === "invite") {
       return {
         subject: inviteSubject(lang),
-        html: inviteHtml({ lang, name: who, company, slots: previewSlots, links: ["#", "#"], siteUrl: site }),
+        html: inviteHtml({ lang, name: who, company, slots: previewSlots, links: ["#", "#"], signer, siteUrl: site }),
       };
     }
     if (kind === "offer") {
       return {
         subject: offerSubject(lang),
-        html: offerHtml({ lang, name: who, text, total, monthly, note, file: file?.name ?? "", siteUrl: site }),
+        html: offerHtml({ lang, name: who, text, total, monthly, note, file: file?.name ?? "", materials, links: ["#", "#"], signer, siteUrl: site }),
       };
     }
     return { subject: confirmationSubject(lang), html: confirmationHtml({ name: who }, lang, site) };
     // previewSlots is derived from slots, which is listed.
-  }, [kind, lang, name, company, slots, total, monthly, note, text, file, origin]);
+  }, [kind, lang, name, company, slots, total, monthly, note, text, file, materials, signer, origin]);
 
   function body(mode: "render" | "send") {
     const form = new FormData();
     form.set("kind", kind);
     form.set("mode", mode);
-    form.set("fields", JSON.stringify({ email, page, name, company, lang, slots, text, total, monthly, note }));
+    form.set("fields", JSON.stringify({ email, page, name, company, lang, slots, text, total, monthly, note, materials, signer }));
     if (file && kind === "offer") form.set("file", file);
     return form;
   }
@@ -412,9 +414,14 @@ export function StudioComposer() {
                 <input id="c-note" value={note} onChange={(e) => setNote(e.target.value)} className={field} />
               </div>
               <div>
-                <Label htmlFor="c-text">Texto da proposta</Label>
-                <textarea id="c-text" rows={9} value={text} onChange={(e) => setText(e.target.value)} className={`${field} leading-relaxed`} />
-                <p className="mt-1 text-[0.8125rem] text-ash">Uma linha em branco começa um parágrafo novo.</p>
+                <Label htmlFor="c-text">Texto da proposta (opcional)</Label>
+                <textarea id="c-text" rows={5} value={text} onChange={(e) => setText(e.target.value)} className={`${field} leading-relaxed`} />
+                <p className="mt-1 text-[0.8125rem] text-ash">Entra a seguir à abertura. Uma linha em branco começa um parágrafo novo.</p>
+              </div>
+              <div>
+                <Label htmlFor="c-materials">Materiais em falta</Label>
+                <textarea id="c-materials" rows={4} value={materials} onChange={(e) => setMaterials(e.target.value)} className={`${field} leading-relaxed`} />
+                <p className="mt-1 text-[0.8125rem] text-ash">Os materiais mencionados na reunião; aparecem numa caixa no email. Vazio, a caixa não aparece.</p>
               </div>
               <div>
                 <Label htmlFor="c-file">Contrato (PDF, até 4 MB)</Label>
@@ -428,6 +435,25 @@ export function StudioComposer() {
                 />
               </div>
             </>
+          )}
+
+          {kind !== "confirmation" && (
+            <div>
+              <Label>Assinado por</Label>
+              <div className="mt-2 flex flex-wrap">
+                {SIGNERS.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setSigner(s)}
+                    aria-pressed={signer === s}
+                    className={`mono-label border px-4 py-2 first:border-r-0 ${signer === s ? "border-ink bg-ink text-paper" : "border-hair-strong"}`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
 
           {kind !== "confirmation" && (

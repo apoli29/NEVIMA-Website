@@ -13,9 +13,9 @@ import { lisbonTime, slotDay, slotSentence, slotTime } from "./slots";
    (src/app/api/meeting). So the client needs nothing but a click.
 
    Written in the studio's composer (/interno), which fills the name,
-   the company, the language and the two times, and signs the links.
-   Without a company (a site for personal use) the call is only to get
-   to know each other.
+   the company, the language and the two times, signs the links, and
+   says which partner signs the email. With a company the call is also
+   to get to know it; without one (a site for personal use), the project.
    ================================================================== */
 
 export type Invite = {
@@ -26,6 +26,8 @@ export type Invite = {
   slots: [string, string];
   /** Where each button goes; "#" in a preview. */
   links: [string, string];
+  /** The partner who signs it. */
+  signer: string;
   siteUrl: string;
 };
 
@@ -39,9 +41,9 @@ const WORDS = {
     hi: (name: string) => `Hi ${name},`,
     ready: "We have looked carefully at your request and already have a proposal for you!",
     call: (company: string) =>
-      `We would like to present it on a short 20 to 30 minute call, which would also be a chance to get to know you${
-        company ? ` and ${company}` : ""
-      } better. We see this call as essential to delivering a result that fits your preferences and needs as closely as possible.`,
+      `We would like to present it on a short 20 to 30 minute call, which would also be a chance to get to know each other better, as well as ${
+        company ? "your company" : "your project"
+      }.`,
     pick: "So we are suggesting two times for the call. Pick whichever suits you best (just click the time you want):",
     caption: (zone: string) => `${zone} · 20–30 min`,
     other: "If you would rather book it for another time, do not hesitate to get in touch, so we can arrange it:",
@@ -55,9 +57,9 @@ const WORDS = {
     hi: (name: string) => `Olá, ${name}`,
     ready: "Analisámos cuidadosamente o seu pedido e já temos uma proposta para si!",
     call: (company: string) =>
-      `Gostaríamos de a apresentar numa breve chamada de 20 a 30 minutos, onde aproveitaríamos também para nos conhecermos melhor${
-        company ? ` e para ficarmos a conhecer melhor a empresa ${company}` : ""
-      }. Consideramos esta chamada fundamental para entregar um resultado o mais ajustado possível às suas preferências e necessidades.`,
+      `Gostaríamos de a apresentar numa breve chamada de 20 a 30 minutos, onde aproveitaríamos também para nos conhecermos melhor, bem como para conhecermos melhor ${
+        company ? "a sua empresa" : "o seu projeto"
+      }.`,
     pick: "Desta forma, propomos dois horários para podermos fazer esta chamada. Esteja à vontade para escolher (basta clicar no horário desejado):",
     caption: (zone: string) => `${zone} · 20–30 min`,
     other: "Caso tenha preferência em agendar para outra altura, não hesite em contactar-nos, para podermos fazer a marcação:",
@@ -68,7 +70,7 @@ const WORDS = {
 
 export const inviteSubject = (lang: Lang) => WORDS[lang].subject;
 
-export function inviteHtml({ lang, name, company, slots, links, siteUrl }: Invite) {
+export function inviteHtml({ lang, name, company, slots, links, signer, siteUrl }: Invite) {
   const w = WORDS[lang];
   const buttons = slots.map((slot, i) => slotButton(links[i], slotDay(slot, lang), slotTime(slot, lang))).join("");
   return shell({
@@ -84,12 +86,12 @@ export function inviteHtml({ lang, name, company, slots, links, siteUrl }: Invit
       slotBlock(buttons, w.caption(lisbonTime(lang))),
       prose(w.other),
       phoneChips(),
-      signoff(w.regards, siteUrl),
+      signoff(w.regards, siteUrl, signer),
     ].join(""),
   });
 }
 
-export function inviteText({ lang, name, company, slots, links }: Invite) {
+export function inviteText({ lang, name, company, slots, links, signer }: Invite) {
   const w = WORDS[lang];
   return plain([
     w.hi(firstName(name)),
@@ -105,6 +107,7 @@ export function inviteText({ lang, name, company, slots, links }: Invite) {
     `${w.other} ${phones}`,
     "",
     w.regards,
+    signer,
     "nevima",
     STUDIO_EMAIL,
   ]);

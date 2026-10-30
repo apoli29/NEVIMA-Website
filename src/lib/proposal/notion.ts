@@ -177,6 +177,8 @@ export type RequestPage = {
   state: string;
   received: string;
   meeting: string;
+  /** "Sim" or "Não": whether the client wants the call midway through. */
+  midCall: string;
 };
 
 type RawPage = { id?: string; url?: string; properties?: Record<string, Record<string, unknown>> };
@@ -198,6 +200,7 @@ function readPage(page: RawPage): RequestPage | null {
     state: select("Estado"),
     received: date("Recebido"),
     meeting: date("Reunião"),
+    midCall: select("Reunião a meio"),
   };
 }
 
