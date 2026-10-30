@@ -204,7 +204,13 @@ export const studioInbox = () =>
     .map((address) => address.trim())
     .filter(Boolean);
 
-export const siteUrl = () => (process.env.SITE_URL ?? "https://nevima.studio").replace(/\/$/, "");
+/** Where the emails' images and links point. Running locally without
+    SITE_URL, the local server itself, on whatever port it took. */
+export const siteUrl = () =>
+  (
+    process.env.SITE_URL ??
+    (process.env.NODE_ENV === "development" ? `http://localhost:${process.env.PORT ?? 3000}` : "https://nevima.studio")
+  ).replace(/\/$/, "");
 
 /** The notice to the studio: who wrote, and the page in Notion. Replying
     to it answers the visitor. */
