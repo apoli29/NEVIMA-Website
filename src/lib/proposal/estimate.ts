@@ -110,10 +110,12 @@ function web(
   const design = advanced ? 1 + p.advancedPercent / 100 : 1;
   const [fewest, most] = p.pages[a.pages][market];
   const extras = others * p.perLanguage;
-  // The landing page is a fixed price for each design level, with no range.
-  const landing = a.pages === "landing" ? (advanced ? p.landingAdvanced[market] : fewest) : null;
-  let min = (landing ?? fewest * design) + extras;
-  let max = (landing ?? most * design) + extras;
+  // Advanced is Essential+ ×1.35 unless the size has a price of its own for
+  // it; the ceiling keeps the size's share over its floor (none for the
+  // landing page, a fixed price for each design level).
+  const start = advanced ? (p.advancedFloors[a.pages]?.[market] ?? fewest * design) : fewest;
+  let min = start + extras;
+  let max = start * (most / fewest) + extras;
 
   // Writing the texts the client does not have, by the site's size.
   if (a.texts === "no") {
