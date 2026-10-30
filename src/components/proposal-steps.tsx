@@ -1170,7 +1170,7 @@ export function StepScreen({
         </div>
       )}
 
-      {step === "estimate" && <EstimateScreen state={estimate} retry={retryEstimate} web={web} personal={personal} />}
+      {step === "estimate" && <EstimateScreen state={estimate} retry={retryEstimate} personal={personal} />}
 
       {step === "contact" && (
         <ContactScreen
@@ -1214,12 +1214,10 @@ function useReview() {
 function EstimateScreen({
   state,
   retry,
-  web,
   personal = false,
 }: {
   state: EstimateState;
   retry: () => void;
-  web: boolean;
   personal?: boolean;
 }) {
   const review = useReview();
@@ -1335,26 +1333,6 @@ function EstimateScreen({
           )}
         </span>
       </motion.div>
-      {web && (
-        <motion.div variants={ROW} className="pf-line">
-          <span>
-            <span className="pf-line-name block">{t("Website ready in", "Website pronto em")}</span>
-            <span className="mono-label mt-1 block text-ash-2">
-              {t("An estimate, confirmed in your proposal", "Uma estimativa, confirmada na proposta")}
-            </span>
-          </span>
-          <span className={`pf-line-value ${estimate.timeline?.kind === "days" ? "" : "pf-line-quiet"}`}>
-            {estimate.timeline?.kind === "days"
-              ? t(
-                  `${estimate.timeline.min}–${estimate.timeline.max} working days`,
-                  `${estimate.timeline.min}–${estimate.timeline.max} dias úteis`,
-                )
-              : estimate.timeline?.kind === "agreed"
-                ? t("Agreed between us", "Combinado entre nós")
-                : t("Set in your proposal", "Definido na proposta")}
-          </span>
-        </motion.div>
-      )}
     </div>
       <motion.p variants={ROW} className="mono-label pf-foot-note">
         {t("An estimate from your answers", "Uma estimativa a partir das respostas")}
