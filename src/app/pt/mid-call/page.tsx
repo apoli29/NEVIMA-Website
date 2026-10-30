@@ -7,7 +7,7 @@ import { readMidCall } from "@/lib/proposal/meeting";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Reunião a meio do projeto",
+  title: "Chamada a meio do projeto",
   robots: { index: false, follow: false },
 };
 

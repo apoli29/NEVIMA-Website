@@ -101,7 +101,7 @@ const FLOWS: { title: string; when: string; chain: { app: AppId; does: string }[
     ],
   },
   {
-    title: "O cliente responde sobre a reunião a meio do projeto",
+    title: "O cliente responde sobre a chamada a meio do projeto",
     when: "Clica em sim ou não no email da proposta final.",
     chain: [
       { app: "mail", does: "O botão abre o site." },
@@ -178,11 +178,11 @@ const STEPS: Step[] = [
     who: "Estúdio",
     apps: ["site", "notion", "resend", "gmail"],
     body: "Separador \"Proposta final\": procurar o cliente pelo email (sem pedido ligado, o email não sai, porque os botões precisam dele). Preencher o valor final e, se houver, o valor mensal; escrever os materiais em falta, que aparecem numa caixa; se for preciso, acrescentar um texto da proposta. Anexar o contrato em PDF, escolher quem assina, ver o email e carregar em Enviar.",
-    behind: "O contrato vai em anexo e o nome do ficheiro aparece no email, para o cliente o procurar. A nota de IVA por baixo do valor pode ser alterada. O email traz dois botões, sim e não, para o cliente dizer se quer a reunião a meio do projeto, que é opcional.",
+    behind: "O contrato vai em anexo e o nome do ficheiro aparece no email, para o cliente o procurar. A nota de IVA por baixo do valor pode ser alterada. O email traz dois botões, sim e não, para o cliente dizer se quer a chamada a meio do projeto, que é opcional.",
     notion: "Estado Proposta enviada, \"Valor final\" preenchido e \"Contrato enviado\" assinalado.",
   },
   {
-    title: "O cliente responde sobre a reunião a meio do projeto",
+    title: "O cliente responde sobre a chamada a meio do projeto",
     who: "Cliente",
     apps: ["mail", "site", "notion", "gmail"],
     body: "O cliente clica em sim ou não no email. Abre-se uma página do site com a resposta e um botão para a confirmar. Se a resposta for sim, o estúdio envia depois, à mão, um email para marcar a data.",
@@ -213,7 +213,7 @@ const LIMITS = [
   "O plano gratuito do Resend envia 100 emails por dia e 3000 por mês, contando as confirmações e os avisos automáticos.",
   "O contrato vai num só PDF, até 4 MB.",
   "Uma só chave para os dois; mudá-la na Vercel fecha todas as sessões abertas. A sessão dura 30 dias em cada navegador.",
-  "Os links dos botões (horários e reunião a meio do projeto) deixam de funcionar se a chave dos links (LINKS_SECRET) mudar na Vercel.",
+  "Os links dos botões (horários e chamada a meio do projeto) deixam de funcionar se a chave dos links (LINKS_SECRET) mudar na Vercel.",
   "A página não impede dois clientes de escolher o mesmo horário: oferecer horários diferentes a cada um.",
   "Nada do que se escreve aqui é guardado: só o que é enviado, e o que fica no Notion.",
 ];
