@@ -19,10 +19,13 @@ import {
   useEstimate,
   type Draft,
   type Errors,
+  type EstimateState,
   type SendState,
   type StepId,
 } from "./proposal-steps";
 import { useLang, useT } from "@/lib/use-lang";
+import { useOriginFade, useProposal, type ProposalController } from "./proposal-flow";
+import { useProposalState } from "./proposal-state";
 
 /* The free-proposal form set in Let's work together (work-together.tsx),
    kept in a file of its own so it is fetched only as the section comes
@@ -35,9 +38,117 @@ const ERROR_OF: Partial<Record<keyof Draft, string>> = {
   region: "town",
 };
 
-/* --- the form, set in place ---------------------------------------------- */
+/* --- the form at the foot of a page ----------------------------------------
+
+   On a page that has the proposal overlay, the form here is a preview of
+   it (user, 2026-10-31): pressing it anywhere grows the overlay out of its
+   own box for the visitor to answer in, and closing the overlay brings the
+   answers back here, to be pressed again. On a page with no overlay it is
+   the live form below, answered in place. */
 
 export function InlineProposal() {
+  const proposal = useProposal();
+  return proposal ? <ProposalPreview ctl={proposal} /> : <InlineForm />;
+}
+
+/** The screen to show for a step: the estimate has no preview of its own
+    (it is worked out by the server, for the overlay), so the screen before
+    it stands in; a sent request starts afresh. */
+function previewStep(step: StepId, steps: StepId[]): StepId {
+  if (step === "sent") return "basics";
+  if (step === "estimate") return steps[Math.max(0, steps.indexOf("estimate") - 1)] ?? "basics";
+  return step;
+}
+
+const NO_ESTIMATE: EstimateState = { status: "loading" };
+const NO_SEND: SendState = { status: "idle" };
+const NO_ERRORS: Errors = {};
+const noop = () => {};
+
+function ProposalPreview({ ctl }: { ctl: ProposalController }) {
+  const t = useT();
+  const { draft, contact, step } = useProposalState();
+  const box = useRef<HTMLDivElement>(null);
+  const title = useRef<HTMLHeadingElement>(null);
+  const [launched, setLaunched] = useState(false);
+  useEffect(() => {
+    if (!ctl.present) setLaunched(false);
+  }, [ctl.present]);
+  // Let go over the same stretch as the pane comes in, taken back as it
+  // goes home, so no frame shows neither (proposal-flow.tsx).
+  useOriginFade(box, ctl.progress, launched && ctl.present);
+
+  const steps = stepsFor(draft);
+  const shown = previewStep(step, steps);
+  const index = Math.max(0, steps.indexOf(shown));
+  const progress = steps.length > 1 ? index / (steps.length - 1) : 0;
+  const action = actionFor(shown, steps[index + 1], t);
+
+  const open = () => {
+    if (!box.current) return;
+    setLaunched(true);
+    ctl.show(box.current, box.current, false, 0);
+  };
+
+  return (
+    <div
+      ref={box}
+      role="button"
+      tabIndex={0}
+      aria-haspopup="dialog"
+      aria-label={t("Open the free proposal form", "Abrir o formulário da proposta gratuita")}
+      onClick={open}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          open();
+        }
+      }}
+      className="wt-form wt-preview relative isolate cursor-pointer text-ink"
+    >
+      <div aria-hidden="true" className="pf-pane" />
+      {/* Nothing in it can be reached: a press lands on the preview. */}
+      <div inert className="flex h-full min-h-0 flex-col">
+        <p className="mono-label mb-2.5 flex items-center justify-between text-ash-2">
+          <span className="idx-title">{t("Free proposal", "Proposta gratuita")}</span>
+        </p>
+        <div className="relative min-h-0 flex-1">
+          <div aria-hidden="true" className="pf-progress">
+            <span className="pf-progress-fill" style={{ transform: `scaleX(${Math.max(progress, 0.04)})` }} />
+          </div>
+          <div className="pf-scroll">
+            <StepScreen
+              step={shown}
+              draft={draft}
+              setDraft={noop}
+              contact={contact}
+              setContact={noop}
+              errors={NO_ERRORS}
+              estimate={NO_ESTIMATE}
+              retryEstimate={noop}
+              send={NO_SEND}
+              titleRef={title}
+            />
+          </div>
+        </div>
+        <div className="relative z-10">
+          <span aria-hidden="true" className="absolute inset-x-0 top-0 z-10 block h-px bg-ink" />
+          <div className="idx-link idx-send flex min-w-0 flex-1 text-left">
+            <span className="idx-name truncate">{action}</span>
+            <span aria-hidden="true" className="idx-arrow">
+              <Arrow />
+            </span>
+          </div>
+          <span aria-hidden="true" className="block h-px bg-ink" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* --- the form, set in place ---------------------------------------------- */
+
+function InlineForm() {
   const reduce = useReducedMotion() ?? false;
   const lang = useLang();
   const t = useT();

@@ -41,6 +41,9 @@ type Origin = {
       grows the form out of its own button instead: there is no index to
       turn into the form, so its label and its other rows never show. */
   index: boolean;
+  /** How far the pane stands out round the box it leaves from; the form at
+      the foot of a page leaves from its own edges, with none. */
+  pad?: number;
 };
 
 export function useProposalController() {
@@ -53,8 +56,8 @@ export function useProposalController() {
       and shared so the button it grows out of can follow it. */
   const progress = useMotionValue(0);
 
-  const show = useCallback((box: HTMLElement, focus: HTMLElement | null, index = true) => {
-    origin.current = { box, focus, index };
+  const show = useCallback((box: HTMLElement, focus: HTMLElement | null, index = true, pad?: number) => {
+    origin.current = { box, focus, index, pad };
     setPresent(true);
     setOpen(true);
   }, []);
