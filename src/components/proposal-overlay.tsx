@@ -107,12 +107,14 @@ type Rect = { x: number; y: number; w: number; h: number };
     pane stands out round the index when it sets off. */
 const padFor = (vw: number) => (vw >= 1280 ? 40 : vw >= 768 ? 32 : 20);
 
-/** The middle of the screen, large; on a phone, the whole screen. */
+/** The middle of the screen, large; on a phone, the whole screen. It was
+    880 by 760 at most; the type inside it was too small to read there, so
+    it now takes most of the screen (user, 2026-10-31). */
 function landing(vw: number, vh: number): Rect {
   if (vw < 768) return { x: 0, y: 0, w: vw, h: vh };
-  const margin = vw >= 1280 ? 48 : 32;
-  const w = Math.min(880, vw - 2 * margin);
-  const h = Math.min(760, vh - 2 * Math.min(margin, 32));
+  const margin = vw >= 1280 ? 48 : 28;
+  const w = Math.min(1120, vw - 2 * margin);
+  const h = Math.min(960, vh - 2 * Math.min(margin, 32));
   return { x: (vw - w) / 2, y: (vh - h) / 2, w, h };
 }
 
