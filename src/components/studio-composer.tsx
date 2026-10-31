@@ -421,7 +421,7 @@ export function StudioComposer() {
               <div>
                 <Label htmlFor="c-materials">Materiais em falta</Label>
                 <textarea id="c-materials" rows={4} value={materials} onChange={(e) => setMaterials(e.target.value)} className={`${field} leading-relaxed`} />
-                <p className="mt-1 text-[0.8125rem] text-ash">Os materiais mencionados na chamada; aparecem numa caixa no email. Vazio, a caixa não aparece.</p>
+                <p className="mt-1 text-[0.8125rem] text-ash">Os materiais mencionados na chamada; aparecem numa caixa no email, que fica lá mesmo vazia.</p>
               </div>
               <div>
                 <Label htmlFor="c-file">Contrato (PDF, até 4 MB)</Label>

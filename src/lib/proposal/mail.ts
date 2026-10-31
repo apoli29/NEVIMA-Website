@@ -143,11 +143,12 @@ export function attachment(caption: string, name: string) {
   );
 }
 
-/** What the studio wrote for this client, in a hairline box. */
+/** What the studio wrote for this client, in a hairline box, which keeps
+    its room when nothing is written yet. */
 export function boxed(text: string) {
   return row(
     `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:-4px 0 26px;"><tr>
-      <td style="padding:14px 16px;border:1px solid ${HAIR_STRONG};font-family:${READ};font-size:15px;line-height:1.6;color:${PAPER};">${escapeHtml(text.trim()).replace(/\n/g, "<br>")}</td>
+      <td height="96" valign="top" style="height:96px;padding:14px 16px;border:1px solid ${HAIR_STRONG};font-family:${READ};font-size:15px;line-height:1.6;color:${PAPER};">${escapeHtml(text.trim()).replace(/\n/g, "<br>") || "&nbsp;"}</td>
     </tr></table>`,
   );
 }
