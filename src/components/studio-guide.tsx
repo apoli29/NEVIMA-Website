@@ -139,7 +139,7 @@ const STEPS: Step[] = [
     who: "Automático",
     apps: ["resend", "mail", "gmail"],
     body: "No mesmo instante, o cliente recebe a confirmação automática, na língua que escolheu (pode vê-la no separador \"Confirmação automática\"). O estúdio recebe no Gmail um aviso com o resumo do pedido, a estimativa e o link para a página do Notion.",
-    behind: "Os dois emails saem pelo Resend. Se o Resend falhar, o pedido não se perde, porque já está no Notion, mas ninguém é avisado da falha. Responder ao aviso responde diretamente ao cliente.",
+    behind: "Os dois emails saem pelo Resend. Se o Resend falhar, o pedido não se perde, porque já está no Notion, e a coluna \"Alertas\" diz qual dos emails não saiu. Responder ao aviso responde diretamente ao cliente.",
   },
   {
     title: "Preparar a chamada",
@@ -262,16 +262,17 @@ const ACCESS = [
 
 const FAILURES = [
   { when: "Um pedido chega e o Notion falha", then: "O formulário diz que o pedido não chegou e propõe enviá-lo pela app de email do visitante. Nada fica guardado: os registos não têm os contactos.", todo: "Ver o erro nos registos da Vercel." },
-  { when: "Um pedido chega e o Resend falha", then: "O pedido fica no Notion e o visitante vê sucesso, mas pode não sair a confirmação nem o aviso ao estúdio. Ninguém é avisado disso.", todo: "Consultar o Notion com regularidade, sobretudo até o domínio estar verificado." },
+  { when: "Um pedido chega e o Resend falha", then: "O pedido fica no Notion e o visitante vê sucesso. A coluna \"Alertas\" diz qual dos emails não saiu: a confirmação, o aviso ao estúdio ou os dois.", todo: "Consultar o Notion com regularidade: sem aviso, um pedido novo só se vê lá. Se a confirmação não saiu, contactar o cliente." },
   { when: "O mesmo email pede de novo em 24 horas", then: "É recusado e o formulário diz quanto falta. Conta em cada base em separado.", todo: "Para testes, usar um endereço de REPEAT_ALLOWED_EMAILS_FORMS." },
   { when: "Um robô preenche o formulário", then: "Campo escondido preenchido, ou envio em menos de 4 segundos: o site responde que correu bem e não guarda nada.", todo: "Nada." },
   { when: "Enviar e o Resend recusa", then: "O email não sai e o Notion não muda.", todo: "Ver os registos, ou usar Copiar para o Gmail." },
   { when: "Enviar: o email sai e o Notion falha", then: "O cliente recebe o email e a página avisa que o Notion ficou por atualizar.", todo: "Atualizar à mão. Não voltar a enviar." },
   { when: "O cliente confirma um horário e o Notion falha", then: "A marcação não fica feita, o estúdio não é avisado e o cliente é convidado a tentar de novo ou a ligar.", todo: "Atender a chamada ou o email do cliente." },
-  { when: "O horário fica marcado e o aviso falha", then: "O Notion tem a data, mas o estúdio não recebe aviso.", todo: "Ver a coluna \"Reunião\" no Notion." },
-  { when: "O cliente usa um botão antigo do convite", then: "Se o horário ainda não passou, a marcação muda e o estado volta a Reunião marcada, mesmo que o pedido já vá mais à frente. O estúdio é avisado.", todo: "Corrigir o estado à mão." },
+  { when: "O horário fica marcado e o aviso falha", then: "O Notion tem a data e a coluna \"Alertas\" regista que o aviso não saiu.", todo: "Ver as colunas \"Reunião\" e \"Alertas\" no Notion." },
+  { when: "O cliente usa um botão antigo do convite", then: "Se o horário ainda não passou, a data muda. Com o pedido em Reunião feita, Proposta enviada, Ganho ou Perdido, o estado não muda. O estúdio é avisado.", todo: "Ver se a nova data ainda faz sentido e falar com o cliente." },
   { when: "O cliente escolhe um horário que já passou", then: "O site recusa e a página diz que o horário já passou.", todo: "Enviar novo convite." },
   { when: "A resposta sobre a chamada a meio não entra no Notion", then: "Se o aviso ao estúdio sair, o cliente vê sucesso e o aviso diz para atualizar à mão. Se também falhar, o cliente vê o erro.", todo: "Atualizar à mão \"Reunião a meio\"." },
+  { when: "A resposta entra no Notion e o aviso falha", then: "A coluna \"Reunião a meio\" tem a resposta e \"Alertas\" regista que o aviso não saiu.", todo: "Ver as duas colunas. Se a resposta for sim, enviar o email para marcar a data." },
   { when: "Muda a LINKS_SECRET", then: "Todos os botões já enviados deixam de funcionar: a página diz que o link não é válido.", todo: "Não a mudar sem necessidade, ou reenviar os emails pendentes." },
   { when: "SITE_URL errado ou em falta", then: "As imagens dos emails não carregam e os botões apontam para o endereço errado.", todo: "Definir o endereço real na Vercel e publicar de novo." },
 ];
@@ -334,6 +335,7 @@ const NOTION_FIELDS = [
   { field: "Contrato enviado", by: "Automático", when: "Proposta enviada com Enviar e com PDF." },
   { field: "Reunião a meio", by: "Automático", when: "O cliente confirma sim ou não." },
   { field: "Ganho ou Perdido", by: "À mão", when: "No fecho." },
+  { field: "Alertas", by: "Automático", when: "Quando um email automático não sai. Apagar à mão depois de resolver." },
 ];
 
 const DATA_PLACES = [
@@ -347,7 +349,7 @@ const DATA_PLACES = [
 const WATCH = [
   "Copiar para o Gmail também precisa do pedido ligado e da LINKS_SECRET. Gera o email e os links, mas não muda o Notion nem junta o PDF, que tem de ser anexado à mão.",
   "A procura só encontra pedidos de \"Pedidos\". Para um parceiro, é preciso colar o link da página, e a base \"Parceiros\" não tem Valor final, por isso o Notion não é atualizado ao enviar a proposta.",
-  "A procura devolve o pedido mais recente daquele email.",
+  "A procura devolve o pedido mais recente daquele email e mostra a vermelho os alertas que ele tiver.",
   "A caixa dos materiais aparece sempre: se ficar vazia, o cliente recebe-a em branco.",
   "A confirmação automática não se envia daqui: esse separador só a mostra.",
   "Por confirmar: que ola@nevima.studio encaminha para o Gmail do estúdio. Sem isso, os avisos e as respostas não chegam lá.",

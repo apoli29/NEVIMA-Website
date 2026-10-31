@@ -34,7 +34,7 @@ import { Wordmark } from "./wordmark";
 
 type Kind = "invite" | "offer" | "confirmation";
 
-type Found = { id: string; url: string; name: string; company: string; lang: Lang; state: string; received: string };
+type Found = { id: string; url: string; name: string; company: string; lang: Lang; state: string; received: string; alerts: string };
 
 type View = Kind | "guide";
 
@@ -332,6 +332,7 @@ export function StudioComposer() {
                     <a href={found.url} target="_blank" rel="noreferrer" className="text-ink underline underline-offset-4">
                       abrir no Notion
                     </a>
+                    {found.alerts && <span className="mt-1 block text-[#b3261e]">Alertas: {found.alerts}</span>}
                   </p>
                 ) : (
                   looking && <p className="mt-2 text-[0.875rem] text-ash">{looking}</p>

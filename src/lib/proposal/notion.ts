@@ -179,6 +179,8 @@ export type RequestPage = {
   meeting: string;
   /** "Sim" or "Não": whether the client wants the call midway through. */
   midCall: string;
+  /** Emails that could not be sent: nobody else would know. */
+  alerts: string;
 };
 
 type RawPage = { id?: string; url?: string; properties?: Record<string, Record<string, unknown>> };
@@ -201,6 +203,7 @@ function readPage(page: RawPage): RequestPage | null {
     received: date("Recebido"),
     meeting: date("Reunião"),
     midCall: select("Reunião a meio"),
+    alerts: text("Alertas", "rich_text"),
   };
 }
 
@@ -247,6 +250,14 @@ export async function getRequest(pageId: string): Promise<RequestPage | null> {
     return null;
   }
 }
+
+/** A page's id, from its address as Notion gives it. */
+export const pageIdFromUrl = (url: string) => url.split(/[?#]/)[0].replace(/-/g, "").match(/[0-9a-f]{32}$/i)?.[0] ?? "";
+
+/** Says on the page that an email could not be sent, after what it
+    already says. A failure here only reaches the log. */
+export const addAlert = (pageId: string, current: string, words: string) =>
+  updatePage(pageId, { Alertas: prop.text(current ? `${current} · ${words}` : words) });
 
 /** True once the page's properties were changed. */
 export async function updatePage(pageId: string, properties: Record<string, unknown>): Promise<boolean> {
