@@ -1,7 +1,7 @@
 import "server-only";
 import type { Lang } from "../i18n";
 import { confirmationHtml, confirmationSubject, confirmationText, STUDIO_EMAIL, summaryOf } from "./email";
-import { block, createPage, lastRequestSince, prop } from "./notion";
+import { addAlert, block, createPage, lastRequestSince, pageIdFromUrl, prop } from "./notion";
 import {
   CREDITS,
   DELIVERIES,
@@ -22,8 +22,8 @@ import { SERVICES, labelOf, type Answers, type Contact, type Estimate, type Rang
    request reported as delivered. Then the studio gets a notice by email
    with a link to the page, and a proposal request's visitor gets a
    confirmation, both through Resend. If either email fails the request
-   is still delivered: it is logged (without the visitor's details) and
-   the page is in Notion.
+   is still delivered: it is logged (without the visitor's details), the
+   page is in Notion, and its "Alertas" says which email did not go.
 
    When Notion is not configured or does not answer, the request is
    reported as not delivered, so the form tells the visitor and offers to
@@ -280,7 +280,7 @@ export async function deliverRequest(request: ProposalRequest): Promise<boolean>
 
   const { answers, contact, estimate } = request;
   const [services, who, country] = summaryOf(answers, "pt");
-  await Promise.all([
+  const [noticed, confirmed] = await Promise.all([
     notify(
       `Novo pedido: ${contact.name}${contact.company ? ` (${contact.company})` : ""}`,
       [
@@ -301,6 +301,11 @@ export async function deliverRequest(request: ProposalRequest): Promise<boolean>
       text: confirmationText(contact, request.lang),
     }),
   ]);
+  const missing = [
+    !noticed && "Aviso ao estúdio não enviado",
+    !confirmed && "Confirmação ao cliente não enviada",
+  ].filter(Boolean);
+  if (missing.length) await addAlert(pageIdFromUrl(page), "", missing.join(" · "));
   return true;
 }
 
@@ -319,7 +324,7 @@ export async function deliverPartner(request: PartnerRequest): Promise<boolean> 
 
   const { answers, contact } = request;
   const pt = (list: Parameters<typeof labelOf>[0], id: string) => labelOf(list, id, "pt");
-  await notify(
+  const noticed = await notify(
     `Novo parceiro: ${contact.company || contact.name}`,
     [
       `Projeto: ${pt(PROJECT_TYPES, answers.project)} · Ecrãs: ${pt(SCREENS, answers.screens)}`,
@@ -330,5 +335,6 @@ export async function deliverPartner(request: PartnerRequest): Promise<boolean> 
     page,
     contact,
   );
+  if (!noticed) await addAlert(pageIdFromUrl(page), "", "Aviso ao estúdio não enviado");
   return true;
 }

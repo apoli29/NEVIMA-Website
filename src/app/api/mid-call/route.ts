@@ -1,7 +1,7 @@
 import { sendEmail, studioInbox } from "@/lib/proposal/deliver";
 import { allow, clientIp, json, readJson } from "@/lib/proposal/guard";
 import { readMidCall } from "@/lib/proposal/meeting";
-import { getRequest, prop, updatePage } from "@/lib/proposal/notion";
+import { addAlert, getRequest, prop, updatePage } from "@/lib/proposal/notion";
 
 /* The client's answer about the call midway through the project, confirmed
    on the page the final proposal's buttons lead to. The request's page in
@@ -39,5 +39,6 @@ export async function POST(request: Request) {
     ].join("\n"),
   });
   if (!saved && !told) return json({ error: "not_configured" }, 503);
+  if (!told) await addAlert(token.page, page.alerts, `Aviso não enviado: chamada a meio, ${answer.toLowerCase()}`);
   return json({ ok: true });
 }

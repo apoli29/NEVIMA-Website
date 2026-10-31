@@ -66,6 +66,8 @@ const common = {
   Telefone: { phone_number: {} },
   Empresa: { rich_text: {} },
   "Reunião": { date: {} },
+  // An email that could not be sent, written by the site (user, 2026-10-31).
+  Alertas: { rich_text: {} },
 };
 
 const databases = [
