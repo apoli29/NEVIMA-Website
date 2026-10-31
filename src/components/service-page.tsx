@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { alternates, localize, translator, type Lang } from "@/lib/i18n";
 import { SERVICES, findService, servicePath, servicesIn } from "@/lib/services";
 import { Footer } from "./footer";
+import { ProposalHost } from "./proposal-host";
 import { Included } from "./services";
 import { WorkTogether } from "./work-together";
 
@@ -56,7 +57,7 @@ export function ServicePage({ slug, lang }: { slug: string; lang: Lang }) {
   );
 
   return (
-    <>
+    <ProposalHost>
       <main id="top" className="relative min-h-[100svh] bg-paper">
         {/* The same black strip the home page floats, holding the same mark. */}
         <header className="pt-4 md:pt-6">
@@ -131,6 +132,6 @@ export function ServicePage({ slug, lang }: { slug: string; lang: Lang }) {
       </main>
       <WorkTogether />
       <Footer />
-    </>
+    </ProposalHost>
   );
 }

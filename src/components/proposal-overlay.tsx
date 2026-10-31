@@ -21,8 +21,6 @@ import type { Contact } from "@/lib/proposal/questions";
 import { useLang, useT } from "@/lib/use-lang";
 import { SECTION_LINKS } from "./index-links";
 import {
-  EMPTY_CONTACT,
-  EMPTY_DRAFT,
   OfflineNote,
   STUDIO_EMAIL,
   StepScreen,
@@ -39,6 +37,7 @@ import {
   type SendState,
   type StepId,
 } from "./proposal-steps";
+import { resetProposalState, setContactState, setDraftState, setStepState, useProposalState } from "./proposal-state";
 import type { ProposalController } from "./proposal-flow";
 
 
@@ -133,17 +132,15 @@ const useMeasureEffect = typeof window === "undefined" ? useEffect : useLayoutEf
     proposal-flow.tsx), then for the life of the page, so what was answered
     is still there if the form is closed and opened again. */
 export function ProposalOverlayPanel({ ctl }: { ctl: ProposalController }) {
-  const [draft, setDraftState] = useState<Draft>(EMPTY_DRAFT);
-  const [contact, setContactState] = useState<Contact>(EMPTY_CONTACT);
-  const [step, setStep] = useState<StepId>("basics");
+  // What was answered is kept outside, so the form at the foot of the page
+  // (a preview of this one) shows it too (proposal-state.ts).
+  const { draft, contact, step } = useProposalState();
   const [errors, setErrors] = useState<Errors>({});
   const [send, setSend] = useState<SendState>({ status: "idle" });
 
   // Once sent, the next opening starts afresh.
   const reset = useCallback(() => {
-    setDraftState(EMPTY_DRAFT);
-    setContactState(EMPTY_CONTACT);
-    setStep("basics");
+    resetProposalState();
     setErrors({});
     setSend({ status: "idle" });
   }, []);
@@ -160,7 +157,7 @@ export function ProposalOverlayPanel({ ctl }: { ctl: ProposalController }) {
       contact={contact}
       setContactState={setContactState}
       step={step}
-      setStep={setStep}
+      setStep={setStepState}
       errors={errors}
       setErrors={setErrors}
       send={send}
@@ -215,7 +212,7 @@ function Panel({
   const [view, setView] = useState(() => ({ w: window.innerWidth, h: window.innerHeight }));
   const pad = padFor(view.w);
   const [from, setFrom] = useState<Rect>(() =>
-    ctl.origin.current ? measure(ctl.origin.current.box, padFor(window.innerWidth)) : landing(view.w, view.h),
+    ctl.origin.current ? measure(ctl.origin.current.box, ctl.origin.current.pad ?? padFor(window.innerWidth)) : landing(view.w, view.h),
   );
   const to = landing(view.w, view.h);
 
@@ -309,7 +306,7 @@ function Panel({
   useEffect(() => {
     // Going back, the index is measured again: it is where it is now that
     // the form has to land on, to the pixel.
-    if (!open && ctl.origin.current) setFrom(measure(ctl.origin.current.box, padFor(window.innerWidth)));
+    if (!open && ctl.origin.current) setFrom(measure(ctl.origin.current.box, ctl.origin.current.pad ?? padFor(window.innerWidth)));
     const target = open ? 1 : 0;
     const full = reduce ? 0.2 : open ? OPEN_S : CLOSE_S;
     // From wherever it has got to: a run reversed halfway takes half as long.

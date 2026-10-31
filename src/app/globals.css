@@ -646,6 +646,10 @@
     backdrop-filter: blur(14px) saturate(1.05);
   }
 
+  /* The form at the foot of a page, a preview that opens the big one when
+     it is pressed (user, 2026-10-31). */
+  .wt-preview:focus-visible { outline: 1px solid var(--color-paper); outline-offset: 4px; }
+
   .pf-panel {
     position: fixed;
     left: 0;
