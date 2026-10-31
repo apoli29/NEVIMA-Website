@@ -768,9 +768,11 @@
     color: var(--color-ink);
     text-wrap: pretty;
   }
-  /* The form's small type was read at 11px; in its panel the labels are 13. */
+  /* The form's small type was read at 11px; in every form the labels are 13
+     from a tablet up, so a preview does not change size as it opens. */
   @media (min-width: 768px) {
-    .pf-panel .mono-label { font-size: 0.8125rem; }
+    .pf-panel .mono-label,
+    .wt-form .mono-label { font-size: 0.8125rem; }
   }
   @media (min-width: 768px) {
     .pf-q { padding-top: 0.55rem; }
@@ -968,6 +970,32 @@
     font-size: 0.9375rem;
     line-height: 1.45;
     color: var(--color-ash);
+  }
+
+  /* A phone keeps the sizes it was set in: the larger type above is for the
+     larger panel (user, 2026-10-31), and on a narrow screen it only made
+     the questions longer and squeezed the estimate's names by its figures. */
+  @media (max-width: 767px) {
+    .pf-q { font-size: 1.0625rem; }
+    .pf-note { font-size: 0.875rem; }
+    .pf-footnote { font-size: 0.8125rem; }
+    .pf-level-name { font-size: 1rem; }
+    .pf-line-name,
+    .pf-line-value { font-size: 1.125rem; }
+    .pf-part .pf-line-name,
+    .pf-part .pf-line-value { font-size: 1rem; }
+  }
+  /* The foot's button beside "Back" on a small phone: its longest words
+     ("Pedir proposta final") ran into the arrow. */
+  .idx-send { column-gap: 0.75rem; }
+  @media (max-width: 400px) {
+    .pf-back .idx-name,
+    .idx-send .idx-name { font-size: 1.0625rem; }
+  }
+  /* A phone on its side: the title gives its room to the questions. */
+  @media (max-height: 559px) {
+    .pf-panel .pf-scroll { padding-top: 1.25rem; }
+    .pf-panel .pf-title { font-size: 1.5rem; margin-bottom: 1rem; }
   }
 
   /* The way back, beside the inked row: a plain index row. */
@@ -3695,6 +3723,18 @@
     overflow: visible;
     -webkit-mask-image: none;
     mask-image: none;
+  }
+  /* The preview is a window on the big form: as tall as the section gives
+     it, whatever has been answered, its button always in sight and what
+     does not fit going soft at the edge. Grown with its answers, it moved
+     the page behind the open form and sent the form home to a box taller
+     than the screen. */
+  .wt-preview { height: 100%; }
+  .wt-preview .pf-scroll {
+    position: absolute;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 1rem, #000 calc(100% - 1.5rem), transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 1rem, #000 calc(100% - 1.5rem), transparent);
   }
   @media (min-width: 768px) {
     .wt-form { padding: 2rem; }

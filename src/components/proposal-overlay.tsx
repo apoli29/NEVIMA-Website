@@ -106,11 +106,15 @@ type Rect = { x: number; y: number; w: number; h: number };
     pane stands out round the index when it sets off. */
 const padFor = (vw: number) => (vw >= 1280 ? 40 : vw >= 768 ? 32 : 20);
 
+/** Under this height (a phone on its side, however wide) margins round the
+    form would come out of the questions, which had 189px left at 844 x 390. */
+const SHORT_VH = 560;
+
 /** The middle of the screen, large; on a phone, the whole screen. It was
     880 by 760 at most; the type inside it was too small to read there, so
     it now takes most of the screen (user, 2026-10-31). */
 function landing(vw: number, vh: number): Rect {
-  if (vw < 768) return { x: 0, y: 0, w: vw, h: vh };
+  if (vw < 768 || vh < SHORT_VH) return { x: 0, y: 0, w: vw, h: vh };
   const margin = vw >= 1280 ? 48 : 28;
   const w = Math.min(1120, vw - 2 * margin);
   const h = Math.min(960, vh - 2 * Math.min(margin, 32));
@@ -210,7 +214,7 @@ function Panel({
   /* --- the two ends of the run, in real pixels ------------------------ */
 
   const [view, setView] = useState(() => ({ w: window.innerWidth, h: window.innerHeight }));
-  const pad = padFor(view.w);
+  const pad = view.h < SHORT_VH ? padFor(0) : padFor(view.w);
   const [from, setFrom] = useState<Rect>(() =>
     ctl.origin.current ? measure(ctl.origin.current.box, ctl.origin.current.pad ?? padFor(window.innerWidth)) : landing(view.w, view.h),
   );
@@ -550,7 +554,9 @@ function Panel({
         >
           {/* The index's label, which becomes the form's. */}
           <p className="mono-label mb-2.5 flex items-center justify-between text-ash-2">
-            <span className="grid">
+            {/* On a phone the question takes the label's place: the two
+                together broke over two lines and pushed the form down. */}
+            <span className={`grid ${confirming ? "max-md:sr-only" : ""}`}>
               <motion.span aria-hidden="true" className="idx-title [grid-area:1/1] justify-self-start" style={{ opacity: labelOut }}>
                 {say("Index", "Índice")}
               </motion.span>
@@ -558,7 +564,10 @@ function Panel({
                 {say("Free proposal", "Proposta gratuita")}
               </motion.span>
             </span>
-            <motion.span className="flex items-center gap-4 md:gap-6" style={{ opacity: form }}>
+            <motion.span
+              className={`flex items-center gap-4 md:gap-6 ${confirming ? "max-md:w-full max-md:justify-between" : ""}`}
+              style={{ opacity: form }}
+            >
               {step !== "sent" &&
                 (confirming ? (
                   <span role="group" aria-label={say("Clear all answers?", "Apagar todas as respostas?")} className="flex items-center gap-2">
