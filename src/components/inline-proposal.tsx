@@ -108,7 +108,7 @@ function ProposalPreview({ ctl }: { ctl: ProposalController }) {
     >
       <div aria-hidden="true" className="pf-pane" />
       {/* Nothing in it can be reached: a press lands on the preview. */}
-      <div inert className="flex h-full min-h-0 flex-col">
+      <div inert className="flex min-h-0 flex-1 flex-col">
         <p className="mono-label mb-2.5 flex items-center justify-between text-ash-2">
           <span className="idx-title">{t("Free proposal", "Proposta gratuita")}</span>
         </p>
