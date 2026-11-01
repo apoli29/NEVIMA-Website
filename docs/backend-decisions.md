@@ -91,3 +91,18 @@ Still open:
 - Whether the client should also get an email once the call is booked; for now the page confirms it and the studio sends the call's link by hand.
 - At the end of the form, "Contact us now?" with the two phones (asked 2026-10-29, not built).
 - Outreach emails to potential clients, for leads (asked 2026-10-29, not built).
+
+## SQL Server: a copy of every proposal request (user, 2026-11-01)
+
+Beside Notion, not instead of it: Notion stays where the studio works on a request (states, the meeting, the composer, the 24-hour check), and an Azure SQL database keeps every proposal request as a record that SQL queries can be run on. Partner requests are not copied.
+
+- **Where:** Azure for Students, Azure SQL Database free offer (serverless, paused until next month when the free amount runs out, so nothing is ever charged). Server `nevima-rg-de` in Germany West Central, database `Nevima`, resource group `nevima-rg`. The subscription may only deploy in a few regions (Azure Policy "Allowed resource deployment regions"), and the free offer is not available in Spain Central, where a first, empty server `nevima-sql` was made: it can be deleted.
+- **Schema:** `scripts/sql/nevima-db.sql`, run whole in the `Nevima` database (VS Code with the SQL Server (mssql) extension, signed in as the server admin). It can be run again: it makes what is missing, adds new columns and updates the procedure and the view, deleting nothing. One row per request in `PedidosProposta` (contact, every answer in a column of its own, the estimate, and the raw answers as JSON), one row per choice in `PedidoServicos`, `PedidoIdiomas` and `PedidoFuncionalidades`, and `vw_PedidosResumo` to read them.
+- **Writing:** `src/lib/proposal/sql.ts`, called from `/api/proposal` through `after()`, once the visitor has their answer, so the database never makes anyone wait and never decides whether a request was delivered (Notion still does). The free database pauses when unused and refuses the first connection while it wakes: a refused write is tried once more 20 seconds later (`maxDuration` 60). Failures reach the log as `[nevima:sql]` with the error's code only, never the visitor's details.
+- **Access:** the site signs in as `nevima_site`, a contained database user that may only run `dbo.usp_InserirPedidoProposta`: it cannot read, change or delete anything. The firewall allows every address (Vercel's change from request to request), so the protection is the encrypted connection and that user's password. Reading and deleting is done with the admin account, from the partners' own computers (their IP addresses are added to the firewall).
+- **Vercel, Production:** `MSSQL_SERVER` (`nevima-rg-de.database.windows.net`), `MSSQL_DATABASE` (`Nevima`), `MSSQL_USER` (`nevima_site`), `MSSQL_PASSWORD`. Without all four nothing is written and nothing fails.
+
+Open:
+
+- The privacy policy (`src/lib/legal/privacy.ts`) does not name Microsoft (Azure) among those who receive data, nor Notion or Resend, and still says requests go by email until direct sending is active. To be updated by the partners, in both languages.
+- Requests that do not lead to a contract are deleted after 3 months (privacy policy): that now includes their rows in SQL Server (`DELETE FROM dbo.PedidosProposta WHERE Id = …` deletes the choices with them).
