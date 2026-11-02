@@ -40,7 +40,7 @@ const APPS: Record<AppId, App> = {
   },
   sql: {
     name: "SQL Server",
-    what: "Uma base de dados na Azure (servidor nevima-rg-de, base Nevima) com uma cópia de cada pedido de proposta: as respostas, os contactos e a estimativa. Não substitui o Notion: serve de registo e para consultas em SQL. O site só consegue acrescentar pedidos; ler e apagar faz-se no VS Code, com a conta de administrador. A base gratuita adormece quando não é usada e acorda no pedido seguinte.",
+    what: "Uma base de dados na Azure (servidor nevima-rg-de, base Nevima) com uma cópia de cada pedido dos dois formulários: os pedidos de proposta (com a estimativa) na tabela PedidosProposta e os de parceria na PedidosParceria, com as respostas e os contactos. Não substitui o Notion: serve de registo e para consultas em SQL. O site só consegue acrescentar pedidos; ler e apagar faz-se no VS Code, com a conta de administrador. A base gratuita adormece quando não é usada e acorda no pedido seguinte.",
     who: "Estúdio",
   },
   resend: {
@@ -267,7 +267,7 @@ const ACCESS = [
 
 const FAILURES = [
   { when: "Um pedido chega e o Notion falha", then: "O formulário diz que o pedido não chegou e propõe enviá-lo pela app de email do visitante. Não fica no Notion, mas fica a cópia no SQL Server (se estiver ligado); os registos não têm os contactos.", todo: "Ver o erro nos registos da Vercel. O pedido pode estar no SQL Server, e chegar também por email." },
-  { when: "Um pedido chega e o SQL Server falha", then: "Nada muda para o visitante nem no Notion: a cópia é escrita depois da resposta, com uma segunda tentativa 20 segundos depois, para a base que estava a dormir. Se as duas falharem, o pedido só fica no Notion.", todo: "Ver nos registos da Vercel as linhas [nevima:sql]. Se faltar um pedido, copiá-lo à mão do Notion." },
+  { when: "Um pedido (de proposta ou de parceria) chega e o SQL Server falha", then: "Nada muda para o visitante nem no Notion: a cópia é escrita depois da resposta, com uma segunda tentativa 20 segundos depois, para a base que estava a dormir. Se as duas falharem, o pedido só fica no Notion.", todo: "Ver nos registos da Vercel as linhas [nevima:sql]. Se faltar um pedido, copiá-lo à mão do Notion." },
   { when: "Um pedido chega e o Resend falha", then: "O pedido fica no Notion e o visitante vê sucesso. A coluna \"Alertas\" diz qual dos emails não saiu: a confirmação, o aviso ao estúdio ou os dois.", todo: "Consultar o Notion com regularidade: sem aviso, um pedido novo só se vê lá. Se a confirmação não saiu, contactar o cliente." },
   { when: "O mesmo email pede de novo em 24 horas", then: "É recusado e o formulário diz quanto falta. Conta em cada base em separado.", todo: "Para testes, usar um endereço de REPEAT_ALLOWED_EMAILS_FORMS." },
   { when: "Um robô preenche o formulário", then: "Campo escondido preenchido, ou envio em menos de 4 segundos: o site responde que correu bem e não guarda nada.", todo: "Nada." },

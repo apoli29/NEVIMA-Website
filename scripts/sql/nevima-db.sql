@@ -5,11 +5,11 @@
    Pode correr-se as vezes que for preciso: cria o que falta, acrescenta
    colunas novas e atualiza o procedimento e a vista, sem apagar dados.
 
-   Quem escreve aqui: a rota /api/proposal (src/lib/proposal/sql.ts),
-   com o utilizador nevima_site, que só pode executar
-   dbo.usp_InserirPedidoProposta. As respostas chegam como o site as
-   guarda (src/lib/proposal/questions.ts, tipo Answers): agrupadas em
-   "web", "photo" e "search".
+   Quem escreve aqui: as rotas /api/proposal e /api/partner
+   (src/lib/proposal/sql.ts), com o utilizador nevima_site, que só pode
+   executar os dois procedimentos de inserção. As respostas chegam como o
+   site as guarda: os pedidos de proposta agrupados em "web", "photo" e
+   "search" (questions.ts, tipo Answers); os de parceria em partner.ts.
 
    Decisões e passos: docs/backend-decisions.md, secção "SQL Server".
    ===================================================================== */
@@ -277,6 +277,106 @@ GO
 
 
 /* ---------------------------------------------------------------------
+   4b. Pedidos de parceria (o segundo formulário: empresas de desenvolvimento)
+   Respostas em src/lib/proposal/partner.ts (tipo PartnerAnswers).
+   --------------------------------------------------------------------- */
+IF OBJECT_ID(N'dbo.PedidosParceria', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.PedidosParceria (
+        Id                    INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_PedidosParceria PRIMARY KEY,
+        CriadoEm              DATETIME2(0)   NOT NULL CONSTRAINT DF_PedidosParceria_CriadoEm DEFAULT (SYSUTCDATETIME()),  -- UTC
+        Estado                VARCHAR(20)    NOT NULL CONSTRAINT DF_PedidosParceria_Estado DEFAULT ('novo'),
+        Idioma                CHAR(2)        NOT NULL,          -- língua da resposta (en | pt)
+        TempoPreenchimentoMs  INT            NULL,              -- elapsedMs
+
+        -- Contacto
+        Nome                  NVARCHAR(150)  NOT NULL,          -- contact.name
+        Email                 NVARCHAR(254)  NOT NULL,          -- contact.email
+        Telefone              NVARCHAR(40)   NULL,              -- contact.phone
+        Empresa               NVARCHAR(150)  NULL,              -- contact.company
+        Mensagem              NVARCHAR(4000) NULL,              -- contact.message
+
+        -- Respostas
+        Projeto               NVARCHAR(50)   NULL,              -- project
+        Ecras                 NVARCHAR(50)   NULL,              -- screens
+        EcrasEstimativa       NVARCHAR(150)  NULL,              -- screensEstimate
+        Inspiracao            NVARCHAR(20)   NULL,              -- inspiration
+        LinkInspiracao        NVARCHAR(500)  NULL,              -- inspirationLink
+        Inicio                NVARCHAR(50)   NULL,              -- start
+        Entrega               NVARCHAR(50)   NULL,              -- delivery
+        Modelo                NVARCHAR(50)   NULL,              -- model
+        Credito               NVARCHAR(50)   NULL,              -- credit
+        NDA                   BIT            NOT NULL CONSTRAINT DF_PedidosParceria_NDA DEFAULT (0),  -- nda
+
+        RespostasJson         NVARCHAR(MAX)  NOT NULL,          -- as respostas inteiras
+        NotasInternas         NVARCHAR(MAX)  NULL,
+
+        CONSTRAINT CK_PedidosParceria_Estado CHECK (Estado IN ('novo', 'em_analise', 'proposta_enviada', 'aceite', 'recusado', 'arquivado')),
+        CONSTRAINT CK_PedidosParceria_Idioma CHECK (Idioma IN ('en', 'pt')),
+        CONSTRAINT CK_PedidosParceria_Nome   CHECK (LEN(Nome) > 0),
+        CONSTRAINT CK_PedidosParceria_Email  CHECK (Email LIKE N'%_@_%._%'),
+        CONSTRAINT CK_PedidosParceria_Json   CHECK (ISJSON(RespostasJson) = 1)
+    );
+
+    CREATE INDEX IX_PedidosParceria_CriadoEm ON dbo.PedidosParceria (CriadoEm DESC) INCLUDE (Estado, Nome, Empresa);
+    CREATE INDEX IX_PedidosParceria_Email    ON dbo.PedidosParceria (Email);
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.usp_InserirPedidoParceria
+    @Respostas  NVARCHAR(MAX),          -- answers (JSON)
+    @Contacto   NVARCHAR(MAX),          -- contact (JSON)
+    @Idioma     CHAR(2),
+    @TempoMs    INT = NULL,
+    @NovoId     INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    IF ISJSON(@Respostas) <> 1 OR ISJSON(@Contacto) <> 1
+        THROW 50001, N'As respostas ou o contacto não são JSON válido.', 1;
+
+    INSERT INTO dbo.PedidosParceria (
+        Idioma, TempoPreenchimentoMs,
+        Nome, Email, Telefone, Empresa, Mensagem,
+        Projeto, Ecras, EcrasEstimativa, Inspiracao, LinkInspiracao,
+        Inicio, Entrega, Modelo, Credito, NDA,
+        RespostasJson
+    )
+    SELECT
+        @Idioma, @TempoMs,
+        LTRIM(RTRIM(c.Nome)), LTRIM(RTRIM(c.Email)),
+        NULLIF(LTRIM(RTRIM(c.Telefone)), N''), NULLIF(LTRIM(RTRIM(c.Empresa)), N''), NULLIF(LTRIM(RTRIM(c.Mensagem)), N''),
+        NULLIF(r.Projeto, N''), NULLIF(r.Ecras, N''), NULLIF(r.EcrasEstimativa, N''), NULLIF(r.Inspiracao, N''), NULLIF(r.LinkInspiracao, N''),
+        NULLIF(r.Inicio, N''), NULLIF(r.Entrega, N''), NULLIF(r.Modelo, N''), NULLIF(r.Credito, N''), ISNULL(r.NDA, 0),
+        @Respostas
+    FROM OPENJSON(@Contacto) WITH (
+            Nome      NVARCHAR(150)  '$.name',
+            Email     NVARCHAR(254)  '$.email',
+            Telefone  NVARCHAR(40)   '$.phone',
+            Empresa   NVARCHAR(150)  '$.company',
+            Mensagem  NVARCHAR(4000) '$.message'
+         ) AS c
+    CROSS JOIN OPENJSON(@Respostas) WITH (
+            Projeto          NVARCHAR(50)   '$.project',
+            Ecras            NVARCHAR(50)   '$.screens',
+            EcrasEstimativa  NVARCHAR(150)  '$.screensEstimate',
+            Inspiracao       NVARCHAR(20)   '$.inspiration',
+            LinkInspiracao   NVARCHAR(500)  '$.inspirationLink',
+            Inicio           NVARCHAR(50)   '$.start',
+            Entrega          NVARCHAR(50)   '$.delivery',
+            Modelo           NVARCHAR(50)   '$.model',
+            Credito          NVARCHAR(50)   '$.credit',
+            NDA              BIT            '$.nda'
+         ) AS r;
+
+    SET @NovoId = CAST(SCOPE_IDENTITY() AS INT);
+END
+GO
+
+
+/* ---------------------------------------------------------------------
    5. Vista para ler os pedidos de forma legível
    --------------------------------------------------------------------- */
 CREATE OR ALTER VIEW dbo.vw_PedidosResumo
@@ -316,8 +416,14 @@ GO
    A palavra-passe vai só para a Vercel (MSSQL_PASSWORD), nunca para o código.
    --------------------------------------------------------------------- */
 -- CREATE USER nevima_site WITH PASSWORD = N'...';
--- GRANT EXECUTE ON OBJECT::dbo.usp_InserirPedidoProposta TO nevima_site;
 -- Para trocar a palavra-passe:  ALTER USER nevima_site WITH PASSWORD = N'...';
+
+-- As permissões: dadas sempre que o script corre, se o utilizador já existir.
+IF DATABASE_PRINCIPAL_ID(N'nevima_site') IS NOT NULL
+BEGIN
+    GRANT EXECUTE ON OBJECT::dbo.usp_InserirPedidoProposta TO nevima_site;
+    GRANT EXECUTE ON OBJECT::dbo.usp_InserirPedidoParceria TO nevima_site;
+END
 GO
 
 
