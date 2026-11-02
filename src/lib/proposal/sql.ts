@@ -1,15 +1,16 @@
 import "server-only";
 import sql from "mssql";
-import type { ProposalRequest } from "./deliver";
+import type { PartnerRequest, ProposalRequest } from "./deliver";
 
 /* ==================================================================
-   A copy of every proposal request in the studio's SQL Server
+   A copy of every request in the studio's SQL Server
 
-   Beside Notion, not instead of it (user, 2026-11-01): Notion stays
-   where the studio works on a request (states, the meeting, the
-   composer), and the database keeps every request as a record that
-   queries can be run on. The tables, the procedure and the view are
-   made by scripts/sql/nevima-db.sql.
+   Both forms (user, 2026-11-02): proposal requests in PedidosProposta,
+   partners in PedidosParceria. Beside Notion, not instead of it (user,
+   2026-11-01): Notion stays where the studio works on a request
+   (states, the meeting, the composer), and the database keeps every
+   request as a record that queries can be run on. The tables, the
+   procedures and the view are made by scripts/sql/nevima-db.sql.
 
    It never decides whether a request was delivered: that is still
    Notion's (deliver.ts). The route writes here after it has answered
@@ -24,7 +25,7 @@ import type { ProposalRequest } from "./deliver";
    Environment variables (set in Vercel, never in the repository):
    - MSSQL_SERVER    e.g. nevima-rg-de.database.windows.net
    - MSSQL_DATABASE  Nevima
-   - MSSQL_USER      nevima_site (may only run the procedure)
+   - MSSQL_USER      nevima_site (may only run the two procedures)
    - MSSQL_PASSWORD
    Without all four, nothing is written and nothing fails.
    ================================================================== */
@@ -61,20 +62,35 @@ function connect(settings: sql.config) {
   return pool;
 }
 
-async function insert(settings: sql.config, request: ProposalRequest, elapsedMs: number) {
-  const db = await connect(settings);
+type Insert = (db: sql.ConnectionPool) => Promise<number>;
+
+const proposalInsert = (request: ProposalRequest, elapsedMs: number): Insert => async (db) => {
   const result = await db
     .request()
     .input("Respostas", sql.NVarChar(sql.MAX), JSON.stringify(request.answers))
     .input("Contacto", sql.NVarChar(sql.MAX), JSON.stringify(request.contact))
     .input("Idioma", sql.Char(2), request.lang)
     .input("Origem", sql.VarChar(30), request.origin)
-    .input("TempoMs", sql.Int, Math.min(Math.max(Math.round(elapsedMs), 0), 2_147_483_647))
+    .input("TempoMs", sql.Int, clampMs(elapsedMs))
     .input("Estimativa", sql.NVarChar(sql.MAX), JSON.stringify(request.estimate))
     .output("NovoId", sql.Int)
     .execute("dbo.usp_InserirPedidoProposta");
   return result.output.NovoId as number;
-}
+};
+
+const partnerInsert = (request: PartnerRequest, elapsedMs: number): Insert => async (db) => {
+  const result = await db
+    .request()
+    .input("Respostas", sql.NVarChar(sql.MAX), JSON.stringify(request.answers))
+    .input("Contacto", sql.NVarChar(sql.MAX), JSON.stringify(request.contact))
+    .input("Idioma", sql.Char(2), request.lang)
+    .input("TempoMs", sql.Int, clampMs(elapsedMs))
+    .output("NovoId", sql.Int)
+    .execute("dbo.usp_InserirPedidoParceria");
+  return result.output.NovoId as number;
+};
+
+const clampMs = (ms: number) => Math.min(Math.max(Math.round(ms), 0), 2_147_483_647);
 
 /** What the log may say about a failure: its kind and code, never a value. */
 function why(error: unknown) {
@@ -85,20 +101,28 @@ function why(error: unknown) {
   return "error";
 }
 
-/** Writes the request to SQL Server. The new row's id, or null when it
-    was not written (not configured, or refused twice). */
-export async function saveRequestToSql(request: ProposalRequest, elapsedMs: number): Promise<number | null> {
+/** Runs the insert, once more after a short wait if it was refused.
+    The new row's id, or null when nothing was written. */
+async function save(kind: "proposal" | "partner", insert: Insert): Promise<number | null> {
   const settings = config();
   if (!settings) return null;
   for (let attempt = 1; attempt <= 2; attempt++) {
     try {
-      const id = await insert(settings, request, elapsedMs);
-      console.info("[nevima:sql] saved", id);
+      const id = await insert(await connect(settings));
+      console.info("[nevima:sql] saved", kind, id);
       return id;
     } catch (error) {
-      console.error("[nevima:sql] failed", `attempt ${attempt}`, why(error));
+      console.error("[nevima:sql] failed", kind, `attempt ${attempt}`, why(error));
       if (attempt === 1) await new Promise((wake) => setTimeout(wake, RETRY_AFTER_MS));
     }
   }
   return null;
 }
+
+/** A proposal request, into PedidosProposta. */
+export const saveRequestToSql = (request: ProposalRequest, elapsedMs: number) =>
+  save("proposal", proposalInsert(request, elapsedMs));
+
+/** A partner request, into PedidosParceria. */
+export const savePartnerToSql = (request: PartnerRequest, elapsedMs: number) =>
+  save("partner", partnerInsert(request, elapsedMs));
