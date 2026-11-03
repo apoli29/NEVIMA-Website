@@ -81,6 +81,7 @@ Limits:
 - What is sent from the composer is not in Gmail's "Sent": the hidden copy in the inbox stands for it.
 - The contract: one PDF of at most 4 MB (Vercel takes no larger request).
 - One shared key, no accounts: it keeps out the curious. Changing `STUDIO_KEY` closes every session.
+- The door never does nothing (2026-11-03, after a partner typed the key and saw no change). The session cookie is `SameSite=Lax`, not `Strict`: with `Strict`, opening `/interno` from a link (WhatsApp, an email, Notion) sent no cookie, and neither did the reload after a right key, so the door came back with no word. `Lax` still keeps the cookie off POSTs from other sites. After a right key the page asks `GET /api/studio/login` whether the session stuck and says so when the browser refused it; the key is read from the field itself (password-manager fills count); "A entrar…" shows while it waits, and a lost connection has its own message. Without the page's script the same form posts as a plain form and comes back to `/interno`, with the cookie or with `?porta=<reason>`.
 - The time links are signed with `LINKS_SECRET` and carry only the Notion page's id and the two times, never a name or an address. Changing `LINKS_SECRET` breaks every link already sent.
 - The page does not stop two clients from taking the same time: the studio offers each one its own times.
 

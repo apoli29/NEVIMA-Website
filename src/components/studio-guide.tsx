@@ -306,13 +306,13 @@ const ROUTES = [
   { path: "/mid-call", who: "Link assinado", what: "Mostra a resposta sobre a chamada a meio do projeto. Abrir a página não regista nada." },
   { path: "/api/mid-call", who: "Link assinado", what: "Guarda a resposta no Notion e avisa o estúdio." },
   { path: "/interno", who: "Chave", what: "Sem sessão válida mostra a porta; com sessão, esta página. Sem links para ela e fora dos motores de busca." },
-  { path: "/api/studio/login", who: "Público", what: "Compara a chave e devolve o cookie da sessão." },
+  { path: "/api/studio/login", who: "Público", what: "Compara a chave e devolve o cookie da sessão; logo a seguir, a porta confirma que o navegador o guardou e diz se não guardou." },
   { path: "/api/studio/lookup", who: "Sessão", what: "Procura em \"Pedidos\" o pedido mais recente de um email." },
   { path: "/api/studio/email", who: "Sessão", what: "Gera os emails e, em Enviar, envia-os e atualiza o Notion." },
 ];
 
 const GUARDS = [
-  "Chave: comparada no servidor, sem espaços acidentais. O cookie guarda uma impressão da chave, nunca a própria chave; dura 30 dias, não é legível por código da página, só viaja por HTTPS em produção e só em pedidos vindos do próprio site.",
+  "Chave: comparada no servidor, sem espaços acidentais. O cookie guarda uma impressão da chave, nunca a própria chave; dura 30 dias, não é legível por código da página, só viaja por HTTPS em produção e nunca em envios feitos a partir de outro site (abrir esta página por um link de um email ou do WhatsApp mantém a sessão).",
   "Não há contas nem segundo fator: a mesma chave serve aos dois. Mudá-la na Vercel, com nova publicação, fecha todas as sessões.",
   "Links dos botões: levam só o id da página do Notion, os horários e a língua, com uma assinatura. Não levam nome, email ou telefone, não expiram e não indicam quem clicou.",
   "Duplo clique: o botão no email só abre a página do site, e só a confirmação conta. Assim, um programa de email que abra links não marca nem responde nada.",
