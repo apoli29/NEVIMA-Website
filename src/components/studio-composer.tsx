@@ -79,47 +79,85 @@ function Label({ children, htmlFor }: { children: React.ReactNode; htmlFor?: str
   );
 }
 
-export function StudioLogin() {
-  const [key, setKey] = useState("");
-  const [error, setError] = useState("");
-  async function enter(event: React.FormEvent) {
+/** What the door says when it does not open. The same codes come back
+    from the login route, as JSON or, without the page's script, in ?porta=. */
+const DOOR: Record<string, string> = {
+  wrong_key: "Chave errada.",
+  rate_limited: "Demasiadas tentativas. Esperar 1 minuto.",
+  no_key: "Este site ainda não tem chave: falta STUDIO_KEY na Vercel (em Production), e publicar de novo depois de a acrescentar.",
+  no_cookie:
+    "A chave está certa, mas este navegador não guardou a sessão. Permitir cookies para este site (ou sair da navegação privada) e tentar de novo.",
+  offline: "Sem ligação ao site. Verificar a internet e tentar de novo.",
+};
+
+export function StudioLogin({ reason = "" }: { reason?: string }) {
+  const [error, setError] = useState(reason ? (DOOR[reason] ?? DOOR.wrong_key) : "");
+  const [busy, setBusy] = useState(false);
+  async function enter(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const res = await fetch("/api/studio/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ key }),
-    });
-    if (res.ok) window.location.reload();
-    else
-      setError(
-        res.status === 429
-          ? "Demasiadas tentativas. Esperar 1 minuto."
-          : res.status === 503
-            ? "Este site ainda não tem chave: falta STUDIO_KEY na Vercel (em Production), e publicar de novo depois de a acrescentar."
-            : "Chave errada.",
-      );
+    // Read from the field itself, so a key the password manager filled in
+    // without a keystroke is still the one sent.
+    const key = String(new FormData(event.currentTarget).get("key") ?? "");
+    setBusy(true);
+    setError("");
+    try {
+      const res = await fetch("/api/studio/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key }),
+      });
+      if (!res.ok) {
+        const { error: code } = (await res.json().catch(() => ({}))) as { error?: string };
+        setError(DOOR[code ?? ""] ?? DOOR.wrong_key);
+        setBusy(false);
+        return;
+      }
+      // The key was right: check the browser kept the session before
+      // reloading, or the door would just come back with no word.
+      const check = await fetch("/api/studio/login", { cache: "no-store" });
+      const { inside } = (await check.json().catch(() => ({}))) as { inside?: boolean };
+      if (!inside) {
+        setError(DOOR.no_cookie);
+        setBusy(false);
+        return;
+      }
+      window.location.assign("/interno");
+    } catch {
+      setError(DOOR.offline);
+      setBusy(false);
+    }
   }
   return (
     <main className="flex min-h-[var(--screen)] flex-col bg-ink text-paper">
-      <form onSubmit={enter} className="shell flex flex-1 flex-col justify-center gap-6 py-16">
+      <form
+        method="post"
+        action="/api/studio/login"
+        onSubmit={enter}
+        className="shell flex flex-1 flex-col justify-center gap-6 py-16"
+      >
         <Wordmark className="block h-auto w-40" />
         <p className="mono-label text-paper/60">Interno · só para o estúdio</p>
         <input
           type="password"
+          name="key"
           autoComplete="current-password"
-          value={key}
-          onChange={(e) => setKey(e.target.value)}
           aria-label="Chave"
           placeholder="Chave"
           className="w-full max-w-sm border border-paper/30 bg-transparent px-3 py-3 text-paper outline-none placeholder:text-paper/40 focus:border-paper"
         />
-        <button type="submit" className="cta-crate inline-flex w-fit items-center text-[0.9375rem] leading-none">
-          Entrar
+        <button
+          type="submit"
+          disabled={busy}
+          className="cta-crate inline-flex w-fit items-center text-[0.9375rem] leading-none disabled:opacity-60"
+        >
+          {busy ? "A entrar…" : "Entrar"}
           <span aria-hidden="true" className="cta-crate-key">
             &rarr;
           </span>
         </button>
-        {error && <p className="text-paper/70">{error}</p>}
+        <p role="status" aria-live="polite" className="max-w-sm text-paper/70">
+          {error}
+        </p>
       </form>
     </main>
   );

@@ -13,7 +13,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function StudioPage() {
+export default async function StudioPage({ searchParams }: { searchParams: Promise<{ porta?: string | string[] }> }) {
   const jar = await cookies();
-  return isStudio(jar.get(COOKIE)?.value) ? <StudioComposer /> : <StudioLogin />;
+  if (isStudio(jar.get(COOKIE)?.value)) return <StudioComposer />;
+  // Why the door did not open, when the form was sent without the page's script.
+  const { porta } = await searchParams;
+  return <StudioLogin reason={typeof porta === "string" ? porta : ""} />;
 }
