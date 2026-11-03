@@ -9,6 +9,12 @@
       "port": 3000
     },
     {
+      "name": "nevima-prod",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start"],
+      "port": 3000
+    },
+    {
       "name": "nevima-dev-emails",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],

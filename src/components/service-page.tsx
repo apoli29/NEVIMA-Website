@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { alternates, localize, translator, type Lang } from "@/lib/i18n";
+import { basePath, localize, translator, type Lang } from "@/lib/i18n";
+import { pageMetadata, serviceGraph } from "@/lib/seo";
 import { SERVICES, findService, servicePath, servicesIn } from "@/lib/services";
+import { JsonLd } from "./json-ld";
 import { Footer } from "./footer";
 import { ProposalHost } from "./proposal-host";
 import { Included } from "./services";
@@ -17,33 +19,35 @@ import { WorkTogether } from "./work-together";
    written twice, so filling these pages out later means adding to them
    rather than keeping two copies of the same sentence in step.
 
-   The same page serves both languages: /services/<slug> and
-   /pt/services/<slug> (see src/app).
+   The same page serves both languages: /services/<slug> and, with the
+   words of its address in Portuguese, /pt/servicos/<slug> (see
+   src/app and PT_PATHS in src/lib/i18n.ts). The code names a service
+   by its English slug; slugFrom() reads it from the address.
    ================================================================== */
 
 /** Web design has no page (the user had its own page taken down,
     2026-10-11); its work moves to the portfolio. */
 const OWN_PAGE = new Set(["web-design"]);
 
-export function serviceParams() {
+/** The last word of a service's address, in a language. */
+const addressSlug = (slug: string, lang: Lang) => localize(servicePath(slug), lang).split("/").pop()!;
+
+/** The service a page's address names, by its English slug. */
+export function slugFrom(param: string, lang: Lang): string {
+  if (lang === "en") return param;
+  return basePath(`/pt/servicos/${param}`).split("/").pop()!;
+}
+
+export function serviceParams(lang: Lang) {
   return SERVICES.filter((service) => !OWN_PAGE.has(service.slug)).map((service) => ({
-    slug: service.slug,
+    slug: addressSlug(service.slug, lang),
   }));
 }
 
 export function serviceMetadata(slug: string, lang: Lang): Metadata {
   const service = findService(slug, lang);
-  if (!service) return {};
-  return {
-    title: service.title,
-    description: service.body,
-    alternates: alternates(servicePath(service.slug), lang),
-    openGraph: {
-      title: `${service.title} · nevima`,
-      description: service.body,
-      type: "article",
-    },
-  };
+  if (!service || OWN_PAGE.has(service.slug)) return {};
+  return pageMetadata(servicePath(service.slug), lang);
 }
 
 export function ServicePage({ slug, lang }: { slug: string; lang: Lang }) {
@@ -58,6 +62,7 @@ export function ServicePage({ slug, lang }: { slug: string; lang: Lang }) {
 
   return (
     <ProposalHost>
+      <JsonLd data={serviceGraph(service.slug, lang)} />
       <main id="top" className="relative min-h-[100svh] bg-paper">
         {/* The same black strip the home page floats, holding the same mark. */}
         <header className="pt-4 md:pt-6">
