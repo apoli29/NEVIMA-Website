@@ -10,17 +10,27 @@ import type { LegalRecord } from "./types";
 
 export const PRIVACY: LegalRecord = {
   slug: "/privacy",
-  version: "1.0",
-  effective: "2026-10-19",
-  updated: "2026-10-19",
-  history: [{ version: "1.0", date: "2026-10-19", change: { pt: "Primeira versão.", en: "First version." } }],
+  version: "1.1",
+  effective: "2026-11-03",
+  updated: "2026-11-03",
+  history: [
+    { version: "1.0", date: "2026-10-19", change: { pt: "Primeira versão.", en: "First version." } },
+    {
+      version: "1.1",
+      date: "2026-11-03",
+      change: {
+        pt: "A medição da velocidade das páginas (Vercel Speed Insights), sem cookies e sem identificar quem visita.",
+        en: "Page speed measurement (Vercel Speed Insights), without cookies and without identifying visitors.",
+      },
+    },
+  ],
   doc: {
     pt: {
       title: "Política de Privacidade",
       lede: "Como a nevima trata os dados pessoais de quem visita este website, pede uma proposta ou trabalha connosco.",
       summary: [
         "Recolhemos apenas o necessário para responder a um pedido e para trabalhar com cada cliente.",
-        "Não usamos cookies de publicidade nem ferramentas de análise, e não vendemos nem cedemos dados para marketing.",
+        "Não usamos cookies de publicidade nem ferramentas de análise de visitantes, e não vendemos nem cedemos dados para marketing. Medimos apenas a velocidade das páginas, sem cookies e sem identificar quem visita.",
         "Os pedidos que não dão origem a contrato são apagados ao fim de 3 meses. As faturas são guardadas durante 10 anos, porque a lei o exige.",
         "Para aceder aos dados, corrigi-los ou apagá-los, basta um email para [ola@nevima.studio](mailto:ola@nevima.studio).",
       ],
@@ -129,7 +139,7 @@ export const PRIVACY: LegalRecord = {
             { p: "Os dados só são partilhados com quem presta serviços à nevima ou quando a lei o exige:" },
             {
               list: [
-                "**Vercel Inc.**, que aloja o website (Estados Unidos);",
+                "**Vercel Inc.**, que aloja o website e mede a velocidade das páginas (Speed Insights: dados técnicos anónimos, como o tipo de aparelho e o tempo de carregamento) (Estados Unidos);",
                 "**Google**, através do Google Workspace, onde ficam os emails;",
                 "**Autoridade Tributária e Aduaneira**, para a faturação, por obrigação legal.",
               ],
@@ -236,7 +246,7 @@ export const PRIVACY: LegalRecord = {
       lede: "How nevima handles the personal data of people who visit this website, ask for a proposal or work with us.",
       summary: [
         "We only collect what we need to answer a request and to work with each client.",
-        "We use no advertising cookies or analytics tools, and we never sell or share data for marketing.",
+        "We use no advertising cookies or visitor analytics tools, and we never sell or share data for marketing. We only measure how fast pages load, without cookies and without identifying visitors.",
         "Requests that don't lead to a contract are deleted after 3 months. Invoices are kept for 10 years, because the law requires it.",
         "To see, correct or delete your data, just email [ola@nevima.studio](mailto:ola@nevima.studio).",
       ],
@@ -345,7 +355,7 @@ export const PRIVACY: LegalRecord = {
             { p: "Data is only shared with those who provide services to nevima, or where the law requires it:" },
             {
               list: [
-                "**Vercel Inc.**, which hosts the website (United States);",
+                "**Vercel Inc.**, which hosts the website and measures page speed (Speed Insights: anonymous technical data such as device type and load time) (United States);",
                 "**Google**, through Google Workspace, where emails are kept;",
                 "**the Portuguese Tax Authority**, for invoicing, as the law requires.",
               ],
