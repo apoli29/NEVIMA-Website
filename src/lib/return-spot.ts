@@ -161,6 +161,11 @@ export function hasOpened() {
    the switch is in the foot and the two languages' pages are not quite
    the same height. Noted as the link is followed, read by the keeper
    once the page is there (return-keeper.tsx).
+
+   Each language has its own document (site-root.tsx), so the switch
+   loads the page anew. The home page reads the note too, and does not
+   play its opening for a visitor who only changed language
+   (switchingTo).
    ================================================================== */
 
 const LANG_KEY = "nevima:lang-spot";
@@ -175,10 +180,20 @@ export function keepLangSpot(path: string) {
   } satisfies LangSpot);
 }
 
+function langNote(path: string): LangSpot | null {
+  const note = read<LangSpot>(LANG_KEY);
+  return note && note.path === path && Date.now() - note.at <= RESTORE_TTL ? note : null;
+}
+
+/** Whether this page was opened from the foot's switch just now. */
+export function switchingTo(path: string) {
+  return langNote(path) !== null;
+}
+
 /** How far from the foot to put this page back, used up as it is read. */
 export function takeLangSpot(path: string): number | null {
-  const note = read<LangSpot>(LANG_KEY);
-  if (!note || note.path !== path || Date.now() - note.at > RESTORE_TTL) return null;
+  const note = langNote(path);
+  if (!note) return null;
   try {
     sessionStorage.removeItem(LANG_KEY);
   } catch {}

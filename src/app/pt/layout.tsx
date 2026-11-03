@@ -1,27 +1,17 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { SiteRoot } from "@/components/site-root";
+import { siteMetadata } from "@/lib/seo";
 
 /* The Portuguese pages (see src/lib/i18n.ts): the same pages as the
-   English ones, under /pt, with the site's title and description in
-   Portuguese. The words on each page follow its address. */
+   English ones, under /pt, with the words of their addresses translated
+   and the document declared in Portuguese (site-root.tsx). */
 
-export const metadata: Metadata = {
-  // Absolute: the root layout's template would otherwise be put on it.
-  title: {
-    absolute: "nevima — websites e identidade visual",
-    template: "%s · nevima",
-  },
-  description:
-    "Duas pessoas, as ferramentas certas: websites e identidade visual ao nível de agências muito maiores, sem a burocracia que costuma vir com esse tamanho.",
-  openGraph: {
-    title: "nevima — menos estrutura, mais alcance",
-    description:
-      "Estúdio de websites e identidade visual. Duas pessoas, zero intermediários, resultados de agência grande.",
-    type: "website",
-    locale: "pt_PT",
-    alternateLocale: ["en_US"],
-  },
+export const metadata: Metadata = siteMetadata("pt");
+
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
 };
 
 export default function PortugueseLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return children;
+  return <SiteRoot lang="pt">{children}</SiteRoot>;
 }

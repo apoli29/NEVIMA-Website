@@ -2,7 +2,8 @@
    Languages
 
    The site is in English at its own addresses and in European
-   Portuguese under /pt (user, 2026-10-18): "/about" is "/pt/about",
+   Portuguese under /pt (user, 2026-10-18), with the words of its
+   addresses in Portuguese (user, 2026-11-03): "/about" is "/pt/sobre",
    the home page is "/pt". The language is read from the address, so a
    page, a link and the server all agree on it without anything stored.
 
@@ -22,27 +23,58 @@ export type Copy<T = string> = { en: T; pt: T };
 
 export const PT_PREFIX = "/pt";
 
+/** The Portuguese address of every page whose words are translated
+    (user, 2026-11-03): "/about" is "/pt/sobre". The words in an address
+    are shown in search results and in a shared link, so they are in the
+    page's language; once the site is live an address never changes
+    without a redirect (docs/seo-decisions.md). No accents, so a copied
+    link stays legible. A page left out keeps its English words under
+    /pt: "/cookies", and the pages the studio's emails link to
+    ("/meeting", "/mid-call"), which search engines never see. A new page
+    with words in its address gets its line here (the SEO check in
+    audit/seo-check.mjs fails a Portuguese link that is not on the site). */
+const PT_PATHS: Record<string, string> = {
+  "/about": "/sobre",
+  "/portfolio": "/portefolio",
+  "/services/visual-identity": "/servicos/identidade-visual",
+  "/services/seo": "/servicos/seo",
+  "/services/geo": "/servicos/geo",
+  "/services/photo-shoot": "/servicos/sessao-fotografica",
+  "/privacy": "/privacidade",
+  "/terms": "/termos",
+  "/legal-notice": "/aviso-legal",
+  "/accessibility": "/acessibilidade",
+  "/ai": "/ia",
+};
+
+const EN_PATHS: Record<string, string> = Object.fromEntries(
+  Object.entries(PT_PATHS).map(([en, pt]) => [pt, en]),
+);
+
 /** The language a path of the site is in. */
 export function langOf(pathname: string): Lang {
   return pathname === PT_PREFIX || pathname.startsWith(`${PT_PREFIX}/`) ? "pt" : "en";
 }
 
-/** A path with its language taken off: "/pt/about" is "/about", "/pt" is "/". */
+/** A path with its language taken off, in the English words the code
+    names pages by: "/pt/sobre" is "/about", "/pt" is "/". */
 export function basePath(pathname: string): string {
   if (langOf(pathname) === "en") return pathname || "/";
-  return pathname.slice(PT_PREFIX.length) || "/";
+  const path = pathname.slice(PT_PREFIX.length) || "/";
+  return EN_PATHS[path] ?? path;
 }
 
-/** A link of the site, in a language. Paths are prefixed ("/about" is
-    "/pt/about", "/#services" is "/pt#services"); a place on the same
-    page ("#top"), another site and an email address are left as they are. */
+/** A link of the site, in a language. Paths are prefixed and their words
+    translated ("/about" is "/pt/sobre", "/#services" is "/pt#services");
+    a place on the same page ("#top"), another site and an email address
+    are left as they are. */
 export function localize(href: string, lang: Lang): string {
   if (lang === "en" || !href.startsWith("/") || href.startsWith("//")) return href;
   if (langOf(href.split(/[?#]/)[0]) === "pt") return href;
   const at = href.search(/[?#]/);
   const path = at === -1 ? href : href.slice(0, at);
   const rest = at === -1 ? "" : href.slice(at);
-  return (path === "/" ? PT_PREFIX : `${PT_PREFIX}${path}`) + rest;
+  return (path === "/" ? PT_PREFIX : `${PT_PREFIX}${PT_PATHS[path] ?? path}`) + rest;
 }
 
 /** The same page in the other language. */

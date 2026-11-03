@@ -21,7 +21,7 @@ import { Services } from "./services";
 import { StatementScreen } from "./statement-screen";
 import { useSmoothScroll } from "./smooth-scroll";
 import { Studio } from "./studio";
-import { hasOpened, markOpened, returningTo } from "@/lib/return-spot";
+import { hasOpened, markOpened, returningTo, switchingTo } from "@/lib/return-spot";
 import { booted, OPENING_CLASS } from "@/lib/opened";
 import { useT } from "@/lib/use-lang";
 
@@ -335,9 +335,13 @@ export function Home() {
      2026-10-13). One exception on a fresh load: "Exit portfolio" sent the
      visitor here a moment ago (the browser went back by loading the page
      anew), so they are put back where they were rather than at the start;
-     they come out of the black of the exit, so nothing flashes. */
+     they come out of the black of the exit, so nothing flashes. The same
+     for the foot's language switch, which loads the page anew in the
+     other language (each has its own document): the visitor only changed
+     language, and is put back at the foot. */
   useMeasureEffect(() => {
-    if (!(booted.done && hasOpened()) && !returningTo(window.location.pathname)) return;
+    const here = window.location.pathname;
+    if (!(booted.done && hasOpened()) && !returningTo(here) && !switchingTo(here)) return;
     progress.set(1);
     phaseRef.current = "open";
     setPhase("open");
