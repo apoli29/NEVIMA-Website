@@ -18,24 +18,29 @@
 
 type Who = "Cliente" | "Automático" | "Estúdio";
 
-type AppId = "site" | "vercel" | "notion" | "resend" | "gmail" | "hostinger" | "mail" | "calendar" | "call";
+type AppId = "site" | "vercel" | "notion" | "sql" | "resend" | "gmail" | "hostinger" | "mail" | "calendar" | "call";
 
 type App = { name: string; what: string; who: string };
 
 const APPS: Record<AppId, App> = {
   site: {
     name: "Site",
-    what: "O website (nevima-website.vercel.app, mais tarde nevima.studio). Tem o formulário, a página onde o cliente confirma o horário, esta página interna e as rotas do servidor que ligam tudo: recebem o pedido, falam com o Notion e mandam o Resend enviar.",
+    what: "O website (nevima-website.vercel.app, mais tarde nevima.studio). Tem o formulário, a página onde o cliente confirma o horário, esta página interna e as rotas do servidor que ligam tudo: recebem o pedido, falam com o Notion, guardam uma cópia no SQL Server e mandam o Resend enviar.",
     who: "Cliente e estúdio",
   },
   vercel: {
     name: "Vercel",
-    what: "Aloja o site e publica cada alteração do código. Guarda as chaves secretas (Notion, Resend, a chave desta página, a dos links) e os registos, onde se vê se um envio falhou.",
+    what: "Aloja o site e publica cada alteração do código. Guarda as chaves secretas (Notion, SQL Server, Resend, a chave desta página, a dos links) e os registos, onde se vê se um envio falhou.",
     who: "Estúdio (só para configurar)",
   },
   notion: {
     name: "Notion",
     what: "Onde ficam os pedidos: a base \"Pedidos\" (clientes) e a base \"Parceiros\" (empresas de desenvolvimento). Cada pedido é uma página com as respostas, a estimativa, o estado, a data da reunião e os valores. O site escreve e lê nelas através de uma integração; o estúdio trabalha nelas à mão.",
+    who: "Estúdio",
+  },
+  sql: {
+    name: "SQL Server",
+    what: "Uma base de dados na Azure (servidor nevima-rg-de, base Nevima) com uma cópia de cada pedido dos dois formulários: os pedidos de proposta (com a estimativa) na tabela PedidosProposta e os de parceria na PedidosParceria, com as respostas e os contactos. Não substitui o Notion: serve de registo e para consultas em SQL. O site só consegue acrescentar pedidos; ler e apagar faz-se no VS Code, com a conta de administrador. A base gratuita adormece quando não é usada e acorda no pedido seguinte.",
     who: "Estúdio",
   },
   resend: {
@@ -261,7 +266,8 @@ const ACCESS = [
 ];
 
 const FAILURES = [
-  { when: "Um pedido chega e o Notion falha", then: "O formulário diz que o pedido não chegou e propõe enviá-lo pela app de email do visitante. Nada fica guardado: os registos não têm os contactos.", todo: "Ver o erro nos registos da Vercel." },
+  { when: "Um pedido chega e o Notion falha", then: "O formulário diz que o pedido não chegou e propõe enviá-lo pela app de email do visitante. Não fica no Notion, mas fica a cópia no SQL Server (se estiver ligado); os registos não têm os contactos.", todo: "Ver o erro nos registos da Vercel. O pedido pode estar no SQL Server, e chegar também por email." },
+  { when: "Um pedido (de proposta ou de parceria) chega e o SQL Server falha", then: "Nada muda para o visitante nem no Notion: a cópia é escrita depois da resposta, com uma segunda tentativa 20 segundos depois, para a base que estava a dormir. Se as duas falharem, o pedido só fica no Notion.", todo: "Ver nos registos da Vercel as linhas [nevima:sql]. Se faltar um pedido, copiá-lo à mão do Notion." },
   { when: "Um pedido chega e o Resend falha", then: "O pedido fica no Notion e o visitante vê sucesso. A coluna \"Alertas\" diz qual dos emails não saiu: a confirmação, o aviso ao estúdio ou os dois.", todo: "Consultar o Notion com regularidade: sem aviso, um pedido novo só se vê lá. Se a confirmação não saiu, contactar o cliente." },
   { when: "O mesmo email pede de novo em 24 horas", then: "É recusado e o formulário diz quanto falta. Conta em cada base em separado.", todo: "Para testes, usar um endereço de REPEAT_ALLOWED_EMAILS_FORMS." },
   { when: "Um robô preenche o formulário", then: "Campo escondido preenchido, ou envio em menos de 4 segundos: o site responde que correu bem e não guarda nada.", todo: "Nada." },

@@ -1,5 +1,7 @@
-import { deliverPartner, waitBefore } from "@/lib/proposal/deliver";
+import { after } from "next/server";
+import { deliverPartner, waitBefore, type PartnerRequest } from "@/lib/proposal/deliver";
 import { allow, caught, clientIp, json, readJson } from "@/lib/proposal/guard";
+import { savePartnerToSql } from "@/lib/proposal/sql";
 import { readContact, readPartner } from "@/lib/proposal/validate";
 
 /* A development company's request to work with us on a front end (the
@@ -7,6 +9,8 @@ import { readContact, readPartner } from "@/lib/proposal/validate";
    quote. The same guards as the proposal's. */
 
 export const dynamic = "force-dynamic";
+/** Room for the SQL copy's second try while a paused database wakes. */
+export const maxDuration = 60;
 
 /** Less than this between opening the form and sending is a script. */
 const FASTEST_MS = 4000;
@@ -34,13 +38,19 @@ export async function POST(request: Request) {
   const wait = await waitBefore("partner", contact.value.email);
   if (wait > 0) return json({ error: "already_sent", waitMs: wait }, 409);
 
-  const delivered = await deliverPartner({
+  const partner: PartnerRequest = {
     at: new Date().toISOString(),
     // The language picked for the reply, else the site's (user, 2026-10-30).
     lang: contact.value.reply ?? (fields.lang === "pt" ? "pt" : "en"),
     answers: answers.value,
     contact: contact.value,
-  });
+  };
+
+  // A copy in SQL Server once the visitor has their answer, as for
+  // proposal requests (user, 2026-11-02; sql.ts).
+  after(() => savePartnerToSql(partner, elapsed));
+
+  const delivered = await deliverPartner(partner);
   if (!delivered) return json({ error: "not_configured" }, 503);
   return json({ ok: true });
 }

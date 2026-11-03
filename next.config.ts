@@ -12,6 +12,8 @@ const SECURITY_HEADERS = [
 
 const nextConfig: NextConfig = {
   images: { qualities: [90] },
+  // The SQL Server driver runs as Node loads it, not bundled (src/lib/proposal/sql.ts).
+  serverExternalPackages: ["mssql"],
   // Each language has its own root layout, so a missing page has one of
   // its own above both (src/app/global-not-found.tsx).
   experimental: { globalNotFound: true },

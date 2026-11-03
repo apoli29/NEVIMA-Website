@@ -1,6 +1,8 @@
+import { after } from "next/server";
 import { estimate } from "@/lib/proposal/estimate";
-import { deliverRequest, waitBefore } from "@/lib/proposal/deliver";
+import { deliverRequest, waitBefore, type ProposalRequest } from "@/lib/proposal/deliver";
 import { allow, caught, clientIp, json, readJson } from "@/lib/proposal/guard";
+import { saveRequestToSql } from "@/lib/proposal/sql";
 import { readAnswers, readContact } from "@/lib/proposal/validate";
 
 /* The request for a final proposal. The estimate is worked out again
@@ -8,6 +10,8 @@ import { readAnswers, readContact } from "@/lib/proposal/validate";
    figure, not whatever the browser says it was shown. */
 
 export const dynamic = "force-dynamic";
+/** Room for the SQL copy's second try while a paused database wakes. */
+export const maxDuration = 60;
 
 /** Less than this between opening the form and sending is a script. */
 const FASTEST_MS = 4000;
@@ -38,14 +42,21 @@ export async function POST(request: Request) {
   // The estimate in the words the visitor read it in; the reply, and the
   // studio's later emails, in the language picked for it (user, 2026-10-30).
   const siteLang = fields.lang === "pt" ? "pt" : "en";
-  const delivered = await deliverRequest({
+  const proposal: ProposalRequest = {
     origin: fields.origin === "page" || fields.origin === "overlay" ? fields.origin : "other",
     at: new Date().toISOString(),
     lang: contact.value.reply ?? siteLang,
     answers: answers.value,
     estimate: estimate(answers.value, undefined, siteLang),
     contact: contact.value,
-  });
+  };
+
+  // A copy in SQL Server, written once the visitor has their answer, so
+  // the database never makes them wait. Notion still decides whether the
+  // request was delivered (user, 2026-11-01; sql.ts).
+  after(() => saveRequestToSql(proposal, elapsed));
+
+  const delivered = await deliverRequest(proposal);
   if (!delivered) return json({ error: "not_configured" }, 503);
   return json({ ok: true });
 }
