@@ -16,6 +16,15 @@ import {
   LANGUAGES,
   MAX,
   PAGES,
+  PAGE_MODES,
+  PAGE_TYPES,
+  SECTOR_PAGES,
+  ITEM_LISTS,
+  MIN_CHOSEN,
+  MAX_OTHERS,
+  chosenCount,
+  countPages,
+  pagesFor,
   PERSONAL_ABROAD,
   PERSONAL_FEATURE_NOTES,
   PHOTO_PLANS,
@@ -41,6 +50,8 @@ import {
   type FormKindId,
   type LanguageId,
   type PagesId,
+  type PageModeId,
+  type PageTypeId,
   type PhotoPlanId,
   type Range,
   type ReachId,
@@ -78,7 +89,14 @@ export type Draft = {
   country: CountryId | "";
   countryOther: string;
   design: DesignId | "";
-  pages: PagesId | "";
+  /** A landing page, a website (with its page types) or not sure. */
+  pageMode: PageModeId | "";
+  /** A website's ticked kinds of page; Home and About are always in. */
+  pageTypes: PageTypeId[];
+  /** Up to MAX_OTHERS pages or sections written in, one per slot. */
+  pageOthers: string[];
+  /** "Not sure, you choose for me" on the pages and sections. */
+  pagesUnsure: boolean;
   languages: LanguageId[];
   languagesOther: string;
   /** The second level of what the website does (see FEATURES). */
@@ -113,7 +131,10 @@ export const EMPTY_DRAFT: Draft = {
   country: "",
   countryOther: "",
   design: "",
-  pages: "",
+  pageMode: "",
+  pageTypes: [],
+  pageOthers: ["", "", ""],
+  pagesUnsure: false,
   languages: [],
   languagesOther: "",
   features: [],
@@ -221,8 +242,8 @@ const DOMAIN_NOTE_PERSONAL: Copy = {
   pt: "Sem domínio, o registo é feito em nome próprio e pago diretamente, com o nosso acompanhamento em todos os passos. Com um domínio já existente, não há nada a acrescentar.",
 };
 const PAGES_NOTE: Copy = {
-  en: "Not sure? We estimate for 2 to 7 pages, so the range of your final estimate can be a little wider than with a set number.",
-  pt: "Sem um número definido, estimamos para 2 a 7 páginas, por isso o intervalo da estimativa final pode ser um pouco mais largo.",
+  en: "Not sure? We estimate from Home, About and Contact up to the pages and sections usual in your sector, so the range of your final estimate can be a little wider.",
+  pt: "Sem um tipo definido, estimamos da página principal, Sobre nós e Contactos até às páginas e secções habituais do setor, por isso o intervalo da estimativa final pode ser um pouco mais largo.",
 };
 const TEXTS_NOTE: Copy = {
   en: "If you don't, writing them is added to the price, as a range set by your website's size.",
@@ -242,6 +263,9 @@ const NO_REFERENCES: Copy<readonly { id: "none"; label: string }[]> = {
 export const personalAbroad = (draft: Draft) =>
   draft.audience === "personal" && draft.country !== "" && draft.country !== "PT";
 
+/** The pages or sections written in, without the empty slots. */
+const writtenIn = (draft: Draft) => draft.pageOthers.map((o) => o.trim()).filter(Boolean);
+
 export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: Lang): Errors {
   const t = translator(lang);
   const PICK_ONE = t("Choose one to continue.", "Escolher uma opção para continuar.");
@@ -251,6 +275,12 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
   if (step === "basics") {
     if (!draft.services.length) e.services = PICK_ANY;
     if (!draft.audience) e.audience = PICK_ONE;
+    // Where the business is based is the first question of all (user,
+    // 2026-11-04).
+    if (!draft.country) e.country = PICK_ONE;
+    else if (draft.country === "other" && !draft.countryOther.trim()) e.country = t("Tell us which country.", "Falta indicar o país.");
+    // Personal use outside Portugal goes no further (shown as it is picked).
+    if (personalAbroad(draft)) e.country = t(PERSONAL_ABROAD);
   }
   if (step === "site") {
     if (draft.audience !== "personal") {
@@ -259,16 +289,24 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
         e.sector = t("Tell us what your business does.", "Falta indicar a área do negócio.");
       }
     }
-    if (!draft.country) e.country = PICK_ONE;
-    else if (draft.country === "other" && !draft.countryOther.trim()) e.country = t("Tell us which country.", "Falta indicar o país.");
-    // Personal use outside Portugal goes no further (shown as it is picked).
-    if (personalAbroad(draft)) e.country = t(PERSONAL_ABROAD);
     // A project beyond what we take on needs nothing more answered.
     if (web && !draft.complex) {
+      if (!draft.design) e.design = PICK_ONE;
+      if (!draft.pageMode) e.pages = PICK_ONE;
+      else if (
+        draft.pageMode === "website" &&
+        chosenCount(draft.pageTypes, writtenIn(draft).length, draft.pagesUnsure) < MIN_CHOSEN
+      ) {
+        // A website needs at least two pages or sections besides the three
+        // always included; "not sure" stands for two (user, 2026-11-04).
+        e.pageTypes = t(
+          `Choose at least ${MIN_CHOSEN} pages or sections to continue.`,
+          `Escolher pelo menos ${MIN_CHOSEN} páginas ou secções para continuar.`,
+        );
+      }
+      // The forms come after the pages (user, 2026-11-04).
       if (draft.features.includes("forms") && !draft.formKind) e.formKind = PICK_ONE;
       if (draft.features.includes("forms") && draft.formKind === "simple" && !draft.forms) e.forms = PICK_ONE;
-      if (!draft.design) e.design = PICK_ONE;
-      if (!draft.pages) e.pages = PICK_ONE;
     }
   }
   if (step === "web") {
@@ -328,9 +366,17 @@ export function toAnswers(draft: Draft): Answers {
     const references = draft.noReferences
       ? []
       : [draft.reference1.trim(), draft.reference2.trim()].filter(Boolean);
+    // The size is worked out the same way on the server, which is the one
+    // that counts; here it is only what the summary shows.
+    const pageMode = draft.pageMode as PageModeId;
+    const pageTypes = pageMode === "website" ? draft.pageTypes : [];
+    const pageOthers = pageMode === "website" ? writtenIn(draft) : [];
+    const pagesUnsure = pageMode === "website" && draft.pagesUnsure;
     answers.web = {
       design: draft.design as DesignId,
-      pages: draft.pages as PagesId,
+      pages: pagesFor(pageMode, pageTypes, pageOthers.length, pagesUnsure),
+      pageMode,
+      pageTypes,
       languages: draft.languages,
       features: draft.features,
       texts: draft.texts as TextsId,
@@ -339,6 +385,8 @@ export function toAnswers(draft: Draft): Answers {
       urgent: draft.urgent as YesNo,
     };
     if (draft.languages.includes("other")) answers.web.languagesOther = draft.languagesOther.trim();
+    if (pageOthers.length) answers.web.pageOthers = pageOthers;
+    if (pagesUnsure) answers.web.pagesUnsure = true;
     if (draft.features.includes("forms") && draft.formKind) {
       answers.web.formKind = draft.formKind;
       if (draft.formKind === "simple" && draft.forms) answers.web.forms = draft.forms;
@@ -384,7 +432,23 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
   if (a.web) {
     lines.push(
       `${t("Design level", "Nível de design")}: ${label(DESIGN, a.web.design)}`,
-      `${t("Pages", "Páginas")}: ${label(PAGES, a.web.pages)}`,
+      `${t("Pages", "Páginas")}: ${
+        a.web.pageMode === "website"
+          ? t(
+              `website, ${countPages(a.web.pageTypes, a.web.pageOthers?.length ?? 0)} pages and sections`,
+              `website, ${countPages(a.web.pageTypes, a.web.pageOthers?.length ?? 0)} páginas e secções`,
+            )
+          : label(PAGES, a.web.pages)
+      }`,
+      ...(a.web.pageTypes.length || a.web.pageOthers?.length || a.web.pagesUnsure
+        ? [
+            `${t("Pages and sections", "Páginas e secções")}: ${[
+              ...a.web.pageTypes.map((k) => label(PAGE_TYPES, k)),
+              ...(a.web.pageOthers ?? []),
+              ...(a.web.pagesUnsure ? [t("others chosen by the studio", "outras à escolha do estúdio")] : []),
+            ].join(", ")}`,
+          ]
+        : []),
       `${t("Languages", "Línguas")}: ${a.web.languages.map((l) => (l === "other" ? a.web?.languagesOther : label(LANGUAGES, l))).join(", ")}`,
       `${t("What it does", "O que faz")}: ${[
         t("presents the business", "apresenta o negócio"),
@@ -715,6 +779,43 @@ export function StepScreen({
 
       {step === "basics" && (
         <div className="pf-rows">
+          {/* Where the business is based is the first question of all (user,
+              2026-11-04): the market sets every price. */}
+          <Question
+            id="country"
+            label={
+              draft.audience === "personal"
+                ? t("Which country are you in?", "Em que país?")
+                : draft.audience === "business"
+                  ? t("Where is your business based?", "Onde está sediado o negócio?")
+                  : t("Where are you based?", "Em que país?")
+            }
+            // The note below says it as soon as it applies.
+            error={personalAbroad(draft) ? undefined : errors.country}
+          >
+            <Segmented
+              name="country"
+              options={list(COUNTRIES)}
+              value={draft.country}
+              onChange={(country) => setDraft({ country })}
+              labelledBy="country-q"
+            />
+            {draft.country === "other" && (
+              <Field
+                id={`${uid}-country`}
+                label={t("Which country?", "Que país?")}
+                placeholder={t("Which country?", "Que país?")}
+                value={draft.countryOther}
+                onChange={(countryOther) => setDraft({ countryOther })}
+                autoComplete="country-name"
+              />
+            )}
+            {personalAbroad(draft) && (
+              <p role="status" className="pf-out">
+                {t(PERSONAL_ABROAD)}
+              </p>
+            )}
+          </Question>
           <Question
             id="services"
             label={t("Which of our services are you interested in?", "Quais os serviços pretendidos?")}
@@ -774,42 +875,125 @@ export function StepScreen({
             )}
           </Question>
           )}
+          {/* Design, then the pages, then what the website does (user,
+              2026-11-04): the forms are asked once the pages are chosen. */}
+          <Question id="design" label={t("Design level", "Nível de design")} error={errors.design}>
+            <Segmented
+              name="design"
+              options={list(DESIGN)}
+              value={draft.design}
+              onChange={(design) => setDraft({ design })}
+              labelledBy="design-q"
+            />
+          </Question>
+          {/* A landing page or a website first, each with a line saying how
+              they differ; then, for a website, the kinds of page (user,
+              2026-11-04). Nothing is ticked for the client: the sector only
+              stars its usual pages inside the one list, and only Home, About
+              and Contact are always in. The size the price is keyed by comes
+              from the count. */}
           <Question
-            id="country"
-            label={
-              draft.audience === "personal"
-                ? t("Which country are you in?", "Em que país?")
-                : t("Where is your business based?", "Onde está sediado o negócio?")
-            }
-            // The note below says it as soon as it applies.
-            error={personalAbroad(draft) ? undefined : errors.country}
+            id="pages"
+            label={t("What do you need?", "O que é necessário?")}
+            error={errors.pages}
+            footnote={draft.pageMode === "unsure" ? t(PAGES_NOTE) : undefined}
           >
             <Segmented
-              name="country"
-              options={list(COUNTRIES)}
-              value={draft.country}
-              onChange={(country) => setDraft({ country })}
-              labelledBy="country-q"
+              name="pages"
+              options={list(PAGE_MODES)}
+              value={draft.pageMode}
+              onChange={(pageMode) => setDraft({ pageMode })}
+              labelledBy="pages-q"
             />
-            {draft.country === "other" && (
-              <Field
-                id={`${uid}-country`}
-                label={t("Which country?", "Que país?")}
-                placeholder={t("Which country?", "Que país?")}
-                value={draft.countryOther}
-                onChange={(countryOther) => setDraft({ countryOther })}
-                autoComplete="country-name"
-              />
-            )}
-            {personalAbroad(draft) && (
-              <p role="status" className="pf-out">
-                {t(PERSONAL_ABROAD)}
-              </p>
-            )}
           </Question>
+          {draft.pageMode === "website" && (
+            <Question
+              id="pageTypes"
+              label={t("Which pages and sections?", "Que páginas e secções?")}
+              hint={t(`Choose at least ${MIN_CHOSEN}`, `Pelo menos ${MIN_CHOSEN}`)}
+              error={errors.pageTypes}
+              group={false}
+            >
+              {(() => {
+                // One list for every business; the sector only puts a star
+                // on the pages it usually has (user, 2026-11-04).
+                const usual = SECTOR_PAGES[personal ? "personal" : draft.sector || "other"];
+                const kinds = list(PAGE_TYPES).map((k) => (usual.includes(k.id) ? { ...k, label: `${k.label}*` } : k));
+                const pick = (next: PageTypeId[]) => {
+                  let types = next;
+                  // The two kinds of item list exclude each other: the one
+                  // just ticked stays, and the other is unticked.
+                  if (ITEM_LISTS.every((id) => types.includes(id))) {
+                    const added = ITEM_LISTS.find((id) => !draft.pageTypes.includes(id));
+                    types = types.filter((id) => !(ITEM_LISTS as readonly PageTypeId[]).includes(id) || id === added);
+                  }
+                  setDraft({ pageTypes: types });
+                };
+                const setOther = (i: number, value: string) =>
+                  setDraft({ pageOthers: draft.pageOthers.map((o, j) => (j === i ? value : o)) });
+                const written = writtenIn(draft).length;
+                const count = countPages(draft.pageTypes, written);
+                return (
+                  <>
+                    <p className="mono-label pf-hint">{t("Always included", "Sempre incluídas")}</p>
+                    <Multi
+                      name="pages-always"
+                      options={[
+                        { id: "home", label: t("Home", "Página principal") },
+                        { id: "about", label: t("About us", "Sobre nós") },
+                        { id: "contact", label: t("Contact & location", "Contactos e localização") },
+                      ]}
+                      value={["home", "about", "contact"]}
+                      locked={["home", "about", "contact"]}
+                      onChange={() => {}}
+                    />
+                    <Multi name="pages-types" options={kinds} value={draft.pageTypes} onChange={pick} />
+                    <p className="pf-footnote">
+                      {personal
+                        ? t("* Usually chosen for projects like yours", "* Costuma ser escolhida em projetos semelhantes")
+                        : t("* Usually chosen by businesses in your sector", "* Costuma ser escolhida por negócios do mesmo setor")}
+                    </p>
+                    <p className="mono-label pf-hint">{t("Other pages and sections*", "Outras páginas e secções*")}</p>
+                    {Array.from({ length: MAX_OTHERS }, (_, i) => (
+                      <Field
+                        key={i}
+                        id={`${uid}-page-other-${i}`}
+                        label={t(`Other page or section ${i + 1}`, `Outra página ou secção ${i + 1}`)}
+                        placeholder={t(`Other page or section ${i + 1}`, `Outra página ou secção ${i + 1}`)}
+                        value={draft.pageOthers[i] ?? ""}
+                        onChange={(value) => setOther(i, value)}
+                      />
+                    ))}
+                    <Multi
+                      name="pages-unsure"
+                      options={[
+                        {
+                          id: "unsure",
+                          label: t("Not sure, I'd rather you choose for me*", "Não sei, prefiro que escolham por mim*"),
+                        },
+                      ]}
+                      value={draft.pagesUnsure ? ["unsure"] : []}
+                      onChange={(v) => setDraft({ pagesUnsure: v.length > 0 })}
+                    />
+                    <p className="pf-footnote">
+                      {t(
+                        "* Writing other sections outside the choices, or leaving the choice to us, can result in an estimate with a wider range.",
+                        "* Escrever outras secções fora das escolhas pode resultar numa estimativa com um intervalo maior.",
+                      )}
+                    </p>
+                    <p role="status" className="pf-footnote">
+                      {t(`${count} pages and sections`, `${count} páginas e secções`)}
+                      {draft.pagesUnsure && ` ${t("+ the ones we choose", "+ as que o estúdio escolher")}`}
+                    </p>
+                  </>
+                );
+              })()}
+            </Question>
+          )}
           {/* What the website has to do, in three levels, each adding to
-              the one before (user, 2026-10-18). Asked before the rest: a project
-              that needs the third needs nothing else answered. */}
+              the one before (user, 2026-10-18); asked after the pages
+              (user, 2026-11-04). The third level ends the form at the
+              estimate, whatever else was answered. */}
           <Question
             id="features"
             label={t("What is your website's core goal?", "Qual o objetivo central do website?")}
@@ -905,28 +1089,6 @@ export function StepScreen({
                 labelledBy="forms-q"
               />
             </Question>
-          )}
-          {!draft.complex && (
-          <>
-          <Question id="design" label={t("Design level", "Nível de design")} error={errors.design}>
-            <Segmented
-              name="design"
-              options={list(DESIGN)}
-              value={draft.design}
-              onChange={(design) => setDraft({ design })}
-              labelledBy="design-q"
-            />
-          </Question>
-          <Question id="pages" label={t("How many pages?", "Quantas páginas?")} error={errors.pages} footnote={t(PAGES_NOTE)}>
-            <Segmented
-              name="pages"
-              options={list(PAGES)}
-              value={draft.pages}
-              onChange={(pages) => setDraft({ pages })}
-              labelledBy="pages-q"
-            />
-          </Question>
-          </>
           )}
         </div>
       )}

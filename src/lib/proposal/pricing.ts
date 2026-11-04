@@ -1,5 +1,6 @@
 import "server-only";
 import type { Copy } from "../i18n";
+import type { PageTypeId } from "./questions";
 
 /* ==================================================================
    The price table
@@ -17,7 +18,7 @@ export type ByMarket = Record<Market, number>;
 
 /** First month, then each month after. */
 type Monthly = { first: number; monthly: number };
-type Size = "landing" | "4-6" | "7-10" | "unsure";
+type Size = "landing" | "3" | "4-6" | "7-10" | "unsure";
 type SearchTable = Record<
   "landing" | "4-6" | "7-10",
   Record<"local" | "national", Record<Market, Monthly>>
@@ -25,51 +26,53 @@ type SearchTable = Record<
 
 export const MARKET = { PT: "pt", ES: "es-it", IT: "es-it", US: "us" } as const;
 
-/** Every size's ceiling over its floor, in percent. */
-const PAGES_SPREAD = 20;
-/** A size's floor by market, as its [floor, ceiling] by market. */
-const upTo = (floors: ByMarket): Record<Market, [number, number]> => ({
-  pt: [floors.pt, floors.pt * (1 + PAGES_SPREAD / 100)],
-  "es-it": [floors["es-it"], floors["es-it"] * (1 + PAGES_SPREAD / 100)],
-  us: [floors.us, floors.us * (1 + PAGES_SPREAD / 100)],
-});
+/** What a website's pages are priced by. */
+export type PageKey = "landing" | "home" | "about" | "contact" | PageTypeId;
 
 export const PRICING = {
   web: {
-    /** The site by its size. "More than 10" is always on request.
-        Each size is a floor, and its ceiling is that floor plus
-        pagesSpreadPercent, the same for every size (user, 2026-10-30).
-        Portugal 290; 380; 580 (Essential+). Spain and Italy, and the USA,
-        keep the ratio the old single prices had to Portugal's. */
+    /** The website's price is the sum of the ranges of its pages, each a
+        [lowest, highest] in Portugal with the Essential+ design (user,
+        2026-11-04). A range exists because two businesses with the same
+        pages can ask for different work; the studio settles the figure
+        inside it after the call. Every kind of page has its own range
+        because each asks for a different effort. Always included: Home
+        ("home" for a website, "landing" for a landing page, which is the
+        Home alone), About and Contact. There is no base fee on top (user).
+        Spain, Italy and the USA keep the ratio the old prices had to
+        Portugal's (derived, not given). PROVISIONAL: the pages the user
+        has not priced yet were suggested. */
     pages: {
-      /** A landing page has no range: a fixed price for each design level
-          (user, 2026-10-30: 290 and 420). This is Essential+; Advanced is
-          landingAdvanced. */
-      landing: { pt: [290, 290], "es-it": [335, 335], us: [510, 510] },
-      /** 420 in Portugal with Essential+ (user, 2026-10-30); Advanced
-          starts at 560 (advancedFloors). */
-      "4-6": upTo({ pt: 420, "es-it": 485, us: 735 }),
-      "7-10": upTo({ pt: 580, "es-it": 670, us: 1015 }),
-      /** "Not sure": from 2 pages (340 in Portugal, user, 2026-10-29) to
-          7, which is where 7–10 starts. Its own range, not a spread. */
-      unsure: { pt: [340, 580], "es-it": [395, 670], us: [595, 1015] },
-    } satisfies Record<Size, Record<Market, [number, number]>>,
-    /** The floor with the Advanced design where it is a price of its own
-        and not Essential+ ×1.35 (user, 2026-10-30): the landing page 420
-        and 4–6 pages 560 in Portugal. Its ceiling keeps the size's share
-        over its floor. Spain, Italy and the USA keep Portugal's ratio to
-        Essential+ (assumed). */
-    advancedFloors: {
-      landing: { pt: 420, "es-it": 485, us: 740 },
-      "4-6": { pt: 560, "es-it": 645, us: 980 },
-    } as Partial<Record<Size, ByMarket>>,
-    /** The ceiling of each size over its floor, and the whole website's
-        range with it: the design level raises both ends alike and adds
-        no range of its own (user, 2026-10-30: 30%). */
-    pagesSpreadPercent: PAGES_SPREAD,
-    /** How long the site takes, in working days, by size. */
+      landing: [205, 255], // average 230
+      home: [70, 100],
+      about: [40, 50],
+      contact: [5, 15],
+      services: [25, 75],
+      team: [15, 25],
+      prices: [10, 20],
+      testimonials: [15, 25],
+      faq: [10, 25],
+      process: [25, 40],
+      partners: [10, 20],
+      work: [25, 40],
+      resources: [5, 15],
+      items: [20, 50],
+      itemsPages: [50, 90],
+      portfolio: [45, 85],
+      gallery: [20, 50],
+      events: [45, 60],
+    } satisfies Record<Exclude<PageKey, "other">, [number, number]>,
+    /** The Advanced design raises each page's range: the lowest by this
+        much, the highest by this much, rounded to 5 (user, 2026-11-04). The
+        more elaborate the design, the more the work varies. */
+    advancedMin: 35,
+    advancedMax: 45,
+    /** Page prices by market, against Portugal. */
+    pagesMarket: { pt: 1, "es-it": 1.155, us: 1.75 } satisfies Record<Market, number>,
+    /** How long the site takes, in working days, by size. PROVISIONAL. */
     days: {
       landing: [4, 7],
+      "3": [6, 9],
       "4-6": [8, 11],
       "7-10": [12, 16],
       unsure: [6, 14],
@@ -86,10 +89,6 @@ export const PRICING = {
       en: "The upper end covers the unforeseen: content volume, connected tools (booking, maps, social media), special design (illustrations, animations), site migration.",
       pt: "O valor mais alto cobre o imprevisto: conteúdo, ferramentas (marcações, mapas, redes sociais), design especial (ilustrações, animações) e migração de site.",
     } satisfies Copy,
-    /** The Advanced design level costs this much more than Essential+
-        (user, 2026-10-29, was 25). The page prices above are Essential+. */
-    advancedPercent: 35,
-
     /** The visual identity redesign (logo and symbol). */
     identity: { pt: 110, "es-it": 125, us: 195 } satisfies ByMarket,
     /** Portuguese and English are included; each other language costs
@@ -99,7 +98,7 @@ export const PRICING = {
     /** Writing the website's texts when the client has none, as a range
         by the site's size (Portugal; other markets scaled by textsMarket).
         PROVISIONAL: figures to be confirmed by the studio. */
-    texts: { landing: [80, 150], "4-6": [150, 300], "7-10": [180, 340], unsure: [120, 320] } as Record<
+    texts: { landing: [80, 150], "3": [130, 250], "4-6": [150, 300], "7-10": [180, 340], unsure: [120, 320] } as Record<
       Size,
       [number, number]
     >,

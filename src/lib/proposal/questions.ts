@@ -58,14 +58,27 @@ export const PERSONAL_FEATURE_NOTES: Record<"forms" | "newsletter", Copy> = {
   },
 };
 
-/** What the business does. It tells us about the project; it never
-    changes the price by itself (what a sector needs is asked as features). */
+/** What the business does. It tells us about the project and, since
+    2026-11-04 (user), it orders the page types and suggests a few of them
+    (see SECTOR_PAGES); it never changes the price by itself. The ids from
+    before the list grew (health, realestate, hospitality, retail,
+    professional, other) keep their meaning, so earlier requests still read
+    right. */
 export const SECTORS = [
-  { id: "health", label: "Health & aesthetics", pt: "Saúde e estética" },
+  { id: "health", label: "Health", pt: "Saúde" },
+  { id: "beauty", label: "Beauty & wellness", pt: "Estética e bem-estar" },
   { id: "realestate", label: "Real estate", pt: "Imobiliário" },
-  { id: "hospitality", label: "Restaurants & hospitality", pt: "Restauração e hotelaria" },
+  { id: "hospitality", label: "Restaurants", pt: "Restauração" },
+  { id: "lodging", label: "Lodging & tourism", pt: "Alojamento e turismo" },
   { id: "retail", label: "Shop / retail", pt: "Loja / comércio" },
   { id: "professional", label: "Professional services", pt: "Serviços profissionais" },
+  { id: "trades", label: "Construction & home services", pt: "Construção e serviços ao domicílio" },
+  { id: "sport", label: "Sport & fitness", pt: "Desporto e fitness" },
+  { id: "education", label: "Education & training", pt: "Educação e formação" },
+  { id: "events", label: "Events & weddings", pt: "Eventos e casamentos" },
+  { id: "creative", label: "Creative & photography", pt: "Criativos e fotografia" },
+  { id: "nonprofit", label: "Associations & causes", pt: "Associações e causas" },
+  { id: "tech", label: "Technology & B2B", pt: "Tecnologia e B2B" },
   { id: "other", label: "Other", pt: "Outro" },
 ] as const;
 export type SectorId = (typeof SECTORS)[number]["id"];
@@ -79,16 +92,142 @@ export const COUNTRIES = [
 ] as const;
 export type CountryId = (typeof COUNTRIES)[number]["id"];
 
-/** Website size. Web design stops at 10 pages; past that is quoted. */
+/** Website size. The price is no longer keyed by it (since 2026-11-04 it
+    is the sum of the ranges of the pages ticked, see PRICING.web.pages);
+    it is kept as a label for the timeline, the texts, SEO/GEO and the
+    records. Web design stops at 10 pages; past that is quoted. It is not
+    asked: the server works it out from the page types (see pagesFor). */
 export const PAGES = [
   { id: "landing", label: "Landing page", pt: "Landing page" },
+  { id: "3", label: "3", pt: "3" },
   { id: "4-6", label: "4–6", pt: "4–6" },
   { id: "7-10", label: "7–10", pt: "7–10" },
   { id: "10+", label: "More than 10", pt: "Mais de 10" },
-  /** Estimated for 2 to 7 pages, with a wider range (user, 2026-10-29). */
   { id: "unsure", label: "Not sure", pt: "Não sei" },
 ] as const;
 export type PagesId = (typeof PAGES)[number]["id"];
+
+/** What the client wants first (user, 2026-11-04): a landing page or a
+    website, with a line saying how they differ; the page types are only
+    asked for a website. */
+export const PAGE_MODES = [
+  {
+    id: "landing",
+    label: "Landing page",
+    pt: "Landing page",
+    note: "Everything on a single page.",
+    notePt: "Tudo numa única página.",
+  },
+  {
+    id: "website",
+    label: "Website",
+    pt: "Website",
+    note: "Several pages: Home, About, Contact and the pages and sections you choose.",
+    notePt: "Várias páginas: Página principal, Sobre nós, Contactos e as páginas e secções escolhidas.",
+  },
+  /** From the pages always included up to the sector's usual ones. */
+  { id: "unsure", label: "Not sure", pt: "Não sei" },
+] as const;
+export type PageModeId = (typeof PAGE_MODES)[number]["id"];
+
+/** The kinds of page a client can add. One generic list for every sector,
+    so no page that matters is left out: the sector only orders it and
+    stars a few as usual (SECTOR_PAGES) inside the same list. Nothing is
+    ticked beforehand; the Home, About and Contact pages are always
+    included, and a website needs at least two more (MIN_CHOSEN). Up to
+    three more can be written in, and "not sure" leaves the choice to us. Each kind has its own price range
+    (PRICING.web.pages). "Items" and "Items with a page for each" exclude
+    each other. Blog is not here (it belongs to SEO), nor is the quote
+    request or anything with a form, nor bookings and reservations: those
+    are the back-end services, kept apart (user, 2026-11-04). */
+export const PAGE_TYPES = [
+  { id: "services", label: "Services", pt: "Serviços" },
+  { id: "items", label: "List of items, no page for each (products, courses, menu…)", pt: "Lista de itens, sem página para cada um (produtos, cursos, menu…)" },
+  { id: "itemsPages", label: "List of items, with a page for each item (properties, rooms, treatments…)", pt: "Lista de itens, com página para cada item (imóveis, quartos, tratamentos…)" },
+  { id: "team", label: "Team", pt: "Equipa" },
+  { id: "portfolio", label: "Portfolio & case studies", pt: "Portefólio e casos" },
+  { id: "gallery", label: "Gallery (photos and videos)", pt: "Galeria (fotografias e vídeos)" },
+  { id: "prices", label: "Prices", pt: "Preços" },
+  { id: "testimonials", label: "Testimonials", pt: "Testemunhos" },
+  { id: "faq", label: "FAQ", pt: "Perguntas frequentes" },
+  { id: "events", label: "Events", pt: "Eventos" },
+  { id: "process", label: "How it works", pt: "Como funciona" },
+  { id: "partners", label: "Partners & brands", pt: "Parceiros e marcas" },
+  { id: "work", label: "Work with us", pt: "Trabalhe connosco" },
+  { id: "resources", label: "Downloads", pt: "Recursos e descarregáveis" },
+] as const;
+export type PageTypeId = (typeof PAGE_TYPES)[number]["id"];
+
+/** Home, About and Contact are in every website. */
+export const ALWAYS_PAGES = 3;
+/** A website must tick at least this many pages besides those (user,
+    2026-11-04); the form does not go on without them. */
+export const MIN_CHOSEN = 2;
+/** Counting stops here: past 10 pages the price is on request. */
+export const MAX_PAGES = 10;
+
+/** The two kinds of item list, one or the other. */
+export const ITEM_LISTS = ["items", "itemsPages"] as const;
+
+/** Per sector: the kinds of page it usually has. They are flagged "usual"
+    and put first, never ticked for the client (user, 2026-11-04). Personal
+    use, with no sector, is the "personal" row. */
+export const SECTOR_PAGES: Record<SectorId | "personal", readonly PageTypeId[]> = {
+  health: ["services", "team", "prices", "faq"],
+  beauty: ["services", "gallery", "prices", "testimonials"],
+  realestate: ["itemsPages", "services", "testimonials", "faq"],
+  hospitality: ["items", "gallery", "events", "faq"],
+  lodging: ["itemsPages", "gallery", "prices", "faq"],
+  retail: ["itemsPages", "faq", "testimonials", "partners"],
+  professional: ["services", "team", "portfolio", "faq"],
+  trades: ["services", "portfolio", "process", "testimonials"],
+  sport: ["services", "prices", "team", "events"],
+  education: ["itemsPages", "team", "faq", "events"],
+  events: ["services", "gallery", "prices", "portfolio"],
+  creative: ["portfolio", "services", "gallery", "process"],
+  nonprofit: ["process", "events", "team", "partners"],
+  tech: ["services", "portfolio", "resources", "process"],
+  other: ["services", "portfolio", "faq", "testimonials"],
+  personal: ["portfolio", "gallery", "faq", "process"],
+};
+
+/** The size label from how many pages there are (Home, About and Contact
+    count). Past 10 it is on request. */
+export function pagesBucket(count: number): Exclude<PagesId, "unsure"> {
+  if (count <= 1) return "landing";
+  if (count <= 3) return "3";
+  if (count <= 6) return "4-6";
+  if (count <= MAX_PAGES) return "7-10";
+  return "10+";
+}
+
+/** Up to this many pages or sections can be written in, besides the list
+    (user, 2026-11-04). Each widens the estimate (see estimate.ts). */
+export const MAX_OTHERS = 3;
+/** "Not sure, you choose" counts as this many pages for the size label. */
+export const UNSURE_PAGES = 2;
+
+/** How many pages the ticked kinds and the written-in ones come to, for the
+    size label. "Not sure, you choose" counts as UNSURE_PAGES. */
+export function countPages(types: readonly PageTypeId[], others = 0, unsure = false) {
+  return ALWAYS_PAGES + types.length + others + (unsure ? UNSURE_PAGES : 0);
+}
+
+/** What a website has chosen, besides Home, About and Contact: ticked kinds,
+    written-in pages and "not sure" (which stands for UNSURE_PAGES). It must
+    come to MIN_CHOSEN. */
+export function chosenCount(types: readonly PageTypeId[], others = 0, unsure = false) {
+  return types.length + others + (unsure ? UNSURE_PAGES : 0);
+}
+
+/** The size from what was answered: the server works it out from the
+    mode and the ticked kinds, and the form does the same for what it
+    shows. */
+export function pagesFor(mode: PageModeId, types: readonly PageTypeId[], others = 0, unsure = false): PagesId {
+  if (mode === "landing") return "landing";
+  if (mode === "unsure") return "unsure";
+  return pagesBucket(countPages(types, others, unsure));
+}
 
 export const LANGUAGES = [
   { id: "pt", label: "Portuguese", pt: "Português" },
@@ -290,7 +429,17 @@ export type Answers = {
   countryOther?: string;
   web?: {
     design: DesignId;
+    /** The size the price is keyed by: worked out from the mode and the
+        kinds of page on the server (pagesFor), never taken from the form. */
     pages: PagesId;
+    pageMode: PageModeId;
+    /** A website's ticked kinds of page (the Home and About pages are
+        always in), in the list's order. */
+    pageTypes: PageTypeId[];
+    /** Pages or sections written in besides the list: up to MAX_OTHERS. */
+    pageOthers?: string[];
+    /** "Not sure, you choose for me" on the pages and sections. */
+    pagesUnsure?: true;
     languages: LanguageId[];
     languagesOther?: string;
     /** The second level's items, in the list's order (none is fine). */
