@@ -117,7 +117,7 @@ export const PRICING = {
       booking: 95,
     },
     /** The back end's monthly fee (user, 2026-11-04). Our labour is always
-        5 a month, however many platforms. The estimate runs from that alone
+        10 a month (5 until 2026-11-04), however many platforms. The estimate runs from that alone
         (the free plan is enough) to that plus the platforms' paid plans,
         which the client pays directly. Forms and the newsletter share one
         platform (Brevo), the calendar is another (Cal.com). A restaurant in
@@ -127,7 +127,7 @@ export const PRICING = {
         with 23% VAT, yearly billing, not scaled: Brevo Starter 6.33 EUR,
         Cal.com Teams 12 USD at about 1.15 USD per EUR (checked 2026-11-04
         on third-party pages: to confirm). */
-    monthly: { labour: 5, restaurant: 40, plans: { brevo: 7.79, calcom: 12.83 } },
+    monthly: { labour: 10, restaurant: 40, plans: { brevo: 7.79, calcom: 12.83 } },
     featuresMarket: { pt: 1, "es-it": 1.15, us: 1.75 } satisfies Record<Market, number>,
     /** What a new domain costs a year, shown to a client without one as
         a reference only: the client registers and pays for it directly,
@@ -151,8 +151,9 @@ export const PRICING = {
   /** SEO and GEO are sold only with a website we built, and priced from it
       (user, 2026-11-04): the one-time setup is this percent of the website's
       price, the same for both; the optional monthly service is this share
-      of the setup. International reach is on request. PROVISIONAL. */
-  search: { setupPercent: 25, monthlyShare: 25 / 100 },
+      of the setup's middle (doubled from 25% to 50%, user 2026-11-04).
+      International reach is on request. PROVISIONAL. */
+  search: { setupPercent: 25, monthlyShare: 50 / 100 },
 };
 
 export type Pricing = typeof PRICING;
