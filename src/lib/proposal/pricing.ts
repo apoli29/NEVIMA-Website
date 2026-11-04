@@ -37,26 +37,27 @@ export const PRICING = {
         Portugal's (derived, not given). PROVISIONAL: the pages the user
         has not priced yet were suggested. */
     pages: {
-      // Raised 20% twice (user, 2026-11-04), to 5; the smallest ends, which
-      // rounding to 5 would have left alone, to the euro.
-      landing: [250, 310], // average 280 (+20% twice, then -15%, user 2026-11-04)
-      home: [100, 145],
-      about: [60, 70],
-      contact: [6, 25],
-      services: [45, 95], // narrowed (user, 2026-11-04)
-      team: [25, 35],
-      prices: [12, 30],
-      testimonials: [25, 35],
-      faq: [12, 35],
-      process: [35, 60],
-      partners: [12, 30],
-      work: [35, 60],
-      resources: [6, 25],
-      items: [30, 70],
-      itemsPages: [70, 130],
-      portfolio: [65, 120],
-      gallery: [30, 70],
-      events: [65, 85],
+      // Each page's highest end is at most 30% over its lowest, keeping the
+      // middle it had, both ends rounded up to 5 (user, 2026-11-04); the
+      // landing page's ceiling rounded down to stay within the 30%.
+      landing: [245, 315],
+      home: [110, 140],
+      about: [60, 75],
+      contact: [15, 20],
+      services: [65, 80],
+      team: [30, 35],
+      prices: [20, 25],
+      testimonials: [30, 35],
+      faq: [25, 30],
+      process: [45, 55],
+      partners: [20, 25],
+      work: [45, 55],
+      resources: [15, 20],
+      items: [45, 60],
+      itemsPages: [90, 115],
+      portfolio: [85, 105],
+      gallery: [45, 60],
+      events: [70, 85],
     } satisfies Record<Exclude<PageKey, "other">, [number, number]>,
     /** The Advanced design moves each page's whole range up by this share
         of its middle, rounded to 5, so it costs about 1.5x the Essential+

@@ -19,30 +19,29 @@ Decided 2026-11-04 (user). Code: `src/lib/proposal/questions.ts`, `pricing.ts`, 
 
 The website's price is the **sum of the ranges of its pages** (Portugal, Essential+), with no base fee on top. Spain and Italy ×1.155 and the USA ×1.75 are ratios derived from the old prices, not given by the user.
 
-| Page | Range (raised 20% twice, 2026-11-04) |
+| Page | Range (30% at most, 2026-11-04) |
 |---|---|
-| Landing page | 250–310 |
-| Home | 100–145 |
-| About | 60–70 |
-| Contact | 6–25 |
-| Services | 45–95 |
-| Team | 25–35 |
-| Prices | 12–30 |
-| Testimonials | 25–35 |
-| FAQ | 12–35 |
-| How it works | 35–60 |
-| Partners & brands | 12–30 |
-| Work with us | 35–60 |
-| Downloads | 6–25 |
-| List of items | 30–70 |
-| List of items, a page each | 70–130 |
-| Portfolio & case studies | 65–120 |
-| Gallery (photos and videos) | 30–70 |
-| Events | 65–85 |
+| Landing page | 245–315 |
+| Home | 110–140 |
+| About | 60–75 |
+| Contact | 15–20 |
+| Services | 65–80 |
+| Team | 30–35 |
+| Prices | 20–25 |
+| Testimonials | 30–35 |
+| FAQ | 25–30 |
+| How it works | 45–55 |
+| Partners & brands | 20–25 |
+| Work with us | 45–55 |
+| Downloads | 15–20 |
+| List of items | 45–60 |
+| List of items, a page each | 90–115 |
+| Portfolio & case studies | 85–105 |
+| Gallery (photos and videos) | 45–60 |
+| Events | 70–85 |
 
 - **Advanced design** moves each page's whole range up by 50% of its middle, rounded to 5 (`advancedShift`; user, 2026-11-04): the same amount on both ends, so the range is as wide as Essential+ and the price about 1.5x. It was the lowest ×1.35 and the highest ×1.45, which made the Advanced range much wider.
-- **A page or section written in** adds a range from the lowest to the highest of the pages already foreseen, leaving out the Home page and the landing page (Essential+: 6–130).
-- **"Not sure, you choose"** adds a range from the average of all those pages to the average of the two dearest (Essential+: about 47 to 96). The "average" of a page is the middle of its range.
+- **A page or section written in**, and **"Not sure, you choose"**, each add the average page: the average of the lowest ends up to the average of the highest, rounded up to 5 (Essential+: 45–55), so they keep within the 30% too (user, 2026-11-04). It used to be the lowest to the highest page (5–130) and, for "not sure", the average up to the two dearest.
 - Both add a note to the estimate saying the range is wider.
 - The floor rounds down to 5 and the ceiling up to 5. More than 10 pages is on request.
 - **"Not sure" on what is needed** (not the list) gives no estimate (user, 2026-11-04): the website, and SEO & GEO with it, show "on request" ("Pages to choose together on a call"); the answers can still be sent, and the pages are chosen with the client on a call. It used to estimate from Home + About + Contact up to the sector's usual pages.
@@ -109,3 +108,7 @@ Decided 2026-11-04 (user; the three questions put to the user went unanswered, s
 - The website's notes (what it includes, the upper end, texts, domain, manual emails, the monthly range) now sit under the Total, before "An estimate from your answers". The other services keep their short note under their name.
 - Each service's name (Web design, Visual identity…) is larger, clamp(1.5rem, 2vw, 1.875rem), and the Total's name and figure match it.
 - Services narrowed to 45–95 (from 35–110).
+
+## Every page within 30%
+
+2026-11-04 (user): with Essential+ a website's highest figure may be at most 30% over its lowest. The ranges had grown up to 4x on some pages (Contact 6–25), and on a 7-page website the gap reached 270 (330–600). Every page now keeps the middle it had and spans 30% at most, both ends rounded up to 5 (the landing page's ceiling rounded down to 315, to stay within it); the written-in page and "not sure, you choose" add the average page. Any combination of pages comes to 30% or less (worst about 29.3%). "Not sure" on the design or the languages can still go over, since it covers two answers and says so.
