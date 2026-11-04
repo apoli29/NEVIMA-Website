@@ -25,7 +25,7 @@ The website's price is the **sum of the ranges of its pages** (Portugal, Essenti
 | Home | 100–145 |
 | About | 60–70 |
 | Contact | 6–25 |
-| Services | 35–110 |
+| Services | 45–95 |
 | Team | 25–35 |
 | Prices | 12–30 |
 | Testimonials | 25–35 |
@@ -103,3 +103,9 @@ Decided 2026-11-04 (user; the three questions put to the user went unanswered, s
 ## Visual identity price
 
 2026-11-04 (user): the visual identity costs 85 in Portugal (it was 110). Spain/Italy and the USA were then lowered in the same proportion, to 5: 95 (was 125) and 150 (was 195).
+
+## Estimate layout and Services range, 2026-11-04 (user)
+
+- The website's notes (what it includes, the upper end, texts, domain, manual emails, the monthly range) now sit under the Total, before "An estimate from your answers". The other services keep their short note under their name.
+- Each service's name (Web design, Visual identity…) is larger, clamp(1.5rem, 2vw, 1.875rem), and the Total's name and figure match it.
+- Services narrowed to 45–95 (from 35–110).

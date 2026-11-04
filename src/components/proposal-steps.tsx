@@ -1467,7 +1467,7 @@ function EstimateScreen({
         <motion.div key={line.id} variants={ROW}>
           <div className="pf-line">
             <span>
-              <span className="pf-line-name block">{line.label}</span>
+              <span className="pf-line-name pf-service-name block">{line.label}</span>
               {!line.parts && notesOf(line.notes)}
             </span>
             <span className="text-right">
@@ -1507,7 +1507,6 @@ function EstimateScreen({
               </span>
             </div>
           ))}
-          {line.parts && <div className="pf-line-notes">{notesOf(line.notes)}</div>}
         </motion.div>
       ))}
       {estimate.onRequest.map((item) => (
@@ -1549,6 +1548,14 @@ function EstimateScreen({
         </span>
       </motion.div>
     </div>
+      {/* The website's notes, under the final price (user, 2026-11-04). */}
+      {estimate.lines
+        .filter((line) => line.parts && line.notes.length)
+        .map((line) => (
+          <motion.div key={line.id} variants={ROW} className="pf-line-notes">
+            {notesOf(line.notes)}
+          </motion.div>
+        ))}
       <motion.p variants={ROW} className="mono-label pf-foot-note">
         {t("An estimate from your answers", "Uma estimativa a partir das respostas")}
       </motion.p>

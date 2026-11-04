@@ -43,7 +43,7 @@ export const PRICING = {
       home: [100, 145],
       about: [60, 70],
       contact: [6, 25],
-      services: [35, 110],
+      services: [45, 95], // narrowed (user, 2026-11-04)
       team: [25, 35],
       prices: [12, 30],
       testimonials: [25, 35],
