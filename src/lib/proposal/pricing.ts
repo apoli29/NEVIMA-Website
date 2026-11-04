@@ -149,12 +149,14 @@ export const PRICING = {
   } satisfies Copy,
 
   /** SEO and GEO are sold only with a website we built, and priced from it
-      (user, 2026-11-04): the one-time setup is this percent of the website's
-      price, the same for both; the optional monthly service is this share
-      of the setup's middle (setup 20% of the website, was 25%; monthly 30%,
-      user 2026-11-04; it was 25%, then 50%
-      for a moment). International reach is on request. PROVISIONAL. */
-  search: { setupPercent: 20, monthlyShare: 30 / 100 },
+      (user, 2026-11-04). The one-time setup is `setupPercent` of the
+      website's price (20%, was 25%). The optional monthly service is
+      `monthlyShare` (30%, was 25%) of the middle of `monthlyBasePercent`
+      (25%) of the website: it stays measured against the setup as it was
+      at 25%, so lowering the setup does not lower the monthly (user: the
+      setup goes down, the monthly goes up). International reach is on
+      request. PROVISIONAL. */
+  search: { setupPercent: 20, monthlyBasePercent: 25, monthlyShare: 30 / 100 },
 };
 
 export type Pricing = typeof PRICING;

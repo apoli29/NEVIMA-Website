@@ -133,3 +133,4 @@ Decided 2026-11-04 (user; the three questions put to the user went unanswered, s
 
 - Revised the same day (user): the SEO & GEO monthly is 30% of the setup's middle, not 50%; the setup stays 25% of the website. The 8-page beauty case with local SEO: setup 110–140, monthly 40 (125 x 30% = 37.5, to the nearest 5).
 - Then (user, same day): the SEO & GEO setup is 20% of the website line, not 25%. The 8-page beauty case with local SEO: setup 90–115, monthly 30 (102.5 x 30% = 30.75, to the nearest 5).
+- Then (user, same day): the aim was a lower setup and a higher monthly. The setup stays 20% of the website; the monthly is 30% of the middle of 25% of the website (the setup as it was), so it no longer falls with the setup. The 8-page beauty case with local SEO: setup 90–115, monthly 40 (was 30 before this round).
