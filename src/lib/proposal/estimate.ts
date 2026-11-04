@@ -388,18 +388,18 @@ function search(
   id: "seo" | "geo",
   plan: SearchPlanId,
   reach: NonNullable<Answers["search"]>["reach"],
-  pages: PagesId | undefined,
-  market: Market,
+  site: Range | undefined,
   p: Pricing,
   t: Translate,
 ): Priced {
-  if (pages === "10+") return { reason: t("More than 10 pages", "Mais de 10 páginas") };
   if (reach === "international") return { reason: t("International reach", "Alcance internacional") };
-  if (!pages) return { reason: t("Quoted in your proposal", "Orçamentado na proposta") };
-  // Not sure about the pages: priced as a mid-sized site. The tables have
-  // three sizes: two and three pages are priced as the smallest.
-  const size = pages === "unsure" ? "4-6" : pages === "3" ? "landing" : pages;
-  const { first, monthly } = p[id][size][reach][market];
+  // Priced from the website we build (user, 2026-11-04): with no price for
+  // the site (more than 10 pages, a country quoted on request) there is none.
+  if (!site) return { reason: t("Quoted in your proposal", "Orçamentado na proposta") };
+  const { setupPercent, monthlyShare } = p.search;
+  const first: Range = { min: down5((site.min * setupPercent) / 100), max: up5((site.max * setupPercent) / 100) };
+  // One monthly figure: a share of the setup's middle, to the nearest 5.
+  const monthly = Math.max(5, Math.round(((first.min + first.max) / 2) * monthlyShare / 5) * 5);
   const notes = [
     t(
       "One-time: strongest in the short term, its effect fades over the medium to long term.",
@@ -414,7 +414,7 @@ function search(
         `O serviço mensal, que mantém as práticas o mais eficazes possível, é opcional: ${monthly} € por mês. Definimos em conjunto.`,
       ),
     );
-    return { line: { amount: fixed(first), notes, provisional: true } };
+    return { line: { amount: first, notes, provisional: true } };
   }
   if (plan === "monthly") {
     notes.push(
@@ -423,9 +423,9 @@ function search(
         "Mais o serviço mensal, que mantém as práticas o mais eficazes possível.",
       ),
     );
-    return { line: { amount: fixed(first), monthly, notes, provisional: true } };
+    return { line: { amount: first, monthly, notes, provisional: true } };
   }
-  return { line: { amount: fixed(first), notes, provisional: true } };
+  return { line: { amount: first, notes, provisional: true } };
 }
 
 export function estimate(answers: Answers, pricing: Pricing = PRICING, lang: Lang = "en"): Estimate {
@@ -469,11 +469,15 @@ export function estimate(answers: Answers, pricing: Pricing = PRICING, lang: Lan
     if (id === "web" && webAnswers) add("web", (m) => web(webAnswers, m, pricing.web, t, answers.audience === "personal", answers.sector));
     if (id === "identity") add("identity", (m) => identity(webAnswers?.urgent === "yes", m, pricing.web, t));
     if (id === "photo" && photoAnswers) add("photo", () => photo(photoAnswers, answers.country, pricing, t));
+  }
+  // SEO and GEO come after the website: they are a share of its price.
+  for (const id of answers.services) {
     if ((id === "seo" || id === "geo") && searchAnswers) {
-      // With web design chosen too, the site's size is the web answer.
-      const pages = webAnswers?.pages ?? searchAnswers.pages;
+      const site = out.lines.find((l) => l.id === "web")?.amount;
       const plan = (id === "seo" ? searchAnswers.seoPlan : searchAnswers.geoPlan) ?? "once";
-      add(id, (m) => search(id, plan, searchAnswers.reach, pages, m, pricing, t));
+      // With the website on request, SEO and GEO are quoted for the same reason.
+      const why = out.onRequest.find((o) => o.id === "web")?.reason;
+      add(id, () => (!site && why ? { reason: why } : search(id, plan, searchAnswers.reach, site, pricing, t)));
     }
   }
 

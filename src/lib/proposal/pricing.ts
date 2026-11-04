@@ -16,13 +16,7 @@ import type { PageTypeId } from "./questions";
 export type Market = "pt" | "es-it" | "us";
 export type ByMarket = Record<Market, number>;
 
-/** First month, then each month after. */
-type Monthly = { first: number; monthly: number };
 type Size = "landing" | "3" | "4-6" | "7-10" | "unsure";
-type SearchTable = Record<
-  "landing" | "4-6" | "7-10",
-  Record<"local" | "national", Record<Market, Monthly>>
->;
 
 export const MARKET = { PT: "pt", ES: "es-it", IT: "es-it", US: "us" } as const;
 
@@ -134,39 +128,11 @@ export const PRICING = {
     pt: "A deslocação até 30 km de Arcozelo está incluída. A partir daí, é cobrada ao km, como fica definido na proposta.",
   } satisfies Copy,
 
-  /** "More than 10" pages and an international reach are on request.
-      "first" is the one-time work, "monthly" the optional monthly
-      service on top of it. 7–10 pages sit 15% above 4–6. PROVISIONAL:
-      to be confirmed by the studio. */
-  seo: {
-    landing: {
-      local: { pt: { first: 150, monthly: 60 }, "es-it": { first: 175, monthly: 70 }, us: { first: 265, monthly: 105 } },
-      national: { pt: { first: 195, monthly: 80 }, "es-it": { first: 225, monthly: 90 }, us: { first: 340, monthly: 140 } },
-    },
-    "4-6": {
-      local: { pt: { first: 230, monthly: 90 }, "es-it": { first: 265, monthly: 105 }, us: { first: 405, monthly: 160 } },
-      national: { pt: { first: 300, monthly: 115 }, "es-it": { first: 345, monthly: 130 }, us: { first: 525, monthly: 200 } },
-    },
-    "7-10": {
-      local: { pt: { first: 265, monthly: 105 }, "es-it": { first: 305, monthly: 120 }, us: { first: 465, monthly: 185 } },
-      national: { pt: { first: 345, monthly: 130 }, "es-it": { first: 395, monthly: 150 }, us: { first: 605, monthly: 230 } },
-    },
-  } satisfies SearchTable,
-
-  geo: {
-    landing: {
-      local: { pt: { first: 190, monthly: 80 }, "es-it": { first: 220, monthly: 90 }, us: { first: 335, monthly: 140 } },
-      national: { pt: { first: 250, monthly: 105 }, "es-it": { first: 290, monthly: 120 }, us: { first: 440, monthly: 185 } },
-    },
-    "4-6": {
-      local: { pt: { first: 290, monthly: 120 }, "es-it": { first: 335, monthly: 140 }, us: { first: 510, monthly: 210 } },
-      national: { pt: { first: 380, monthly: 155 }, "es-it": { first: 435, monthly: 180 }, us: { first: 665, monthly: 270 } },
-    },
-    "7-10": {
-      local: { pt: { first: 335, monthly: 140 }, "es-it": { first: 385, monthly: 160 }, us: { first: 585, monthly: 240 } },
-      national: { pt: { first: 435, monthly: 180 }, "es-it": { first: 500, monthly: 205 }, us: { first: 765, monthly: 310 } },
-    },
-  } satisfies SearchTable,
+  /** SEO and GEO are sold only with a website we built, and priced from it
+      (user, 2026-11-04): the one-time setup is this percent of the website's
+      price, the same for both; the optional monthly service is this share
+      of the setup. International reach is on request. PROVISIONAL. */
+  search: { setupPercent: 20, monthlyShare: 1 / 3 },
 };
 
 export type Pricing = typeof PRICING;
