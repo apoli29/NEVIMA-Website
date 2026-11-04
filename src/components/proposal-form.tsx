@@ -38,8 +38,8 @@ import { useT } from "@/lib/use-lang";
 
 const EMAIL = "ola@nevima.studio";
 const NEEDS = {
-  en: ["Web Design", "Visual Identity", "SEO", "GEO"],
-  pt: ["Web Design", "Identidade Visual", "SEO", "GEO"],
+  en: ["Web Design", "Visual Identity", "SEO & GEO"],
+  pt: ["Web Design", "Identidade Visual", "SEO e GEO"],
 };
 
 const ROW = {

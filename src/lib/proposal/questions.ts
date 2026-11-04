@@ -19,8 +19,9 @@ export const SERVICES = [
   { id: "web", label: "Web design", pt: "Web design" },
   { id: "identity", label: "Visual identity", pt: "Identidade visual" },
   { id: "photo", label: "Photo shoot", pt: "Sessão fotográfica" },
-  { id: "seo", label: "SEO", pt: "SEO" },
-  { id: "geo", label: "GEO", pt: "GEO" },
+  /** SEO and GEO are one service (user, 2026-11-04), kept under the id
+      "seo" so that requests already stored still read. */
+  { id: "seo", label: "SEO & GEO", pt: "SEO e GEO" },
 ] as const;
 export type ServiceId = (typeof SERVICES)[number]["id"];
 
@@ -472,9 +473,8 @@ export type Answers = {
     /** Not asked when web design is chosen too: the web answer stands. */
     pages?: PagesId;
     reach: ReachId;
-    /** One for each of SEO and GEO that was chosen. */
+    /** The one-time or monthly modality of SEO & GEO. */
     seoPlan?: SearchPlanId;
-    geoPlan?: SearchPlanId;
   };
 };
 
@@ -577,6 +577,6 @@ export function groupsFor(services: readonly ServiceId[]) {
   return {
     web: services.includes("web"),
     photo: services.includes("photo"),
-    search: services.includes("seo") || services.includes("geo"),
+    search: services.includes("seo"),
   };
 }
