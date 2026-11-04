@@ -102,4 +102,4 @@ Decided 2026-11-04 (user; the three questions put to the user went unanswered, s
 
 ## Visual identity price
 
-2026-11-04 (user): the visual identity costs 85 in Portugal (it was 110). Spain/Italy (125) and the USA (195) were not changed.
+2026-11-04 (user): the visual identity costs 85 in Portugal (it was 110). Spain/Italy and the USA were then lowered in the same proportion, to 5: 95 (was 125) and 150 (was 195).

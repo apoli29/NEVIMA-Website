@@ -86,8 +86,9 @@ export const PRICING = {
       pt: "O valor mais alto cobre o imprevisto: conteúdo, ferramentas (mapas, redes sociais), design especial (ilustrações, animações) e migração de site.",
     } satisfies Copy,
     /** The visual identity redesign (logo and symbol). */
-    // Portugal 85 (user, 2026-11-04; it was 110). The other markets kept.
-    identity: { pt: 85, "es-it": 125, us: 195 } satisfies ByMarket,
+    // Portugal 85 (user, 2026-11-04; it was 110); the other markets lowered
+    // in the same proportion, to 5.
+    identity: { pt: 85, "es-it": 95, us: 150 } satisfies ByMarket,
     /** Portuguese and English are included; each other language costs
         the same, in every country (user, 2026-10-19; contract clause
         11.4). More than three is quoted. */
