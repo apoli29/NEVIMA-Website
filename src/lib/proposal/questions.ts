@@ -54,8 +54,8 @@ export const PERSONAL_FEATURE_NOTES: Record<"forms" | "newsletter" | "booking", 
     pt: "Os visitantes preenchem um formulário, e as respostas chegam ao projeto.",
   },
   newsletter: {
-    en: "Visitors sign up with their email. A welcome email goes out automatically, and each sign-up is saved in a database.",
-    pt: "Os visitantes inscrevem-se com o email. É enviado automaticamente um email de boas-vindas, e cada inscrição fica registada numa base de dados.",
+    en: "Visitors sign up with their email, and each sign-up is saved in a database.",
+    pt: "Os visitantes inscrevem-se com o email, e cada inscrição fica registada numa base de dados.",
   },
   booking: {
     en: "Visitors book a time or make a reservation themselves, and each one goes into your calendar.",
@@ -261,8 +261,8 @@ export const FEATURES = [
     id: "newsletter",
     label: "Newsletter sign-up",
     pt: "Inscrição na newsletter",
-    note: "Your clients sign up with their email. A welcome email goes out automatically, and each sign-up is saved in a database.",
-    notePt: "Os clientes do negócio inscrevem-se com o email. É enviado automaticamente um email de boas-vindas, e cada inscrição fica registada numa base de dados.",
+    note: "Your clients sign up with their email, and each sign-up is saved in a database.",
+    notePt: "Os clientes do negócio inscrevem-se com o email, e cada inscrição fica registada numa base de dados.",
   },
   {
     id: "booking",
@@ -273,6 +273,12 @@ export const FEATURES = [
   },
 ] as const;
 export type FeatureId = (typeof FEATURES)[number]["id"];
+
+/** Said under forms and the newsletter (user, 2026-11-04). */
+export const CONFIRMATION_INCLUDED: Copy = {
+  en: "Automatic email confirmation included",
+  pt: "Inclui email automático de confirmação",
+};
 
 /** How the emails of the forms and the newsletter work (user, 2026-10-29;
     asked for either since 2026-11-04, and named for the emails, not the

@@ -45,7 +45,7 @@ The website's price is the **sum of the ranges of its pages** (Portugal, Essenti
 - **"Not sure, you choose"** adds a range from the average of all those pages to the average of the two dearest (Essential+: about 47 to 96). The "average" of a page is the middle of its range.
 - Both add a note to the estimate saying the range is wider.
 - The floor rounds down to 5 and the ceiling up to 5. More than 10 pages is on request.
-- **"Not sure" on what is needed** (not the list) goes from Home + About + Contact up to those plus the sector's usual pages.
+- **"Not sure" on what is needed** (not the list) gives no estimate (user, 2026-11-04): the website, and SEO & GEO with it, show "on request" ("Pages to choose together on a call"); the answers can still be sent, and the pages are chosen with the client on a call. It used to estimate from Home + About + Contact up to the sector's usual pages.
 
 ## What is stored
 
@@ -91,3 +91,10 @@ Decided 2026-11-04 (user; the three questions put to the user went unanswered, s
 ## Page prices raised by 20% again
 
 2026-11-04 (user): every page and section range was raised by another 20%, each end rounded to 5; the ends of 5 and 10, which rounding to 5 would have left unchanged, went to the euro (6 and 12), so every option rose. Landing page 295–365 (then lowered 15% to 250–310, user 2026-11-04), Home 100–145, About 60–70, Contact 6–25. The table above holds the current figures.
+
+## Copy round, 2026-11-04 (user)
+
+- Forms and Newsletter sign-up each say "Automatic email confirmation included" / "Inclui email automático de confirmação" under their description (in italics); the newsletter's description no longer mentions the welcome email.
+- Under the second level: "We handle the whole process for you, so you can use the platforms without a worry." / "Tratamos de todo o processo, para que as plataformas se usem sem qualquer preocupação." (the user's Portuguese said "por si"; recast so it does not address the reader, per `docs/language-decisions.md`).
+- Under the page list, two footnotes: "*" for the written-in pages ("Adding sections beyond the ones listed makes the estimate's range wider.") and "**" for "Not sure, I'd rather you choose for me" ("Not sure what to choose? Don't worry: just carry on with the form, and we'll set up a call to help you decide." / "Sem saber o que escolher? Não há problema: basta continuar o formulário, e marcamos uma reunião para ajudar na decisão."). That option still gives an estimate.
+- Under "Not sure" on what is needed: "With this option, there's no estimate at the end. You can still send your answers: we'll go through them and, on a call, help you choose what's best for your project."
