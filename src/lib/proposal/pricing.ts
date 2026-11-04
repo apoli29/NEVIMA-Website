@@ -105,18 +105,25 @@ export const PRICING = {
         said so in the estimate. */
     features: {
       /** By how many simple forms. */
-      forms: { "1": 55, "2": 110, "3": 165 } as Record<"1" | "2" | "3", number>,
+      forms: 55,
       /** The sign-up, its welcome email and its record in the database. */
       newsletter: 39,
       /** Calendar and reservations, set up and configured. */
       booking: 95,
     },
-    /** The back end's monthly fee (user, 2026-11-04): 40 for the calendar
-        and reservations. Forms and the newsletter share one platform account
-        and one fee. The platform's own paid plan, if the client wants it, is
-        paid by the client directly. Scaled by featuresMarket, nearest 5.
-        PROVISIONAL (the 10 for forms and newsletter is a suggestion). */
-    monthly: { forms: 10, booking: 40 },
+    /** The back end's monthly fee (user, 2026-11-04). The client opens and
+        pays for the platform account; the estimate runs from maintenance
+        alone (the free plan is enough) to maintenance plus the platform's
+        paid plan. Forms and the newsletter share one platform (Brevo), the
+        calendar is another (Cal.com): "first" is the maintenance of the
+        first platform, "extra" of each further one. A restaurant in
+        Portugal uses its own reservation platform at a fixed "restaurant"
+        fee, with no paid-plan scenario. Maintenance is scaled by
+        featuresMarket; the plans are the platforms' own prices, not
+        scaled. PROVISIONAL: "first" and "extra" are suggestions; the plan
+        prices are approximate (Brevo Starter about 7 EUR, Cal.com Teams
+        about 15 USD), checked 2026-11-04 on third-party pages. */
+    monthly: { first: 10, extra: 5, restaurant: 40, plans: { brevo: 7, calcom: 14 } },
     featuresMarket: { pt: 1, "es-it": 1.15, us: 1.75 } satisfies Record<Market, number>,
     /** What a new domain costs a year, shown to a client without one as
         a reference only: the client registers and pays for it directly,

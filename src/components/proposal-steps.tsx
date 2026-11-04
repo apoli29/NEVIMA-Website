@@ -7,7 +7,6 @@ import {
   AUDIENCE_NOTE,
   COMPLEX,
   COUNTRIES,
-  COUNTS,
   DESIGN,
   FEATURES,
   FORM_KINDS,
@@ -45,7 +44,6 @@ import {
   type CountryId,
   type DesignId,
   type Estimate,
-  type CountId,
   type FeatureId,
   type FormKindId,
   type LanguageId,
@@ -102,7 +100,6 @@ export type Draft = {
   /** The second level of what the website does (see FEATURES). */
   features: FeatureId[];
   formKind: FormKindId | "";
-  forms: CountId | "";
   /** The third level: a project we do not take on for now. */
   complex: boolean;
   texts: TextsId | "";
@@ -138,7 +135,6 @@ export const EMPTY_DRAFT: Draft = {
   languagesOther: "",
   features: [],
   formKind: "",
-  forms: "",
   complex: false,
   texts: "",
   reference1: "",
@@ -301,7 +297,6 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
       }
       // The forms come after the pages (user, 2026-11-04).
       if (draft.features.includes("forms") && !draft.formKind) e.formKind = PICK_ONE;
-      if (draft.features.includes("forms") && draft.formKind === "simple" && !draft.forms) e.forms = PICK_ONE;
     }
   }
   if (step === "web") {
@@ -383,7 +378,6 @@ export function toAnswers(draft: Draft): Answers {
     if (pagesUnsure) answers.web.pagesUnsure = true;
     if (draft.features.includes("forms") && draft.formKind) {
       answers.web.formKind = draft.formKind;
-      if (draft.formKind === "simple" && draft.forms) answers.web.forms = draft.forms;
     }
     if (draft.complex) answers.web.complex = true;
     if (!references.length) answers.web.noReferences = true;
@@ -449,7 +443,7 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
           const name = label(FEATURES, f).toLowerCase();
           if (f !== "forms" || !a.web?.formKind) return name;
           const kind = label(FORM_KINDS, a.web.formKind).toLowerCase();
-          return a.web.forms ? `${name} (${kind}, ${label(COUNTS, a.web.forms)})` : `${name} (${kind})`;
+          return `${name} (${kind})`;
         }),
         ...(a.web.complex ? [t("complex systems (beyond what we take on now)", "sistemas complexos (fora do que fazemos agora)")] : []),
       ].join(", ")}`,
@@ -474,16 +468,20 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
   if (estimate) {
     const money = moneyIn(lang);
     const span = spanIn(lang);
+    const monthSpan = (min: number, max?: number) => (max && max > min ? `${money(min)} – ${money(max)}` : money(min));
     lines.push("", t("Estimate shown:", "Estimativa apresentada:"));
     for (const l of estimate.lines) {
-      const then = l.monthly !== undefined ? t(`, then ${money(l.monthly)}/month`, `, depois ${money(l.monthly)}/mês`) : "";
+      const then =
+        l.monthly !== undefined
+          ? t(`, then ${monthSpan(l.monthly, l.monthlyMax)}/month`, `, depois ${monthSpan(l.monthly, l.monthlyMax)}/mês`)
+          : "";
       lines.push(`${l.label}: ${span(l.amount)}${then}`);
       for (const part of l.parts ?? []) lines.push(`  ${part.label}: ${span(part.amount)}`);
     }
     for (const r of estimate.onRequest) lines.push(`${r.label}: ${t("on request", "sob consulta")} (${r.reason})`);
     if (estimate.total !== null) lines.push(`Total: ${span(estimate.total)}`);
     if (estimate.later?.length) lines.push(`+ ${estimate.later.join(", ")} (${t("price to be defined", "preço a definir")})`);
-    if (estimate.monthly !== null) lines.push(`${t("Then monthly", "Depois, por mês")}: ${money(estimate.monthly)}`);
+    if (estimate.monthly !== null) lines.push(`${t("Then monthly", "Depois, por mês")}: ${monthSpan(estimate.monthly, estimate.monthlyMax)}`);
   }
   if (contact.message.trim()) lines.push("", t("Tell us more:", "Informações adicionais:"), contact.message.trim());
   return lines.join("\n");
@@ -1071,17 +1069,6 @@ export function StepScreen({
               />
             </Question>
           )}
-          {!draft.complex && draft.features.includes("forms") && draft.formKind === "simple" && (
-            <Question id="forms" label={t("How many simple forms?", "Quantos formulários simples?")} error={errors.forms}>
-              <Segmented
-                name="forms"
-                options={list(COUNTS)}
-                value={draft.forms}
-                onChange={(forms) => setDraft({ forms })}
-                labelledBy="forms-q"
-              />
-            </Question>
-          )}
         </div>
       )}
 
@@ -1369,6 +1356,7 @@ function EstimateScreen({
   const t = useT();
   const money = moneyIn(lang);
   const span = spanIn(lang);
+  const monthSpan = (min: number, max?: number) => (max && max > min ? `${money(min)} – ${money(max)}` : money(min));
   if (state.status === "loading") {
     return (
       <motion.div variants={ROW} className="pf-rows" aria-busy="true">
@@ -1431,7 +1419,10 @@ function EstimateScreen({
               </span>
               {line.monthly !== undefined && (
                 <span className="mono-label mt-1 block text-ash-2">
-                  {t(`One-time, then ${money(line.monthly)}/mo`, `Pontual, depois ${money(line.monthly)}/mês`)}
+                  {t(
+                    `One-time, then ${monthSpan(line.monthly, line.monthlyMax)}/mo`,
+                    `Pontual, depois ${monthSpan(line.monthly, line.monthlyMax)}/mês`,
+                  )}
                 </span>
               )}
             </span>
@@ -1478,7 +1469,10 @@ function EstimateScreen({
           </span>
           {estimate.monthly !== null && (
             <span className="mono-label mt-1 block text-white/70">
-              {t(`Then ${money(estimate.monthly)}/mo`, `Depois ${money(estimate.monthly)}/mês`)}
+              {t(
+                `Then ${monthSpan(estimate.monthly, estimate.monthlyMax)}/mo`,
+                `Depois ${monthSpan(estimate.monthly, estimate.monthlyMax)}/mês`,
+              )}
             </span>
           )}
         </span>

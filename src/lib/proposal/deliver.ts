@@ -96,7 +96,7 @@ function timelineText(estimate: Estimate) {
 /** The estimate, line by line, as the visitor was shown it. */
 function estimateLines(estimate: Estimate) {
   const lines = estimate.lines.map(
-    (line) => `${line.label}: ${range(line.amount)} €${line.monthly ? ` + ${line.monthly} €/mês` : ""}`,
+    (line) => `${line.label}: ${range(line.amount)} €${line.monthly ? ` + ${line.monthly}${line.monthlyMax ? `–${line.monthlyMax}` : ""} €/mês` : ""}`,
   );
   const onRequest = estimate.onRequest.map((item) => `Sob consulta: ${item.label}`);
   const later = (estimate.later ?? []).map((label) => `Sob consulta: ${label}`);
@@ -286,7 +286,7 @@ export async function deliverRequest(request: ProposalRequest): Promise<boolean>
       [
         `${services.label}: ${services.value}`,
         `${who.label}: ${who.value} · ${country.label}: ${country.value}`,
-        `Estimativa: ${totalText(estimate)} €${estimate.monthly ? ` + ${estimate.monthly} €/mês` : ""}`,
+        `Estimativa: ${totalText(estimate)} €${estimate.monthly ? ` + ${estimate.monthly}${estimate.monthlyMax ? `–${estimate.monthlyMax}` : ""} €/mês` : ""}`,
         `Prazo: ${timelineText(estimate)}`,
         `Origem: ${request.origin} · Responder em: ${REPLY_IN[request.lang]}`,
       ],

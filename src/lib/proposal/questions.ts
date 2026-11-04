@@ -274,18 +274,6 @@ export const FEATURES = [
 ] as const;
 export type FeatureId = (typeof FEATURES)[number]["id"];
 
-/** How many forms. More than three has no price yet (user, 2026-10-29):
-    the estimate says so. */
-export const COUNTS = [
-  { id: "1", label: "1", pt: "1" },
-  { id: "2", label: "2", pt: "2" },
-  { id: "3", label: "3", pt: "3" },
-  { id: "more", label: "More than 3", pt: "Mais de 3" },
-  /** Priced from 1 form up to 3 (user, 2026-10-29: both ends). */
-  { id: "unsure", label: "Not sure", pt: "Não sei" },
-] as const;
-export type CountId = (typeof COUNTS)[number]["id"];
-
 /** What kind of forms (user, 2026-10-29). A simple one is a form with one
     automatic email and its answers saved in a database; from there the
     process is manual. Any other scenario is a complex one, whose price is
@@ -458,8 +446,6 @@ export type Answers = {
     features: FeatureId[];
     /** With forms ticked: simple or complex. */
     formKind?: FormKindId;
-    /** With simple forms: how many. */
-    forms?: CountId;
     /** The third level: an online shop, logins, payments, internal
         software. Such a project is not priced. */
     complex?: true;
@@ -502,8 +488,12 @@ export type Estimate = {
     label: string;
     /** Paid up front (for SEO and GEO, the one-time work). */
     amount: Range;
-    /** Paid each month (SEO and GEO with the monthly service). */
+    /** Paid each month: SEO & GEO with the monthly service, and the back
+        end (its lowest figure). */
     monthly?: number;
+    /** The highest monthly figure, when it is a range (the back end: from
+        maintenance alone to maintenance plus the platforms' paid plans). */
+    monthlyMax?: number;
     /** Shown under the line: what it includes, what it assumes. */
     notes: string[];
     /** The website's price in two parts, when it has a back end (forms or
@@ -515,7 +505,7 @@ export type Estimate = {
     provisional?: boolean;
   }[];
   onRequest: { id: string; label: string; reason: string }[];
-  /** Forms with no price yet (complex ones, or more than three): named
+  /** Forms with no price yet (complex ones): named
       under the total, which they are understood to be on top of (user,
       2026-10-30). */
   later?: string[];
@@ -523,6 +513,8 @@ export type Estimate = {
   total: Range | null;
   /** The sum paid each month after the first, when there is any. */
   monthly: number | null;
+  /** The highest monthly sum, when some line has a range. */
+  monthlyMax?: number;
   /** The project needs the third level (complex systems): nothing is
       priced, and the visitor is told it is beyond what we take on now. */
   outOfScope?: true;

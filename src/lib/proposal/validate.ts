@@ -2,7 +2,6 @@ import "server-only";
 import {
   AUDIENCES,
   COUNTRIES,
-  COUNTS,
   DESIGN,
   FEATURES,
   FORM_KINDS,
@@ -153,8 +152,6 @@ export function readAnswers(raw: unknown): Result<Answers> {
     if (!features) return { ok: false, error: "features" };
     const formKind = features.includes("forms") ? one(FORM_KINDS, w.formKind) : undefined;
     if (formKind === null) return { ok: false, error: "formKind" };
-    const forms = formKind === "simple" ? one(COUNTS, w.forms) : undefined;
-    if (forms === null) return { ok: false, error: "forms" };
     // Up to two references, or none when the visitor said they have none.
     const refs = Array.isArray(w.references) ? w.references : [];
     if (refs.length > 2) return { ok: false, error: "references" };
@@ -169,7 +166,6 @@ export function readAnswers(raw: unknown): Result<Answers> {
     if (pageOthers.length) answers.web.pageOthers = pageOthers;
     if (pagesUnsure) answers.web.pagesUnsure = true;
     if (formKind) answers.web.formKind = formKind;
-    if (forms) answers.web.forms = forms;
     if (w.complex === true) answers.web.complex = true;
     if (!references.length) answers.web.noReferences = true;
     if (languages.includes("other")) {
