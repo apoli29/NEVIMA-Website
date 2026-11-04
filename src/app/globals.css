@@ -846,6 +846,30 @@
   .pf-tick-key[data-off] { opacity: 0.4; cursor: not-allowed; }
   .pf-tick-key[data-off]:hover { background: transparent; }
   /* The third level ticked: said at once, in ink. */
+  /* The star on the pages a sector usually has. */
+  .pf-star { width: 0.7rem; height: 0.7rem; flex-shrink: 0; margin-left: 0.4rem; }
+  .pf-footnote .pf-star { margin-left: 0; }
+  /* The third level's end: one message in the middle of the form, and the
+     way back under it. */
+  .pf-out-screen {
+    min-height: 55vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.75rem;
+    text-align: center;
+    padding: 2rem 0.75rem;
+  }
+  .pf-out-screen .pf-lede { max-width: 30em; }
+  .pf-out-back {
+    border: 1px solid var(--color-ink);
+    padding: 0.85rem 1.25rem;
+    color: var(--color-ink);
+    transition: background-color 0.2s, color 0.2s;
+  }
+  .pf-out-back:hover,
+  .pf-out-back:focus-visible { background: var(--color-ink); color: var(--color-paper); }
   .pf-out {
     padding: 0.8rem 0.95rem 0.85rem;
     border-left: 2px solid var(--color-ink);
@@ -933,8 +957,14 @@
     padding: 0.7rem 0.75rem 0.75rem 1.75rem;
     border-top: 1px solid rgb(0 0 0 / 0.18);
   }
-  .pf-part .pf-line-name,
   .pf-part .pf-line-value { font-size: 1.125rem; }
+  /* Its labels a step smaller than the figures (user, 2026-11-04). */
+  .pf-part .pf-line-name { font-size: 1rem; }
+  /* The website's notes, after its two parts. */
+  .pf-line-notes {
+    padding: 0.55rem 0.75rem 1rem;
+    border-top: 1px solid rgb(0 0 0 / 0.18);
+  }
   /* Review mode (?revisao): figures on unconfirmed prices. */
   .pf-provisional {
     text-decoration: underline;
@@ -982,8 +1012,8 @@
     .pf-level-name { font-size: 1rem; }
     .pf-line-name,
     .pf-line-value { font-size: 1.125rem; }
-    .pf-part .pf-line-name,
     .pf-part .pf-line-value { font-size: 1rem; }
+    .pf-part .pf-line-name { font-size: 0.9375rem; }
   }
   /* The foot's button beside "Back" on a small phone: its longest words
      ("Pedir proposta final") ran into the arrow. */

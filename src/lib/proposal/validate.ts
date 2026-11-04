@@ -150,7 +150,8 @@ export function readAnswers(raw: unknown): Result<Answers> {
     const rawFeatures = w.features === undefined ? [] : w.features;
     const features = Array.isArray(rawFeatures) && rawFeatures.length === 0 ? [] : many(FEATURES, rawFeatures);
     if (!features) return { ok: false, error: "features" };
-    const formKind = features.includes("forms") ? one(FORM_KINDS, w.formKind) : undefined;
+    // Forms and the newsletter come with how their emails work.
+    const formKind = features.includes("forms") || features.includes("newsletter") ? one(FORM_KINDS, w.formKind) : undefined;
     if (formKind === null) return { ok: false, error: "formKind" };
     // Up to two references, or none when the visitor said they have none.
     const refs = Array.isArray(w.references) ? w.references : [];
