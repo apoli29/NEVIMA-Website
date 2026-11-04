@@ -39,25 +39,28 @@ export const PRICING = {
     pages: {
       // Each page's highest end is at most 30% over its lowest, keeping the
       // middle it had, both ends rounded up to 5 (user, 2026-11-04); the
-      // landing page's ceiling rounded down to stay within the 30%.
-      landing: [245, 315],
-      home: [110, 140],
-      about: [60, 75],
-      contact: [15, 20],
-      services: [65, 85], // exception: within 40% (user, 2026-11-04)
-      team: [30, 35],
-      prices: [20, 25],
-      testimonials: [30, 35],
-      faq: [25, 30],
-      process: [45, 55],
-      partners: [20, 25],
-      work: [45, 55],
-      resources: [15, 20],
-      items: [45, 60],
-      itemsPages: [90, 115],
-      portfolio: [80, 110], // exception: within 40% (user, 2026-11-04)
-      gallery: [45, 60],
-      events: [70, 85],
+      // landing page's ceiling rounded down to stay within the 30%. Then all
+      // lowered 12.5%, to 5 (user, 2026-11-04); the smallest (Contact,
+      // Downloads, Prices, Partners) became a single figure, since a range
+      // to 5 would have kept them where they were.
+      landing: [215, 275],
+      home: [95, 120],
+      about: [50, 65],
+      contact: [15, 15],
+      services: [55, 75], // exception: within 40% (user, 2026-11-04)
+      team: [25, 30],
+      prices: [20, 20],
+      testimonials: [25, 30],
+      faq: [20, 25],
+      process: [40, 50],
+      partners: [20, 20],
+      work: [40, 50],
+      resources: [15, 15],
+      items: [40, 50],
+      itemsPages: [80, 100],
+      portfolio: [70, 95], // exception: within 40% (user, 2026-11-04)
+      gallery: [40, 50],
+      events: [60, 75],
     } satisfies Record<Exclude<PageKey, "other">, [number, number]>,
     /** The Advanced design moves each page's whole range up by this share
         of its middle, rounded to 5, so it costs about 1.5x the Essential+
