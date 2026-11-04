@@ -36,8 +36,7 @@ const LABEL: Record<ServiceId, { en: string; pt: string }> = {
   web: { en: "Web design", pt: "Web design" },
   identity: { en: "Visual identity", pt: "Identidade visual" },
   photo: { en: "Photo shoot", pt: "Sessão fotográfica" },
-  seo: { en: "SEO", pt: "SEO" },
-  geo: { en: "GEO", pt: "GEO" },
+  seo: { en: "SEO & GEO", pt: "SEO e GEO" },
 };
 
 type Line = Estimate["lines"][number];
@@ -385,7 +384,7 @@ function photo(a: NonNullable<Answers["photo"]>, country: Answers["country"], p:
 }
 
 function search(
-  id: "seo" | "geo",
+  id: "seo",
   plan: SearchPlanId,
   reach: NonNullable<Answers["search"]>["reach"],
   site: Range | undefined,
@@ -472,9 +471,9 @@ export function estimate(answers: Answers, pricing: Pricing = PRICING, lang: Lan
   }
   // SEO and GEO come after the website: they are a share of its price.
   for (const id of answers.services) {
-    if ((id === "seo" || id === "geo") && searchAnswers) {
+    if (id === "seo" && searchAnswers) {
       const site = out.lines.find((l) => l.id === "web")?.amount;
-      const plan = (id === "seo" ? searchAnswers.seoPlan : searchAnswers.geoPlan) ?? "once";
+      const plan = searchAnswers.seoPlan ?? "once";
       // With the website on request, SEO and GEO are quoted for the same reason.
       const why = out.onRequest.find((o) => o.id === "web")?.reason;
       add(id, () => (!site && why ? { reason: why } : search(id, plan, searchAnswers.reach, site, pricing, t)));

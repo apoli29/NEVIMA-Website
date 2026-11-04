@@ -132,7 +132,7 @@ export const PRICING = {
       (user, 2026-11-04): the one-time setup is this percent of the website's
       price, the same for both; the optional monthly service is this share
       of the setup. International reach is on request. PROVISIONAL. */
-  search: { setupPercent: 20, monthlyShare: 1 / 3 },
+  search: { setupPercent: 25, monthlyShare: 25 / 100 },
 };
 
 export type Pricing = typeof PRICING;

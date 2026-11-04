@@ -118,7 +118,6 @@ export type Draft = {
   searchPages: PagesId | "";
   reach: ReachId | "";
   seoPlan: SearchPlanId | "";
-  geoPlan: SearchPlanId | "";
 };
 
 export const EMPTY_DRAFT: Draft = {
@@ -154,7 +153,6 @@ export const EMPTY_DRAFT: Draft = {
   searchPages: "",
   reach: "",
   seoPlan: "",
-  geoPlan: "",
 };
 
 export const EMPTY_CONTACT: Contact = {
@@ -208,11 +206,8 @@ function titleFor(step: StepId, draft: Draft, t: Translate) {
       return "Web design";
     case "photo":
       return t("Photo shoot", "Sessão fotográfica");
-    case "search": {
-      const seo = draft.services.includes("seo");
-      const geo = draft.services.includes("geo");
-      return seo && geo ? t("SEO & GEO", "SEO e GEO") : seo ? "SEO" : "GEO";
-    }
+    case "search":
+      return t("SEO & GEO", "SEO e GEO");
     case "estimate":
       return t("Your estimate", "Estimativa");
     case "contact":
@@ -331,7 +326,6 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
     if (!web && !draft.searchPages) e.searchPages = PICK_ONE;
     if (!draft.reach) e.reach = PICK_ONE;
     if (draft.services.includes("seo") && !draft.seoPlan) e.seoPlan = PICK_ONE;
-    if (draft.services.includes("geo") && !draft.geoPlan) e.geoPlan = PICK_ONE;
   }
   if (step === "contact") {
     if (!contact.name.trim()) e.name = t("Enter your name.", "Falta indicar o nome.");
@@ -401,7 +395,6 @@ export function toAnswers(draft: Draft): Answers {
   if (groups.search) {
     answers.search = { reach: draft.reach as ReachId };
     if (draft.services.includes("seo")) answers.search.seoPlan = draft.seoPlan as SearchPlanId;
-    if (draft.services.includes("geo")) answers.search.geoPlan = draft.geoPlan as SearchPlanId;
     if (!groups.web) {
       answers.search.pages = draft.searchPages as PagesId;
       if (draft.site.trim()) answers.search.site = draft.site.trim();
@@ -476,8 +469,7 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
     if (a.search.site) lines.push(`Website: ${a.search.site}`);
     if (a.search.pages) lines.push(`${t("Site pages", "Páginas do site")}: ${label(PAGES, a.search.pages)}`);
     lines.push(`${t("Reach", "Alcance")}: ${label(REACH, a.search.reach)}`);
-    if (a.search.seoPlan) lines.push(`SEO: ${label(SEARCH_PLANS, a.search.seoPlan)}`);
-    if (a.search.geoPlan) lines.push(`GEO: ${label(SEARCH_PLANS, a.search.geoPlan)}`);
+    if (a.search.seoPlan) lines.push(`SEO & GEO: ${label(SEARCH_PLANS, a.search.seoPlan)}`);
   }
   if (estimate) {
     const money = moneyIn(lang);
@@ -1309,24 +1301,13 @@ export function StepScreen({
             />
           </Question>
           {draft.services.includes("seo") && (
-            <Question id="seoPlan" label={t("How would you like your SEO?", "Que modalidade de SEO?")} error={errors.seoPlan}>
+            <Question id="seoPlan" label={t("How would you like your SEO & GEO?", "Que modalidade de SEO e GEO?")} error={errors.seoPlan}>
               <Segmented
                 name="seoPlan"
                 options={list(SEARCH_PLANS)}
                 value={draft.seoPlan}
                 onChange={(seoPlan) => setDraft({ seoPlan })}
                 labelledBy="seoPlan-q"
-              />
-            </Question>
-          )}
-          {draft.services.includes("geo") && (
-            <Question id="geoPlan" label={t("How would you like your GEO?", "Que modalidade de GEO?")} error={errors.geoPlan}>
-              <Segmented
-                name="geoPlan"
-                options={list(SEARCH_PLANS)}
-                value={draft.geoPlan}
-                onChange={(geoPlan) => setDraft({ geoPlan })}
-                labelledBy="geoPlan-q"
               />
             </Question>
           )}

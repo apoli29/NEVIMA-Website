@@ -202,11 +202,6 @@ export function readAnswers(raw: unknown): Result<Answers> {
       if (!plan) return { ok: false, error: "seoPlan" };
       answers.search.seoPlan = plan;
     }
-    if (services.includes("geo")) {
-      const plan = one(SEARCH_PLANS, s.geoPlan);
-      if (!plan) return { ok: false, error: "geoPlan" };
-      answers.search.geoPlan = plan;
-    }
     // With web design chosen too, the site is the one being built: its
     // address is not asked and its size is the web answer.
     if (!groups.web) {
