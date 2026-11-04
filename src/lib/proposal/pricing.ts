@@ -111,19 +111,18 @@ export const PRICING = {
       /** Calendar and reservations, set up and configured. */
       booking: 95,
     },
-    /** The back end's monthly fee (user, 2026-11-04). The client opens and
-        pays for the platform account; the estimate runs from maintenance
-        alone (the free plan is enough) to maintenance plus the platform's
-        paid plan. Forms and the newsletter share one platform (Brevo), the
-        calendar is another (Cal.com): "first" is the maintenance of the
-        first platform, "extra" of each further one. A restaurant in
+    /** The back end's monthly fee (user, 2026-11-04). Our labour is always
+        5 a month, however many platforms. The estimate runs from that alone
+        (the free plan is enough) to that plus the platforms' paid plans,
+        which the client pays directly. Forms and the newsletter share one
+        platform (Brevo), the calendar is another (Cal.com). A restaurant in
         Portugal uses its own reservation platform at a fixed "restaurant"
-        fee, with no paid-plan scenario. Maintenance is scaled by
-        featuresMarket; the plans are the platforms' own prices, not
-        scaled. PROVISIONAL: "first" and "extra" are suggestions; the plan
-        prices are approximate (Brevo Starter about 7 EUR, Cal.com Teams
-        about 15 USD), checked 2026-11-04 on third-party pages. */
-    monthly: { first: 10, extra: 5, restaurant: 40, plans: { brevo: 7, calcom: 14 } },
+        fee (with its upkeep inside), with no paid-plan scenario. Labour is
+        scaled by featuresMarket; the plans are the platforms' own prices
+        with 23% VAT, yearly billing, not scaled: Brevo Starter 6.33 EUR,
+        Cal.com Teams 12 USD at about 1.15 USD per EUR (checked 2026-11-04
+        on third-party pages: to confirm). */
+    monthly: { labour: 5, restaurant: 40, plans: { brevo: 7.79, calcom: 12.83 } },
     featuresMarket: { pt: 1, "es-it": 1.15, us: 1.75 } satisfies Record<Market, number>,
     /** What a new domain costs a year, shown to a client without one as
         a reference only: the client registers and pays for it directly,

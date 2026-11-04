@@ -363,18 +363,17 @@ function features(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["we
   const mail = has("newsletter") || simpleForm;
   const restaurant = has("booking") && sector === "hospitality" && market === "pt";
   const calendar = has("booking") && !restaurant;
-  const platforms = (mail ? 1 : 0) + (calendar ? 1 : 0);
-  const upkeep = (platforms > 0 ? p.monthly.first + p.monthly.extra * (platforms - 1) : 0) + (restaurant ? p.monthly.restaurant : 0);
+  const upkeep = (mail || calendar ? p.monthly.labour : 0) + (restaurant ? p.monthly.restaurant : 0);
   if (upkeep > 0) {
-    const planPrices = [mail ? p.monthly.plans.brevo : 0, calendar ? p.monthly.plans.calcom : 0].filter(Boolean);
-    const plans = planPrices.reduce((x, y) => x + y, 0);
+    const planPrices = [mail ? p.monthly.plans.brevo : 0, calendar ? p.monthly.plans.calcom : 0].filter(Boolean).map(Math.round);
+    const plans = (mail ? p.monthly.plans.brevo : 0) + (calendar ? p.monthly.plans.calcom : 0);
     out.monthly = Math.max(5, Math.round((upkeep * k) / 5) * 5);
     out.monthlyMax = Math.max(out.monthly, up5(upkeep * k + plans));
     out.notes.push(
       plans > 0
         ? t(
-            `The monthly fee is a range: the lower figure is our maintenance alone, if the platforms' free plans are enough; the higher adds their paid plans (about €${planPrices.join(" and €")} a month), paid by you directly to the platform. Which one applies is only known once we know the business.`,
-            `A mensalidade é um intervalo: o valor mais baixo é só a manutenção, se os planos gratuitos das plataformas chegarem; o mais alto soma os planos pagos (cerca de ${planPrices.join(" € e ")} € por mês), pagos diretamente pelo cliente à plataforma. Só se sabe qual se aplica depois de conhecer o negócio.`,
+            `The monthly fee is a range: the lower figure is our maintenance alone, if the platforms' free plans are enough; the higher adds their paid plans (about €${planPrices.join(" and €")} a month with VAT), paid by you directly to the platform. Which one applies is only known once we know the business.`,
+            `A mensalidade é um intervalo: o valor mais baixo é só a manutenção, se os planos gratuitos das plataformas chegarem; o mais alto soma os planos pagos (cerca de ${planPrices.join(" € e ")} € por mês, com IVA), pagos diretamente pelo cliente à plataforma. Só se sabe qual se aplica depois de conhecer o negócio.`,
           )
         : t("The monthly fee covers keeping the reservations running.", "A mensalidade cobre a manutenção das reservas."),
     );
