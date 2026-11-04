@@ -54,7 +54,7 @@ The website's price is the **sum of the ranges of its pages** (Portugal, Essenti
 
 - Texts never change the price (user, 2026-11-04): the question stays, for the studio to know, and writing them when there are none is included. The texts ranges are gone from `pricing.ts`.
 - Provisional: timeline days by bucket; the ranges of pages the user did not price (How it works, Work with us, Downloads were given: 25–40, 25–40, 5–15).
-- SEO and GEO are one service, "SEO & GEO" (id `seo`; user, 2026-11-04), with one modality question (one-time or one-time + monthly). Priced from the website (provisional): sold only with a website Nevima built; setup = 25% of the website line (floor rounded down and ceiling up to 5); the optional monthly service = 50% of the setup's middle (25% until 2026-11-04), to the nearest 5 (a single figure). Local and national cost the same; international, a website on request and a country quoted on request make it on request. The old size tables are gone (`PRICING.search` in `pricing.ts`). A form left open from before the change, still sending "geo", is refused.
+- SEO and GEO are one service, "SEO & GEO" (id `seo`; user, 2026-11-04), with one modality question (one-time or one-time + monthly). Priced from the website (provisional): sold only with a website Nevima built; setup = 25% of the website line (floor rounded down and ceiling up to 5); the optional monthly service = 30% of the setup's middle (25% until 2026-11-04, briefly 50%), to the nearest 5 (a single figure). Local and national cost the same; international, a website on request and a country quoted on request make it on request. The old size tables are gone (`PRICING.search` in `pricing.ts`). A form left open from before the change, still sending "geo", is refused.
 - Back-end services (Brevo, cal.com, restaurant reservations, per-country platforms, setup + monthly maintenance, a free-plan and a pro-plan scenario) are set aside, with the contract clauses on passwords, 2FA and data processing for the partners and legal review.
 
 ## What the website does: back-end prices
@@ -130,3 +130,5 @@ Decided 2026-11-04 (user; the three questions put to the user went unanswered, s
 ## Pages always included raised by 10%
 
 2026-11-04 (user): Home, About and Contact raised 10%, to the nearest 5: Home 105–130, About 55–70; Contact stays 15–20 (16.5–22 rounds back to it). The three together: 175–220 (Essential+), was 160–205.
+
+- Revised the same day (user): the SEO & GEO monthly is 30% of the setup's middle, not 50%; the setup stays 25% of the website. The 8-page beauty case with local SEO: setup 110–140, monthly 40 (125 x 30% = 37.5, to the nearest 5).
