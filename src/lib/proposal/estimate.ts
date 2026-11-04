@@ -270,8 +270,8 @@ function web(
               monthly: f.monthly,
               monthlyMax: f.monthlyMax > f.monthly ? f.monthlyMax : undefined,
               monthlyNote: t(
-                "The monthly fee covers the platforms' costs and our maintenance: whenever something goes wrong, we fix it.",
-                "A mensalidade cobre os custos das plataformas e a manutenção: sempre que surgir um problema, o estúdio resolve-o.",
+                "The monthly fee covers the platforms' costs and our maintenance: if, by some miracle, something goes wrong, we fix it.",
+                "A mensalidade cobre os custos das plataformas e a manutenção: se, por milagre, alguma coisa correr mal, resolvemos.",
               ),
             }
           : {}),

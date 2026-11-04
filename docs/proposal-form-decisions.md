@@ -142,3 +142,10 @@ Decided 2026-11-04 (user; the three questions put to the user went unanswered, s
 - Then (user, same day): SEO & GEO figures round inward: the lowest end up to 5, the highest down, never crossing. The 8-page case: one-time 80-125, monthly 25-35.
 - Then (user, same day): the highest end rounds to the nearest 5, a half going up (37.5 is 40, 37 is 35); the lowest still rounds up. The 8-page case: one-time 80-125, monthly 25-40.
 - The rounding rule, settled (user, same day): both ends of the SEO & GEO ranges go to the nearest 5; exactly half-way, the lowest end goes up and the highest down (22.4 is 20, 22.5 is 25; 37.4 and 37.5 are 35). The 8-page case: one-time 80-125, monthly 20-35.
+
+## Copy round, later the same day (user)
+
+- Back end's monthly note, with a touch of humour: "The monthly fee covers the platforms' costs and our maintenance: if, by some miracle, something goes wrong, we fix it." / "A mensalidade cobre os custos das plataformas e a manutenção: se, por milagre, alguma coisa correr mal, resolvemos."
+- Languages note shorter and without the price: "Portuguese and English are included. Other languages are translated by an AI specialised in translation; if anything needs adjusting, we send you a simple document for your corrections." (the extra language is still priced in the estimate).
+- The texts question lost its footnote and asterisk ("If you don't, we write them for you…").
+- The features question is now "Which features does your website need?" / "De que funcionalidades precisa o website?" (it was "What is your website's core goal?").
