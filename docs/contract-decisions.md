@@ -16,10 +16,6 @@ A v1.12 torna opcional a Chamada de Acompanhamento (definição e cl. 11, decis�
 
 Os trechos a laranja escuro (`.pending`) aguardam a decisão final dos sócios. As cláusulas ajustáveis têm a etiqueta **Ajustável** no título e uma frase que diz **quais os pontos** se podem ajustar (v1.5): **6.1** (sinal), **6.2** (prazo do pagamento final), **6.5** (meios de pagamento), **8.2** (prazo dos Materiais), **10.6** (desmarcação da sessão) e **21.2** (o sinal no cancelamento). A cl. 16 deixou de ser ajustável, porque as escolhas de portfólio e de crédito já se fazem na Proposta. Um ajuste só vale se ficar escrito nas Condições específicas, com a cláusula e o ponto (cl. 5.2).
 
-## Cl. 4.1 e volume de conteúdo (2026-11-04, decidido pelo utilizador)
-
-A cl. 4.1 fica como está: a nevima apresenta sempre também uma Proposta com as escolhas do Cliente, dentro dos intervalos da estimativa. Não se acrescenta exceção para volume de conteúdo muito acima do habitual (um portefólio ou catálogo muito extenso, por exemplo). Nesses casos a nevima propõe duas opções: um preço um pouco acima do intervalo, ou o preço dentro do intervalo com o conteúdo reduzido a um volume habitual. Fica por resolver a frase da estimativa sobre páginas escritas em "Outras" ("o orçamento final pode ficar ligeiramente fora desta estimativa"), que não bate com esta cláusula.
-
 ## Estrutura (v1.4)
 - **Parte I, Condições Gerais:**
   1. Partes
