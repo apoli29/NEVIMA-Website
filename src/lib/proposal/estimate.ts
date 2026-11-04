@@ -1,15 +1,18 @@
 import "server-only";
 import { translator, type Lang, type Translate } from "../i18n";
-import { MARKET, PRICING, type Market, type Pricing } from "./pricing";
+import { MARKET, PRICING, type Market, type PageKey, type Pricing } from "./pricing";
 import {
   REGIONS,
+  SECTOR_PAGES,
   TRANSLATION_NOTE,
   countLanguages,
+  countPages,
   labelOf,
   type Answers,
   type Estimate,
   type PagesId,
   type Range,
+  type SectorId,
   type SearchPlanId,
   type ServiceId,
 } from "./questions";
@@ -43,6 +46,10 @@ type Priced = { line: Omit<Line, "id" | "label"> } | { reason: string };
 const fixed = (n: number): Range => ({ min: n, max: n });
 const down10 = (n: number) => Math.floor(n / 10) * 10;
 const up10 = (n: number) => Math.ceil(n / 10) * 10;
+/** The website's floor rounds down to 5, like its ceiling up to 5, so the
+    sum of the pages' lowest ends is shown as it adds up (user, 2026-11-04:
+    205 stays 205). */
+const down5 = (n: number) => Math.floor(n / 5) * 5;
 /** Ceilings round up to 5, so 380 + 30% reads 495 and not 500. */
 const up5 = (n: number) => Math.ceil(n / 5) * 5;
 
@@ -52,6 +59,7 @@ function web(
   p: Pricing["web"],
   t: Translate,
   personal = false,
+  sector?: SectorId,
 ): Priced {
   if (a.pages === "10+") return { reason: t("More than 10 pages", "Mais de 10 páginas") };
   const notes = [t(p.includes), t(p.marginNote)];
@@ -79,8 +87,8 @@ function web(
       languages: languagesUnsure ? ["pt", "en", "other"] : a.languages,
       languagesOther: languagesUnsure ? "one more" : a.languagesOther,
     };
-    const low = web(cheap, market, p, t, personal);
-    const high = web(dear, market, p, t, personal);
+    const low = web(cheap, market, p, t, personal, sector);
+    const high = web(dear, market, p, t, personal, sector);
     if (!("line" in low)) return low;
     if (!("line" in high)) return high;
     const what = [
@@ -115,19 +123,72 @@ function web(
     };
   }
 
-  // The pages' range (the same share over the floor for every size).
-  // Advanced costs more than Essential+ at both ends alike (user,
-  // 2026-10-30).
+  // The pages' price: the sum of the ranges of the pages, each with its own
+  // range by design level (user, 2026-11-04). The lowest ends add up to the
+  // floor and the highest to the ceiling; the studio settles the figure
+  // inside after the call.
   const advanced = a.design === "advanced";
-  const design = advanced ? 1 + p.advancedPercent / 100 : 1;
-  const [fewest, most] = p.pages[a.pages][market];
   const extras = others * p.perLanguage;
-  // Advanced is Essential+ ×1.35 unless the size has a price of its own for
-  // it; the ceiling keeps the size's share over its floor (none for the
-  // landing page, a fixed price for each design level).
-  const start = advanced ? (p.advancedFloors[a.pages]?.[market] ?? fewest * design) : fewest;
-  let min = start + extras;
-  let max = start * (most / fewest) + extras;
+  const round5 = (n: number) => Math.round(n / 5) * 5;
+  const pageRange = (key: PageKey): [number, number] => {
+    const [lo, hi] = p.pages[key];
+    return advanced ? [round5(lo * (1 + p.advancedMin / 100)), round5(hi * (1 + p.advancedMax / 100))] : [lo, hi];
+  };
+  const total = (keys: readonly PageKey[], end: 0 | 1) => keys.reduce((sum, key) => sum + pageRange(key)[end], 0);
+
+  const always = ["home", "about", "contact"] as const;
+  const chosen = a.pageTypes;
+  // The pages and sections we already foresee, without the Home page and the
+  // landing page: what a page we cannot foresee is measured against.
+  const foreseen = (Object.keys(p.pages) as PageKey[]).filter((k) => k !== "home" && k !== "landing");
+  const lowOf = (k: PageKey) => pageRange(k)[0];
+  const highOf = (k: PageKey) => pageRange(k)[1];
+  const mid = (k: PageKey) => (lowOf(k) + highOf(k)) / 2;
+  // Each page or section written in beyond the list adds a range from the
+  // lowest to the highest of those foreseen (user, 2026-11-04).
+  const written = a.pageMode === "website" ? (a.pageOthers?.length ?? 0) : 0;
+  const writtenLow = Math.min(...foreseen.map(lowOf));
+  const writtenHigh = Math.max(...foreseen.map(highOf));
+  // "Not sure, you choose" adds a range from the average of all those pages
+  // up to the average of the two dearest (user, 2026-11-04).
+  const unsureWeb = a.pageMode === "website" && a.pagesUnsure === true;
+  const byMid = [...foreseen].sort((x, y) => mid(y) - mid(x));
+  const unsureLow = foreseen.reduce((sum, k) => sum + mid(k), 0) / foreseen.length;
+  const unsureHigh = (mid(byMid[0]) + mid(byMid[1])) / 2;
+  let lows: number;
+  let highs: number;
+  if (a.pageMode === "landing") {
+    lows = total(["landing"], 0);
+    highs = total(["landing"], 1);
+  } else if (a.pageMode === "website") {
+    lows = total([...always, ...chosen], 0) + written * writtenLow + (unsureWeb ? unsureLow : 0);
+    highs = total([...always, ...chosen], 1) + written * writtenHigh + (unsureWeb ? unsureHigh : 0);
+  } else {
+    // Not sure: from the pages always included up to those usual in the
+    // business's sector.
+    const usual = SECTOR_PAGES[personal ? "personal" : (sector ?? "other")];
+    lows = total(always, 0);
+    highs = total([...always, ...usual], 1);
+  }
+  const scale = p.pagesMarket[market];
+  let min = lows * scale + extras;
+  let max = highs * scale + extras;
+  if (written > 0) {
+    notes.push(
+      t(
+        "Pages or sections written in outside the list can make the range wider, and the final quote may fall slightly outside this estimate.",
+        "Páginas ou secções escritas fora das escolhas podem tornar o intervalo maior, e o orçamento final pode ficar ligeiramente fora desta estimativa.",
+      ),
+    );
+  }
+  if (unsureWeb) {
+    notes.push(
+      t(
+        "Since the choice of some pages and sections was left to us, the range is wider than with them chosen.",
+        "Como a escolha de algumas páginas e secções ficou a cargo do estúdio, o intervalo é maior do que com elas escolhidas.",
+      ),
+    );
+  }
 
   // Writing the texts the client does not have, by the site's size.
   if (a.texts === "no") {
@@ -167,13 +228,13 @@ function web(
   if (a.pages === "unsure") {
     notes.push(
       t(
-        "Estimated for 2 to 7 pages, so the range is wider than with a set number of pages.",
-        "Estimado para 2 a 7 páginas, por isso o intervalo é mais largo do que com um número de páginas definido.",
+        "Estimated from Home, About and Contact up to the pages and sections usual in the business's sector, so the range is wider than with the pages chosen.",
+        "Estimado desde a página principal, Sobre nós e Contactos até às páginas e secções habituais do setor, por isso o intervalo é mais largo do que com as páginas escolhidas.",
       ),
     );
   }
   // A fixed price (the landing page) is not rounded down.
-  const floor = min === max ? min : down10(min);
+  const floor = min === max ? min : down5(min);
   const ceiling = min === max ? max : up5(max);
 
   // What the website receives from its visitors (the second level), each
@@ -186,7 +247,7 @@ function web(
   const hi = ceiling + f.max * rush;
   // With no range there is no upper end to explain.
   const kept = lo === hi ? notes.filter((n) => n !== t(p.marginNote)) : notes;
-  const amount = lo === hi ? { min: up5(lo), max: up5(hi) } : { min: down10(lo), max: up5(hi) };
+  const amount = lo === hi ? { min: up5(lo), max: up5(hi) } : { min: down5(lo), max: up5(hi) };
 
   // With a back end the price shows in two parts that add up to the line:
   // the front end is the website itself, the back end what its forms and
@@ -219,13 +280,22 @@ function web(
     the languages, the texts when they are written for the client, and an
     urgent deadline. "Not sure" answers are said as they are. */
 function frontDetail(a: NonNullable<Answers["web"]>, others: number, t: Translate) {
-  const pages = {
-    landing: t("a landing page", "uma landing page"),
-    "4-6": t("4–6 pages", "4–6 páginas"),
-    "7-10": t("7–10 pages", "7–10 páginas"),
-    unsure: t("2 to 7 pages", "2 a 7 páginas"),
-    "10+": "",
-  }[a.pages];
+  // A website says how many pages it was counted to (and one more we
+  // cannot foresee, when "Other" was ticked).
+  const count = countPages(a.pageTypes, a.pageOthers?.length ?? 0);
+  const pages =
+    a.pageMode === "website"
+      ? a.pagesUnsure
+        ? t(`${count} pages and sections, plus others we choose`, `${count} páginas e secções, mais outras à escolha do estúdio`)
+        : t(`${count} pages and sections`, `${count} páginas e secções`)
+      : {
+          landing: t("a landing page", "uma landing page"),
+          "3": "",
+          "4-6": "",
+          "7-10": "",
+          unsure: t("pages and sections to be defined", "páginas e secções a definir"),
+          "10+": "",
+        }[a.pages];
   const design = {
     essential: t("Essential+ design", "design Essencial+"),
     advanced: t("Advanced design", "design Avançado"),
@@ -326,8 +396,10 @@ function search(
   if (pages === "10+") return { reason: t("More than 10 pages", "Mais de 10 páginas") };
   if (reach === "international") return { reason: t("International reach", "Alcance internacional") };
   if (!pages) return { reason: t("Quoted in your proposal", "Orçamentado na proposta") };
-  // Not sure about the pages: priced as a mid-sized site.
-  const { first, monthly } = p[id][pages === "unsure" ? "4-6" : pages][reach][market];
+  // Not sure about the pages: priced as a mid-sized site. The tables have
+  // three sizes: two and three pages are priced as the smallest.
+  const size = pages === "unsure" ? "4-6" : pages === "3" ? "landing" : pages;
+  const { first, monthly } = p[id][size][reach][market];
   const notes = [
     t(
       "One-time: strongest in the short term, its effect fades over the medium to long term.",
@@ -394,7 +466,7 @@ export function estimate(answers: Answers, pricing: Pricing = PRICING, lang: Lan
 
   const { web: webAnswers, photo: photoAnswers, search: searchAnswers } = answers;
   for (const id of answers.services) {
-    if (id === "web" && webAnswers) add("web", (m) => web(webAnswers, m, pricing.web, t, answers.audience === "personal"));
+    if (id === "web" && webAnswers) add("web", (m) => web(webAnswers, m, pricing.web, t, answers.audience === "personal", answers.sector));
     if (id === "identity") add("identity", (m) => identity(webAnswers?.urgent === "yes", m, pricing.web, t));
     if (id === "photo" && photoAnswers) add("photo", () => photo(photoAnswers, answers.country, pricing, t));
     if ((id === "seo" || id === "geo") && searchAnswers) {

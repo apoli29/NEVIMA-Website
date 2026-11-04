@@ -9,6 +9,8 @@ import {
   LANGUAGES,
   MAX,
   PAGES,
+  PAGE_MODES,
+  PAGE_TYPES,
   PHOTO_PLANS,
   REACH,
   REGIONS,
@@ -17,7 +19,12 @@ import {
   SERVICES,
   TEXTS,
   YES_NO,
+  ITEM_LISTS,
+  MIN_CHOSEN,
+  MAX_OTHERS,
+  chosenCount,
   groupsFor,
+  pagesFor,
   type Answers,
   type Contact,
 } from "./questions";
@@ -102,14 +109,41 @@ export function readAnswers(raw: unknown): Result<Answers> {
   if (groups.web) {
     const w = isObject(raw.web) ? raw.web : {};
     const design = one(DESIGN, w.design);
-    const pages = one(PAGES, w.pages);
+    const pageMode = one(PAGE_MODES, w.pageMode);
     const languages = many(LANGUAGES, w.languages);
     const texts = one(TEXTS, w.texts);
     const domain = one(YES_NO, w.domain);
     const urgent = one(YES_NO, w.urgent);
-    if (!design || !pages || !languages || !texts || !domain || !urgent) {
+    if (!design || !pageMode || !languages || !texts || !domain || !urgent) {
       return { ok: false, error: "web" };
     }
+    // The page types are ticked for a website only: each from the list,
+    // once, in the list's order (none is fine: Home and About stay). The
+    // size is worked out here, never taken from the form.
+    const rawTypes = pageMode === "website" && Array.isArray(w.pageTypes) ? w.pageTypes : [];
+    if (!rawTypes.every((v) => typeof v === "string" && ids(PAGE_TYPES).has(v))) {
+      return { ok: false, error: "pageTypes" };
+    }
+    const pageTypes = PAGE_TYPES.map((k) => k.id).filter((id) => rawTypes.includes(id));
+    // Up to three pages or sections written in (empty ones dropped), and
+    // "not sure, you choose": for a website only.
+    const rawOthers = pageMode === "website" && Array.isArray(w.pageOthers) ? w.pageOthers : [];
+    if (rawOthers.length > MAX_OTHERS) return { ok: false, error: "pageOthers" };
+    const pageOthers: string[] = [];
+    for (const o of rawOthers) {
+      const clean = text(o, MAX.short);
+      if (clean === null) return { ok: false, error: "pageOthers" };
+      if (clean) pageOthers.push(clean);
+    }
+    const pagesUnsure = pageMode === "website" && w.pagesUnsure === true;
+    // A website needs at least two pages or sections besides those always
+    // included ("not sure" stands for two), and the two kinds of item list
+    // exclude each other.
+    if (pageMode === "website" && chosenCount(pageTypes, pageOthers.length, pagesUnsure) < MIN_CHOSEN) {
+      return { ok: false, error: "pageTypes" };
+    }
+    if (ITEM_LISTS.every((id) => pageTypes.includes(id))) return { ok: false, error: "pageTypes" };
+    const pages = pagesFor(pageMode, pageTypes, pageOthers.length, pagesUnsure);
     // "Not sure" stands alone: it does not go with any language.
     if (languages.includes("unsure") && languages.length > 1) return { ok: false, error: "languages" };
     // The second level: any of its items, none included. Forms come with
@@ -131,7 +165,9 @@ export function readAnswers(raw: unknown): Result<Answers> {
       if (clean) references.push(clean);
     }
     if (!references.length && w.noReferences !== true) return { ok: false, error: "references" };
-    answers.web = { design, pages, languages, features, texts, references, domain, urgent };
+    answers.web = { design, pages, pageMode, pageTypes, languages, features, texts, references, domain, urgent };
+    if (pageOthers.length) answers.web.pageOthers = pageOthers;
+    if (pagesUnsure) answers.web.pagesUnsure = true;
     if (formKind) answers.web.formKind = formKind;
     if (forms) answers.web.forms = forms;
     if (w.complex === true) answers.web.complex = true;
