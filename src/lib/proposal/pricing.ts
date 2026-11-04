@@ -42,24 +42,26 @@ export const PRICING = {
       // landing page's ceiling rounded down to stay within the 30%. Then all
       // lowered 12.5%, to 5 (user, 2026-11-04); the smallest (Contact,
       // Downloads, Prices, Partners) became a single figure, since a range
-      // to 5 would have kept them where they were.
+      // to 5 would have kept them where they were. Then those up to 50 raised
+      // 12.5% (user, 2026-11-04), to 5: the single figures got their range
+      // back, with the top end raised.
       landing: [215, 275],
       home: [95, 120],
       about: [50, 65],
-      contact: [15, 15],
+      contact: [15, 20],
       services: [55, 75], // exception: within 40% (user, 2026-11-04)
-      team: [25, 30],
-      prices: [20, 20],
-      testimonials: [25, 30],
-      faq: [20, 25],
-      process: [40, 50],
-      partners: [20, 20],
-      work: [40, 50],
-      resources: [15, 15],
-      items: [40, 50],
+      team: [30, 35],
+      prices: [20, 25],
+      testimonials: [30, 35],
+      faq: [25, 30],
+      process: [45, 55],
+      partners: [20, 25],
+      work: [45, 55],
+      resources: [15, 20],
+      items: [45, 55],
       itemsPages: [80, 100],
       portfolio: [70, 95], // exception: within 40% (user, 2026-11-04)
-      gallery: [40, 50],
+      gallery: [45, 55],
       events: [60, 75],
     } satisfies Record<Exclude<PageKey, "other">, [number, number]>,
     /** The Advanced design moves each page's whole range up by this share

@@ -24,20 +24,20 @@ The website's price is the **sum of the ranges of its pages** (Portugal, Essenti
 | Landing page | 215–275 |
 | Home | 95–120 |
 | About | 50–65 |
-| Contact | 15 |
+| Contact | 15–20 |
 | Services | 55–75 |
-| Team | 25–30 |
-| Prices | 20 |
-| Testimonials | 25–30 |
-| FAQ | 20–25 |
-| How it works | 40–50 |
-| Partners & brands | 20 |
-| Work with us | 40–50 |
-| Downloads | 15 |
-| List of items | 40–50 |
+| Team | 30–35 |
+| Prices | 20–25 |
+| Testimonials | 30–35 |
+| FAQ | 25–30 |
+| How it works | 45–55 |
+| Partners & brands | 20–25 |
+| Work with us | 45–55 |
+| Downloads | 15–20 |
+| List of items | 45–55 |
 | List of items, a page each | 80–100 |
 | Portfolio & case studies | 70–95 |
-| Gallery (photos and videos) | 40–50 |
+| Gallery (photos and videos) | 45–55 |
 | Events | 60–75 |
 
 - **Advanced design** moves each page's whole range up by 50% of its middle, rounded to 5 (`advancedShift`; user, 2026-11-04): the same amount on both ends, so the range is as wide as Essential+ and the price about 1.5x. It was the lowest ×1.35 and the highest ×1.45, which made the Advanced range much wider.
@@ -118,3 +118,7 @@ Decided 2026-11-04 (user; the three questions put to the user went unanswered, s
 ## Page prices lowered by 12.5%
 
 2026-11-04 (user): every page range lowered 12.5%, each end rounded to 5. Contact and Downloads (15) and Prices and Partners (20) became a single figure: rounded to 5 as a range they would not have moved. Every range stays within 30% (Services and Portfolio within 40%). Examples in Portugal, Essential+: landing 215–275; Home, About, Contact, Services, Portfolio, Gallery, Prices, Testimonials with a form 425–525.
+
+## Small pages raised by 12.5%
+
+2026-11-04 (user): every page whose highest end was 50 or less raised 12.5%, to 5. Contact and Downloads 15–20, Prices and Partners 20–25 (their range back), Team and Testimonials 30–35, FAQ 25–30, How it works, Work with us, List of items and Gallery 45–55. Without Services or Portfolio a website stays within 30% (worst about 28%); with them it can reach about 32%, inside their 40% exception. The 8-page beauty case with a form: 435–545.
