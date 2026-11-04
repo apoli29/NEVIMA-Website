@@ -451,12 +451,17 @@ function search(
   const { setup, monthlyOfSetup } = p.search;
   // The one-time work, from its lowest share of the website's lowest figure
   // to its highest share of the highest (user, 2026-11-04).
-  const first: Range = { min: down5((site.min * setup.min) / 100), max: up5((site.max * setup.max) / 100) };
-  // The monthly service, the same way from the one-time work's ends, each
-  // to the nearest 5.
-  const near5 = (n: number) => Math.max(5, Math.round(n / 5) * 5);
-  const monthly = near5((first.min * monthlyOfSetup.min) / 100);
-  const monthlyMax = Math.max(monthly, near5((first.max * monthlyOfSetup.max) / 100));
+  // The lowest end rounds up to 5 and the highest down (user, 2026-11-04),
+  // never crossing.
+  const inward = (lo: number, hi: number): Range => {
+    const min = Math.max(5, up5(lo));
+    return { min, max: Math.max(min, down5(hi)) };
+  };
+  const first = inward((site.min * setup.min) / 100, (site.max * setup.max) / 100);
+  // The monthly service, the same way from the one-time work's ends.
+  const month = inward((first.min * monthlyOfSetup.min) / 100, (first.max * monthlyOfSetup.max) / 100);
+  const monthly = month.min;
+  const monthlyMax = month.max;
   const perMonth = monthlyMax > monthly ? `${monthly}–${monthlyMax}` : `${monthly}`;
   const notes = [
     t(
