@@ -324,7 +324,7 @@ export const OUT_OF_SCOPE: Copy = {
   pt: "Projetos assim estão, por agora, fora do que fazemos. Preferimos dizê-lo com honestidade a entregar menos do que o nosso melhor.",
 };
 
-/** Two design levels for now (user, 2026-10-17), 35% apart (2026-10-29). */
+/** Two design levels for now (user, 2026-10-17); Advanced about 1.5x Essential+, as wide a range (2026-11-04). */
 export const DESIGN = [
   {
     id: "essential",

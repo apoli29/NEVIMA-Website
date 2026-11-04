@@ -131,7 +131,9 @@ function web(
   const round5 = (n: number) => Math.round(n / 5) * 5;
   const pageRange = (key: PageKey): [number, number] => {
     const [lo, hi] = p.pages[key];
-    return advanced ? [round5(lo * (1 + p.advancedMin / 100)), round5(hi * (1 + p.advancedMax / 100))] : [lo, hi];
+    // The same amount on both ends: as wide as Essential+, about 1.5x dearer.
+    const shift = round5(((lo + hi) / 2) * (p.advancedShift / 100));
+    return advanced ? [lo + shift, hi + shift] : [lo, hi];
   };
   const total = (keys: readonly PageKey[], end: 0 | 1) => keys.reduce((sum, key) => sum + pageRange(key)[end], 0);
 
