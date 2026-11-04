@@ -74,14 +74,14 @@ export const PRICING = {
     /** What every website comes with, shown under its line. Kept in
         step with the contract (clauses 11 and 12). */
     includes: {
-      en: "Includes optimised images, review of your texts, free hosting (first year, then every 6 months) and, if you wish, a free call once part of the site is built.",
-      pt: "Inclui imagens otimizadas, revisão dos textos, alojamento gratuito (1.º ano, depois de 6 em 6 meses) e, se pedida, uma chamada gratuita com parte do site construída.",
+      en: "Includes optimised images, review of your texts, free hosting (the first contract year, renewed yearly) and, if you wish, a free call once part of the site is built.",
+      pt: "Inclui imagens otimizadas, revisão dos textos, alojamento gratuito (1.º ano de contrato, renovado de ano a ano) e, se pedida, uma chamada gratuita com parte do site construída.",
     } satisfies Copy,
 
     /** What the upper end allows for, shown under the website's line. */
     marginNote: {
-      en: "The upper end covers the unforeseen: content volume, connected tools (booking, maps, social media), special design (illustrations, animations), site migration.",
-      pt: "O valor mais alto cobre o imprevisto: conteúdo, ferramentas (marcações, mapas, redes sociais), design especial (ilustrações, animações) e migração de site.",
+      en: "The upper end covers the unforeseen: content volume, connected tools (maps, social media), special design (illustrations, animations), site migration.",
+      pt: "O valor mais alto cobre o imprevisto: conteúdo, ferramentas (mapas, redes sociais), design especial (ilustrações, animações) e migração de site.",
     } satisfies Copy,
     /** The visual identity redesign (logo and symbol). */
     identity: { pt: 110, "es-it": 125, us: 195 } satisfies ByMarket,
@@ -129,8 +129,9 @@ export const PRICING = {
         in their own name (contract v1.9, clause 13), so it is never
         added to our price. */
     newDomain: { min: 10, max: 30 },
-    /** Added for an urgent deadline, on the website and its extras. The
-        timeline is then agreed between both sides. */
+    /** Added for an urgent deadline, on the project's whole one-time price
+        (user, 2026-11-04; contract v1.13, clause 4.5), never on the monthly
+        fees. The timeline is then agreed between both sides. */
     urgentPercent: 40,
   },
 
