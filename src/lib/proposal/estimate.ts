@@ -451,11 +451,11 @@ function search(
   const { setup, monthlyOfSetup } = p.search;
   // The one-time work, from its lowest share of the website's lowest figure
   // to its highest share of the highest (user, 2026-11-04).
-  // The lowest end rounds up to 5 and the highest down (user, 2026-11-04),
-  // never crossing.
+  // The lowest end rounds up to 5; the highest to the nearest 5, a half
+  // going up (37.5 is 40, 37 is 35; user, 2026-11-04). Never crossing.
   const inward = (lo: number, hi: number): Range => {
     const min = Math.max(5, up5(lo));
-    return { min, max: Math.max(min, down5(hi)) };
+    return { min, max: Math.max(min, Math.round(hi / 5) * 5) };
   };
   const first = inward((site.min * setup.min) / 100, (site.max * setup.max) / 100);
   // The monthly service, the same way from the one-time work's ends.
