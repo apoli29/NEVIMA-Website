@@ -89,14 +89,9 @@ export const PRICING = {
         the same, in every country (user, 2026-10-19; contract clause
         11.4). More than three is quoted. */
     perLanguage: 35,
-    /** Writing the website's texts when the client has none, as a range
-        by the site's size (Portugal; other markets scaled by textsMarket).
-        PROVISIONAL: figures to be confirmed by the studio. */
-    texts: { landing: [80, 150], "3": [130, 250], "4-6": [150, 300], "7-10": [180, 340], unsure: [120, 320] } as Record<
-      Size,
-      [number, number]
-    >,
-    textsMarket: { pt: 1, "es-it": 1.15, us: 1.75 } satisfies Record<Market, number>,
+    /* Writing the website's texts, when the client has none, is included:
+       whether there are texts or not never changes the price (user,
+       2026-11-04; contract v1.14, clause 11.1). */
     /** The second level of what a website does (user, 2026-10-29), as
         fixed prices for Portugal; other markets scaled by featuresMarket.
         A simple form is one with a single automatic email and its answers

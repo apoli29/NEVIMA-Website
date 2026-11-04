@@ -342,13 +342,12 @@ export const DESIGN = [
 ] as const;
 export type DesignId = (typeof DESIGN)[number]["id"];
 
-/** Whether the client already has the website's texts: writing them is
-    priced as a range, by the site's size (user, 2026-10-17: yes or no). */
+/** Whether the client already has the website's texts. It never changes
+    the price: writing them, when there are none, is included (user,
+    2026-11-04). */
 export const TEXTS = [
   { id: "yes", label: "Yes", pt: "Sim" },
   { id: "no", label: "No", pt: "Não" },
-  /** Priced as ready, with writing them added to the upper end (user,
-      2026-10-27). */
   { id: "unsure", label: "Not sure", pt: "Não sei" },
 ] as const;
 export type TextsId = (typeof TEXTS)[number]["id"];

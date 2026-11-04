@@ -237,8 +237,8 @@ const PAGES_NOTE: Copy = {
   pt: "Sem um tipo definido, estimamos da página principal, Sobre nós e Contactos até às páginas e secções habituais do setor, por isso o intervalo da estimativa final pode ser um pouco mais largo.",
 };
 const TEXTS_NOTE: Copy = {
-  en: "If you don't, writing them is added to the price, as a range set by your website's size.",
-  pt: "Caso não existam, a escrita dos textos acresce ao preço, num intervalo definido pelo tamanho do website.",
+  en: "If you don't, we write them for you, and the price stays the same.",
+  pt: "Caso não existam, a escrita dos textos está incluída, sem alterar o preço.",
 };
 const URGENT_NOTE: Copy = {
   en: "An urgent deadline raises the price by 40%.",
