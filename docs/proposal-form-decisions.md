@@ -56,3 +56,13 @@ The website's price is the **sum of the ranges of its pages** (Portugal, Essenti
 - Provisional: timeline days and the texts ranges by bucket; the ranges of pages the user did not price (How it works, Work with us, Downloads were given: 25–40, 25–40, 5–15).
 - SEO and GEO are one service, "SEO & GEO" (id `seo`; user, 2026-11-04), with one modality question (one-time or one-time + monthly). Priced from the website (provisional): sold only with a website Nevima built; setup = 25% of the website line (floor rounded down and ceiling up to 5); the optional monthly service = 25% of the setup's middle, to the nearest 5 (a single figure). Local and national cost the same; international, a website on request and a country quoted on request make it on request. The old size tables are gone (`PRICING.search` in `pricing.ts`). A form left open from before the change, still sending "geo", is refused.
 - Back-end services (Brevo, cal.com, restaurant reservations, per-country platforms, setup + monthly maintenance, a free-plan and a pro-plan scenario) are set aside, with the contract clauses on passwords, 2FA and data processing for the partners and legal review.
+
+## What the website does: back-end prices
+
+Decided 2026-11-04 (user). Set up and configured, in Portugal (other markets scaled by `featuresMarket`: Spain/Italy x1.15, USA x1.75):
+
+- Forms: 55 each (1, 2, 3 = 55, 110, 165; "not sure" 55-165). More than three, and complex ones, are still priced later.
+- Newsletter sign-up: 39.
+- Calendar and reservations: 95 (new, in the same list of ticks; it is no longer a "complex form").
+- Monthly: 40 for calendar and reservations (the user's figure); 10 for forms and newsletter together, one platform account (a suggestion, provisional). Added to the web line as one figure, nearest 5, with a note that the platform's paid plan, if chosen, is paid by the client directly. The two-scenario range (free plan versus pro plan) is not built.
+- Still open: which platform for restaurant reservations abroad, and the contract clauses on credentials, 2FA and data processing.
