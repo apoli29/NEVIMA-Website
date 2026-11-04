@@ -448,12 +448,16 @@ function search(
   // Priced from the website we build (user, 2026-11-04): with no price for
   // the site (more than 10 pages, a country quoted on request) there is none.
   if (!site) return { reason: t("Quoted in your proposal", "Orçamentado na proposta") };
-  const { setupPercent, monthlyBasePercent, monthlyShare } = p.search;
-  const first: Range = { min: down5((site.min * setupPercent) / 100), max: up5((site.max * setupPercent) / 100) };
-  // One monthly figure: a share of the middle of the setup as it was at
-  // 25% of the website, to the nearest 5 (see PRICING.search).
-  const base = { min: down5((site.min * monthlyBasePercent) / 100), max: up5((site.max * monthlyBasePercent) / 100) };
-  const monthly = Math.max(5, Math.round(((base.min + base.max) / 2) * monthlyShare / 5) * 5);
+  const { setup, monthlyOfSetup } = p.search;
+  // The one-time work, from its lowest share of the website's lowest figure
+  // to its highest share of the highest (user, 2026-11-04).
+  const first: Range = { min: down5((site.min * setup.min) / 100), max: up5((site.max * setup.max) / 100) };
+  // The monthly service, the same way from the one-time work's ends, each
+  // to the nearest 5.
+  const near5 = (n: number) => Math.max(5, Math.round(n / 5) * 5);
+  const monthly = near5((first.min * monthlyOfSetup.min) / 100);
+  const monthlyMax = Math.max(monthly, near5((first.max * monthlyOfSetup.max) / 100));
+  const perMonth = monthlyMax > monthly ? `${monthly}–${monthlyMax}` : `${monthly}`;
   const notes = [
     t(
       "One-time: strongest in the short term, its effect fades over the medium to long term.",
@@ -464,8 +468,8 @@ function search(
   if (plan === "unsure") {
     notes.push(
       t(
-        `The monthly service, which keeps the practices as effective as they can be, is optional: €${monthly} a month. We settle it together.`,
-        `O serviço mensal, que mantém as práticas o mais eficazes possível, é opcional: ${monthly} € por mês. Definimos em conjunto.`,
+        `The monthly service, which keeps the practices as effective as they can be, is optional: €${perMonth} a month. We settle it together.`,
+        `O serviço mensal, que mantém as práticas o mais eficazes possível, é opcional: ${perMonth} € por mês. Definimos em conjunto.`,
       ),
     );
     return { line: { amount: first, notes, provisional: true } };
@@ -477,7 +481,7 @@ function search(
         "Mais o serviço mensal, que mantém as práticas o mais eficazes possível.",
       ),
     );
-    return { line: { amount: first, monthly, notes, provisional: true } };
+    return { line: { amount: first, monthly, monthlyMax: monthlyMax > monthly ? monthlyMax : undefined, notes, provisional: true } };
   }
   return { line: { amount: first, notes, provisional: true } };
 }
