@@ -149,18 +149,18 @@ function web(
   const foreseen = (Object.keys(p.pages) as PageKey[]).filter((k) => k !== "home" && k !== "landing");
   const lowOf = (k: PageKey) => pageRange(k)[0];
   const highOf = (k: PageKey) => pageRange(k)[1];
-  const mid = (k: PageKey) => (lowOf(k) + highOf(k)) / 2;
-  // Each page or section written in beyond the list adds a range from the
-  // lowest to the highest of those foreseen (user, 2026-11-04).
+  // A page or section written in beyond the list, and "Not sure, you
+  // choose", each add the average page: the average of the lowest ends up
+  // to the average of the highest, rounded up to 5, so they keep within
+  // the 30% every page keeps to (user, 2026-11-04).
+  const averageLow = up5(foreseen.reduce((sum, k) => sum + lowOf(k), 0) / foreseen.length);
+  const averageHigh = up5(foreseen.reduce((sum, k) => sum + highOf(k), 0) / foreseen.length);
   const written = a.pageMode === "website" ? (a.pageOthers?.length ?? 0) : 0;
-  const writtenLow = Math.min(...foreseen.map(lowOf));
-  const writtenHigh = Math.max(...foreseen.map(highOf));
-  // "Not sure, you choose" adds a range from the average of all those pages
-  // up to the average of the two dearest (user, 2026-11-04).
+  const writtenLow = averageLow;
+  const writtenHigh = averageHigh;
   const unsureWeb = a.pageMode === "website" && a.pagesUnsure === true;
-  const byMid = [...foreseen].sort((x, y) => mid(y) - mid(x));
-  const unsureLow = foreseen.reduce((sum, k) => sum + mid(k), 0) / foreseen.length;
-  const unsureHigh = (mid(byMid[0]) + mid(byMid[1])) / 2;
+  const unsureLow = averageLow;
+  const unsureHigh = averageHigh;
   let lows: number;
   let highs: number;
   if (a.pageMode === "landing") {
