@@ -146,7 +146,10 @@ export type PageModeId = (typeof PAGE_MODES)[number]["id"];
     request or anything with a form, nor bookings and reservations: those
     are the back-end services, kept apart (user, 2026-11-04). */
 export const PAGE_TYPES = [
-  { id: "services", label: "Services", pt: "Serviços" },
+  // Services in two kinds, one or the other (user, 2026-11-04), named the
+  // way the item lists are, so the difference reads at once.
+  { id: "services", label: "Services, all on one page or section", pt: "Serviços, todos numa página ou secção" },
+  { id: "servicesPages", label: "Services, with a page for each service", pt: "Serviços, com página para cada serviço" },
   { id: "items", label: "List of items, no page for each (products, courses, menu…)", pt: "Lista de itens, sem página para cada um (produtos, cursos, menu…)" },
   { id: "itemsPages", label: "List of items, with a page for each item (properties, rooms, treatments…)", pt: "Lista de itens, com página para cada item (imóveis, quartos, tratamentos…)" },
   { id: "team", label: "Team", pt: "Equipa" },
@@ -173,6 +176,10 @@ export const MAX_PAGES = 10;
 
 /** The two kinds of item list, one or the other. */
 export const ITEM_LISTS = ["items", "itemsPages"] as const;
+/** The two kinds of services page, one or the other. */
+export const SERVICE_PAGES = ["services", "servicesPages"] as const;
+/** Pairs that exclude each other: ticking one unticks the other. */
+export const EXCLUSIVE_PAIRS = [ITEM_LISTS, SERVICE_PAGES] as const;
 
 /** Per sector: the kinds of page it usually has. They are flagged "usual"
     and put first, never ticked for the client (user, 2026-11-04). Personal

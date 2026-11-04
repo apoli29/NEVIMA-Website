@@ -25,7 +25,8 @@ The website's price is the **sum of the ranges of its pages** (Portugal, Essenti
 | Home | 105–130 |
 | About | 55–70 |
 | Contact | 15–20 |
-| Services | 55–75 |
+| Services, all on one page or section | 25–55 |
+| Services, with a page for each service | 55–85 |
 | Team | 30–35 |
 | Prices | 20–25 |
 | Testimonials | 30–35 |
@@ -149,3 +150,7 @@ Decided 2026-11-04 (user; the three questions put to the user went unanswered, s
 - Languages note shorter and without the price: "Portuguese and English are included. Other languages are translated by an AI specialised in translation; if anything needs adjusting, we send you a simple document for your corrections." (the extra language is still priced in the estimate).
 - The texts question lost its footnote and asterisk ("If you don't, we write them for you…").
 - The features question is now "Which features does your website need?" / "De que funcionalidades precisa o website?" (it was "What is your website's core goal?").
+
+## Services in two kinds
+
+2026-11-04 (user): Services is split, like the item lists, into "Services, all on one page or section" (25–55) and "Services, with a page for each service" (55–85). They exclude each other: ticking one unticks the other, and the server refuses both (`EXCLUSIVE_PAIRS` in `questions.ts`). The id `services` keeps the one-page kind (so the sectors' star stays on it); the new one is `servicesPages`. The 25–55 range is wider than the 30% rule, by the user's choice.

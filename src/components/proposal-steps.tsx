@@ -18,7 +18,7 @@ import {
   PAGE_MODES,
   PAGE_TYPES,
   SECTOR_PAGES,
-  ITEM_LISTS,
+  EXCLUSIVE_PAIRS,
   MIN_CHOSEN,
   MAX_OTHERS,
   chosenCount,
@@ -957,11 +957,14 @@ export function StepScreen({
                 const kinds = list(PAGE_TYPES).map((k) => (usual.includes(k.id) ? { ...k, star: true } : k));
                 const pick = (next: PageTypeId[]) => {
                   let types = next;
-                  // The two kinds of item list exclude each other: the one
-                  // just ticked stays, and the other is unticked.
-                  if (ITEM_LISTS.every((id) => types.includes(id))) {
-                    const added = ITEM_LISTS.find((id) => !draft.pageTypes.includes(id));
-                    types = types.filter((id) => !(ITEM_LISTS as readonly PageTypeId[]).includes(id) || id === added);
+                  // The two kinds of item list, and the two kinds of services
+                  // page, exclude each other: the one just ticked stays, and
+                  // the other is unticked.
+                  for (const pair of EXCLUSIVE_PAIRS) {
+                    if (pair.every((id) => types.includes(id))) {
+                      const added = pair.find((id) => !draft.pageTypes.includes(id));
+                      types = types.filter((id) => !(pair as readonly PageTypeId[]).includes(id) || id === added);
+                    }
                   }
                   setDraft({ pageTypes: types });
                 };

@@ -49,7 +49,10 @@ export const PRICING = {
       home: [105, 130], // +10% (user, 2026-11-04)
       about: [55, 70], // +10% (user, 2026-11-04)
       contact: [15, 20],
-      services: [55, 75], // exception: within 40% (user, 2026-11-04)
+      // Services in two kinds (user, 2026-11-04): all on one page or
+      // section, or an overview with a page for each service.
+      services: [25, 55],
+      servicesPages: [55, 85],
       team: [30, 35],
       prices: [20, 25],
       testimonials: [30, 35],
