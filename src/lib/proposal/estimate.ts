@@ -375,7 +375,10 @@ function features(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["we
             `The monthly fee is a range: the lower figure is our maintenance alone, if the platforms' free plans are enough; the higher adds their paid plans (about €${planPrices.join(" and €")} a month with VAT), paid by you directly to the platform. Which one applies is only known once we know the business.`,
             `A mensalidade é um intervalo: o valor mais baixo é só a manutenção, se os planos gratuitos das plataformas chegarem; o mais alto soma os planos pagos (cerca de ${planPrices.join(" € e ")} € por mês, com IVA), pagos diretamente pelo cliente à plataforma. Só se sabe qual se aplica depois de conhecer o negócio.`,
           )
-        : t("The monthly fee covers keeping the reservations running.", "A mensalidade cobre a manutenção das reservas."),
+        : t(
+            "The monthly fee is the reservation platform's plan, paid by you directly to the platform, plus our upkeep of the reservations.",
+            "A mensalidade soma o plano da plataforma de reservas, pago diretamente pelo cliente à plataforma, e a manutenção das reservas.",
+          ),
     );
   }
   return out;
@@ -393,7 +396,10 @@ function identity(urgent: boolean, market: Market, p: Pricing["web"], t: Transla
   };
 }
 
-function photo(a: NonNullable<Answers["photo"]>, country: Answers["country"], p: Pricing, t: Translate): Priced {
+/** The shoot, raised like every one-time service when the deadline is
+    urgent (contract v1.13, clause 4.5). */
+function photo(a: NonNullable<Answers["photo"]>, country: Answers["country"], p: Pricing, t: Translate, urgent: boolean): Priced {
+  const rush = urgent ? 1 + p.web.urgentPercent / 100 : 1;
   if (country !== "PT") return { reason: t("Shoot outside Portugal", "Sessão fora de Portugal") };
   if (a.region && a.region !== "mainland") {
     const region = labelOf(REGIONS, a.region, t<Lang>("en", "pt"));
@@ -403,7 +409,7 @@ function photo(a: NonNullable<Answers["photo"]>, country: Answers["country"], p:
   if (a.plan === "unsure") {
     return {
       line: {
-        amount: { min: p.photo.photos, max: p.photo["photos-video"] },
+        amount: { min: Math.round(p.photo.photos * rush), max: Math.round(p.photo["photos-video"] * rush) },
         notes: [
           t(
             "Photos only or photos & video: the range runs from one to the other, and we settle it together.",
@@ -414,7 +420,7 @@ function photo(a: NonNullable<Answers["photo"]>, country: Answers["country"], p:
       },
     };
   }
-  return { line: { amount: fixed(p.photo[a.plan]), notes: [t(p.photoTravel)] } };
+  return { line: { amount: fixed(Math.round(p.photo[a.plan] * rush)), notes: [t(p.photoTravel)] } };
 }
 
 function search(
@@ -501,7 +507,7 @@ export function estimate(answers: Answers, pricing: Pricing = PRICING, lang: Lan
   for (const id of answers.services) {
     if (id === "web" && webAnswers) add("web", (m) => web(webAnswers, m, pricing.web, t, answers.audience === "personal", answers.sector));
     if (id === "identity") add("identity", (m) => identity(webAnswers?.urgent === "yes", m, pricing.web, t));
-    if (id === "photo" && photoAnswers) add("photo", () => photo(photoAnswers, answers.country, pricing, t));
+    if (id === "photo" && photoAnswers) add("photo", () => photo(photoAnswers, answers.country, pricing, t, webAnswers?.urgent === "yes"));
   }
   // SEO and GEO come after the website: they are a share of its price.
   for (const id of answers.services) {
