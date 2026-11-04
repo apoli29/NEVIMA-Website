@@ -115,6 +115,9 @@ function web(
           ),
         ],
         provisional: low.line.provisional || high.line.provisional,
+        // The back end does not depend on the design or the languages.
+        monthly: low.line.monthly,
+        monthlyMax: low.line.monthlyMax,
       },
     };
   }
@@ -259,11 +262,20 @@ function web(
       {
         id: "backend",
         label: "Back end",
-        detail: t(
-          `What works behind it: ${f.listed.join(", ")}, plus the automatic emails and the database that saves the answers.`,
-          `O que funciona por trás: ${f.listed.join(", ")}, mais os emails automáticos e a base de dados que guarda as respostas.`,
-        ),
+        // The options chosen, said plainly (user, 2026-11-04), and the
+        // monthly fee in this row, with what it pays for.
+        detail: `${t("Options chosen: ", "Opções escolhidas: ")}${f.chosen.join(", ")}.`,
         amount: { min: amount.min - front.min, max: amount.max - front.max },
+        ...(f.monthly
+          ? {
+              monthly: f.monthly,
+              monthlyMax: f.monthlyMax > f.monthly ? f.monthlyMax : undefined,
+              monthlyNote: t(
+                "The monthly fee covers the platforms' costs and our maintenance: whenever something goes wrong, we fix it.",
+                "A mensalidade cobre os custos das plataformas e a manutenção: sempre que surgir um problema, o estúdio resolve-o.",
+              ),
+            }
+          : {}),
       },
     ];
   }
@@ -323,7 +335,7 @@ function frontDetail(a: NonNullable<Answers["web"]>, others: number, t: Translat
     they read in the line's note, and what is left for the proposal. */
 function features(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"], t: Translate, sector?: string) {
   const k = p.featuresMarket[market];
-  const out = { min: 0, max: 0, monthly: 0, monthlyMax: 0, listed: [] as string[], notes: [] as string[] };
+  const out = { min: 0, max: 0, monthly: 0, monthlyMax: 0, listed: [] as string[], chosen: [] as string[], notes: [] as string[] };
   const add = ([lo, hi]: [number, number], what: string) => {
     out.min += lo * k;
     out.max += hi * k;
@@ -331,24 +343,32 @@ function features(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["we
   };
   const has = (id: (typeof a.features)[number]) => a.features.includes(id);
   const fixedPrice = (n: number): [number, number] => [n, n];
-  // Complex forms, and more than three, have no price yet: the estimate
-  // lists them apart (see estimate()).
-  const simpleForm = has("forms") && a.formKind === "simple";
+  // A form is priced whatever its emails (one is enough, user 2026-11-04);
+  // automated emails have no price yet, and the estimate names them apart
+  // (see estimate()).
+  const simpleForm = has("forms");
   if (simpleForm) {
-    // One form is enough (user, 2026-11-04).
-    add(fixedPrice(p.features.forms), t("a simple form", "um formulário simples"));
-    out.notes.push(
-      t(
-        "A simple form has one automatic email and its answers saved in a database; from there, the process is manual.",
-        "Um formulário simples tem um email automático e o registo das respostas numa base de dados; daí em diante, o processo é manual.",
-      ),
-    );
+    add(fixedPrice(p.features.forms), t("a form", "um formulário"));
+    out.chosen.push(t("forms", "formulários"));
   }
   if (has("newsletter")) {
     add(fixedPrice(p.features.newsletter), t("a newsletter sign-up with a welcome email", "uma inscrição na newsletter com email de boas-vindas"));
+    out.chosen.push(t("newsletter sign-up", "inscrição na newsletter"));
+  }
+  if (has("forms") || has("newsletter")) {
+    out.chosen.push(a.formKind === "complex" ? t("automated emails", "emails automatizados") : t("manual emails", "emails manuais"));
+    if (a.formKind !== "complex") {
+      out.notes.push(
+        t(
+          "With manual emails, one automatic email goes out and the answers are saved in a database; from there, every email is written by hand.",
+          "Com emails manuais, é enviado um email automático e as respostas ficam registadas numa base de dados; daí em diante, cada email é escrito à mão.",
+        ),
+      );
+    }
   }
   if (has("booking")) {
     add(fixedPrice(p.features.booking), t("calendar and reservations", "calendarização e reservas"));
+    out.chosen.push(t("calendar and reservations", "calendarização e reservas"));
   }
   // The monthly fee runs from maintenance alone (the platforms' free plans
   // are enough) to maintenance plus their paid plans (user, 2026-11-04).
@@ -514,11 +534,12 @@ export function estimate(answers: Answers, pricing: Pricing = PRICING, lang: Lan
     }
   }
 
-  // Forms with no price yet (user, 2026-10-29): complex ones, and more than
-  // three simple ones. They are named under the total, so the visitor knows
-  // the price comes later and on top of it.
-  if (webAnswers?.features.includes("forms") && out.lines.some((l) => l.id === "web")) {
-    if (webAnswers.formKind === "complex") out.later = [t("Complex forms", "Formulários complexos")];
+  // Automated emails have no price yet (user, 2026-11-04): they are named
+  // under the total, so the visitor knows the price comes later and on top
+  // of it.
+  const mailing = webAnswers?.features.some((f) => f === "forms" || f === "newsletter");
+  if (mailing && webAnswers?.formKind === "complex" && out.lines.some((l) => l.id === "web")) {
+    out.later = [t("Automated emails", "Emails automatizados")];
   }
 
   if (out.lines.length) {

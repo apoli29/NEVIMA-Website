@@ -134,7 +134,8 @@ export const EMPTY_DRAFT: Draft = {
   languages: [],
   languagesOther: "",
   features: [],
-  formKind: "",
+  // Manual emails come chosen (user, 2026-11-04).
+  formKind: "simple",
   complex: false,
   texts: "",
   reference1: "",
@@ -164,9 +165,8 @@ export type StepId = "basics" | "site" | "web" | "photo" | "search" | "estimate"
 /** The screens this draft goes through, in order. */
 export function stepsFor(draft: Draft): StepId[] {
   const groups = groupsFor(draft.services);
-  // Needing the third level ends the form at the estimate's place, which
-  // says the project is beyond what we take on now.
-  if (groups.web && draft.complex) return ["basics", "site", "estimate"];
+  // Needing the third level stops the form on its own screen (checkStep),
+  // with a message saying the project is beyond what we take on now.
   return [
     "basics",
     // Where the business is and what it does are asked with the website's
@@ -255,6 +255,8 @@ export const personalAbroad = (draft: Draft) =>
   draft.audience === "personal" && draft.country !== "" && draft.country !== "PT";
 
 /** The pages or sections written in, without the empty slots. */
+/** Forms and the newsletter send emails, and ask how they work. */
+const mailing = (features: readonly FeatureId[]) => features.includes("forms") || features.includes("newsletter");
 const writtenIn = (draft: Draft) => draft.pageOthers.map((o) => o.trim()).filter(Boolean);
 
 export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: Lang): Errors {
@@ -280,7 +282,14 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
         e.sector = t("Tell us what your business does.", "Falta indicar a área do negócio.");
       }
     }
-    // A project beyond what we take on needs nothing more answered.
+    // A project beyond what we take on goes no further until the tick is
+    // taken off (user, 2026-11-04).
+    if (web && draft.complex) {
+      e.complex = t(
+        "Untick \u201cComplex systems\u201d to continue.",
+        "Retirar a op\u00e7\u00e3o \u201cSistemas complexos\u201d para continuar.",
+      );
+    }
     if (web && !draft.complex) {
       if (!draft.design) e.design = PICK_ONE;
       if (!draft.pageMode) e.pages = PICK_ONE;
@@ -296,7 +305,7 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
         );
       }
       // The forms come after the pages (user, 2026-11-04).
-      if (draft.features.includes("forms") && !draft.formKind) e.formKind = PICK_ONE;
+      if (mailing(draft.features) && !draft.formKind) e.formKind = PICK_ONE;
     }
   }
   if (step === "web") {
@@ -376,7 +385,7 @@ export function toAnswers(draft: Draft): Answers {
     if (draft.languages.includes("other")) answers.web.languagesOther = draft.languagesOther.trim();
     if (pageOthers.length) answers.web.pageOthers = pageOthers;
     if (pagesUnsure) answers.web.pagesUnsure = true;
-    if (draft.features.includes("forms") && draft.formKind) {
+    if (mailing(draft.features) && draft.formKind) {
       answers.web.formKind = draft.formKind;
     }
     if (draft.complex) answers.web.complex = true;
@@ -441,9 +450,9 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
         t("presents the business", "apresenta o negócio"),
         ...a.web.features.map((f) => {
           const name = label(FEATURES, f).toLowerCase();
-          if (f !== "forms" || !a.web?.formKind) return name;
+          if ((f !== "forms" && f !== "newsletter") || !a.web?.formKind) return name;
           const kind = label(FORM_KINDS, a.web.formKind).toLowerCase();
-          return `${name} (${kind})`;
+          return `${name} (${t("emails", "emails")}: ${kind})`;
         }),
         ...(a.web.complex ? [t("complex systems (beyond what we take on now)", "sistemas complexos (fora do que fazemos agora)")] : []),
       ].join(", ")}`,
@@ -581,17 +590,30 @@ export function Segmented<T extends string>({
   );
 }
 
+/** The mark on the pages a sector usually has (user, 2026-11-04): a
+    small solid star, in the key's own colour. */
+function StarIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 12 12" className="pf-star">
+      <path d="M6 .6l1.6 3.4 3.7.4-2.8 2.5.8 3.7L6 8.7 2.7 10.6l.8-3.7L.7 4.4l3.7-.4z" fill="currentColor" />
+    </svg>
+  );
+}
+
 /** Any number from a few: separate keys, each with a tick box. A locked
-    key is always ticked and cannot be unticked. */
+    key is always ticked and cannot be unticked. A starred key carries the
+    star after its name. */
 function Multi<T extends string>({
   name,
   options,
   value,
   onChange,
   locked = [],
+  starWord = "",
 }: {
   name: string;
-  options: readonly { id: T; label: string }[];
+  starWord?: string;
+  options: readonly { id: T; label: string; star?: boolean }[];
   value: T[];
   onChange: (v: T[]) => void;
   locked?: readonly T[];
@@ -617,6 +639,12 @@ function Multi<T extends string>({
           />
           <span aria-hidden="true" className="pf-tick" />
           <span className="mono-label">{o.label}</span>
+          {o.star && (
+            <>
+              <StarIcon />
+              <span className="sr-only">{` (${starWord})`}</span>
+            </>
+          )}
         </label>
       ))}
     </div>
@@ -756,6 +784,8 @@ export function StepScreen({
   // Personal use: a project and its visitors, not a business and its
   // clients (user, 2026-10-19).
   const personal = draft.audience === "personal";
+  // The message that ends the form when the third level is ticked.
+  const [outOpen, setOutOpen] = useState(false);
 
   return (
     <motion.div
@@ -843,7 +873,28 @@ export function StepScreen({
         </div>
       )}
 
-      {step === "site" && (
+      {/* The third level ends the form here (user, 2026-11-04): a message
+          in the middle, and a way back to the form, whose Continue does
+          nothing until the tick is taken off. */}
+      {step === "site" && draft.complex && outOpen && (
+        <motion.div variants={ROW} role="status" className="pf-out-screen">
+          <p className="pf-lede">{t(OUT_OF_SCOPE)}</p>
+          <button
+            type="button"
+            className="pf-out-back mono-label"
+            onClick={() => {
+              setOutOpen(false);
+              requestAnimationFrame(() =>
+                document.querySelector('[data-question="features"]')?.scrollIntoView({ block: "center" }),
+              );
+            }}
+          >
+            {t("Go back to the form", "Voltar ao formulário")}
+          </button>
+        </motion.div>
+      )}
+
+      {step === "site" && !(draft.complex && outOpen) && (
         <div className="pf-rows">
           {draft.audience !== "personal" && (
           <Question id="sector" label={t("What does your business do?", "Qual é a área do negócio?")} error={errors.sector}>
@@ -908,7 +959,7 @@ export function StepScreen({
                 // One list for every business; the sector only puts a star
                 // on the pages it usually has (user, 2026-11-04).
                 const usual = SECTOR_PAGES[personal ? "personal" : draft.sector || "other"];
-                const kinds = list(PAGE_TYPES).map((k) => (usual.includes(k.id) ? { ...k, label: `${k.label}*` } : k));
+                const kinds = list(PAGE_TYPES).map((k) => (usual.includes(k.id) ? { ...k, star: true } : k));
                 const pick = (next: PageTypeId[]) => {
                   let types = next;
                   // The two kinds of item list exclude each other: the one
@@ -937,11 +988,18 @@ export function StepScreen({
                       locked={["home", "about", "contact"]}
                       onChange={() => {}}
                     />
-                    <Multi name="pages-types" options={kinds} value={draft.pageTypes} onChange={pick} />
-                    <p className="pf-footnote">
+                    <Multi
+                      name="pages-types"
+                      options={kinds}
+                      value={draft.pageTypes}
+                      onChange={pick}
+                      starWord={t("usually chosen", "costuma ser escolhida")}
+                    />
+                    <p className="pf-footnote flex items-center gap-1.5">
+                      <StarIcon />
                       {personal
-                        ? t("* Usually chosen for projects like yours", "* Costuma ser escolhida em projetos semelhantes")
-                        : t("* Usually chosen by businesses in your sector", "* Costuma ser escolhida por negócios do mesmo setor")}
+                        ? t("Usually chosen for projects like yours", "Costuma ser escolhida em projetos semelhantes")
+                        : t("Usually chosen by businesses in your sector", "Costuma ser escolhida por negócios do mesmo setor")}
                     </p>
                     <p className="mono-label pf-hint">{t("Other pages and sections*", "Outras páginas e secções*")}</p>
                     {Array.from({ length: MAX_OTHERS }, (_, i) => (
@@ -980,39 +1038,24 @@ export function StepScreen({
               })()}
             </Question>
           )}
-          {/* What the website has to do, in three levels, each adding to
-              the one before (user, 2026-10-18); asked after the pages
-              (user, 2026-11-04). The third level ends the form at the
-              estimate, whatever else was answered. */}
+          {/* What the website has to do behind it, in two levels (user,
+              2026-10-18; the first, presenting the business, is every
+              website and is no longer shown, 2026-11-04); asked after the
+              pages (user, 2026-11-04). The second level ends the form at
+              the estimate, whatever else was answered. */}
           <Question
             id="features"
             label={t("What is your website's core goal?", "Qual o objetivo central do website?")}
-            hint={t("Each level adds to the one before", "Cada nível soma-se ao anterior")}
+            hint={t("What works behind the website", "O que funciona por trás do website")}
+            error={errors.complex}
             group={false}
           >
             <div className="pf-levels">
-              <div className="pf-level">
-                <p className="pf-level-name">
-                  {personal ? t("Present your project", "Apresentar o projeto") : t("Present your business", "Apresentar o negócio")}
-                </p>
-                <p className="pf-footnote">
-                  {personal
-                    ? t(
-                        "Who you are, what you want to show and how to reach you.",
-                        "Quem está por trás do projeto, o que se quer mostrar e os contactos.",
-                      )
-                    : t(
-                        "The story behind it, the details that set you apart, the products or services you offer and how to reach you.",
-                        "A história por trás do negócio, os pormenores que o distinguem, os produtos ou serviços que oferece e os contactos.",
-                      )}
-                </p>
-                <span className="mono-label pf-level-tag">{t("Always included", "Sempre incluído")}</span>
-              </div>
               <div className="pf-level" role="group" aria-labelledby={`${uid}-level2`}>
                 <p id={`${uid}-level2`} className="pf-level-name">
                   {personal
-                    ? t("+ Receive information from visitors", "+ Receber informação dos visitantes")
-                    : t("+ Receive information from your clients", "+ Receber informação dos clientes")}
+                    ? t("Receive information from visitors", "Receber informação dos visitantes")
+                    : t("Receive information from your clients", "Receber informação dos clientes")}
                 </p>
                 <Ticks
                   name="features"
@@ -1037,13 +1080,16 @@ export function StepScreen({
               </div>
               <div className="pf-level" role="group" aria-labelledby={`${uid}-level3`}>
                 <p id={`${uid}-level3`} className="pf-level-name">
-                  {t("+ Complex systems behind the website", "+ Sistemas complexos por trás do website")}
+                  {t("Complex systems behind the website", "Sistemas complexos por trás do website")}
                 </p>
                 <Ticks
                   name="complex"
                   options={list(COMPLEX)}
                   value={draft.complex ? ["complex"] : []}
-                  onChange={(v) => setDraft({ complex: v.length > 0 })}
+                  onChange={(v) => {
+                    setDraft({ complex: v.length > 0 });
+                    setOutOpen(v.length > 0);
+                  }}
                 />
                 {draft.complex && (
                   <p role="status" className="pf-out">
@@ -1053,12 +1099,14 @@ export function StepScreen({
               </div>
             </div>
           </Question>
-          {!draft.complex && draft.features.includes("forms") && (
+          {/* How the emails work, for forms or the newsletter (user,
+              2026-11-04). */}
+          {!draft.complex && mailing(draft.features) && (
             <Question
               id="formKind"
-              label={t("What kind of forms?", "Que tipo de formulários?")}
+              label={t("How should the emails work?", "Como devem funcionar os emails?")}
               error={errors.formKind}
-              footnote={t(FORM_KIND_NOTE)}
+              footnote={draft.features.includes("forms") ? t(FORM_KIND_NOTE) : undefined}
             >
               <Segmented
                 name="formKind"
@@ -1396,6 +1444,16 @@ function EstimateScreen({
     );
   }
   const someOnRequest = estimate.onRequest.length > 0;
+  // When the back end is the only monthly fee, it is said in its own row
+  // and not again under the total (user, 2026-11-04).
+  const monthlyLines = estimate.lines.filter((l) => l.monthly !== undefined);
+  const monthlyInBackEnd = monthlyLines.length === 1 && monthlyLines[0].parts?.some((p) => p.monthly !== undefined);
+  const notesOf = (notes: string[]) =>
+    notes.map((note) => (
+      <span key={note} className="pf-footnote mt-1.5 block max-w-[38em]">
+        {note}
+      </span>
+    ));
   return (
     <div aria-live="polite">
     <div className="pf-rows">
@@ -1404,11 +1462,7 @@ function EstimateScreen({
           <div className="pf-line">
             <span>
               <span className="pf-line-name block">{line.label}</span>
-              {line.notes.map((note) => (
-                <span key={note} className="pf-footnote mt-1.5 block max-w-[38em]">
-                  {note}
-                </span>
-              ))}
+              {!line.parts && notesOf(line.notes)}
             </span>
             <span className="text-right">
               <span
@@ -1417,7 +1471,7 @@ function EstimateScreen({
               >
                 {span(line.amount)}
               </span>
-              {line.monthly !== undefined && (
+              {line.monthly !== undefined && !line.parts && (
                 <span className="mono-label mt-1 block text-ash-2">
                   {t(
                     `One-time, then ${monthSpan(line.monthly, line.monthlyMax)}/mo`,
@@ -1427,16 +1481,27 @@ function EstimateScreen({
               )}
             </span>
           </div>
-          {/* The website's price in two parts, when it has a back end. */}
+          {/* The website's price in two parts, when it has a back end:
+              right under its name, the back end with its monthly fee, and
+              the line's notes after them (user, 2026-11-04). */}
           {line.parts?.map((part) => (
             <div key={part.id} className="pf-part">
               <span>
                 <span className="pf-line-name block">{part.label}</span>
                 <span className="pf-footnote mt-1 block max-w-[38em]">{part.detail}</span>
+                {part.monthlyNote && <span className="pf-footnote mt-1 block max-w-[38em]">{part.monthlyNote}</span>}
               </span>
-              <span className="pf-line-value">{span(part.amount)}</span>
+              <span className="text-right">
+                <span className="pf-line-value block">{span(part.amount)}</span>
+                {part.monthly !== undefined && (
+                  <span className="mono-label mt-1 block text-ash-2">
+                    {t(`Then ${monthSpan(part.monthly, part.monthlyMax)}/mo`, `Depois ${monthSpan(part.monthly, part.monthlyMax)}/mês`)}
+                  </span>
+                )}
+              </span>
             </div>
           ))}
+          {line.parts && <div className="pf-line-notes">{notesOf(line.notes)}</div>}
         </motion.div>
       ))}
       {estimate.onRequest.map((item) => (
@@ -1467,7 +1532,7 @@ function EstimateScreen({
           <span className="pf-line-value block">
             {estimate.total === null ? t("On request", "Sob consulta") : span(estimate.total)}
           </span>
-          {estimate.monthly !== null && (
+          {estimate.monthly !== null && !monthlyInBackEnd && (
             <span className="mono-label mt-1 block text-white/70">
               {t(
                 `Then ${monthSpan(estimate.monthly, estimate.monthlyMax)}/mo`,

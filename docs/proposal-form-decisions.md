@@ -19,30 +19,30 @@ Decided 2026-11-04 (user). Code: `src/lib/proposal/questions.ts`, `pricing.ts`, 
 
 The website's price is the **sum of the ranges of its pages** (Portugal, Essential+), with no base fee on top. Spain and Italy ×1.155 and the USA ×1.75 are ratios derived from the old prices, not given by the user.
 
-| Page | Range |
+| Page | Range (raised 20%, 2026-11-04) |
 |---|---|
-| Landing page | 205–255 |
-| Home | 70–100 |
-| About | 40–50 |
-| Contact | 5–15 |
-| Services | 25–75 |
-| Team | 15–25 |
-| Prices | 10–20 |
-| Testimonials | 15–25 |
-| FAQ | 10–25 |
-| How it works | 25–40 |
-| Partners & brands | 10–20 |
-| Work with us | 25–40 |
-| Downloads | 5–15 |
-| List of items | 20–50 |
-| List of items, a page each | 50–90 |
-| Portfolio & case studies | 45–85 |
-| Gallery (photos and videos) | 20–50 |
-| Events | 45–60 |
+| Landing page | 245–305 |
+| Home | 85–120 |
+| About | 50–60 |
+| Contact | 5–20 |
+| Services | 30–90 |
+| Team | 20–30 |
+| Prices | 10–25 |
+| Testimonials | 20–30 |
+| FAQ | 10–30 |
+| How it works | 30–50 |
+| Partners & brands | 10–25 |
+| Work with us | 30–50 |
+| Downloads | 5–20 |
+| List of items | 25–60 |
+| List of items, a page each | 60–110 |
+| Portfolio & case studies | 55–100 |
+| Gallery (photos and videos) | 25–60 |
+| Events | 55–70 |
 
 - **Advanced design** raises each page's range: the lowest ×1.35 and the highest ×1.45, rounded to 5.
-- **A page or section written in** adds a range from the lowest to the highest of the pages already foreseen, leaving out the Home page and the landing page (Essential+: 5–90).
-- **"Not sure, you choose"** adds a range from the average of all those pages to the average of the two dearest (Essential+: about 33 to 68). The "average" of a page is the middle of its range.
+- **A page or section written in** adds a range from the lowest to the highest of the pages already foreseen, leaving out the Home page and the landing page (Essential+: 5–110).
+- **"Not sure, you choose"** adds a range from the average of all those pages to the average of the two dearest (Essential+: about 40 to 81). The "average" of a page is the middle of its range.
 - Both add a note to the estimate saying the range is wider.
 - The floor rounds down to 5 and the ceiling up to 5. More than 10 pages is on request.
 - **"Not sure" on what is needed** (not the list) goes from Home + About + Contact up to those plus the sector's usual pages.
@@ -62,12 +62,28 @@ The website's price is the **sum of the ranges of its pages** (Portugal, Essenti
 
 Decided 2026-11-04 (user). Set up and configured, in Portugal (other markets scaled by `featuresMarket`: Spain/Italy x1.15, USA x1.75):
 
-- Form: 55, and one is enough (no count question). Complex forms are still priced later.
+- Form: 55, and one is enough (no count question), whatever its emails. Automated emails are priced later (see below).
 - Newsletter sign-up: 39.
 - Calendar and reservations: 95 (its own tick, in the same list).
 - Monthly, as a range (the user's rule): our labour is always 5 a month, however many platforms; the lowest figure is that alone (the platforms' free plans are enough), the highest adds the platforms' paid plans, which the client pays directly. Which applies is only known once the business is known. Forms and the newsletter share one platform (Brevo); the calendar is another (Cal.com). Plans with 23% VAT, yearly billing, not scaled by market: Brevo 7.79 (Starter 6.33 + VAT), Cal.com 12.83 (Teams 12 USD at about 1.15 USD per EUR + VAT); to confirm. Rounded to 5. Examples in Portugal: form, newsletter or both 5-15; calendar 5-20; form + calendar 5-30. Both platforms offer affiliate programs (Cal.com: 20% discount for the client the first 12 months and 20% recurring commission for us; Brevo: commission to us only); to confirm on their pages and to mention in the contract.
 - A restaurant (sector "Restauração") in Portugal books through its own reservation platform: a fixed 40 a month (with its upkeep inside), with no paid-plan scenario; with a form too it is 45-55. Outside Portugal there is no such platform known, so a restaurant is priced like any other business with Cal.com (provisional).
 - Every platform, the restaurants' reservation platform included, is paid by the client directly to it; a monthly figure always splits into the platform's plan and our upkeep, and with a free plan only our upkeep is paid (user, 2026-11-04; contract v1.13, clause 15).
 - An urgent deadline adds 40% to the project's whole one-time price, the photo shoot included, never to the monthly fees (user, 2026-11-04; contract v1.13, clause 4.5).
-- The monthly range is on the web line (`monthly`, `monthlyMax`), with a note explaining it.
+- The monthly range is on the web line (`monthly`, `monthlyMax`), with a note explaining it. Since 2026-11-04 it is shown in the back end's row, not beside the web line nor under the total (the total keeps it only when another line, SEO & GEO, has a monthly fee too).
 - Open: the reservation platform for restaurants abroad, the exact plan prices, and the contract clauses on credentials, 2FA and data processing.
+
+## How the emails work, and the estimate's back end
+
+Decided 2026-11-04 (user; the three questions put to the user went unanswered, so the recommended options were taken and are open to change).
+
+- The old "What kind of forms?" (Simple / Complex) is now **"How should the emails work?"** / "Como devem funcionar os emails?", asked when **Forms or Newsletter sign-up** is ticked, since it is about the emails, not the forms.
+- **Manual** (chosen from the start, the old Simple, same price): one automatic email and the answers saved in a database; every email after it is written by hand. **Automated** (the old Complex): templates with placeholders, the base of each email already written and only what changes filled in; price set later, named under the total as "Automated emails". The form and the newsletter keep their own price with either. The ids stay `simple` / `complex` (database column `TipoFormularios`, studio emails).
+- "What is your website's core goal?": the always-included first level ("Present your business / project") is gone; the hint "Each level adds to the one before" became "What works behind the website" / "O que funciona por trás do website", and the levels lost their "+".
+- Estimate: the website's Front end and Back end sit right under its name, with the line's notes after them. The part labels are a step smaller than the figures. The back end reads "Options chosen: forms, newsletter sign-up, manual emails." and carries the monthly fee ("Then €5–€15/mo") with "The monthly fee covers the platforms' costs and our maintenance: whenever something goes wrong, we fix it."
+- Still to align: the contract (`contratos/contrato-nevima.html`, clause on forms) still speaks of simple and complex forms.
+- Third level ("Complex systems behind the website"): ticking it now ends the form on that screen with one message in the middle (we do not take such projects on now) and a "Go back to the form" / "Voltar ao formulário" button; Continue then does nothing (an error under the question) until the tick is taken off. The form no longer jumps to the estimate screen for it.
+- The pages a sector usually has carry a small star icon (no more asterisk), with the same star before "Usually chosen…" under the list.
+
+## Page prices raised by 20%
+
+2026-11-04 (user): every page and section range in `pricing.ts` (`web.pages`) was raised by 20%, each end rounded to 5 (the lowest never under 5). On average the ends rose 20.5%; the smallest ends (5, 10) stay where they were after rounding. Landing page 245–305, Home 85–120, About 50–60, Contact 5–20. The Advanced uplift (35% / 45%) and the market ratios are applied on top, as before.

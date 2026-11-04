@@ -274,31 +274,34 @@ export const FEATURES = [
 ] as const;
 export type FeatureId = (typeof FEATURES)[number]["id"];
 
-/** What kind of forms (user, 2026-10-29). A simple one is a form with one
-    automatic email and its answers saved in a database; from there the
-    process is manual. Any other scenario is a complex one, whose price is
-    set later. */
+/** How the emails of the forms and the newsletter work (user, 2026-10-29;
+    asked for either since 2026-11-04, and named for the emails, not the
+    forms). Manual, chosen from the start: one automatic email and the
+    answers saved in a database, every email after it written by hand.
+    Automated: templates with placeholders, whose price is set later. The
+    ids keep their first names ("simple", "complex"), which the database
+    and the studio's emails already hold. */
 export const FORM_KINDS = [
   {
     id: "simple",
-    label: "Simple",
-    pt: "Simples",
-    note: "One automatic email, and the answers saved in a database. From there, the process is manual.",
-    notePt: "Um email automático e o registo das respostas numa base de dados. Daí em diante, o processo é manual.",
+    label: "Manual",
+    pt: "Manual",
+    note: "One automatic email, and the answers saved in a database. From there, every email is written by hand.",
+    notePt: "Um email automático e o registo das respostas numa base de dados. Daí em diante, cada email é escrito à mão.",
   },
   {
     id: "complex",
-    label: "Complex",
-    pt: "Complexo",
-    note: "Any other scenario, such as several automatic emails. Price set later.",
-    notePt: "Qualquer outro cenário, como vários emails automáticos. Preço a definir depois.",
+    label: "Automated",
+    pt: "Automatizado",
+    note: "Templates with placeholders: the base of each email is already written, and only what changes is filled in. Price set later.",
+    notePt: "Modelos com campos variáveis: a base de cada email já está escrita, e só se preenche o que muda. Preço a definir depois.",
   },
 ] as const;
 export type FormKindId = (typeof FORM_KINDS)[number]["id"];
 
 export const FORM_KIND_NOTE: Copy = {
-  en: "A form where visitors ask for a date or time, which is then confirmed by hand, is also a simple form.",
-  pt: "Um formulário em que se pede uma data ou hora, confirmada depois manualmente, também é um formulário simples.",
+  en: "A form where visitors ask for a date or time, which is then confirmed by hand, is also manual.",
+  pt: "Um formulário em que se pede uma data ou hora, confirmada depois manualmente, também é manual.",
 };
 
 /** The third level, as one key. */
@@ -498,13 +501,23 @@ export type Estimate = {
     /** The website's price in two parts, when it has a back end (forms or
         a newsletter): what visitors see, and what works behind it. They
         add up to `amount` (user, 2026-10-30). */
-    parts?: { id: "frontend" | "backend"; label: string; detail: string; amount: Range }[];
+    parts?: {
+      id: "frontend" | "backend";
+      label: string;
+      detail: string;
+      amount: Range;
+      /** The back end's monthly fee, shown in its row (user, 2026-11-04),
+          with what it pays for. */
+      monthly?: number;
+      monthlyMax?: number;
+      monthlyNote?: string;
+    }[];
     /** The figure rests on prices the studio has not confirmed yet:
         underlined in orange when the form is opened with ?revisao. */
     provisional?: boolean;
   }[];
   onRequest: { id: string; label: string; reason: string }[];
-  /** Forms with no price yet (complex ones): named
+  /** What has no price yet (automated emails): named
       under the total, which they are understood to be on top of (user,
       2026-10-30). */
   later?: string[];
