@@ -235,8 +235,8 @@ const DOMAIN_NOTE_PERSONAL: Copy = {
 };
 // "Not sure" gives no estimate (user, 2026-11-04).
 const PAGES_NOTE: Copy = {
-  en: "With this option, there's no estimate at the end. You can still send your answers: we'll go through them and, on a call, help you choose what's best for your project.",
-  pt: "Com esta opção, não há estimativa no fim. Ainda assim, é possível enviar as respostas: analisamo-las e, numa reunião, ajudamos a escolher o melhor para o projeto.",
+  en: "With this option, there's no estimate at the end. But don't worry: finish the form, send it, and we'll set up a video call to help you out.",
+  pt: "Com esta opção, não há estimativa no fim. Mas não há problema: basta terminar e enviar o formulário, e marcamos uma videochamada para ajudar.",
 };
 const TEXTS_NOTE: Copy = {
   en: "If you don't, we write them for you, and the price stays the same.",
@@ -1028,14 +1028,14 @@ export function StepScreen({
                     />
                     <p className="pf-footnote">
                       {t(
-                        "* Adding sections beyond the ones listed makes the estimate's range wider.",
+                        "* Adding sections beyond the ones listed will result in a wider estimate range.",
                         "* Acrescentar secções além das apresentadas torna maior o intervalo da estimativa.",
                       )}
                     </p>
                     <p className="pf-footnote">
                       {t(
-                        "** Not sure what to choose? Don't worry: just carry on with the form, and we'll set up a call to help you decide.",
-                        "** Sem saber o que escolher? Não há problema: basta continuar o formulário, e marcamos uma reunião para ajudar na decisão.",
+                        "** Not sure what to choose? Don't worry: finish the form, send it, and we'll set up a video call to help you decide.",
+                        "** Sem saber o que escolher? Não há problema: basta continuar o formulário, e marcamos uma reunião para ajudar a decidir.",
                       )}
                     </p>
                     <p role="status" className="pf-footnote">
@@ -1083,8 +1083,8 @@ export function StepScreen({
                     together. */}
                 <p className="pf-footnote">
                   {t(
-                    "We handle the whole process for you, so you can use the platforms without a worry.",
-                    "Tratamos de todo o processo, para que as plataformas se usem sem qualquer preocupação.",
+                    "We handle the whole process for you, so you can use the platforms without any worry or difficulty.",
+                    "Tratamos de todo o processo, para que as plataformas possam ser utilizadas sem qualquer preocupação ou dificuldade.",
                   )}
                 </p>
               </div>
