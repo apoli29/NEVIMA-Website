@@ -67,22 +67,20 @@ function web(
   const others = a.languages.includes("other") ? countLanguages(a.languagesOther ?? "") : 0;
   if (others > 3) return { reason: t("More than three additional languages", "Mais de três línguas adicionais") };
 
-  // "Not sure" about the design, the texts or the languages (user,
-  // 2026-10-27): the range runs from the price with the cheaper answers
+  // "Not sure" about the design or the languages (user, 2026-10-27; the
+  // texts never change the price since 2026-11-04): the range runs from the price with the cheaper answers
   // to the price with the dearer ones, so it never passes what the dearer
   // answer would have cost on its own.
   const languagesUnsure = a.languages.includes("unsure");
-  if (a.design === "unsure" || a.texts === "unsure" || languagesUnsure) {
+  if (a.design === "unsure" || languagesUnsure) {
     const cheap: typeof a = {
       ...a,
       design: a.design === "unsure" ? "essential" : a.design,
-      texts: a.texts === "unsure" ? "yes" : a.texts,
       languages: languagesUnsure ? ["pt", "en"] : a.languages,
     };
     const dear: typeof a = {
       ...a,
       design: a.design === "unsure" ? "advanced" : a.design,
-      texts: a.texts === "unsure" ? "no" : a.texts,
       languages: languagesUnsure ? ["pt", "en", "other"] : a.languages,
       languagesOther: languagesUnsure ? "one more" : a.languagesOther,
     };
@@ -93,7 +91,6 @@ function web(
     const what = [
       a.design === "unsure" && t("the Advanced design level", "o nível de design Avançado"),
       languagesUnsure && t("one more language", "mais uma língua"),
-      a.texts === "unsure" && t("writing the texts", "a escrita dos textos"),
     ].filter(Boolean);
     // The two parts follow the same ends as the line, with the sentences
     // written from the answers as given.
@@ -189,11 +186,9 @@ function web(
     );
   }
 
-  // Writing the texts the client does not have, by the site's size.
+  // Writing the texts the client does not have is included: whether there
+  // are texts or not never changes the price (user, 2026-11-04).
   if (a.texts === "no") {
-    const [lo, hi] = p.texts[a.pages];
-    min += lo * p.textsMarket[market];
-    max += hi * p.textsMarket[market];
     notes.push(
       t(
         personal
@@ -279,7 +274,6 @@ function web(
       parts,
       monthly: f.monthly || undefined,
       monthlyMax: f.monthlyMax > f.monthly ? f.monthlyMax : undefined,
-      provisional: a.texts === "no",
     },
   };
 }

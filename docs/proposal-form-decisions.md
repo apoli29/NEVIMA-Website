@@ -53,7 +53,8 @@ The website's price is the **sum of the ranges of its pages** (Portugal, Essenti
 
 ## Open
 
-- Provisional: timeline days and the texts ranges by bucket; the ranges of pages the user did not price (How it works, Work with us, Downloads were given: 25–40, 25–40, 5–15).
+- Texts never change the price (user, 2026-11-04): the question stays, for the studio to know, and writing them when there are none is included. The texts ranges are gone from `pricing.ts`.
+- Provisional: timeline days by bucket; the ranges of pages the user did not price (How it works, Work with us, Downloads were given: 25–40, 25–40, 5–15).
 - SEO and GEO are one service, "SEO & GEO" (id `seo`; user, 2026-11-04), with one modality question (one-time or one-time + monthly). Priced from the website (provisional): sold only with a website Nevima built; setup = 25% of the website line (floor rounded down and ceiling up to 5); the optional monthly service = 25% of the setup's middle, to the nearest 5 (a single figure). Local and national cost the same; international, a website on request and a country quoted on request make it on request. The old size tables are gone (`PRICING.search` in `pricing.ts`). A form left open from before the change, still sending "geo", is refused.
 - Back-end services (Brevo, cal.com, restaurant reservations, per-country platforms, setup + monthly maintenance, a free-plan and a pro-plan scenario) are set aside, with the contract clauses on passwords, 2FA and data processing for the partners and legal review.
 
