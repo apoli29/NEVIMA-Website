@@ -448,10 +448,12 @@ function search(
   // Priced from the website we build (user, 2026-11-04): with no price for
   // the site (more than 10 pages, a country quoted on request) there is none.
   if (!site) return { reason: t("Quoted in your proposal", "Orçamentado na proposta") };
-  const { setupPercent, monthlyShare } = p.search;
+  const { setupPercent, monthlyBasePercent, monthlyShare } = p.search;
   const first: Range = { min: down5((site.min * setupPercent) / 100), max: up5((site.max * setupPercent) / 100) };
-  // One monthly figure: a share of the setup's middle, to the nearest 5.
-  const monthly = Math.max(5, Math.round(((first.min + first.max) / 2) * monthlyShare / 5) * 5);
+  // One monthly figure: a share of the middle of the setup as it was at
+  // 25% of the website, to the nearest 5 (see PRICING.search).
+  const base = { min: down5((site.min * monthlyBasePercent) / 100), max: up5((site.max * monthlyBasePercent) / 100) };
+  const monthly = Math.max(5, Math.round(((base.min + base.max) / 2) * monthlyShare / 5) * 5);
   const notes = [
     t(
       "One-time: strongest in the short term, its effect fades over the medium to long term.",
