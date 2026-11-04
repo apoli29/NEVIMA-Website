@@ -141,3 +141,4 @@ Decided 2026-11-04 (user; the three questions put to the user went unanswered, s
 - Then (user, same day): the one-time work is 17.5% of the website's lowest up to 22.5% of its highest (was 20-25%). The 8-page case: one-time 75-130, monthly 20-40.
 - Then (user, same day): SEO & GEO figures round inward: the lowest end up to 5, the highest down, never crossing. The 8-page case: one-time 80-125, monthly 25-35.
 - Then (user, same day): the highest end rounds to the nearest 5, a half going up (37.5 is 40, 37 is 35); the lowest still rounds up. The 8-page case: one-time 80-125, monthly 25-40.
+- The rounding rule, settled (user, same day): both ends of the SEO & GEO ranges go to the nearest 5; exactly half-way, the lowest end goes up and the highest down (22.4 is 20, 22.5 is 25; 37.4 and 37.5 are 35). The 8-page case: one-time 80-125, monthly 20-35.
