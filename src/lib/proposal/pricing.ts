@@ -46,8 +46,8 @@ export const PRICING = {
       // 12.5% (user, 2026-11-04), to 5: the single figures got their range
       // back, with the top end raised.
       landing: [215, 275],
-      home: [95, 120],
-      about: [50, 65],
+      home: [105, 130], // +10% (user, 2026-11-04)
+      about: [55, 70], // +10% (user, 2026-11-04)
       contact: [15, 20],
       services: [55, 75], // exception: within 40% (user, 2026-11-04)
       team: [30, 35],
