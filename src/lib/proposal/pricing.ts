@@ -152,7 +152,8 @@ export const PRICING = {
       (user, 2026-11-04), as ranges: the one-time work is 17.5% (was 20%) of the
       website's lowest figure up to 22.5% (was 25%) of its highest; the monthly
       service is 28% of the one-time work's lowest up to 30% of its highest,
-      the lowest end rounded up to 5, the highest to the nearest 5 (a half up). International
+      both ends to the nearest 5, a half going up on the lowest and down on
+      the highest. International
       reach is on request. PROVISIONAL. */
   search: { setup: { min: 17.5, max: 22.5 }, monthlyOfSetup: { min: 28, max: 30 } },
 };
