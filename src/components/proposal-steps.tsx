@@ -223,15 +223,11 @@ const PHOTO_NOTE: Copy = {
   en: "The photo shoot is only available in Portugal. Travel beyond 30 km of Arcozelo is added to the price of the service.",
   pt: "A sessão fotográfica só está disponível em Portugal. A deslocação para lá dos 30 km de Arcozelo acresce ao preço do serviço.",
 };
+// Short and plain (user, 2026-11-04); the estimate still says the client
+// registers it in their own name and pays for it directly.
 const DOMAIN_NOTE: Copy = {
-  en: "If you don't have a domain yet, you register it in your business's name and pay for it directly, and we guide you through every step. If you already have one, there's nothing to add.",
-  pt: "Sem domínio, o registo é feito em nome do negócio e pago diretamente, com o nosso acompanhamento em todos os passos. Com um domínio já existente, não há nada a acrescentar.",
-};
-
-/** The same, for personal use. */
-const DOMAIN_NOTE_PERSONAL: Copy = {
-  en: "If you don't have a domain yet, you register it in your own name and pay for it directly, and we guide you through every step. If you already have one, there's nothing to add.",
-  pt: "Sem domínio, o registo é feito em nome próprio e pago diretamente, com o nosso acompanhamento em todos os passos. Com um domínio já existente, não há nada a acrescentar.",
+  en: "Don't have one? Don't worry: we'll help you buy it in a couple of minutes.",
+  pt: "Sem domínio? Não há problema: ajudamos a comprá-lo em poucos minutos.",
 };
 // "Not sure" gives no estimate (user, 2026-11-04).
 const PAGES_NOTE: Copy = {
@@ -1217,7 +1213,7 @@ export function StepScreen({
             id="domain"
             label={personal ? t("Do you already have a domain?*", "Já existe um domínio?*") : t("Do you already have a domain?*", "O negócio já possui domínio?*")}
             error={errors.domain}
-            footnote={`*${t(personal ? DOMAIN_NOTE_PERSONAL : DOMAIN_NOTE)}`}
+            footnote={`*${t(DOMAIN_NOTE)}`}
           >
             <Segmented
               name="domain"
