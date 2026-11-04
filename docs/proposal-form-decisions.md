@@ -61,8 +61,10 @@ The website's price is the **sum of the ranges of its pages** (Portugal, Essenti
 
 Decided 2026-11-04 (user). Set up and configured, in Portugal (other markets scaled by `featuresMarket`: Spain/Italy x1.15, USA x1.75):
 
-- Forms: 55 each (1, 2, 3 = 55, 110, 165; "not sure" 55-165). More than three, and complex ones, are still priced later.
+- Form: 55, and one is enough (no count question). Complex forms are still priced later.
 - Newsletter sign-up: 39.
-- Calendar and reservations: 95 (new, in the same list of ticks; it is no longer a "complex form").
-- Monthly: 40 for calendar and reservations (the user's figure); 10 for forms and newsletter together, one platform account (a suggestion, provisional). Added to the web line as one figure, nearest 5, with a note that the platform's paid plan, if chosen, is paid by the client directly. The two-scenario range (free plan versus pro plan) is not built.
-- Still open: which platform for restaurant reservations abroad, and the contract clauses on credentials, 2FA and data processing.
+- Calendar and reservations: 95 (its own tick, in the same list).
+- Monthly, as a range (the user's rule): from our maintenance alone (the platforms' free plans are enough) to maintenance plus the platforms' paid plans, which the client pays directly. Which applies is only known once the business is known. Forms and the newsletter share one platform (Brevo); the calendar is another (Cal.com). Maintenance 10 for the first platform and 5 for each further one (a suggestion, provisional, scaled by market); plan prices are the platforms' own, not scaled: Brevo Starter about 7, Cal.com Teams about 14 (checked 2026-11-04 on third-party pages, to confirm). Examples in Portugal: form or newsletter 10-20; calendar 10-25; form + calendar 15-40.
+- A restaurant (sector "Restauração") in Portugal books through its own reservation platform: a fixed 40 a month, with no paid-plan scenario. Outside Portugal there is no such platform known, so a restaurant is priced like any other business with Cal.com (provisional).
+- The monthly range is on the web line (`monthly`, `monthlyMax`), with a note explaining it.
+- Open: the reservation platform for restaurants abroad, the exact plan prices, and the contract clauses on credentials, 2FA and data processing.

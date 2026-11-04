@@ -239,7 +239,7 @@ function web(
   // What the website receives from its visitors (the second level), each
   // item a range of its own, carried whole: added after the cap, raised
   // with the rest on an urgent deadline.
-  const f = features(a, market, p, t);
+  const f = features(a, market, p, t, sector);
   const rush = a.urgent === "yes" ? 1 + p.urgentPercent / 100 : 1;
   notes.push(...f.notes);
   const lo = floor + f.min * rush;
@@ -272,7 +272,16 @@ function web(
       },
     ];
   }
-  return { line: { amount, notes: kept, parts, monthly: f.monthly || undefined, provisional: a.texts === "no" } };
+  return {
+    line: {
+      amount,
+      notes: kept,
+      parts,
+      monthly: f.monthly || undefined,
+      monthlyMax: f.monthlyMax > f.monthly ? f.monthlyMax : undefined,
+      provisional: a.texts === "no",
+    },
+  };
 }
 
 /** What the front end is made of, as a phrase: the size, the design level,
@@ -318,9 +327,9 @@ function frontDetail(a: NonNullable<Answers["web"]>, others: number, t: Translat
 
 /** The second level's items, priced by the market: their range, how
     they read in the line's note, and what is left for the proposal. */
-function features(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"], t: Translate) {
+function features(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"], t: Translate, sector?: string) {
   const k = p.featuresMarket[market];
-  const out = { min: 0, max: 0, monthly: 0, listed: [] as string[], notes: [] as string[] };
+  const out = { min: 0, max: 0, monthly: 0, monthlyMax: 0, listed: [] as string[], notes: [] as string[] };
   const add = ([lo, hi]: [number, number], what: string) => {
     out.min += lo * k;
     out.max += hi * k;
@@ -330,10 +339,10 @@ function features(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["we
   const fixedPrice = (n: number): [number, number] => [n, n];
   // Complex forms, and more than three, have no price yet: the estimate
   // lists them apart (see estimate()).
-  if (has("forms") && a.formKind === "simple" && a.forms && a.forms !== "more") {
-    // Not sure: from one form to three, both ends.
-    if (a.forms === "unsure") add([p.features.forms["1"], p.features.forms["3"]], t("1 to 3 simple forms", "1 a 3 formulários simples"));
-    else add(fixedPrice(p.features.forms[a.forms]), t(a.forms === "1" ? "1 simple form" : `${a.forms} simple forms`, a.forms === "1" ? "1 formulário simples" : `${a.forms} formulários simples`));
+  const simpleForm = has("forms") && a.formKind === "simple";
+  if (simpleForm) {
+    // One form is enough (user, 2026-11-04).
+    add(fixedPrice(p.features.forms), t("a simple form", "um formulário simples"));
     out.notes.push(
       t(
         "A simple form has one automatic email and its answers saved in a database; from there, the process is manual.",
@@ -347,17 +356,27 @@ function features(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["we
   if (has("booking")) {
     add(fixedPrice(p.features.booking), t("calendar and reservations", "calendarização e reservas"));
   }
-  // The monthly fee: one for forms and the newsletter together, one for the
-  // calendar. Complex or more than three forms are priced later, with the rest.
-  const simpleForms = has("forms") && a.formKind === "simple" && a.forms && a.forms !== "more";
-  const monthly = (has("newsletter") || simpleForms ? p.monthly.forms : 0) + (has("booking") ? p.monthly.booking : 0);
-  if (monthly > 0) {
-    out.monthly = Math.max(5, Math.round((monthly * k) / 5) * 5);
+  // The monthly fee runs from maintenance alone (the platforms' free plans
+  // are enough) to maintenance plus their paid plans (user, 2026-11-04).
+  // Forms and the newsletter share one platform, the calendar is another; a
+  // restaurant in Portugal books through its own platform at a fixed fee.
+  const mail = has("newsletter") || simpleForm;
+  const restaurant = has("booking") && sector === "hospitality" && market === "pt";
+  const calendar = has("booking") && !restaurant;
+  const platforms = (mail ? 1 : 0) + (calendar ? 1 : 0);
+  const upkeep = (platforms > 0 ? p.monthly.first + p.monthly.extra * (platforms - 1) : 0) + (restaurant ? p.monthly.restaurant : 0);
+  if (upkeep > 0) {
+    const planPrices = [mail ? p.monthly.plans.brevo : 0, calendar ? p.monthly.plans.calcom : 0].filter(Boolean);
+    const plans = planPrices.reduce((x, y) => x + y, 0);
+    out.monthly = Math.max(5, Math.round((upkeep * k) / 5) * 5);
+    out.monthlyMax = Math.max(out.monthly, up5(upkeep * k + plans));
     out.notes.push(
-      t(
-        "The monthly fee covers keeping these running on your own platform account. If you choose the platform's paid plan, you pay for it directly.",
-        "A mensalidade cobre a manutenção destas funcionalidades na conta da plataforma do cliente. Se o plano pago da plataforma for escolhido, é pago diretamente pelo cliente.",
-      ),
+      plans > 0
+        ? t(
+            `The monthly fee is a range: the lower figure is our maintenance alone, if the platforms' free plans are enough; the higher adds their paid plans (about €${planPrices.join(" and €")} a month), paid by you directly to the platform. Which one applies is only known once we know the business.`,
+            `A mensalidade é um intervalo: o valor mais baixo é só a manutenção, se os planos gratuitos das plataformas chegarem; o mais alto soma os planos pagos (cerca de ${planPrices.join(" € e ")} € por mês), pagos diretamente pelo cliente à plataforma. Só se sabe qual se aplica depois de conhecer o negócio.`,
+          )
+        : t("The monthly fee covers keeping the reservations running.", "A mensalidade cobre a manutenção das reservas."),
     );
   }
   return out;
@@ -501,7 +520,6 @@ export function estimate(answers: Answers, pricing: Pricing = PRICING, lang: Lan
   // the price comes later and on top of it.
   if (webAnswers?.features.includes("forms") && out.lines.some((l) => l.id === "web")) {
     if (webAnswers.formKind === "complex") out.later = [t("Complex forms", "Formulários complexos")];
-    else if (webAnswers.forms === "more") out.later = [t("More than 3 forms", "Mais de 3 formulários")];
   }
 
   if (out.lines.length) {
@@ -511,6 +529,8 @@ export function estimate(answers: Answers, pricing: Pricing = PRICING, lang: Lan
     };
     const monthly = out.lines.reduce((a, l) => a + (l.monthly ?? 0), 0);
     out.monthly = monthly > 0 ? monthly : null;
+    const monthlyMax = out.lines.reduce((a, l) => a + (l.monthlyMax ?? l.monthly ?? 0), 0);
+    if (monthly > 0 && monthlyMax > monthly) out.monthlyMax = monthlyMax;
   }
 
   // The website's timeline, whatever the country: it is the work's length.
