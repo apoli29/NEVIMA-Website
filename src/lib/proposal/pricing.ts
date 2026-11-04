@@ -151,9 +151,10 @@ export const PRICING = {
   /** SEO and GEO are sold only with a website we built, and priced from it
       (user, 2026-11-04): the one-time setup is this percent of the website's
       price, the same for both; the optional monthly service is this share
-      of the setup's middle (30%, user 2026-11-04; it was 25%, then 50%
+      of the setup's middle (setup 20% of the website, was 25%; monthly 30%,
+      user 2026-11-04; it was 25%, then 50%
       for a moment). International reach is on request. PROVISIONAL. */
-  search: { setupPercent: 25, monthlyShare: 30 / 100 },
+  search: { setupPercent: 20, monthlyShare: 30 / 100 },
 };
 
 export type Pricing = typeof PRICING;
