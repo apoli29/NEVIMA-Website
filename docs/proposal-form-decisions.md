@@ -40,7 +40,7 @@ The website's price is the **sum of the ranges of its pages** (Portugal, Essenti
 | Gallery (photos and videos) | 30–70 |
 | Events | 65–85 |
 
-- **Advanced design** raises each page's range: the lowest ×1.35 and the highest ×1.45, rounded to 5.
+- **Advanced design** moves each page's whole range up by 50% of its middle, rounded to 5 (`advancedShift`; user, 2026-11-04): the same amount on both ends, so the range is as wide as Essential+ and the price about 1.5x. It was the lowest ×1.35 and the highest ×1.45, which made the Advanced range much wider.
 - **A page or section written in** adds a range from the lowest to the highest of the pages already foreseen, leaving out the Home page and the landing page (Essential+: 6–130).
 - **"Not sure, you choose"** adds a range from the average of all those pages to the average of the two dearest (Essential+: about 47 to 96). The "average" of a page is the middle of its range.
 - Both add a note to the estimate saying the range is wider.

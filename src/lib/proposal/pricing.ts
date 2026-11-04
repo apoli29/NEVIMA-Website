@@ -58,11 +58,11 @@ export const PRICING = {
       gallery: [30, 70],
       events: [65, 85],
     } satisfies Record<Exclude<PageKey, "other">, [number, number]>,
-    /** The Advanced design raises each page's range: the lowest by this
-        much, the highest by this much, rounded to 5 (user, 2026-11-04). The
-        more elaborate the design, the more the work varies. */
-    advancedMin: 35,
-    advancedMax: 45,
+    /** The Advanced design moves each page's whole range up by this share
+        of its middle, rounded to 5, so it costs about 1.5x the Essential+
+        and its range is as wide (user, 2026-11-04; it was +35% on the
+        lowest end and +45% on the highest, which widened the range). */
+    advancedShift: 50,
     /** Page prices by market, against Portugal. */
     pagesMarket: { pt: 1, "es-it": 1.155, us: 1.75 } satisfies Record<Market, number>,
     /** How long the site takes, in working days, by size. PROVISIONAL. */
