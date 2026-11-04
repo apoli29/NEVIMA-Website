@@ -22,8 +22,8 @@ The website's price is the **sum of the ranges of its pages** (Portugal, Essenti
 | Page | Range (30% at most, then -12.5%, 2026-11-04) |
 |---|---|
 | Landing page | 215–275 |
-| Home | 95–120 |
-| About | 50–65 |
+| Home | 105–130 |
+| About | 55–70 |
 | Contact | 15–20 |
 | Services | 55–75 |
 | Team | 30–35 |
@@ -126,3 +126,7 @@ Decided 2026-11-04 (user; the three questions put to the user went unanswered, s
 ## Monthly fees raised
 
 2026-11-04 (user): the SEO & GEO monthly service doubled (50% of the setup's middle, to the nearest 5; it was 25%), and our back-end upkeep rose from 5 to 10 a month. The plan prices (Brevo, Cal.com) and the restaurants' fixed 40 a month (its upkeep inside) are unchanged. Examples in Portugal: a form, newsletter or both 10-20 a month; form + calendar 10-35; the 8-page beauty case with local SEO & GEO monthly: web 10-20 and SEO & GEO 60 a month (was 30).
+
+## Pages always included raised by 10%
+
+2026-11-04 (user): Home, About and Contact raised 10%, to the nearest 5: Home 105–130, About 55–70; Contact stays 15–20 (16.5–22 rounds back to it). The three together: 175–220 (Essential+), was 160–205.
