@@ -61,6 +61,11 @@ function web(
   sector?: SectorId,
 ): Priced {
   if (a.pages === "10+") return { reason: t("More than 10 pages", "Mais de 10 páginas") };
+  // "Not sure" on what is needed gives no estimate (user, 2026-11-04): the
+  // answers are still sent, and the pages are chosen together on a call.
+  if (a.pages === "unsure") {
+    return { reason: t("Pages to choose together on a call", "Páginas a escolher em conjunto numa reunião") };
+  }
   const notes = [t(p.includes), t(p.marginNote)];
 
   // Portuguese and English are included; each other language is paid.
@@ -224,14 +229,6 @@ function web(
     );
   }
 
-  if (a.pages === "unsure") {
-    notes.push(
-      t(
-        "Estimated from Home, About and Contact up to the pages and sections usual in the business's sector, so the range is wider than with the pages chosen.",
-        "Estimado desde a página principal, Sobre nós e Contactos até às páginas e secções habituais do setor, por isso o intervalo é mais largo do que com as páginas escolhidas.",
-      ),
-    );
-  }
   // A fixed price (the landing page) is not rounded down.
   const floor = min === max ? min : down5(min);
   const ceiling = min === max ? max : up5(max);

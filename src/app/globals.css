@@ -816,6 +816,8 @@
     transition: color 0.25s ease;
   }
   .pf-key:has(input:checked) .pf-note { color: rgb(255 255 255 / 0.72); }
+  /* What comes with the key, set apart from what it does. */
+  .pf-note-extra { font-style: italic; }
   /* Small print under an answer or a priced line. */
   .pf-footnote {
     font-size: 0.9rem;

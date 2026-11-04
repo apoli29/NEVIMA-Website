@@ -26,6 +26,7 @@ import {
   pagesFor,
   PERSONAL_ABROAD,
   PERSONAL_FEATURE_NOTES,
+  CONFIRMATION_INCLUDED,
   PHOTO_PLANS,
   REACH,
   REGIONS,
@@ -232,9 +233,10 @@ const DOMAIN_NOTE_PERSONAL: Copy = {
   en: "If you don't have a domain yet, you register it in your own name and pay for it directly, and we guide you through every step. If you already have one, there's nothing to add.",
   pt: "Sem domínio, o registo é feito em nome próprio e pago diretamente, com o nosso acompanhamento em todos os passos. Com um domínio já existente, não há nada a acrescentar.",
 };
+// "Not sure" gives no estimate (user, 2026-11-04).
 const PAGES_NOTE: Copy = {
-  en: "Not sure? We estimate from Home, About and Contact up to the pages and sections usual in your sector, so the range of your final estimate can be a little wider.",
-  pt: "Sem um tipo definido, estimamos da página principal, Sobre nós e Contactos até às páginas e secções habituais do setor, por isso o intervalo da estimativa final pode ser um pouco mais largo.",
+  en: "With this option, there's no estimate at the end. You can still send your answers: we'll go through them and, on a call, help you choose what's best for your project.",
+  pt: "Com esta opção, não há estimativa no fim. Ainda assim, é possível enviar as respostas: analisamo-las e, numa reunião, ajudamos a escolher o melhor para o projeto.",
 };
 const TEXTS_NOTE: Copy = {
   en: "If you don't, we write them for you, and the price stays the same.",
@@ -661,7 +663,7 @@ export function Ticks<T extends string>({
   off = [],
 }: {
   name: string;
-  options: readonly { id: T; label: string; note?: string }[];
+  options: readonly { id: T; label: string; note?: string; extra?: string }[];
   value: T[];
   onChange: (v: T[]) => void;
   off?: readonly T[];
@@ -691,6 +693,7 @@ export function Ticks<T extends string>({
             {o.label ? <span className="mono-label">{o.label}</span> : <span className="pf-note mt-0">{o.note}</span>}
           </span>
           {o.label && o.note && <span className="pf-note">{o.note}</span>}
+          {o.extra && <span className="pf-note pf-note-extra">{o.extra}</span>}
         </label>
       ))}
     </div>
@@ -1017,7 +1020,7 @@ export function StepScreen({
                       options={[
                         {
                           id: "unsure",
-                          label: t("Not sure, I'd rather you choose for me*", "Não sei, prefiro que escolham por mim*"),
+                          label: t("Not sure, I'd rather you choose for me**", "Não sei, prefiro que escolham por mim**"),
                         },
                       ]}
                       value={draft.pagesUnsure ? ["unsure"] : []}
@@ -1025,8 +1028,14 @@ export function StepScreen({
                     />
                     <p className="pf-footnote">
                       {t(
-                        "* Writing other sections outside the choices, or leaving the choice to us, can result in an estimate with a wider range.",
-                        "* Escrever outras secções fora das escolhas pode resultar numa estimativa com um intervalo maior.",
+                        "* Adding sections beyond the ones listed makes the estimate's range wider.",
+                        "* Acrescentar secções além das apresentadas torna maior o intervalo da estimativa.",
+                      )}
+                    </p>
+                    <p className="pf-footnote">
+                      {t(
+                        "** Not sure what to choose? Don't worry: just carry on with the form, and we'll set up a call to help you decide.",
+                        "** Sem saber o que escolher? Não há problema: basta continuar o formulário, e marcamos uma reunião para ajudar na decisão.",
                       )}
                     </p>
                     <p role="status" className="pf-footnote">
@@ -1059,7 +1068,13 @@ export function StepScreen({
                 </p>
                 <Ticks
                   name="features"
-                  options={list(FEATURES).map((o) => (personal ? { ...o, note: t(PERSONAL_FEATURE_NOTES[o.id]) } : o))}
+                  options={list(FEATURES).map((o) => ({
+                    ...o,
+                    ...(personal ? { note: t(PERSONAL_FEATURE_NOTES[o.id]) } : {}),
+                    // Forms and the newsletter send a confirmation by
+                    // themselves (user, 2026-11-04).
+                    ...(o.id === "forms" || o.id === "newsletter" ? { extra: t(CONFIRMATION_INCLUDED) } : {}),
+                  }))}
                   value={draft.features}
                   onChange={(features) => setDraft({ features })}
                 />
@@ -1067,15 +1082,10 @@ export function StepScreen({
                     2026-10-19): the client's own free account, set up
                     together. */}
                 <p className="pf-footnote">
-                  {personal
-                    ? t(
-                        "For these, we help you open a free account on an email platform, in your own name, and assist you all the way.",
-                        "Para isto, criamos em conjunto uma conta gratuita numa plataforma de email, em nome próprio, com acompanhamento total.",
-                      )
-                    : t(
-                        "For these, we help you open a free account on an email platform, in your business's name, and assist you all the way.",
-                        "Para isto, criamos em conjunto uma conta gratuita numa plataforma de email, em nome do negócio, com acompanhamento total.",
-                      )}
+                  {t(
+                    "We handle the whole process for you, so you can use the platforms without a worry.",
+                    "Tratamos de todo o processo, para que as plataformas se usem sem qualquer preocupação.",
+                  )}
                 </p>
               </div>
               <div className="pf-level" role="group" aria-labelledby={`${uid}-level3`}>
