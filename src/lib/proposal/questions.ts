@@ -544,8 +544,9 @@ export type Estimate = {
 /** Said wherever languages other than Portuguese and English are asked
     for or priced (user). */
 export const TRANSLATION_NOTE: Copy = {
-  en: "Portuguese and English are included. Each other language costs €35 and is translated by an AI specialised in translation. If changes are needed, we provide a simply structured document where you give us the translations of the sentences that need fine-tuning.",
-  pt: "O português e o inglês estão incluídos. Cada uma das outras línguas custa 35 € e é traduzida por uma IA especializada em tradução. Se forem necessárias mudanças, fornecemos um documento com uma estrutura simples, onde o cliente disponibiliza as traduções das frases que precisem de ser afinadas.",
+  // Short, with no price (user, 2026-11-04).
+  en: "Portuguese and English are included. Other languages are translated by an AI specialised in translation; if anything needs adjusting, we send you a simple document for your corrections.",
+  pt: "O português e o inglês estão incluídos. As outras línguas são traduzidas por uma IA especializada em tradução; se algo precisar de ajustes, enviamos um documento simples para as correções.",
 };
 
 /** How many languages were typed under "Other": "French, German and

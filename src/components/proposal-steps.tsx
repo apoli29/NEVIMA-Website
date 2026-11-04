@@ -234,10 +234,6 @@ const PAGES_NOTE: Copy = {
   en: "With this option, there's no estimate at the end. But don't worry: finish the form, send it, and we'll set up a video call to help you out.",
   pt: "Com esta opção, não há estimativa no fim. Mas não há problema: basta terminar e enviar o formulário, e marcamos uma videochamada para ajudar.",
 };
-const TEXTS_NOTE: Copy = {
-  en: "If you don't, we write them for you, and the price stays the same.",
-  pt: "Caso não existam, a escrita dos textos está incluída, sem alterar o preço.",
-};
 const URGENT_NOTE: Copy = {
   en: "An urgent deadline raises the price by 40%.",
   pt: "Um prazo urgente aumenta o preço em 40%.",
@@ -1050,7 +1046,7 @@ export function StepScreen({
               the estimate, whatever else was answered. */}
           <Question
             id="features"
-            label={t("What is your website's core goal?", "Qual o objetivo central do website?")}
+            label={t("Which features does your website need?", "De que funcionalidades precisa o website?")}
             hint={t("What works behind the website", "O que funciona por trás do website")}
             error={errors.complex}
             group={false}
@@ -1162,9 +1158,8 @@ export function StepScreen({
           </Question>
           <Question
             id="texts"
-            label={t("Are there texts ready to be used?*", "Já existem textos prontos a ser usados?*")}
+            label={t("Are there texts ready to be used?", "Já existem textos prontos a ser usados?")}
             error={errors.texts}
-            footnote={`*${t(TEXTS_NOTE)}`}
           >
             <Segmented
               name="texts"
