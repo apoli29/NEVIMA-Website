@@ -962,11 +962,13 @@
   .pf-part .pf-line-value { font-size: 1.125rem; }
   /* Its labels a step smaller than the figures (user, 2026-11-04). */
   .pf-part .pf-line-name { font-size: 1rem; }
-  /* The website's notes, after its two parts. */
-  .pf-line-notes {
-    padding: 0.55rem 0.75rem 1rem;
-    border-top: 1px solid rgb(0 0 0 / 0.18);
-  }
+  /* The website's notes, under the total. */
+  .pf-line-notes { padding: 0.35rem 0.75rem 0; }
+  /* Each service's name, a step above its parts and the figures. */
+  .pf-line .pf-service-name { font-size: clamp(1.5rem, 2vw, 1.875rem); }
+  /* The total as large, so it never reads smaller than what it adds up. */
+  .pf-total .pf-line-name,
+  .pf-total .pf-line-value { font-size: clamp(1.5rem, 2vw, 1.875rem); }
   /* Review mode (?revisao): figures on unconfirmed prices. */
   .pf-provisional {
     text-decoration: underline;
