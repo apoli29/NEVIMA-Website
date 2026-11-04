@@ -139,3 +139,4 @@ Decided 2026-11-04 (user; the three questions put to the user went unanswered, s
 
 2026-11-04 (user, replacing the single figures above): the one-time work is 20% of the website's lowest figure up to 25% of its highest (floor down, ceiling up to 5); the monthly service is 28% of the one-time work's lowest up to 30% of its highest, each to the nearest 5 (`PRICING.search`: `setup`, `monthlyOfSetup`). The "not sure" note quotes the monthly as a range. The 8-page beauty case with local SEO (website 450–560): one-time 90–140, monthly 25–40; with the form's upkeep the total monthly is 35–60.
 - Then (user, same day): the one-time work is 17.5% of the website's lowest up to 22.5% of its highest (was 20-25%). The 8-page case: one-time 75-130, monthly 20-40.
+- Then (user, same day): SEO & GEO figures round inward: the lowest end up to 5, the highest down, never crossing. The 8-page case: one-time 80-125, monthly 25-35.
