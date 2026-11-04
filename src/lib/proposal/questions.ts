@@ -48,7 +48,7 @@ export const PERSONAL_ABROAD: Copy = {
 
 /** The second level's notes for personal use: visitors rather than a
     business's clients (user, 2026-10-19). */
-export const PERSONAL_FEATURE_NOTES: Record<"forms" | "newsletter", Copy> = {
+export const PERSONAL_FEATURE_NOTES: Record<"forms" | "newsletter" | "booking", Copy> = {
   forms: {
     en: "Visitors fill in a form, and you receive their answers.",
     pt: "Os visitantes preenchem um formulário, e as respostas chegam ao projeto.",
@@ -56,6 +56,10 @@ export const PERSONAL_FEATURE_NOTES: Record<"forms" | "newsletter", Copy> = {
   newsletter: {
     en: "Visitors sign up with their email. A welcome email goes out automatically, and each sign-up is saved in a database.",
     pt: "Os visitantes inscrevem-se com o email. É enviado automaticamente um email de boas-vindas, e cada inscrição fica registada numa base de dados.",
+  },
+  booking: {
+    en: "Visitors book a time or make a reservation themselves, and each one goes into your calendar.",
+    pt: "Os visitantes marcam ou reservam diretamente, e cada marcação entra no calendário do projeto.",
   },
 };
 
@@ -260,6 +264,13 @@ export const FEATURES = [
     note: "Your clients sign up with their email. A welcome email goes out automatically, and each sign-up is saved in a database.",
     notePt: "Os clientes do negócio inscrevem-se com o email. É enviado automaticamente um email de boas-vindas, e cada inscrição fica registada numa base de dados.",
   },
+  {
+    id: "booking",
+    label: "Calendar & reservations",
+    pt: "Calendarização e reservas",
+    note: "Your clients book a time or make a reservation themselves, and each one goes into your calendar.",
+    notePt: "Os clientes do negócio marcam ou reservam diretamente, e cada marcação entra no calendário do negócio.",
+  },
 ] as const;
 export type FeatureId = (typeof FEATURES)[number]["id"];
 
@@ -291,8 +302,8 @@ export const FORM_KINDS = [
     id: "complex",
     label: "Complex",
     pt: "Complexo",
-    note: "Any other scenario, such as several automatic emails or a booking calendar. Price set later.",
-    notePt: "Qualquer outro cenário, como vários emails automáticos ou um calendário de marcações. Preço a definir depois.",
+    note: "Any other scenario, such as several automatic emails. Price set later.",
+    notePt: "Qualquer outro cenário, como vários emails automáticos. Preço a definir depois.",
   },
 ] as const;
 export type FormKindId = (typeof FORM_KINDS)[number]["id"];

@@ -272,7 +272,7 @@ function web(
       },
     ];
   }
-  return { line: { amount, notes: kept, parts, provisional: a.texts === "no" } };
+  return { line: { amount, notes: kept, parts, monthly: f.monthly || undefined, provisional: a.texts === "no" } };
 }
 
 /** What the front end is made of, as a phrase: the size, the design level,
@@ -320,7 +320,7 @@ function frontDetail(a: NonNullable<Answers["web"]>, others: number, t: Translat
     they read in the line's note, and what is left for the proposal. */
 function features(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"], t: Translate) {
   const k = p.featuresMarket[market];
-  const out = { min: 0, max: 0, listed: [] as string[], notes: [] as string[] };
+  const out = { min: 0, max: 0, monthly: 0, listed: [] as string[], notes: [] as string[] };
   const add = ([lo, hi]: [number, number], what: string) => {
     out.min += lo * k;
     out.max += hi * k;
@@ -343,6 +343,22 @@ function features(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["we
   }
   if (has("newsletter")) {
     add(fixedPrice(p.features.newsletter), t("a newsletter sign-up with a welcome email", "uma inscrição na newsletter com email de boas-vindas"));
+  }
+  if (has("booking")) {
+    add(fixedPrice(p.features.booking), t("calendar and reservations", "calendarização e reservas"));
+  }
+  // The monthly fee: one for forms and the newsletter together, one for the
+  // calendar. Complex or more than three forms are priced later, with the rest.
+  const simpleForms = has("forms") && a.formKind === "simple" && a.forms && a.forms !== "more";
+  const monthly = (has("newsletter") || simpleForms ? p.monthly.forms : 0) + (has("booking") ? p.monthly.booking : 0);
+  if (monthly > 0) {
+    out.monthly = Math.max(5, Math.round((monthly * k) / 5) * 5);
+    out.notes.push(
+      t(
+        "The monthly fee covers keeping these running on your own platform account. If you choose the platform's paid plan, you pay for it directly.",
+        "A mensalidade cobre a manutenção destas funcionalidades na conta da plataforma do cliente. Se o plano pago da plataforma for escolhido, é pago diretamente pelo cliente.",
+      ),
+    );
   }
   return out;
 }
