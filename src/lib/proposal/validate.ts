@@ -18,7 +18,7 @@ import {
   SERVICES,
   TEXTS,
   YES_NO,
-  ITEM_LISTS,
+  EXCLUSIVE_PAIRS,
   MIN_CHOSEN,
   MAX_OTHERS,
   chosenCount,
@@ -141,7 +141,7 @@ export function readAnswers(raw: unknown): Result<Answers> {
     if (pageMode === "website" && chosenCount(pageTypes, pageOthers.length, pagesUnsure) < MIN_CHOSEN) {
       return { ok: false, error: "pageTypes" };
     }
-    if (ITEM_LISTS.every((id) => pageTypes.includes(id))) return { ok: false, error: "pageTypes" };
+    if (EXCLUSIVE_PAIRS.some((pair) => pair.every((id) => pageTypes.includes(id)))) return { ok: false, error: "pageTypes" };
     const pages = pagesFor(pageMode, pageTypes, pageOthers.length, pagesUnsure);
     // "Not sure" stands alone: it does not go with any language.
     if (languages.includes("unsure") && languages.length > 1) return { ok: false, error: "languages" };
