@@ -37,24 +37,26 @@ export const PRICING = {
         Portugal's (derived, not given). PROVISIONAL: the pages the user
         has not priced yet were suggested. */
     pages: {
-      landing: [245, 305], // average 275 (+20%, user 2026-11-04)
-      home: [85, 120],
-      about: [50, 60],
-      contact: [5, 20],
-      services: [30, 90],
-      team: [20, 30],
-      prices: [10, 25],
-      testimonials: [20, 30],
-      faq: [10, 30],
-      process: [30, 50],
-      partners: [10, 25],
-      work: [30, 50],
-      resources: [5, 20],
-      items: [25, 60],
-      itemsPages: [60, 110],
-      portfolio: [55, 100],
-      gallery: [25, 60],
-      events: [55, 70],
+      // Raised 20% twice (user, 2026-11-04), to 5; the smallest ends, which
+      // rounding to 5 would have left alone, to the euro.
+      landing: [250, 310], // average 280 (+20% twice, then -15%, user 2026-11-04)
+      home: [100, 145],
+      about: [60, 70],
+      contact: [6, 25],
+      services: [35, 110],
+      team: [25, 35],
+      prices: [12, 30],
+      testimonials: [25, 35],
+      faq: [12, 35],
+      process: [35, 60],
+      partners: [12, 30],
+      work: [35, 60],
+      resources: [6, 25],
+      items: [30, 70],
+      itemsPages: [70, 130],
+      portfolio: [65, 120],
+      gallery: [30, 70],
+      events: [65, 85],
     } satisfies Record<Exclude<PageKey, "other">, [number, number]>,
     /** The Advanced design raises each page's range: the lowest by this
         much, the highest by this much, rounded to 5 (user, 2026-11-04). The

@@ -19,30 +19,30 @@ Decided 2026-11-04 (user). Code: `src/lib/proposal/questions.ts`, `pricing.ts`, 
 
 The website's price is the **sum of the ranges of its pages** (Portugal, Essential+), with no base fee on top. Spain and Italy ×1.155 and the USA ×1.75 are ratios derived from the old prices, not given by the user.
 
-| Page | Range (raised 20%, 2026-11-04) |
+| Page | Range (raised 20% twice, 2026-11-04) |
 |---|---|
-| Landing page | 245–305 |
-| Home | 85–120 |
-| About | 50–60 |
-| Contact | 5–20 |
-| Services | 30–90 |
-| Team | 20–30 |
-| Prices | 10–25 |
-| Testimonials | 20–30 |
-| FAQ | 10–30 |
-| How it works | 30–50 |
-| Partners & brands | 10–25 |
-| Work with us | 30–50 |
-| Downloads | 5–20 |
-| List of items | 25–60 |
-| List of items, a page each | 60–110 |
-| Portfolio & case studies | 55–100 |
-| Gallery (photos and videos) | 25–60 |
-| Events | 55–70 |
+| Landing page | 250–310 |
+| Home | 100–145 |
+| About | 60–70 |
+| Contact | 6–25 |
+| Services | 35–110 |
+| Team | 25–35 |
+| Prices | 12–30 |
+| Testimonials | 25–35 |
+| FAQ | 12–35 |
+| How it works | 35–60 |
+| Partners & brands | 12–30 |
+| Work with us | 35–60 |
+| Downloads | 6–25 |
+| List of items | 30–70 |
+| List of items, a page each | 70–130 |
+| Portfolio & case studies | 65–120 |
+| Gallery (photos and videos) | 30–70 |
+| Events | 65–85 |
 
 - **Advanced design** raises each page's range: the lowest ×1.35 and the highest ×1.45, rounded to 5.
-- **A page or section written in** adds a range from the lowest to the highest of the pages already foreseen, leaving out the Home page and the landing page (Essential+: 5–110).
-- **"Not sure, you choose"** adds a range from the average of all those pages to the average of the two dearest (Essential+: about 40 to 81). The "average" of a page is the middle of its range.
+- **A page or section written in** adds a range from the lowest to the highest of the pages already foreseen, leaving out the Home page and the landing page (Essential+: 6–130).
+- **"Not sure, you choose"** adds a range from the average of all those pages to the average of the two dearest (Essential+: about 47 to 96). The "average" of a page is the middle of its range.
 - Both add a note to the estimate saying the range is wider.
 - The floor rounds down to 5 and the ceiling up to 5. More than 10 pages is on request.
 - **"Not sure" on what is needed** (not the list) goes from Home + About + Contact up to those plus the sector's usual pages.
@@ -87,3 +87,7 @@ Decided 2026-11-04 (user; the three questions put to the user went unanswered, s
 ## Page prices raised by 20%
 
 2026-11-04 (user): every page and section range in `pricing.ts` (`web.pages`) was raised by 20%, each end rounded to 5 (the lowest never under 5). On average the ends rose 20.5%; the smallest ends (5, 10) stay where they were after rounding. Landing page 245–305, Home 85–120, About 50–60, Contact 5–20. The Advanced uplift (35% / 45%) and the market ratios are applied on top, as before.
+
+## Page prices raised by 20% again
+
+2026-11-04 (user): every page and section range was raised by another 20%, each end rounded to 5; the ends of 5 and 10, which rounding to 5 would have left unchanged, went to the euro (6 and 12), so every option rose. Landing page 295–365 (then lowered 15% to 250–310, user 2026-11-04), Home 100–145, About 60–70, Contact 6–25. The table above holds the current figures.
