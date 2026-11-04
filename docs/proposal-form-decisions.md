@@ -25,7 +25,7 @@ The website's price is the **sum of the ranges of its pages** (Portugal, Essenti
 | Home | 110–140 |
 | About | 60–75 |
 | Contact | 15–20 |
-| Services | 65–80 |
+| Services | 55–95 |
 | Team | 30–35 |
 | Prices | 20–25 |
 | Testimonials | 30–35 |
@@ -36,7 +36,7 @@ The website's price is the **sum of the ranges of its pages** (Portugal, Essenti
 | Downloads | 15–20 |
 | List of items | 45–60 |
 | List of items, a page each | 90–115 |
-| Portfolio & case studies | 85–105 |
+| Portfolio & case studies | 75–115 |
 | Gallery (photos and videos) | 45–60 |
 | Events | 70–85 |
 
@@ -112,3 +112,5 @@ Decided 2026-11-04 (user; the three questions put to the user went unanswered, s
 ## Every page within 30%
 
 2026-11-04 (user): with Essential+ a website's highest figure may be at most 30% over its lowest. The ranges had grown up to 4x on some pages (Contact 6–25), and on a 7-page website the gap reached 270 (330–600). Every page now keeps the middle it had and spans 30% at most, both ends rounded up to 5 (the landing page's ceiling rounded down to 315, to stay within it); the written-in page and "not sure, you choose" add the average page. Any combination of pages comes to 30% or less (worst about 29.3%). "Not sure" on the design or the languages can still go over, since it covers two answers and says so.
+
+- Exception (user, 2026-11-04): Services 55–95 and Portfolio & case studies 75–115, each 40 apart around the middle they had, rounded up to 5. With either of them a website can go over 30% (Home, About, Contact, Services and Portfolio: 315–445, about +41%).

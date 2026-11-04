@@ -44,7 +44,7 @@ export const PRICING = {
       home: [110, 140],
       about: [60, 75],
       contact: [15, 20],
-      services: [65, 80],
+      services: [55, 95], // exception: 40 apart (user, 2026-11-04)
       team: [30, 35],
       prices: [20, 25],
       testimonials: [30, 35],
@@ -55,7 +55,7 @@ export const PRICING = {
       resources: [15, 20],
       items: [45, 60],
       itemsPages: [90, 115],
-      portfolio: [85, 105],
+      portfolio: [75, 115], // exception: 40 apart (user, 2026-11-04)
       gallery: [45, 60],
       events: [70, 85],
     } satisfies Record<Exclude<PageKey, "other">, [number, number]>,
