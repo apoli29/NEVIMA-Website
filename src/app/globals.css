@@ -929,7 +929,8 @@
     background: var(--color-ink);
   }
   /* A missing answer: white on black under the question, and for 3 seconds
-     it pulses a ring so the eye finds it (user, 2026-11-05). */
+     the text rises in brightness in three waves so the eye finds it (user,
+     2026-11-05). The box itself stays still. */
   .pf-error-q {
     align-self: flex-start;
     margin-top: 0.15rem;
@@ -937,18 +938,15 @@
     background: var(--color-ink);
     color: #fff;
     line-height: 1.3;
-    animation: pf-error-in 3s ease-out both;
+    animation: pf-error-wave 1s ease-in-out 3;
   }
-  .pf-error-q::before { background: #fff; animation: pf-error-dot 1s steps(2, jump-none) 3; }
-  @keyframes pf-error-in {
-    0% { transform: translateY(-0.4rem); opacity: 0; box-shadow: 0 0 0 0 rgb(0 0 0 / 0.5); }
-    8% { transform: none; opacity: 1; }
-    8%, 33%, 58%, 83% { box-shadow: 0 0 0 0 rgb(0 0 0 / 0.45); }
-    25%, 50%, 75%, 100% { box-shadow: 0 0 0 0.6rem rgb(0 0 0 / 0); }
+  .pf-error-q::before { background: #fff; }
+  @keyframes pf-error-wave {
+    0%, 100% { color: #7d7d7d; text-shadow: none; }
+    50% { color: #fff; text-shadow: 0 0 0.5rem rgb(255 255 255 / 0.9), 0 0 1.1rem rgb(255 255 255 / 0.5); }
   }
-  @keyframes pf-error-dot { 0% { opacity: 1; } 100% { opacity: 0.2; } }
   @media (prefers-reduced-motion: reduce) {
-    .pf-error-q, .pf-error-q::before { animation: none; }
+    .pf-error-q { animation: none; }
   }
   .pf-error-row { padding: 0.5rem 0.75rem 0.65rem; }
   .pf-send-error { margin-top: 1rem; }
