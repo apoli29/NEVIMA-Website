@@ -11,6 +11,12 @@
    site as guarda: os pedidos de proposta agrupados em "web", "photo" e
    "search" (questions.ts, tipo Answers); os de parceria em partner.ts.
 
+   Para ler os pedidos (no VS Code, numa New Query na base Nevima):
+     SELECT * FROM dbo.vw_Pedidos ORDER BY Id DESC;     -- a lista
+     EXEC dbo.Ficha 2;                                  -- um pedido inteiro
+     SELECT * FROM dbo.vw_Parcerias ORDER BY Id DESC;
+     EXEC dbo.FichaParceria 1;
+
    Decisões e passos: docs/backend-decisions.md, secção "SQL Server".
    ===================================================================== */
 
@@ -407,6 +413,393 @@ SELECT
     p.Idioma,
     p.Origem
 FROM dbo.PedidosProposta p;
+GO
+
+
+/* ---------------------------------------------------------------------
+   5b. Rótulos: as respostas nas palavras do formulário, em português
+   Os ids que o site guarda ("health", "4-6") e o texto que o formulário
+   mostra ("Saúde", "4–6"). Gerados por scripts/sql/rotulos.ts.
+   --------------------------------------------------------------------- */
+IF OBJECT_ID(N'dbo.Rotulos', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Rotulos (
+        Lista   VARCHAR(40)    NOT NULL,   -- o nome da lista no código do site (SECTORS, PAGES...)
+        Codigo  NVARCHAR(60)   NOT NULL,   -- o id que o site guarda
+        Texto   NVARCHAR(200)  NOT NULL,   -- o que o formulário mostra em português
+        CONSTRAINT PK_Rotulos PRIMARY KEY (Lista, Codigo)
+    );
+END
+GO
+
+-- <rotulos> (gerado por scripts/sql/rotulos.ts a partir das listas do formulário: não editar à mão)
+DELETE FROM dbo.Rotulos;
+INSERT INTO dbo.Rotulos (Lista, Codigo, Texto) VALUES
+    (N'SERVICES', N'web', N'Web design'),
+    (N'SERVICES', N'identity', N'Identidade visual'),
+    (N'SERVICES', N'photo', N'Sessão fotográfica'),
+    (N'SERVICES', N'seo', N'SEO e GEO'),
+    (N'AUDIENCES', N'business', N'Um negócio'),
+    (N'AUDIENCES', N'personal', N'Uso pessoal'),
+    (N'SECTORS', N'health', N'Saúde'),
+    (N'SECTORS', N'beauty', N'Estética e bem-estar'),
+    (N'SECTORS', N'realestate', N'Imobiliário'),
+    (N'SECTORS', N'hospitality', N'Restauração'),
+    (N'SECTORS', N'lodging', N'Alojamento e turismo'),
+    (N'SECTORS', N'retail', N'Loja / comércio'),
+    (N'SECTORS', N'professional', N'Serviços profissionais'),
+    (N'SECTORS', N'trades', N'Construção e serviços ao domicílio'),
+    (N'SECTORS', N'sport', N'Desporto e fitness'),
+    (N'SECTORS', N'education', N'Educação e formação'),
+    (N'SECTORS', N'events', N'Eventos e casamentos'),
+    (N'SECTORS', N'creative', N'Criativos e fotografia'),
+    (N'SECTORS', N'nonprofit', N'Associações e causas'),
+    (N'SECTORS', N'tech', N'Tecnologia e B2B'),
+    (N'SECTORS', N'other', N'Outro'),
+    (N'COUNTRIES', N'PT', N'Portugal'),
+    (N'COUNTRIES', N'ES', N'Espanha'),
+    (N'COUNTRIES', N'IT', N'Itália'),
+    (N'COUNTRIES', N'US', N'EUA'),
+    (N'COUNTRIES', N'other', N'Outro'),
+    (N'PAGES', N'landing', N'Landing page'),
+    (N'PAGES', N'3', N'3'),
+    (N'PAGES', N'4-6', N'4–6'),
+    (N'PAGES', N'7-10', N'7–10'),
+    (N'PAGES', N'10+', N'Mais de 10'),
+    (N'PAGES', N'unsure', N'Não sei'),
+    (N'PAGE_MODES', N'landing', N'Landing page'),
+    (N'PAGE_MODES', N'website', N'Website'),
+    (N'PAGE_MODES', N'unsure', N'Não sei'),
+    (N'PAGE_TYPES', N'services', N'Serviços, todos numa página ou secção'),
+    (N'PAGE_TYPES', N'servicesPages', N'Serviços, com página para cada serviço'),
+    (N'PAGE_TYPES', N'items', N'Lista de itens, sem página para cada um (produtos, cursos, menu…)'),
+    (N'PAGE_TYPES', N'itemsPages', N'Lista de itens, com página para cada item (imóveis, quartos, tratamentos…)'),
+    (N'PAGE_TYPES', N'team', N'Equipa'),
+    (N'PAGE_TYPES', N'portfolio', N'Portefólio e casos'),
+    (N'PAGE_TYPES', N'gallery', N'Galeria (fotografias e vídeos)'),
+    (N'PAGE_TYPES', N'prices', N'Preços'),
+    (N'PAGE_TYPES', N'testimonials', N'Testemunhos'),
+    (N'PAGE_TYPES', N'faq', N'Perguntas frequentes'),
+    (N'PAGE_TYPES', N'events', N'Eventos'),
+    (N'PAGE_TYPES', N'process', N'Como funciona'),
+    (N'PAGE_TYPES', N'partners', N'Parceiros e marcas'),
+    (N'PAGE_TYPES', N'work', N'Trabalhe connosco'),
+    (N'PAGE_TYPES', N'resources', N'Recursos e descarregáveis'),
+    (N'LANGUAGES', N'pt', N'Português'),
+    (N'LANGUAGES', N'en', N'Inglês'),
+    (N'LANGUAGES', N'other', N'Outras'),
+    (N'LANGUAGES', N'unsure', N'Não sei'),
+    (N'FEATURES', N'forms', N'Formulários'),
+    (N'FEATURES', N'newsletter', N'Inscrição na newsletter'),
+    (N'FEATURES', N'booking', N'Calendarização e reservas'),
+    (N'FORM_KINDS', N'simple', N'Manual'),
+    (N'FORM_KINDS', N'complex', N'Automatizado'),
+    (N'DESIGN', N'essential', N'Essencial+'),
+    (N'DESIGN', N'advanced', N'Avançado'),
+    (N'DESIGN', N'unsure', N'Não sei'),
+    (N'TEXTS', N'yes', N'Sim'),
+    (N'TEXTS', N'no', N'Não'),
+    (N'TEXTS', N'unsure', N'Não sei'),
+    (N'YES_NO', N'yes', N'Sim'),
+    (N'YES_NO', N'no', N'Não'),
+    (N'PHOTO_PLANS', N'photos', N'Só fotografia'),
+    (N'PHOTO_PLANS', N'photos-video', N'Fotografia e vídeo'),
+    (N'PHOTO_PLANS', N'unsure', N'Não sei'),
+    (N'REGIONS', N'mainland', N'Continente'),
+    (N'REGIONS', N'madeira', N'Madeira'),
+    (N'REGIONS', N'azores', N'Açores'),
+    (N'SEARCH_PLANS', N'once', N'Pontual'),
+    (N'SEARCH_PLANS', N'monthly', N'Pontual + mensal'),
+    (N'SEARCH_PLANS', N'unsure', N'Não sei'),
+    (N'REACH', N'local', N'Local'),
+    (N'REACH', N'national', N'Nacional'),
+    (N'REACH', N'international', N'Internacional'),
+    (N'PROJECT_TYPES', N'website', N'Website'),
+    (N'PROJECT_TYPES', N'platform', N'Plataforma'),
+    (N'PROJECT_TYPES', N'webapp', N'Aplicação web'),
+    (N'SCREENS', N'1-10', N'1–10'),
+    (N'SCREENS', N'11-20', N'11–20'),
+    (N'SCREENS', N'20+', N'Mais de 20'),
+    (N'STARTS', N'week', N'Menos de uma semana'),
+    (N'STARTS', N'1-2w', N'1–2 semanas'),
+    (N'STARTS', N'3-4w', N'3–4 semanas'),
+    (N'STARTS', N'month+', N'Mais de 1 mês'),
+    (N'DELIVERIES', N'2w', N'Menos de 2 semanas'),
+    (N'DELIVERIES', N'2-4w', N'2–4 semanas'),
+    (N'DELIVERIES', N'1-2m', N'1–2 meses'),
+    (N'DELIVERIES', N'2m+', N'Mais de 2 meses'),
+    (N'MODELS', N'project', N'Um projeto fechado'),
+    (N'MODELS', N'ongoing', N'Trabalho contínuo'),
+    (N'CREDITS', N'credit', N'Sim, com crédito'),
+    (N'CREDITS', N'white', N'Não, sem crédito (white label)'),
+    (N'PARTNER_YES_NO', N'yes', N'Sim'),
+    (N'PARTNER_YES_NO', N'no', N'Não');
+-- </rotulos>
+GO
+
+
+/* ---------------------------------------------------------------------
+   5c. Perguntas: o nome e o grupo de cada resposta, para as fichas
+   Caminho = onde a resposta está no JSON do site; Lista = de que lista
+   de rótulos vêm as palavras (vazia para texto livre ou sim/não).
+   --------------------------------------------------------------------- */
+IF OBJECT_ID(N'dbo.Perguntas', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Perguntas (
+        Formulario  VARCHAR(20)    NOT NULL,   -- proposta | parceria
+        Ordem       INT            NOT NULL,
+        Grupo       NVARCHAR(40)   NOT NULL,
+        Pergunta    NVARCHAR(80)   NOT NULL,
+        Caminho     VARCHAR(80)    NOT NULL,
+        Lista       VARCHAR(40)    NULL,
+        CONSTRAINT PK_Perguntas PRIMARY KEY (Formulario, Ordem)
+    );
+END
+GO
+
+DELETE FROM dbo.Perguntas;
+INSERT INTO dbo.Perguntas (Formulario, Ordem, Grupo, Pergunta, Caminho, Lista) VALUES
+    ('proposta', 10, N'Negócio', N'País', 'country', 'COUNTRIES'),
+    ('proposta', 11, N'Negócio', N'País (outro)', 'countryOther', NULL),
+    ('proposta', 12, N'Negócio', N'Serviços', 'services', 'SERVICES'),
+    ('proposta', 13, N'Negócio', N'Cliente', 'audience', 'AUDIENCES'),
+    ('proposta', 14, N'Negócio', N'Área do negócio', 'sector', 'SECTORS'),
+    ('proposta', 15, N'Negócio', N'Área (outra)', 'sectorOther', NULL),
+    ('proposta', 20, N'Website', N'Nível de design', 'web.design', 'DESIGN'),
+    ('proposta', 21, N'Website', N'O que é preciso', 'web.pageMode', 'PAGE_MODES'),
+    ('proposta', 22, N'Website', N'Páginas e secções', 'web.pageTypes', 'PAGE_TYPES'),
+    ('proposta', 23, N'Website', N'Outras páginas', 'web.pageOthers', NULL),
+    ('proposta', 24, N'Website', N'Outras à escolha do estúdio', 'web.pagesUnsure', NULL),
+    ('proposta', 25, N'Website', N'Número de páginas', 'web.pages', 'PAGES'),
+    ('proposta', 26, N'Website', N'Línguas', 'web.languages', 'LANGUAGES'),
+    ('proposta', 27, N'Website', N'Outras línguas', 'web.languagesOther', NULL),
+    ('proposta', 28, N'Website', N'O que faz', 'web.features', 'FEATURES'),
+    ('proposta', 29, N'Website', N'Formulários', 'web.formKind', 'FORM_KINDS'),
+    ('proposta', 30, N'Website', N'Formulários (quantos)', 'web.forms', NULL),
+    ('proposta', 31, N'Website', N'Sistemas complexos', 'web.complex', NULL),
+    ('proposta', 32, N'Website', N'Textos prontos', 'web.texts', 'TEXTS'),
+    ('proposta', 33, N'Website', N'Websites de referência', 'web.references', NULL),
+    ('proposta', 34, N'Website', N'Sem websites de referência', 'web.noReferences', NULL),
+    ('proposta', 35, N'Website', N'Já tem domínio', 'web.domain', 'YES_NO'),
+    ('proposta', 36, N'Website', N'Prazo urgente', 'web.urgent', 'YES_NO'),
+    ('proposta', 40, N'Sessão fotográfica', N'Plano de fotografia', 'photo.plan', 'PHOTO_PLANS'),
+    ('proposta', 41, N'Sessão fotográfica', N'Zona', 'photo.region', 'REGIONS'),
+    ('proposta', 42, N'Sessão fotográfica', N'Localidade', 'photo.town', NULL),
+    ('proposta', 50, N'SEO e GEO', N'Site atual', 'search.site', NULL),
+    ('proposta', 51, N'SEO e GEO', N'Páginas do site', 'search.pages', 'PAGES'),
+    ('proposta', 52, N'SEO e GEO', N'Alcance', 'search.reach', 'REACH'),
+    ('proposta', 53, N'SEO e GEO', N'Plano', 'search.seoPlan', 'SEARCH_PLANS'),
+    ('proposta', 54, N'SEO e GEO', N'Plano GEO', 'search.geoPlan', 'SEARCH_PLANS'),
+    ('parceria', 10, N'Projeto', N'Projeto', 'project', 'PROJECT_TYPES'),
+    ('parceria', 11, N'Projeto', N'Ecrãs ou páginas', 'screens', 'SCREENS'),
+    ('parceria', 12, N'Projeto', N'Ecrãs (estimativa)', 'screensEstimate', NULL),
+    ('parceria', 13, N'Projeto', N'Design ou guia de marca', 'inspiration', 'PARTNER_YES_NO'),
+    ('parceria', 14, N'Projeto', N'Link do design', 'inspirationLink', NULL),
+    ('parceria', 15, N'Projeto', N'Tecnologia compatível', 'compatible', 'PARTNER_YES_NO'),
+    ('parceria', 20, N'Condições', N'Início', 'start', 'STARTS'),
+    ('parceria', 21, N'Condições', N'Entrega', 'delivery', 'DELIVERIES'),
+    ('parceria', 22, N'Condições', N'Modelo de trabalho', 'model', 'MODELS'),
+    ('parceria', 23, N'Condições', N'No nosso portefólio', 'credit', 'CREDITS'),
+    ('parceria', 24, N'Condições', N'NDA', 'nda', NULL);
+GO
+
+
+/* ---------------------------------------------------------------------
+   5d. Funções de apoio: a hora de Lisboa, os valores e as respostas
+   --------------------------------------------------------------------- */
+
+-- Uma data guardada em UTC, na hora de Lisboa: "05/11/2026 00:14".
+CREATE OR ALTER FUNCTION dbo.fn_HoraLisboa (@Utc DATETIME2(0))
+RETURNS NVARCHAR(20)
+AS
+BEGIN
+    RETURN FORMAT(@Utc AT TIME ZONE 'UTC' AT TIME ZONE 'GMT Standard Time', 'dd/MM/yyyy HH:mm');
+END
+GO
+
+-- Um valor ou um intervalo em euros: "1 010–1 275 €"; sem valor, "Sob consulta".
+CREATE OR ALTER FUNCTION dbo.fn_Euros (@Min DECIMAL(10,2), @Max DECIMAL(10,2))
+RETURNS NVARCHAR(60)
+AS
+BEGIN
+    IF @Min IS NULL RETURN N'Sob consulta';
+    IF @Max IS NULL OR @Max = @Min RETURN FORMAT(@Min, N'#,0', 'pt-PT') + N' €';
+    RETURN FORMAT(@Min, N'#,0', 'pt-PT') + N'–' + FORMAT(@Max, N'#,0', 'pt-PT') + N' €';
+END
+GO
+
+-- As respostas de um pedido, uma por linha, já em português.
+CREATE OR ALTER FUNCTION dbo.fn_Respostas (@Json NVARCHAR(MAX), @Formulario VARCHAR(20))
+RETURNS TABLE
+AS
+RETURN
+    SELECT
+        q.Ordem,
+        q.Grupo,
+        q.Pergunta,
+        COALESCE(
+            lista.Texto,
+            rotulo.Texto,
+            CASE v.Valor WHEN N'true' THEN N'Sim' WHEN N'false' THEN N'Não' ELSE v.Valor END
+        ) AS Resposta
+    FROM dbo.Perguntas AS q
+    CROSS APPLY (
+        SELECT JSON_VALUE(@Json, '$.' + q.Caminho) COLLATE DATABASE_DEFAULT AS Valor,
+               JSON_QUERY(@Json, '$.' + q.Caminho) AS Lista
+    ) AS v
+    OUTER APPLY (
+        SELECT STRING_AGG(COALESCE(r.Texto, a.[value] COLLATE DATABASE_DEFAULT), N', ')
+                   WITHIN GROUP (ORDER BY CAST(a.[key] AS INT)) AS Texto
+        FROM OPENJSON(v.Lista) AS a
+        LEFT JOIN dbo.Rotulos AS r
+               ON r.Lista = q.Lista AND r.Codigo = a.[value] COLLATE DATABASE_DEFAULT
+    ) AS lista
+    LEFT JOIN dbo.Rotulos AS rotulo
+           ON rotulo.Lista = q.Lista AND rotulo.Codigo = v.Valor
+    WHERE q.Formulario = @Formulario;
+GO
+
+
+/* ---------------------------------------------------------------------
+   5e. As listas: um pedido por linha, já legível
+   SELECT * FROM dbo.vw_Pedidos ORDER BY Id DESC;
+   SELECT * FROM dbo.vw_Parcerias ORDER BY Id DESC;
+   --------------------------------------------------------------------- */
+CREATE OR ALTER VIEW dbo.vw_Pedidos
+AS
+SELECT
+    p.Id,
+    dbo.fn_HoraLisboa(p.CriadoEm)                                        AS Recebido,
+    p.Estado,
+    p.Nome,
+    p.Empresa,
+    p.Email,
+    p.Telefone,
+    (SELECT r.Texto FROM dbo.Rotulos r WHERE r.Lista = 'AUDIENCES' AND r.Codigo = p.Publico)  AS Cliente,
+    COALESCE(p.SetorOutro,
+             (SELECT r.Texto FROM dbo.Rotulos r WHERE r.Lista = 'SECTORS' AND r.Codigo = p.Setor))   AS [Área],
+    COALESCE(p.PaisOutro,
+             (SELECT r.Texto FROM dbo.Rotulos r WHERE r.Lista = 'COUNTRIES' AND r.Codigo = p.Pais))  AS [País],
+    (SELECT STRING_AGG(COALESCE(r.Texto, s.[value] COLLATE DATABASE_DEFAULT), N', ')
+                WITHIN GROUP (ORDER BY CAST(s.[key] AS INT))
+       FROM OPENJSON(p.RespostasJson, '$.services') AS s
+       LEFT JOIN dbo.Rotulos r ON r.Lista = 'SERVICES' AND r.Codigo = s.[value] COLLATE DATABASE_DEFAULT) AS [Serviços],
+    dbo.fn_Euros(p.EstimativaMin, p.EstimativaMax)
+        + CASE WHEN p.EstimativaMensal IS NULL THEN N''
+               ELSE N' + ' + dbo.fn_Euros(p.EstimativaMensal,
+                                          TRY_CAST(JSON_VALUE(p.EstimativaJson, '$.monthlyMax') AS DECIMAL(10,2)))
+                    + N'/mês' END                                           AS Estimativa,
+    p.Mensagem
+FROM dbo.PedidosProposta AS p;
+GO
+
+CREATE OR ALTER VIEW dbo.vw_Parcerias
+AS
+SELECT
+    p.Id,
+    dbo.fn_HoraLisboa(p.CriadoEm)                                                                   AS Recebido,
+    p.Estado,
+    p.Nome,
+    p.Empresa,
+    p.Email,
+    p.Telefone,
+    (SELECT r.Texto FROM dbo.Rotulos r WHERE r.Lista = 'PROJECT_TYPES' AND r.Codigo = p.Projeto)  AS Projeto,
+    (SELECT r.Texto FROM dbo.Rotulos r WHERE r.Lista = 'SCREENS' AND r.Codigo = p.Ecras)
+        + COALESCE(N' (' + p.EcrasEstimativa + N')', N'')                                          AS [Ecrãs],
+    (SELECT r.Texto FROM dbo.Rotulos r WHERE r.Lista = 'STARTS' AND r.Codigo = p.Inicio)          AS [Início],
+    (SELECT r.Texto FROM dbo.Rotulos r WHERE r.Lista = 'DELIVERIES' AND r.Codigo = p.Entrega)     AS Entrega,
+    (SELECT r.Texto FROM dbo.Rotulos r WHERE r.Lista = 'MODELS' AND r.Codigo = p.Modelo)          AS Modelo,
+    (SELECT r.Texto FROM dbo.Rotulos r WHERE r.Lista = 'CREDITS' AND r.Codigo = p.Credito)        AS [Portefólio],
+    CASE p.NDA WHEN 1 THEN N'Sim' ELSE N'Não' END                                                  AS NDA,
+    p.Mensagem
+FROM dbo.PedidosParceria AS p;
+GO
+
+
+/* ---------------------------------------------------------------------
+   5f. As fichas: um pedido inteiro, pergunta a pergunta
+   EXEC dbo.Ficha 2;            -- um pedido de proposta
+   EXEC dbo.FichaParceria 1;    -- um pedido de parceria
+   --------------------------------------------------------------------- */
+CREATE OR ALTER PROCEDURE dbo.Ficha
+    @Id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF NOT EXISTS (SELECT 1 FROM dbo.PedidosProposta WHERE Id = @Id)
+    BEGIN
+        SELECT N'Não há nenhum pedido de proposta com o Id ' + CAST(@Id AS NVARCHAR(12)) + N'.' AS Aviso;
+        RETURN;
+    END
+
+    SELECT x.Grupo, x.Pergunta, x.Resposta
+    FROM (
+        SELECT 1 AS Ordem, N'Pedido' AS Grupo, N'Recebido' AS Pergunta, dbo.fn_HoraLisboa(p.CriadoEm) AS Resposta
+          FROM dbo.PedidosProposta p WHERE p.Id = @Id
+        UNION ALL SELECT 2, N'Pedido', N'Estado', p.Estado FROM dbo.PedidosProposta p WHERE p.Id = @Id
+        UNION ALL SELECT 3, N'Pedido', N'Responder em', CASE p.Idioma WHEN 'pt' THEN N'Português' ELSE N'Inglês' END
+          FROM dbo.PedidosProposta p WHERE p.Id = @Id
+        UNION ALL SELECT 4, N'Contacto', N'Nome', p.Nome FROM dbo.PedidosProposta p WHERE p.Id = @Id
+        UNION ALL SELECT 5, N'Contacto', N'Email', p.Email FROM dbo.PedidosProposta p WHERE p.Id = @Id
+        UNION ALL SELECT 6, N'Contacto', N'Telefone', p.Telefone FROM dbo.PedidosProposta p WHERE p.Id = @Id
+        UNION ALL SELECT 7, N'Contacto', N'Nome do negócio', p.Empresa FROM dbo.PedidosProposta p WHERE p.Id = @Id
+        UNION ALL SELECT 8, N'Contacto', N'Mensagem', p.Mensagem FROM dbo.PedidosProposta p WHERE p.Id = @Id
+        UNION ALL
+        SELECT r.Ordem, r.Grupo, r.Pergunta, r.Resposta
+          FROM dbo.PedidosProposta p
+          CROSS APPLY dbo.fn_Respostas(p.RespostasJson, 'proposta') AS r
+         WHERE p.Id = @Id
+        UNION ALL SELECT 900, N'Estimativa', N'Total', dbo.fn_Euros(p.EstimativaMin, p.EstimativaMax)
+          FROM dbo.PedidosProposta p WHERE p.Id = @Id
+        UNION ALL
+        SELECT 901, N'Estimativa', N'Mensal',
+               dbo.fn_Euros(p.EstimativaMensal, TRY_CAST(JSON_VALUE(p.EstimativaJson, '$.monthlyMax') AS DECIMAL(10,2))) + N'/mês'
+          FROM dbo.PedidosProposta p WHERE p.Id = @Id AND p.EstimativaMensal IS NOT NULL
+        UNION ALL
+        SELECT 902, N'Estimativa', N'Prazo',
+               CASE JSON_VALUE(p.EstimativaJson, '$.timeline.kind')
+                    WHEN 'days' THEN JSON_VALUE(p.EstimativaJson, '$.timeline.min') + N'–'
+                                   + JSON_VALUE(p.EstimativaJson, '$.timeline.max') + N' dias úteis'
+                    ELSE N'A combinar' END
+          FROM dbo.PedidosProposta p WHERE p.Id = @Id AND p.EstimativaJson IS NOT NULL
+    ) AS x
+    WHERE x.Resposta IS NOT NULL AND x.Resposta <> N''
+    ORDER BY x.Ordem;
+END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.FichaParceria
+    @Id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF NOT EXISTS (SELECT 1 FROM dbo.PedidosParceria WHERE Id = @Id)
+    BEGIN
+        SELECT N'Não há nenhum pedido de parceria com o Id ' + CAST(@Id AS NVARCHAR(12)) + N'.' AS Aviso;
+        RETURN;
+    END
+
+    SELECT x.Grupo, x.Pergunta, x.Resposta
+    FROM (
+        SELECT 1 AS Ordem, N'Pedido' AS Grupo, N'Recebido' AS Pergunta, dbo.fn_HoraLisboa(p.CriadoEm) AS Resposta
+          FROM dbo.PedidosParceria p WHERE p.Id = @Id
+        UNION ALL SELECT 2, N'Pedido', N'Estado', p.Estado FROM dbo.PedidosParceria p WHERE p.Id = @Id
+        UNION ALL SELECT 3, N'Pedido', N'Responder em', CASE p.Idioma WHEN 'pt' THEN N'Português' ELSE N'Inglês' END
+          FROM dbo.PedidosParceria p WHERE p.Id = @Id
+        UNION ALL SELECT 4, N'Contacto', N'Nome', p.Nome FROM dbo.PedidosParceria p WHERE p.Id = @Id
+        UNION ALL SELECT 5, N'Contacto', N'Email', p.Email FROM dbo.PedidosParceria p WHERE p.Id = @Id
+        UNION ALL SELECT 6, N'Contacto', N'Telefone', p.Telefone FROM dbo.PedidosParceria p WHERE p.Id = @Id
+        UNION ALL SELECT 7, N'Contacto', N'Empresa', p.Empresa FROM dbo.PedidosParceria p WHERE p.Id = @Id
+        UNION ALL SELECT 8, N'Contacto', N'Notas adicionais', p.Mensagem FROM dbo.PedidosParceria p WHERE p.Id = @Id
+        UNION ALL
+        SELECT r.Ordem, r.Grupo, r.Pergunta, r.Resposta
+          FROM dbo.PedidosParceria p
+          CROSS APPLY dbo.fn_Respostas(p.RespostasJson, 'parceria') AS r
+         WHERE p.Id = @Id
+    ) AS x
+    WHERE x.Resposta IS NOT NULL AND x.Resposta <> N''
+    ORDER BY x.Ordem;
+END
 GO
 
 
