@@ -31,6 +31,7 @@ type Words = {
   why: string;
   use: string;
   business: string;
+  association: string;
   country: string;
   services: string;
 };
@@ -50,6 +51,7 @@ const WORDS: Record<Lang, Words> = {
     why: "You are receiving this email because you asked for a proposal on our website. Your details are used only to answer that request.",
     use: "Use",
     business: "Business",
+    association: "Client",
     country: "Country",
     services: "Services",
   },
@@ -67,6 +69,7 @@ const WORDS: Record<Lang, Words> = {
     why: "Recebeu este e-mail porque pediu uma proposta no nosso website. Os seus dados são usados apenas para responder a esse pedido.",
     use: "Utilização",
     business: "Negócio",
+    association: "Cliente",
     country: "País",
     services: "Serviços",
   },
@@ -83,7 +86,9 @@ export function summaryOf(answers: Answers, lang: Lang) {
   const who =
     answers.audience === "personal"
       ? { label: w.use, value: labelOf(AUDIENCES, "personal", lang) }
-      : {
+      : answers.audience === "nonprofit"
+        ? { label: w.association, value: labelOf(AUDIENCES, "nonprofit", lang) }
+        : {
           label: w.business,
           value:
             answers.sector === "other"

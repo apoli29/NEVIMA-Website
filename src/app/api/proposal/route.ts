@@ -32,7 +32,7 @@ export async function POST(request: Request) {
 
   const answers = readAnswers(fields.answers);
   if (!answers.ok) return json({ error: "invalid", field: answers.error }, 422);
-  const contact = readContact(fields.contact, { company: answers.value.audience === "business" });
+  const contact = readContact(fields.contact, { company: answers.value.audience !== "personal" });
   if (!contact.ok) return json({ error: "invalid", field: contact.error }, 422);
 
   // One request per email in 24 hours, bar the studio's own test addresses.

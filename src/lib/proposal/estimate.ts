@@ -4,6 +4,8 @@ import { MARKET, PRICING, type Market, type PageKey, type Pricing } from "./pric
 import {
   REGIONS,
   SECTOR_PAGES,
+  pageTypesFor,
+  type AudienceId,
   TRANSLATION_NOTE,
   countLanguages,
   countPages,
@@ -57,9 +59,11 @@ function web(
   market: Market,
   p: Pricing["web"],
   t: Translate,
-  personal = false,
+  audience: AudienceId = "business",
   sector?: SectorId,
 ): Priced {
+  const personal = audience === "personal";
+  const nonprofit = audience === "nonprofit";
   if (a.pages === "10+") return { reason: t("More than 10 pages", "Mais de 10 páginas") };
   // "Not sure" on what is needed gives no estimate (user, 2026-11-04): the
   // answers are still sent, and the pages are chosen together on a call.
@@ -89,8 +93,8 @@ function web(
       languages: languagesUnsure ? ["pt", "en", "other"] : a.languages,
       languagesOther: languagesUnsure ? "one more" : a.languagesOther,
     };
-    const low = web(cheap, market, p, t, personal, sector);
-    const high = web(dear, market, p, t, personal, sector);
+    const low = web(cheap, market, p, t, audience, sector);
+    const high = web(dear, market, p, t, audience, sector);
     if (!("line" in low)) return low;
     if (!("line" in high)) return high;
     const what = [
@@ -146,7 +150,8 @@ function web(
   const chosen = a.pageTypes;
   // The pages and sections we already foresee, without the Home page and the
   // landing page: what a page we cannot foresee is measured against.
-  const foreseen = (Object.keys(p.pages) as PageKey[]).filter((k) => k !== "home" && k !== "landing");
+  // Each kind of client against its own list (user, 2026-11-05).
+  const foreseen: PageKey[] = ["about", "contact", ...pageTypesFor(audience).map((k) => k.id)];
   const lowOf = (k: PageKey) => pageRange(k)[0];
   const highOf = (k: PageKey) => pageRange(k)[1];
   // A page or section written in beyond the list, and "Not sure, you
@@ -172,7 +177,7 @@ function web(
   } else {
     // Not sure: from the pages always included up to those usual in the
     // business's sector.
-    const usual = SECTOR_PAGES[personal ? "personal" : (sector ?? "other")];
+    const usual = SECTOR_PAGES[personal ? "personal" : nonprofit ? "nonprofit" : (sector ?? "other")];
     lows = total(always, 0);
     highs = total([...always, ...usual], 1);
   }
@@ -203,10 +208,14 @@ function web(
       t(
         personal
           ? "Includes writing the website's texts from what you tell us about your project."
-          : "Includes writing the website's texts from what you tell us about your business.",
+          : nonprofit
+            ? "Includes writing the website's texts from what you tell us about your association."
+            : "Includes writing the website's texts from what you tell us about your business.",
         personal
           ? "Inclui a escrita dos textos do website a partir da informação dada sobre o projeto."
-          : "Inclui a escrita dos textos do website a partir da informação dada sobre o negócio.",
+          : nonprofit
+            ? "Inclui a escrita dos textos do website a partir da informação dada sobre a associação."
+            : "Inclui a escrita dos textos do website a partir da informação dada sobre o negócio.",
       ),
     );
   }
@@ -223,8 +232,8 @@ function web(
   if (a.domain === "no") {
     notes.push(
       t(
-        `Doesn't include the domain, which you register in ${personal ? "your own" : "your business's"} name and pay for directly: about €${p.newDomain.min}–${p.newDomain.max} a year. We guide you through it.`,
-        `Não inclui o domínio, registado em ${personal ? "nome próprio" : "nome do negócio"} e pago diretamente: cerca de ${p.newDomain.min}–${p.newDomain.max} € por ano. Acompanhamos todo o processo.`,
+        `Doesn't include the domain, which you register in ${personal ? "your own" : nonprofit ? "your association's" : "your business's"} name and pay for directly: about €${p.newDomain.min}–${p.newDomain.max} a year. We guide you through it.`,
+        `Não inclui o domínio, registado em ${personal ? "nome próprio" : nonprofit ? "nome da associação" : "nome do negócio"} e pago diretamente: cerca de ${p.newDomain.min}–${p.newDomain.max} € por ano. Acompanhamos todo o processo.`,
       ),
     );
   }
@@ -530,7 +539,7 @@ export function estimate(answers: Answers, pricing: Pricing = PRICING, lang: Lan
 
   const { web: webAnswers, photo: photoAnswers, search: searchAnswers } = answers;
   for (const id of answers.services) {
-    if (id === "web" && webAnswers) add("web", (m) => web(webAnswers, m, pricing.web, t, answers.audience === "personal", answers.sector));
+    if (id === "web" && webAnswers) add("web", (m) => web(webAnswers, m, pricing.web, t, answers.audience, answers.sector));
     if (id === "identity") add("identity", (m) => identity(webAnswers?.urgent === "yes", m, pricing.web, t));
     if (id === "photo" && photoAnswers) add("photo", () => photo(photoAnswers, answers.country, pricing, t, webAnswers?.urgent === "yes"));
   }

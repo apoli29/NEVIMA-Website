@@ -66,6 +66,16 @@ export const PRICING = {
       portfolio: [70, 95], // exception: within 40% (user, 2026-11-04)
       gallery: [45, 55],
       events: [60, 75],
+      // A non-profit association's pages (user, 2026-11-05).
+      projects: [25, 55],
+      projectsPages: [45, 70],
+      help: [25, 30],
+      activities: [40, 65],
+      news: [25, 50],
+      board: [30, 35],
+      transparency: [15, 20],
+      supporters: [20, 25],
+      impact: [30, 35],
     } satisfies Record<Exclude<PageKey, "other">, [number, number]>,
     /** The Advanced design moves each page's whole range up by this share
         of its middle, rounded to 5, so it costs about 1.5x the Essential+
