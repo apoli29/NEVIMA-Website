@@ -154,3 +154,23 @@ Decided 2026-11-04 (user; the three questions put to the user went unanswered, s
 ## Services in two kinds
 
 2026-11-04 (user): Services is split, like the item lists, into "Services, all on one page or section" (25–55) and "Services, with a page for each service" (55–85). They exclude each other: ticking one unticks the other, and the server refuses both (`EXCLUSIVE_PAIRS` in `questions.ts`). The id `services` keeps the one-page kind (so the sectors' star stays on it); the new one is `servicesPages`. The 25–55 range is wider than the 30% rule, by the user's choice.
+
+## Non-profit associations
+
+2026-11-05 (user): a non-profit association is no longer a business with the sector "Associations & causes" (removed from `SECTORS`). "Who is the website for?" has a third answer, "A non-profit association" / "Uma associação sem fins lucrativos" (`AUDIENCES`, id `nonprofit`). The contract has no word of its own for it: it is a professional client and a legal person, so it gets the business's Proposal, in any country, and is asked its name ("Association name" / "Nome da associação").
+
+- No sector question: it goes straight to the design level.
+- Its own list of pages (`NONPROFIT_PAGE_TYPES`), priced separately in `PRICING.web.pages`. Always included: Home, About us (mission and history), Contact. To choose (★ = usually chosen by associations, `SECTOR_PAGES.nonprofit`):
+  - ★ Projects, all on one page or section: 25–55 (`projects`)
+  - Projects, with a page for each project: 45–70 (`projectsPages`), excluding the one above (`PROJECT_PAGES` in `EXCLUSIVE_PAIRS`)
+  - ★ How to help (volunteering, membership, donations): 25–30 (`help`). Donations are a page with bank or MB Way details and a button to an outside platform, never payments on the site.
+  - ★ Events & activities: 40–65 (`activities`)
+  - News: 25–50 (`news`)
+  - Team & governing bodies: 30–35 (`board`)
+  - ★ Transparency (reports, accounts, statutes): 15–20 (`transparency`)
+  - Partners & supporters: 20–25 (`supporters`)
+  - Impact & testimonials: 30–35 (`impact`)
+  - Gallery (photos and videos): 45–55 and FAQ: 25–30, the businesses' own pages.
+- A written-in page, or "Not sure, you choose", adds the average page of the association's own list (About, Contact and the list above); a business's average is unchanged. The server refuses a page from the other list.
+- Copy follows the association: "A associação" as the first step's title, "Onde está sediada a associação?", "A associação já possui domínio?", "Qual é o alcance da associação?", the features' notes speak of visitors and the association, and the estimate's notes say "the association".
+- Switching between an association and a business or personal use clears the pages chosen, since the lists differ.

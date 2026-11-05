@@ -26,6 +26,9 @@ import {
   pagesFor,
   PERSONAL_ABROAD,
   PERSONAL_FEATURE_NOTES,
+  NONPROFIT_FEATURE_NOTES,
+  ALL_PAGE_TYPES,
+  pageTypesFor,
   CONFIRMATION_INCLUDED,
   PHOTO_PLANS,
   REACH,
@@ -196,7 +199,11 @@ export function actionFor(step: StepId, next: StepId | undefined, t: Translate) 
 function titleFor(step: StepId, draft: Draft, t: Translate) {
   switch (step) {
     case "basics":
-      return draft.audience === "personal" ? t("Your project", "O projeto") : t("Your business", "O negócio");
+      return draft.audience === "personal"
+        ? t("Your project", "O projeto")
+        : draft.audience === "nonprofit"
+          ? t("Your association", "A associação")
+          : t("Your business", "O negócio");
     case "site":
       return t("Your website", "O website");
     case "web":
@@ -270,7 +277,8 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
     if (personalAbroad(draft)) e.country = t(PERSONAL_ABROAD);
   }
   if (step === "site") {
-    if (draft.audience !== "personal") {
+    // Only a business is asked what it does (user, 2026-11-05).
+    if (draft.audience === "business") {
       if (!draft.sector) e.sector = PICK_ONE;
       else if (draft.sector === "other" && !draft.sectorOther.trim()) {
         e.sector = t("Tell us what your business does.", "Falta indicar a área do negócio.");
@@ -335,7 +343,9 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
     if (draft.audience !== "personal" && !contact.company.trim()) {
       e.company = draft.audience === "business"
         ? t("Enter your business's name.", "Falta indicar o nome do negócio.")
-        : t("Enter your company's name.", "Falta indicar o nome da empresa.");
+        : draft.audience === "nonprofit"
+          ? t("Enter your association's name.", "Falta indicar o nome da associação.")
+          : t("Enter your company's name.", "Falta indicar o nome da empresa.");
     }
   }
   return e;
@@ -412,6 +422,7 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
     `Email: ${contact.email}`,
     `${t("Phone", "Telefone")}: ${contact.phone}`,
     ...(a.audience === "business" ? [`${t("Business name", "Nome do negócio")}: ${contact.company}`] : []),
+    ...(a.audience === "nonprofit" ? [`${t("Association name", "Nome da associação")}: ${contact.company}`] : []),
     "",
     // Which Proposal to send: a business's, or a consumer's with the annex.
     `${t("Client", "Cliente")}: ${label(AUDIENCES, a.audience)}`,
@@ -433,7 +444,7 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
       ...(a.web.pageTypes.length || a.web.pageOthers?.length || a.web.pagesUnsure
         ? [
             `${t("Pages and sections", "Páginas e secções")}: ${[
-              ...a.web.pageTypes.map((k) => label(PAGE_TYPES, k)),
+              ...a.web.pageTypes.map((k) => label(ALL_PAGE_TYPES, k)),
               ...(a.web.pageOthers ?? []),
               ...(a.web.pagesUnsure ? [t("others chosen by the studio", "outras à escolha do estúdio")] : []),
             ].join(", ")}`,
@@ -441,7 +452,9 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
         : []),
       `${t("Languages", "Línguas")}: ${a.web.languages.map((l) => (l === "other" ? a.web?.languagesOther : label(LANGUAGES, l))).join(", ")}`,
       `${t("What it does", "O que faz")}: ${[
-        t("presents the business", "apresenta o negócio"),
+        a.audience === "nonprofit"
+          ? t("presents the association", "apresenta a associação")
+          : t("presents the business", "apresenta o negócio"),
         ...a.web.features.map((f) => {
           const name = label(FEATURES, f).toLowerCase();
           if ((f !== "forms" && f !== "newsletter") || !a.web?.formKind) return name;
@@ -779,6 +792,8 @@ export function StepScreen({
   // Personal use: a project and its visitors, not a business and its
   // clients (user, 2026-10-19).
   const personal = draft.audience === "personal";
+  // A non-profit association: its own pages, no sector (user, 2026-11-05).
+  const nonprofit = draft.audience === "nonprofit";
   // The message that ends the form when the third level is ticked.
   const [outOpen, setOutOpen] = useState(false);
 
@@ -803,7 +818,9 @@ export function StepScreen({
                 ? t("Which country are you in?", "Em que país?")
                 : draft.audience === "business"
                   ? t("Where is your business based?", "Onde está sediado o negócio?")
-                  : t("Where are you based?", "Em que país?")
+                  : draft.audience === "nonprofit"
+                    ? t("Where is your association based?", "Onde está sediada a associação?")
+                    : t("Where are you based?", "Em que país?")
             }
             // The note below says it as soon as it applies.
             error={personalAbroad(draft) ? undefined : errors.country}
@@ -861,7 +878,15 @@ export function StepScreen({
               name="audience"
               options={list(AUDIENCES)}
               value={draft.audience}
-              onChange={(audience) => setDraft({ audience })}
+              // An association's pages are not a business's: switching
+              // between the two lists starts the choice again.
+              onChange={(audience) =>
+                setDraft(
+                  (audience === "nonprofit") !== (draft.audience === "nonprofit")
+                    ? { audience, pageTypes: [] }
+                    : { audience },
+                )
+              }
               labelledBy="audience-q"
             />
           </Question>
@@ -891,7 +916,7 @@ export function StepScreen({
 
       {step === "site" && !(draft.complex && outOpen) && (
         <div className="pf-rows">
-          {draft.audience !== "personal" && (
+          {draft.audience === "business" && (
           <Question id="sector" label={t("What does your business do?", "Qual é a área do negócio?")} error={errors.sector}>
             <Segmented
               name="sector"
@@ -953,8 +978,8 @@ export function StepScreen({
               {(() => {
                 // One list for every business; the sector only puts a star
                 // on the pages it usually has (user, 2026-11-04).
-                const usual = SECTOR_PAGES[personal ? "personal" : draft.sector || "other"];
-                const kinds = list(PAGE_TYPES).map((k) => (usual.includes(k.id) ? { ...k, star: true } : k));
+                const usual = SECTOR_PAGES[personal ? "personal" : nonprofit ? "nonprofit" : draft.sector || "other"];
+                const kinds = list(pageTypesFor(draft.audience)).map((k) => (usual.includes(k.id) ? { ...k, star: true } : k));
                 const pick = (next: PageTypeId[]) => {
                   let types = next;
                   // The two kinds of item list, and the two kinds of services
@@ -979,7 +1004,12 @@ export function StepScreen({
                       name="pages-always"
                       options={[
                         { id: "home", label: t("Home", "Página principal") },
-                        { id: "about", label: t("About us", "Sobre nós") },
+                        {
+                          id: "about",
+                          label: nonprofit
+                            ? t("About us (mission and history)", "Sobre nós (missão e história)")
+                            : t("About us", "Sobre nós"),
+                        },
                         { id: "contact", label: t("Contact & location", "Contactos e localização") },
                       ]}
                       value={["home", "about", "contact"]}
@@ -997,7 +1027,9 @@ export function StepScreen({
                       <StarIcon />
                       {personal
                         ? t("Usually chosen for projects like yours", "Costuma ser escolhida em projetos semelhantes")
-                        : t("Usually chosen by businesses in your sector", "Costuma ser escolhida por negócios do mesmo setor")}
+                        : nonprofit
+                          ? t("Usually chosen by associations", "Costuma ser escolhida por associações")
+                          : t("Usually chosen by businesses in your sector", "Costuma ser escolhida por negócios do mesmo setor")}
                     </p>
                     <p className="mono-label pf-hint">{t("Other pages and sections*", "Outras páginas e secções*")}</p>
                     {Array.from({ length: MAX_OTHERS }, (_, i) => (
@@ -1057,7 +1089,7 @@ export function StepScreen({
             <div className="pf-levels">
               <div className="pf-level" role="group" aria-labelledby={`${uid}-level2`}>
                 <p id={`${uid}-level2`} className="pf-level-name">
-                  {personal
+                  {personal || nonprofit
                     ? t("Receive information from visitors", "Receber informação dos visitantes")
                     : t("Receive information from your clients", "Receber informação dos clientes")}
                 </p>
@@ -1066,6 +1098,7 @@ export function StepScreen({
                   options={list(FEATURES).map((o) => ({
                     ...o,
                     ...(personal ? { note: t(PERSONAL_FEATURE_NOTES[o.id]) } : {}),
+                    ...(nonprofit ? { note: t(NONPROFIT_FEATURE_NOTES[o.id]) } : {}),
                     // Forms and the newsletter send a confirmation by
                     // themselves (user, 2026-11-04).
                     ...(o.id === "forms" || o.id === "newsletter" ? { extra: t(CONFIRMATION_INCLUDED) } : {}),
@@ -1209,7 +1242,13 @@ export function StepScreen({
           </Question>
           <Question
             id="domain"
-            label={personal ? t("Do you already have a domain?*", "Já existe um domínio?*") : t("Do you already have a domain?*", "O negócio já possui domínio?*")}
+            label={
+              personal
+                ? t("Do you already have a domain?*", "Já existe um domínio?*")
+                : nonprofit
+                  ? t("Do you already have a domain?*", "A associação já possui domínio?*")
+                  : t("Do you already have a domain?*", "O negócio já possui domínio?*")
+            }
             error={errors.domain}
             footnote={`*${t(DOMAIN_NOTE)}`}
           >
@@ -1251,7 +1290,13 @@ export function StepScreen({
           </Question>
           <Question
             id="town"
-            label={personal ? t("Where will the shoot be?", "Onde vai decorrer a sessão?") : t("Where is your business located?", "Onde fica o negócio?")}
+            label={
+              personal
+                ? t("Where will the shoot be?", "Onde vai decorrer a sessão?")
+                : nonprofit
+                  ? t("Where is your association located?", "Onde fica a associação?")
+                  : t("Where is your business located?", "Onde fica o negócio?")
+            }
             hint={
               draft.country === "PT"
                 ? undefined
@@ -1262,7 +1307,9 @@ export function StepScreen({
                 ? t(
                     personal
                       ? "In some parts of the Porto area and in the rest of the country, travel costs are covered by you."
-                      : "In some parts of the Porto area and in the rest of the country, travel costs are covered by your business.",
+                      : nonprofit
+                        ? "In some parts of the Porto area and in the rest of the country, travel costs are covered by your association."
+                        : "In some parts of the Porto area and in the rest of the country, travel costs are covered by your business.",
                     "Em algumas zonas da área do Porto e no resto do país, as despesas de deslocação ficam a cargo do cliente.",
                   )
                 : undefined
@@ -1328,7 +1375,13 @@ export function StepScreen({
           )}
           <Question
             id="reach"
-            label={personal ? t("How far should the website reach?", "Qual é o alcance pretendido?") : t("How far does your business reach?", "Qual é o alcance do negócio?")}
+            label={
+              personal
+                ? t("How far should the website reach?", "Qual é o alcance pretendido?")
+                : nonprofit
+                  ? t("How far does your association reach?", "Qual é o alcance da associação?")
+                  : t("How far does your business reach?", "Qual é o alcance do negócio?")
+            }
             error={errors.reach}
           >
             <Segmented
@@ -1353,7 +1406,7 @@ export function StepScreen({
         </div>
       )}
 
-      {step === "estimate" && <EstimateScreen state={estimate} retry={retryEstimate} personal={personal} />}
+      {step === "estimate" && <EstimateScreen state={estimate} retry={retryEstimate} personal={personal} nonprofit={nonprofit} />}
 
       {step === "contact" && (
         <ContactScreen
@@ -1398,10 +1451,12 @@ function EstimateScreen({
   state,
   retry,
   personal = false,
+  nonprofit = false,
 }: {
   state: EstimateState;
   retry: () => void;
   personal?: boolean;
+  nonprofit?: boolean;
 }) {
   const review = useReview();
   const lang = useLang();
@@ -1560,8 +1615,8 @@ function EstimateScreen({
       {/* What the ranges promise (user, 2026-10-17). */}
       <motion.p variants={ROW} className="pf-footnote mt-2 max-w-[38em]">
         {t(
-          `It assumes a project exactly as your answers describe it. After looking at your ${personal ? "project" : "business"}, we may suggest some changes we think would be best for your project; in that case, the price may end up outside these ranges, lower or higher. Either way, we always also send you an offer based on your own choices, priced within these ranges.`,
-          `Parte de um projeto exatamente como as respostas o descrevem. Depois de ${personal ? "analisarmos o projeto" : "conhecermos o negócio"}, podemos sugerir algumas alterações que consideramos melhores para o projeto; nesse caso, o preço pode ficar fora destes intervalos, para baixo ou para cima. Seja como for, enviamos sempre também uma proposta com base nas escolhas feitas, com o preço dentro destes intervalos.`,
+          `It assumes a project exactly as your answers describe it. After looking at your ${personal ? "project" : nonprofit ? "association" : "business"}, we may suggest some changes we think would be best for your project; in that case, the price may end up outside these ranges, lower or higher. Either way, we always also send you an offer based on your own choices, priced within these ranges.`,
+          `Parte de um projeto exatamente como as respostas o descrevem. Depois de ${personal ? "analisarmos o projeto" : nonprofit ? "conhecermos a associação" : "conhecermos o negócio"}, podemos sugerir algumas alterações que consideramos melhores para o projeto; nesse caso, o preço pode ficar fora destes intervalos, para baixo ou para cima. Seja como for, enviamos sempre também uma proposta com base nas escolhas feitas, com o preço dentro destes intervalos.`,
         )}
       </motion.p>
     </div>
@@ -1608,10 +1663,18 @@ export function ContactScreen({
     {
       key: "company",
       // The partners are companies; a client's may be a sole trader.
-      label: partner ? t("Company", "Empresa") : t("Business name", "Nome do negócio"),
+      label: partner
+        ? t("Company", "Empresa")
+        : audience === "nonprofit"
+          ? t("Association name", "Nome da associação")
+          : t("Business name", "Nome do negócio"),
       type: "text",
       autoComplete: "organization",
-      placeholder: partner ? t("Your business", "Nome da empresa") : t("Your business", "Nome do negócio"),
+      placeholder: partner
+        ? t("Your business", "Nome da empresa")
+        : audience === "nonprofit"
+          ? t("Your association", "Nome da associação")
+          : t("Your business", "Nome do negócio"),
     },
   ] as const;
   const rows = audience === "personal" ? all.filter((row) => row.key !== "company") : all;
@@ -1672,7 +1735,12 @@ export function ContactScreen({
                     )
                   : audience === "personal"
                     ? t("Anything else we should know about your project (optional)", "Qualquer outra informação útil sobre o projeto (opcional)")
-                    : t(
+                    : audience === "nonprofit"
+                      ? t(
+                          "Anything else we should know about your association or your project (optional)",
+                          "Qualquer outra informação útil sobre a associação ou o projeto (opcional)",
+                        )
+                      : t(
                         "Anything else we should know about your business or your project (optional)",
                         "Qualquer outra informação útil sobre o negócio ou o projeto (opcional)",
                       )

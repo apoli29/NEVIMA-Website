@@ -28,9 +28,12 @@ export type ServiceId = (typeof SERVICES)[number]["id"];
 /** Who the website is for. A business includes sole traders and the
     self-employed; personal use makes the client a consumer, which the
     contract's annex for "Particulares" covers, and is taken on in
-    Portugal only (user, 2026-10-19). */
+    Portugal only (user, 2026-10-19). A non-profit association is a
+    professional client too (a legal person, in the contract), but with no
+    sector to ask and its own pages (user, 2026-11-05). */
 export const AUDIENCES = [
   { id: "business", label: "A business", pt: "Um negócio" },
+  { id: "nonprofit", label: "A non-profit association", pt: "Uma associação sem fins lucrativos" },
   { id: "personal", label: "Personal use", pt: "Uso pessoal" },
 ] as const;
 export type AudienceId = (typeof AUDIENCES)[number]["id"];
@@ -63,12 +66,29 @@ export const PERSONAL_FEATURE_NOTES: Record<"forms" | "newsletter" | "booking", 
   },
 };
 
+/** The same notes for a non-profit association (user, 2026-11-05). */
+export const NONPROFIT_FEATURE_NOTES: Record<"forms" | "newsletter" | "booking", Copy> = {
+  forms: {
+    en: "Visitors fill in a form, and the association receives their answers.",
+    pt: "Os visitantes preenchem um formulário, e as respostas chegam à associação.",
+  },
+  newsletter: {
+    en: "Visitors sign up with their email, and each sign-up is saved in a database.",
+    pt: "Os visitantes inscrevem-se com o email, e cada inscrição fica registada numa base de dados.",
+  },
+  booking: {
+    en: "Visitors book a time or make a reservation themselves, and each one goes into the association's calendar.",
+    pt: "Os visitantes marcam ou reservam diretamente, e cada marcação entra no calendário da associação.",
+  },
+};
+
 /** What the business does. It tells us about the project and, since
     2026-11-04 (user), it orders the page types and suggests a few of them
     (see SECTOR_PAGES); it never changes the price by itself. The ids from
     before the list grew (health, realestate, hospitality, retail,
     professional, other) keep their meaning, so earlier requests still read
-    right. */
+    right. Associations left the list on 2026-11-05 (user): they are a
+    kind of client of their own (AUDIENCES). */
 export const SECTORS = [
   { id: "health", label: "Health", pt: "Saúde" },
   { id: "beauty", label: "Beauty & wellness", pt: "Estética e bem-estar" },
@@ -82,7 +102,6 @@ export const SECTORS = [
   { id: "education", label: "Education & training", pt: "Educação e formação" },
   { id: "events", label: "Events & weddings", pt: "Eventos e casamentos" },
   { id: "creative", label: "Creative & photography", pt: "Criativos e fotografia" },
-  { id: "nonprofit", label: "Associations & causes", pt: "Associações e causas" },
   { id: "tech", label: "Technology & B2B", pt: "Tecnologia e B2B" },
   { id: "other", label: "Other", pt: "Outro" },
 ] as const;
@@ -164,7 +183,28 @@ export const PAGE_TYPES = [
   { id: "work", label: "Work with us", pt: "Trabalhe connosco" },
   { id: "resources", label: "Downloads", pt: "Recursos e descarregáveis" },
 ] as const;
-export type PageTypeId = (typeof PAGE_TYPES)[number]["id"];
+/** A non-profit association's own list (user, 2026-11-05): the same
+    kinds of choice, in the words of an association. Gallery and FAQ are
+    the businesses' pages, at their prices. */
+export const NONPROFIT_PAGE_TYPES = [
+  { id: "projects", label: "Projects, all on one page or section", pt: "Projetos, todos numa página ou secção" },
+  { id: "projectsPages", label: "Projects, with a page for each project", pt: "Projetos, com página para cada projeto" },
+  { id: "help", label: "How to help (volunteering, membership, donations)", pt: "Como ajudar (voluntariado, sócios, donativos)" },
+  { id: "activities", label: "Events & activities", pt: "Eventos e atividades" },
+  { id: "news", label: "News", pt: "Notícias" },
+  { id: "board", label: "Team & governing bodies", pt: "Equipa e órgãos sociais" },
+  { id: "transparency", label: "Transparency (reports, accounts, statutes)", pt: "Transparência (relatórios, contas, estatutos)" },
+  { id: "supporters", label: "Partners & supporters", pt: "Parceiros e apoios" },
+  { id: "impact", label: "Impact & testimonials", pt: "Impacto e testemunhos" },
+  { id: "gallery", label: "Gallery (photos and videos)", pt: "Galeria (fotografias e vídeos)" },
+  { id: "faq", label: "FAQ", pt: "Perguntas frequentes" },
+] as const;
+export type PageTypeId = (typeof PAGE_TYPES)[number]["id"] | (typeof NONPROFIT_PAGE_TYPES)[number]["id"];
+/** Every kind of page, to name any of them. */
+export const ALL_PAGE_TYPES = [...PAGE_TYPES, ...NONPROFIT_PAGE_TYPES] as const;
+/** The list a kind of client chooses from. */
+export const pageTypesFor = (audience: string): readonly { id: PageTypeId; label: string; pt: string }[] =>
+  audience === "nonprofit" ? NONPROFIT_PAGE_TYPES : PAGE_TYPES;
 
 /** Home, About and Contact are in every website. */
 export const ALWAYS_PAGES = 3;
@@ -178,13 +218,16 @@ export const MAX_PAGES = 10;
 export const ITEM_LISTS = ["items", "itemsPages"] as const;
 /** The two kinds of services page, one or the other. */
 export const SERVICE_PAGES = ["services", "servicesPages"] as const;
+/** The two kinds of projects page, one or the other. */
+export const PROJECT_PAGES = ["projects", "projectsPages"] as const;
 /** Pairs that exclude each other: ticking one unticks the other. */
-export const EXCLUSIVE_PAIRS = [ITEM_LISTS, SERVICE_PAGES] as const;
+export const EXCLUSIVE_PAIRS = [ITEM_LISTS, SERVICE_PAGES, PROJECT_PAGES] as const;
 
 /** Per sector: the kinds of page it usually has. They are flagged "usual"
     and put first, never ticked for the client (user, 2026-11-04). Personal
-    use, with no sector, is the "personal" row. */
-export const SECTOR_PAGES: Record<SectorId | "personal", readonly PageTypeId[]> = {
+    use, with no sector, is the "personal" row; an association, the
+    "nonprofit" one. */
+export const SECTOR_PAGES: Record<SectorId | "personal" | "nonprofit", readonly PageTypeId[]> = {
   health: ["services", "team", "prices", "faq"],
   beauty: ["services", "gallery", "prices", "testimonials"],
   realestate: ["itemsPages", "services", "testimonials", "faq"],
@@ -197,10 +240,10 @@ export const SECTOR_PAGES: Record<SectorId | "personal", readonly PageTypeId[]> 
   education: ["itemsPages", "team", "faq", "events"],
   events: ["services", "gallery", "prices", "portfolio"],
   creative: ["portfolio", "services", "gallery", "process"],
-  nonprofit: ["process", "events", "team", "partners"],
   tech: ["services", "portfolio", "resources", "process"],
   other: ["services", "portfolio", "faq", "testimonials"],
   personal: ["portfolio", "gallery", "faq", "process"],
+  nonprofit: ["projects", "help", "activities", "transparency"],
 };
 
 /** The size label from how many pages there are (Home, About and Contact

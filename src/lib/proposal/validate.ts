@@ -9,7 +9,7 @@ import {
   MAX,
   PAGES,
   PAGE_MODES,
-  PAGE_TYPES,
+  pageTypesFor,
   PHOTO_PLANS,
   REACH,
   REGIONS,
@@ -120,10 +120,12 @@ export function readAnswers(raw: unknown): Result<Answers> {
     // once, in the list's order (none is fine: Home and About stay). The
     // size is worked out here, never taken from the form.
     const rawTypes = pageMode === "website" && Array.isArray(w.pageTypes) ? w.pageTypes : [];
-    if (!rawTypes.every((v) => typeof v === "string" && ids(PAGE_TYPES).has(v))) {
+    // Each kind of client chooses from its own list (user, 2026-11-05).
+    const kinds = pageTypesFor(audience);
+    if (!rawTypes.every((v) => typeof v === "string" && ids(kinds).has(v))) {
       return { ok: false, error: "pageTypes" };
     }
-    const pageTypes = PAGE_TYPES.map((k) => k.id).filter((id) => rawTypes.includes(id));
+    const pageTypes = kinds.map((k) => k.id).filter((id) => rawTypes.includes(id));
     // Up to three pages or sections written in (empty ones dropped), and
     // "not sure, you choose": for a website only.
     const rawOthers = pageMode === "website" && Array.isArray(w.pageOthers) ? w.pageOthers : [];
@@ -216,8 +218,9 @@ export function readAnswers(raw: unknown): Result<Answers> {
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PHONE = /^[+()\d][\d\s().-]{5,24}$/;
 
-/** The business's name is asked of a business (and of the partners'
-    form); a client for personal use has none. */
+/** The business's name is asked of a business, an association's of an
+    association (and of the partners' form); a client for personal use has
+    none. */
 export function readContact(raw: unknown, { company: needsCompany = true } = {}): Result<Contact> {
   if (!isObject(raw)) return { ok: false, error: "contact" };
   const name = text(raw.name, MAX.short);
