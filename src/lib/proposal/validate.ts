@@ -19,7 +19,7 @@ import {
   TEXTS,
   YES_NO,
   EXCLUSIVE_PAIRS,
-  MIN_CHOSEN,
+  minChosenFor,
   MAX_OTHERS,
   chosenCount,
   groupsFor,
@@ -140,7 +140,7 @@ export function readAnswers(raw: unknown): Result<Answers> {
     // A website needs at least two pages or sections besides those always
     // included ("not sure" stands for two), and the two kinds of item list
     // exclude each other.
-    if (pageMode === "website" && chosenCount(pageTypes, pageOthers.length, pagesUnsure) < MIN_CHOSEN) {
+    if (pageMode === "website" && chosenCount(pageTypes, pageOthers.length, pagesUnsure) < minChosenFor(audience)) {
       return { ok: false, error: "pageTypes" };
     }
     if (EXCLUSIVE_PAIRS.some((pair) => pair.every((id) => pageTypes.includes(id)))) return { ok: false, error: "pageTypes" };

@@ -19,7 +19,7 @@ import {
   PAGE_TYPES,
   SECTOR_PAGES,
   EXCLUSIVE_PAIRS,
-  MIN_CHOSEN,
+  minChosenFor,
   MAX_OTHERS,
   chosenCount,
   countPages,
@@ -297,13 +297,13 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
       if (!draft.pageMode) e.pages = PICK_ONE;
       else if (
         draft.pageMode === "website" &&
-        chosenCount(draft.pageTypes, writtenIn(draft).length, draft.pagesUnsure) < MIN_CHOSEN
+        chosenCount(draft.pageTypes, writtenIn(draft).length, draft.pagesUnsure) < minChosenFor(draft.audience)
       ) {
         // A website needs at least two pages or sections besides the three
         // always included; "not sure" stands for two (user, 2026-11-04).
         e.pageTypes = t(
-          `Choose at least ${MIN_CHOSEN} pages or sections to continue.`,
-          `Escolher pelo menos ${MIN_CHOSEN} páginas ou secções para continuar.`,
+          `Choose at least ${minChosenFor(draft.audience)} ${minChosenFor(draft.audience) === 1 ? "page or section" : "pages or sections"} to continue.`,
+          `Escolher pelo menos ${minChosenFor(draft.audience)} ${minChosenFor(draft.audience) === 1 ? "página ou secção" : "páginas ou secções"} para continuar.`,
         );
       }
       // The forms come after the pages (user, 2026-11-04).
@@ -544,6 +544,11 @@ export function Question({
       <div className="pf-q">
         <span id={`${id}-q`}>{label}</span>
         {hint && <span className="mono-label pf-hint">{hint}</span>}
+        {error && (
+          <p id={`${id}-error`} className="mono-label pf-error pf-error-q" role="alert">
+            {error}
+          </p>
+        )}
       </div>
       <div
         className="pf-a"
@@ -553,11 +558,6 @@ export function Question({
       >
         {children}
         {footnote && <p className="pf-footnote">{footnote}</p>}
-        {error && (
-          <p id={`${id}-error`} className="mono-label pf-error" role="alert">
-            {error}
-          </p>
-        )}
       </div>
     </motion.div>
   );
@@ -971,7 +971,7 @@ export function StepScreen({
             <Question
               id="pageTypes"
               label={t("Which pages and sections?", "Que páginas e secções?")}
-              hint={t(`Choose at least ${MIN_CHOSEN}`, `Pelo menos ${MIN_CHOSEN}`)}
+              hint={t(`Choose at least ${minChosenFor(draft.audience)}`, `Pelo menos ${minChosenFor(draft.audience)}`)}
               error={errors.pageTypes}
               group={false}
             >
