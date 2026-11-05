@@ -70,7 +70,7 @@ BEGIN
         Mensagem              NVARCHAR(4000) NULL,              -- contact.message
 
         -- Respostas
-        Publico               VARCHAR(20)    NULL,              -- audience: business | personal
+        Publico               VARCHAR(20)    NULL,              -- audience: business | nonprofit | personal (sem lista fixa: o formulário pode ganhar tipos novos)
         Setor                 NVARCHAR(100)  NULL,              -- sector
         SetorOutro            NVARCHAR(200)  NULL,              -- sectorOther
         Pais                  NVARCHAR(100)  NULL,              -- country
@@ -101,7 +101,6 @@ BEGIN
 
         CONSTRAINT CK_PedidosProposta_Estado  CHECK (Estado IN ('novo', 'em_analise', 'proposta_enviada', 'aceite', 'recusado', 'arquivado')),
         CONSTRAINT CK_PedidosProposta_Idioma  CHECK (Idioma IN ('en', 'pt')),
-        CONSTRAINT CK_PedidosProposta_Publico CHECK (Publico IS NULL OR Publico IN ('business', 'personal')),
         CONSTRAINT CK_PedidosProposta_Nome    CHECK (LEN(Nome) > 0),
         CONSTRAINT CK_PedidosProposta_Email   CHECK (Email LIKE N'%_@_%._%'),
         CONSTRAINT CK_PedidosProposta_Json    CHECK (ISJSON(RespostasJson) = 1)
@@ -118,6 +117,10 @@ GO
 IF COL_LENGTH(N'dbo.PedidosProposta', N'LocalFotos') IS NOT NULL
    AND COL_LENGTH(N'dbo.PedidosProposta', N'SiteAtual') IS NULL
     EXEC sp_rename N'dbo.PedidosProposta.LocalFotos', N'SiteAtual', N'COLUMN';
+-- O tipo de cliente deixou de ter lista fixa (2026-11-05): o formulário ganhou as associações
+-- ("nonprofit") e um pedido com um valor fora da lista era recusado pelo SQL.
+IF OBJECT_ID(N'dbo.CK_PedidosProposta_Publico', N'C') IS NOT NULL
+    ALTER TABLE dbo.PedidosProposta DROP CONSTRAINT CK_PedidosProposta_Publico;
 IF COL_LENGTH(N'dbo.PedidosProposta', N'TipoFormularios') IS NULL
     ALTER TABLE dbo.PedidosProposta ADD TipoFormularios NVARCHAR(50) NULL;          -- web.formKind: simple | complex
 IF COL_LENGTH(N'dbo.PedidosProposta', N'EstimativaMin') IS NULL
@@ -440,6 +443,7 @@ INSERT INTO dbo.Rotulos (Lista, Codigo, Texto) VALUES
     (N'SERVICES', N'photo', N'Sessão fotográfica'),
     (N'SERVICES', N'seo', N'SEO e GEO'),
     (N'AUDIENCES', N'business', N'Um negócio'),
+    (N'AUDIENCES', N'nonprofit', N'Uma associação sem fins lucrativos'),
     (N'AUDIENCES', N'personal', N'Uso pessoal'),
     (N'SECTORS', N'health', N'Saúde'),
     (N'SECTORS', N'beauty', N'Estética e bem-estar'),
@@ -453,7 +457,6 @@ INSERT INTO dbo.Rotulos (Lista, Codigo, Texto) VALUES
     (N'SECTORS', N'education', N'Educação e formação'),
     (N'SECTORS', N'events', N'Eventos e casamentos'),
     (N'SECTORS', N'creative', N'Criativos e fotografia'),
-    (N'SECTORS', N'nonprofit', N'Associações e causas'),
     (N'SECTORS', N'tech', N'Tecnologia e B2B'),
     (N'SECTORS', N'other', N'Outro'),
     (N'COUNTRIES', N'PT', N'Portugal'),
