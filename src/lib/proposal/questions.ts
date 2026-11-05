@@ -211,6 +211,8 @@ export const ALWAYS_PAGES = 3;
 /** A website must tick at least this many pages besides those (user,
     2026-11-04); the form does not go on without them. */
 export const MIN_CHOSEN = 2;
+/** A non-profit association needs only one (user, 2026-11-05). */
+export const minChosenFor = (audience: string) => (audience === "nonprofit" ? 1 : MIN_CHOSEN);
 /** Counting stops here: past 10 pages the price is on request. */
 export const MAX_PAGES = 10;
 
