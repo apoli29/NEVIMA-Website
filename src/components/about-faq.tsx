@@ -171,7 +171,7 @@ const QUESTIONS: readonly Question[] = [
   {
     id: "languages",
     q: "Which languages can my website be in?",
-    a: "Portuguese and English are always included. Each other language costs €35 and is translated by an AI specialized in translation. In those cases, if changes are needed, we provide a simply structured document where you give us the translations of the sentences that need fine-tuning.",
+    a: "Portuguese and English are always included. Each other language costs €25 and is translated by an AI specialized in translation. In those cases, if changes are needed, we provide a simply structured document where you give us the translations of the sentences that need fine-tuning.",
   },
 ];
 
@@ -280,7 +280,7 @@ const PT_QUESTIONS: Record<string, Words> = {
   },
   languages: {
     q: "Em que línguas pode estar o meu website?",
-    a: "Incluímos sempre o português e o inglês. Cada uma das outras línguas custa 35 € e é traduzida por uma IA especializada em tradução. Nestes casos, se forem necessárias mudanças, fornecemos um documento com uma estrutura simples, onde o cliente disponibiliza as traduções das frases que precisem de ser afinadas.",
+    a: "Incluímos sempre o português e o inglês. Cada uma das outras línguas custa 25 € e é traduzida por uma IA especializada em tradução. Nestes casos, se forem necessárias mudanças, fornecemos um documento com uma estrutura simples, onde o cliente disponibiliza as traduções das frases que precisem de ser afinadas.",
   },
 };
 

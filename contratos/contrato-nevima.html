@@ -35,7 +35,7 @@
     size: A4;
     margin: 22mm 20mm 22mm 20mm;
     @bottom-left {
-      content: "nevima · Contrato de prestação de serviços · versão 1.14";
+      content: "nevima · Contrato de prestação de serviços · versão 1.15";
       font-family: "Geist Mono", monospace;
       font-size: 6.5pt;
       letter-spacing: 0.06em;
@@ -90,6 +90,7 @@
     line-height: 1.6;
   }
   .tag.pend { border-color: var(--pending); color: var(--pending); }
+  .pending.und { text-decoration: underline; text-decoration-color: var(--pending); text-decoration-thickness: 1.5px; text-underline-offset: 0.6mm; }
   .pending {
     background: var(--pending-wash);
     border-bottom: 1.5px solid var(--pending);
@@ -392,7 +393,7 @@
   <img class="cover-mark" src="../public/nevima-wordmark.svg" alt="nevima">
 
   <div>
-    <p class="mono" style="margin-bottom:5mm">Versão 1.14 · Novembro de 2026</p>
+    <p class="mono" style="margin-bottom:5mm">Versão 1.15 · Novembro de 2026</p>
     <h1 class="cover-title">Contrato de prestação de serviços</h1>
     <p class="cover-lede">As condições em que a nevima desenha, constrói e aloja o website do Cliente, e presta os serviços que o acompanham: funcionalidades, identidade visual, sessão fotográfica e SEO &amp; GEO.</p>
 
@@ -456,7 +457,7 @@
       <div><dt>Condições específicas</dt><dd>O espaço no fim da Proposta onde ficam escritos os ajustes aos pontos ajustáveis das cláusulas marcadas como Ajustável.</dd></div>
       <div><dt>Materiais</dt><dd>Tudo o que o Cliente tem de entregar para o projeto começar: textos, fotografias, logótipo, acessos e outros indicados na Proposta.</dd></div>
       <div><dt>Prazo Acordado</dt><dd>O número de dias úteis fixado na Proposta para concluir o website.</dd></div>
-      <div><dt>Chamada de Acompanhamento</dt><dd>A chamada opcional e gratuita, a meio do projeto, em que a nevima mostra ao Cliente a direção do website, para o afinar cedo ao seu gosto e reduzir as alterações no fim.</dd></div>
+      <div><dt>Chamada de Acompanhamento</dt><dd>A chamada opcional e gratuita, quando parte do website já está construída, em que a nevima mostra ao Cliente o que está feito e a direção que pretende dar-lhe, para perceber se o Cliente gosta, afinar o website cedo ao seu gosto e reduzir as alterações no fim.</dd></div>
       <div><dt>Chamada de Validação</dt><dd>A videochamada em que a nevima apresenta o website concluído ao Cliente.</dd></div>
       <div><dt>Lançamento</dt><dd>A publicação do website no domínio do Cliente.</dd></div>
       <div><dt>Ano de contrato</dt><dd>O período por que o contrato vigora. O primeiro vai da assinatura da Proposta até ao dia 1 do mês seguinte ao da assinatura, no ano seguinte (por exemplo, de 17 de novembro de 2026 a 1 de dezembro de 2027). Cada renovação dura 1 ano, de dia 1 a dia 1 (cláusula 23).</dd></div>
@@ -593,10 +594,10 @@
       </li>
       <li><strong>Não inclui:</strong> o conteúdo das páginas legais (cláusula 18.3), as alterações maiores (n.º 10), as Funcionalidades, o SEO &amp; GEO, a identidade visual e a sessão fotográfica, que são serviços próprios.</li>
       <li><strong>Funcionalidades:</strong> o formulário, a inscrição na newsletter e o calendário e reservas são configurados e mantidos como descreve a cláusula 15.</li>
-      <li><strong>Línguas:</strong> o português e o inglês estão sempre incluídos. Cada língua adicional custa 35 € e inclui uma reunião de revisão dedicada a ela.</li>
+      <li><strong>Línguas:</strong> o português e o inglês estão sempre incluídos. Cada língua adicional custa 25 € e inclui uma reunião de revisão dedicada a ela.</li>
       <li><strong>Tradução:</strong> as línguas além do português e do inglês são traduzidas com uma ferramenta de inteligência artificial especializada em tradução. A nevima envia ao Cliente um documento formatado para ele indicar as correções necessárias, de forma simples para os dois lados. A exatidão da versão publicada é da responsabilidade do Cliente depois de a aprovar.</li>
       <li><strong>Prazo:</strong> o Prazo Acordado da Proposta. Como referência, 4 a 7 dias úteis para uma landing page, 8 a 11 para 4 a 6 páginas, 12 a 16 para 7 a 10 páginas.</li>
-      <li><strong>Chamada de Acompanhamento:</strong> esta chamada é opcional e gratuita, e só se realiza se o Cliente a pedir. Nesse caso, a nevima marca-a a meio do projeto. Os ajustes que dela resultem são feitos sem custo, para que o website chegue ao fim já na direção que o Cliente quer e as alterações finais sejam as mínimas.</li>
+      <li><strong>Chamada de Acompanhamento:</strong> esta chamada é opcional e gratuita, e só se realiza se o Cliente a pedir. Nesse caso, a nevima marca-a quando parte do website estiver construída, sem momento fixo. Os ajustes que dela resultem são feitos sem custo, para que o website chegue ao fim já na direção que o Cliente quer e as alterações finais sejam as mínimas.</li>
       <li><strong>Chamada de Validação:</strong> concluído o website, com as práticas básicas de SEO aplicadas, a nevima apresenta-o ao Cliente nesta chamada.</li>
       <li><strong>Alterações pequenas</strong> (cada uma com até 15 minutos de trabalho): são gratuitas, até um máximo de 4. A partir da 5.ª, são orçamentadas como as alterações maiores. Não têm prazo fixo: a nevima faz-as e avisa o Cliente quando estiverem aplicadas.</li>
       <li><strong>Alterações maiores:</strong> a nevima apresenta um orçamento antes de as fazer, com o respetivo prazo. Só são feitas se o Cliente o aceitar, e só são aplicadas depois de pagas.</li>
@@ -617,15 +618,15 @@
     <span class="mono">Cláusula 12</span>
     <h3>Alojamento</h3>
     <ol class="items">
-      <li>O alojamento do website é gratuito durante o primeiro Ano de contrato e renova-se com o contrato, de ano em ano (cláusula 23).</li>
+      <li><span class="pending und">O alojamento do website é gratuito durante o primeiro Ano de contrato e renova-se com o contrato, de ano em ano (cláusula 23).</span></li>
       <li>A não renovação do alojamento segue as regras da não renovação do contrato (cláusulas 23.4 e 23.5).</li>
-      <li>Na renovação, a nevima pode passar a cobrar um valor simbólico pelo alojamento, destinado apenas a cobrir os custos que tem com ele e nunca superior a <span class="pending">60 € por ano</span>. Indica-o no lembrete da renovação (cláusula 23.3).</li>
+      <li>Na renovação, a nevima pode passar a cobrar um valor simbólico pelo alojamento, destinado apenas a cobrir os custos que tem com ele e nunca superior a <span class="pending und">60 € por ano</span>. Indica-o no lembrete da renovação (cláusula 23.3).</li>
       <li>Se o Cliente não aceitar esse valor e não renovar, ou se o contrato não for renovado por outro motivo, a nevima entrega-lhe, sem custo, o código e os ficheiros do website, para que o possa alojar onde quiser.</li>
       <li>O website é alojado na Vercel, no plano profissional, uma das principais plataformas de alojamento de websites, com infraestrutura distribuída por vários continentes. A nevima acompanha o alojamento e faz o melhor esforço para manter o website disponível, mas não controla a infraestrutura da Vercel nem garante disponibilidade contínua.</li>
-      <li>Para manter o alojamento gratuito, a nevima definiu um limite justo de <span class="pending">100 mil CDN requests por mês</span> (os pedidos feitos ao servidor sempre que alguém abre uma página ou um ficheiro do website), que permite um número de visitas sólido a qualquer pequena ou média empresa. Se o website ultrapassar este limite em dois meses seguidos:
+      <li>Para manter o alojamento gratuito, a nevima definiu um limite justo de <span class="pending und">100 mil CDN requests por mês</span> (os pedidos feitos ao servidor sempre que alguém abre uma página ou um ficheiro do website), que permite um número de visitas sólido a qualquer pequena ou média empresa. Se o website ultrapassar este limite em dois meses seguidos:
         <ol class="alin">
-          <li>entre <span class="pending">100 mil e 1 milhão</span> de CDN requests por mês, o alojamento passa a custar <span class="pending">120 € por ano</span>;</li>
-          <li>acima de <span class="pending">1 milhão</span>, a nevima contacta o Cliente para lhe apresentar um orçamento especializado.</li>
+          <li>entre <span class="pending und">100 mil e 1 milhão</span> de CDN requests por mês, o alojamento passa a custar <span class="pending und">120 € por ano</span>;</li>
+          <li>acima de <span class="pending und">1 milhão</span>, a nevima contacta o Cliente para lhe apresentar um orçamento especializado.</li>
         </ol>
         Em ambos os casos, a nevima avisa o Cliente antes de qualquer cobrança.
       </li>
@@ -662,11 +663,11 @@
     <ol class="items">
       <li><strong>Inclui:</strong> a configuração das Funcionalidades indicadas na Proposta:
         <ul class="sub">
-          <li>um formulário simples: um email automático e o registo das respostas numa base de dados; daí em diante, o tratamento dos pedidos é feito pelo Cliente;</li>
+          <li>o formulário, manual ou automatizado, como consta da Proposta. No manual, há um email automático e o registo das respostas numa base de dados, e daí em diante cada email é escrito à mão pelo Cliente. No automatizado, os emails seguintes usam modelos com campos variáveis, em que só se preenche o que muda;</li>
           <li>a inscrição na newsletter, com um email de boas-vindas e o registo dos inscritos;</li>
           <li>o calendário e reservas.</li>
         </ul>
-        Os formulários complexos são orçamentados à parte, na Proposta.
+        O preço do formulário automatizado fica definido na Proposta.
       </li>
       <li><strong>Plataformas:</strong> as Funcionalidades funcionam em plataformas de terceiros indicadas na Proposta (por exemplo, a Brevo para o formulário e a newsletter, a Cal.com para o calendário, ou uma plataforma de reservas própria da restauração). As contas são abertas em nome do Cliente, que é o seu titular, e os planos das plataformas são sempre pagos pelo Cliente diretamente a elas. Nunca passam pela fatura da nevima.</li>
       <li><strong>Valor mensal:</strong> o valor mensal indicado na Proposta divide-se sempre em duas partes: o plano da plataforma, pago diretamente à plataforma, e a manutenção, paga à nevima (cláusula 6.6). Enquanto o plano gratuito da plataforma chegar, o Cliente paga apenas a manutenção. A Proposta indica o custo dos planos apenas como referência: não faz parte do preço da nevima.</li>

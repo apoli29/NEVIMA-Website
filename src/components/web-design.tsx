@@ -173,8 +173,8 @@ const PERKS = [
   },
   {
     light: "A free call,",
-    medium: "a quarter of the way in.",
-    text: "When your project is 25–30% done, we call you to go through where it stands. We learn what you want while it is still easy to change, so the finished website is made to your taste and goes live sooner, with no changes needed afterwards.",
+    medium: "once part of it is built.",
+    text: "Once part of your project is built, we call you to show what is done and the direction we plan to give it, to see whether you like it. We learn what you want while it is still easy to change, so the finished website is made to your taste and goes live sooner, with no changes needed afterwards.",
   },
 ] as const;
 
