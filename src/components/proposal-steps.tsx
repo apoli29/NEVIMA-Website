@@ -1656,6 +1656,7 @@ export function ContactScreen({
   send,
   partner = false,
   audience = "",
+  companySite,
 }: {
   contact: Contact;
   setContact: (patch: Partial<Contact>) => void;
@@ -1664,6 +1665,9 @@ export function ContactScreen({
   /** The partners' form (development companies): no estimate, and we
       get in touch rather than send a proposal. */
   partner?: boolean;
+  /** The partners' form only: the company's own website, under its name
+      (user, 2026-11-09). An answer of that form, not a contact detail. */
+  companySite?: { value: string; onChange: (value: string) => void };
   /** Who the website is for: personal use has no business name to ask. */
   audience?: AudienceId | "";
 }) {
@@ -1737,6 +1741,31 @@ export function ContactScreen({
             )}
           </motion.div>
         ))}
+        {companySite && (
+          <motion.div variants={ROW}>
+            <label className="prop-row" data-invalid={errors.companySite ? "" : undefined}>
+              <span className="mono-label prop-label">{t("Company website", "Website da empresa")}</span>
+              <input
+                name="companySite"
+                type="text"
+                inputMode="url"
+                autoComplete="url"
+                placeholder={t("yourcompany.com", "empresa.pt")}
+                value={companySite.value}
+                onChange={(e) => companySite.onChange(e.target.value)}
+                maxLength={MAX.url}
+                aria-invalid={errors.companySite ? true : undefined}
+                aria-describedby={errors.companySite ? "companySite-error" : undefined}
+                className="prop-input"
+              />
+            </label>
+            {errors.companySite && (
+              <p id="companySite-error" className="mono-label pf-error pf-error-row" role="alert">
+                {errors.companySite}
+              </p>
+            )}
+          </motion.div>
+        )}
         {/* Room for what the questions did not ask (user, 2026-10-17). It
             never changes the estimate: it is read with the request. */}
         <motion.div variants={ROW}>

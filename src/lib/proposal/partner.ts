@@ -63,6 +63,18 @@ export const CREDITS = [
 ] as const;
 export type CreditId = (typeof CREDITS)[number]["id"];
 
+/** The budget the partner has in mind (user, 2026-11-09): with no
+    estimate to read, it tells us at once whether the project can work.
+    The ranges are the studio's to adjust. */
+export const BUDGETS = [
+  { id: "1500", label: "Up to €1,500", pt: "Até 1 500 €" },
+  { id: "1500-3000", label: "€1,500–3,000", pt: "1 500–3 000 €" },
+  { id: "3000-6000", label: "€3,000–6,000", pt: "3 000–6 000 €" },
+  { id: "6000+", label: "More than €6,000", pt: "Mais de 6 000 €" },
+  { id: "open", label: "Not defined yet", pt: "Ainda não definido" },
+] as const;
+export type BudgetId = (typeof BUDGETS)[number]["id"];
+
 export const PARTNER_YES_NO = [
   { id: "yes", label: "Yes", pt: "Sim" },
   { id: "no", label: "No", pt: "Não" },
@@ -97,6 +109,15 @@ export type PartnerAnswers = {
   start: StartId;
   delivery: DeliveryId;
   model: ModelId;
+  /** Since 2026-11-09 (user); requests sent before have none. */
+  budget?: BudgetId;
   credit: CreditId;
   nda: boolean;
+  /** The development company's own website, to know it before the call
+      (user, 2026-11-09: the company's, not the project's). Asked with
+      the contact details; requests sent before have none. */
+  companySite?: string;
 };
+
+/** Enough like a web address to be one: a dot and no spaces. */
+export const looksLikeSite = (value: string) => /^\S+\.\S+$/.test(value.trim());

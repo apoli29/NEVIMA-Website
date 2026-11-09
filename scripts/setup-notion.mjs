@@ -157,6 +157,8 @@ const databases = [
       "Início": one("Menos de uma semana", "1–2 semanas", "3–4 semanas", "Mais de 1 mês"),
       Entrega: one("Menos de 2 semanas", "2–4 semanas", "1–2 meses", "Mais de 2 meses"),
       Modelo: one("Um projeto fechado", "Trabalho contínuo"),
+      "Orçamento": one("Até 1 500 €", "1 500–3 000 €", "3 000–6 000 €", "Mais de 6 000 €", "Ainda não definido"),
+      "Website da empresa": { url: {} },
       "Crédito": one("Sim; com crédito", "Não; sem crédito (white label)"),
       NDA: { checkbox: {} },
       Mensagem: { rich_text: {} },
