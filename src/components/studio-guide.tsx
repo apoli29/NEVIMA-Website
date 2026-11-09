@@ -16,6 +16,8 @@
    change it here and in docs/backend-decisions.md together.
    ================================================================== */
 
+import { COLUMN_ORDER } from "@/lib/proposal/steps";
+
 type Who = "Cliente" | "Automático" | "Estúdio";
 
 type AppId = "site" | "vercel" | "notion" | "sql" | "resend" | "gmail" | "hostinger" | "mail" | "calendar" | "call";
@@ -601,6 +603,22 @@ export function StudioGuide({ onStart }: { onStart: () => void }) {
               <span className="text-ash">{row.when}</span>
             </div>
           ))}
+        </div>
+
+        <div className="mt-12">
+          <Label>Ordem das colunas no Notion</Label>
+          <p className="mt-4 max-w-2xl leading-relaxed text-ash">
+            Na tabela e na ficha de cada pedido, por esta ordem. O Notion não deixa o site mudar a ordem: arrastam-se as
+            colunas à mão. Na ficha, as colunas que só alguns clientes têm ficam em &quot;Ocultar quando vazia&quot;.
+          </p>
+          <div className="mt-4 border-b border-ink">
+            {COLUMN_ORDER.map((row) => (
+              <div key={row.group} className="grid gap-x-6 gap-y-1 border-t border-hair py-3 sm:grid-cols-[11rem_minmax(0,1fr)] sm:items-baseline">
+                <span className="mono-label text-ash">{row.group}</span>
+                <span>{row.columns.join(" · ")}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
