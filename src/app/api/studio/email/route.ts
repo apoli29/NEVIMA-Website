@@ -4,9 +4,10 @@ import { json } from "@/lib/proposal/guard";
 import { inviteHtml, inviteSubject, inviteText } from "@/lib/proposal/invite";
 import { meetingLink, midCallLink, signMeeting, signMidCall } from "@/lib/proposal/meeting";
 import { SIGNERS, STUDIO_EMAIL } from "@/lib/proposal/mail";
-import { getRequest, prop, updatePage } from "@/lib/proposal/notion";
+import { getRequest, prop, setSteps, updatePage } from "@/lib/proposal/notion";
 import { offerHtml, offerSubject, offerText } from "@/lib/proposal/offer";
 import { isSlot } from "@/lib/proposal/slots";
+import { firstName, lisbonDayAfter, OFFER_DAYS, ON_OFFER, PAST_BOOKING } from "@/lib/proposal/steps";
 import { fromStudio } from "@/lib/proposal/studio";
 
 /* ==================================================================
@@ -21,6 +22,17 @@ import { fromStudio } from "@/lib/proposal/studio";
    - the invitation: "Contactado", when the request was still "Novo";
    - the proposal: "Proposta enviada", the final value, and "Contrato
      enviado" ticked when a contract went with it.
+
+   Then, in a change of their own, the request's steps (steps.ts) and a
+   line of "Histórico" signed by the partner who sent it:
+
+   - the invitation: "Convite" Enviado and "Marcação" A aguardar
+     resposta (only "Convite", once the request is past the booking);
+   - the proposal: "Proposta" Enviada, "Válida até" (today, in Lisbon,
+     plus 10 days), and the steps after the contract at their start,
+     each only while still empty, so sending it again takes nothing back.
+
+   "notion" in the answer is true only when both changes went through.
 
    The contract comes as a PDF of at most 4 MB: Vercel takes no larger
    request.
@@ -165,15 +177,39 @@ export async function POST(request: Request) {
 
   // The email is out; Notion is brought along, and its failing is reported, not fatal.
   let notion: boolean | null = null;
+  const who = firstName(f.signer);
   if (f.page && kind === "invite") {
     const page = await getRequest(f.page);
     notion = page && (page.state === "" || page.state === "Novo") ? await updatePage(f.page, { Estado: prop.select("Contactado") }) : Boolean(page);
+    if (page) {
+      const steps: Record<string, string> = PAST_BOOKING.has(page.state)
+        ? { Convite: "Enviado" }
+        : { Convite: "Enviado", "Marcação": "A aguardar resposta" };
+      const moved = await setSteps(f.page, page.history, steps, "Convite enviado", who);
+      notion = notion && moved;
+    }
   } else if (f.page && kind === "offer") {
+    // Read first: the steps after the contract are opened only where still empty.
+    const page = await getRequest(f.page);
     notion = await updatePage(f.page, {
       Estado: prop.select("Proposta enviada"),
       "Valor final": prop.number(euros(f.total)),
       ...(attachments ? { "Contrato enviado": prop.checkbox(true) } : {}),
     });
+    if (page) {
+      const opened = Object.fromEntries(Object.entries(ON_OFFER).filter(([name]) => !page.steps[name]));
+      const moved = await setSteps(
+        f.page,
+        page.history,
+        { Proposta: "Enviada", ...opened },
+        attachments ? "Proposta enviada, com o contrato" : "Proposta enviada",
+        who,
+        { "Válida até": prop.day(lisbonDayAfter(new Date(), OFFER_DAYS)) },
+      );
+      notion = notion && moved;
+    } else {
+      notion = false;
+    }
   }
   return json({ ok: true, notion });
 }
