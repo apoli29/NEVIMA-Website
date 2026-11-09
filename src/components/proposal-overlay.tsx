@@ -39,6 +39,25 @@ import {
 } from "./proposal-steps";
 import { resetProposalState, setContactState, setDraftState, setStepState, useProposalState } from "./proposal-state";
 import type { ProposalController } from "./proposal-flow";
+import { setFormKind, useFormKind } from "./form-kind";
+import {
+  PARTNER_STEPS,
+  PartnerScreen,
+  checkPartner,
+  partnerAction,
+  partnerErrorOf,
+  partnerMailto,
+  partnerNotFit,
+  postPartner,
+  type PartnerDraft,
+} from "./partner-steps";
+import {
+  resetPartnerState,
+  setPartnerContact,
+  setPartnerDraft,
+  setPartnerStep,
+  usePartnerState,
+} from "./partner-state";
 
 
 /* ==================================================================
@@ -152,6 +171,28 @@ export function ProposalOverlayPanel({ ctl }: { ctl: ProposalController }) {
     if (!ctl.present && step === "sent") reset();
   }, [ctl.present, step, reset]);
 
+  // Each form starts clean of the other's warnings and sending state,
+  // however it was turned to (here, or from the form at the foot).
+  const kind = useFormKind();
+  useEffect(() => {
+    setErrors({});
+    setSend({ status: "idle" });
+  }, [kind]);
+
+  // A partnership sent from here: the next opening starts afresh, on the
+  // free proposal. One sent from the form in "Let's work together" (the
+  // same answers) is left to that form, which says it has gone.
+  const partnerSent = useRef(false);
+  const onPartnerSent = useCallback(() => {
+    partnerSent.current = true;
+  }, []);
+  useEffect(() => {
+    if (ctl.present || !partnerSent.current) return;
+    partnerSent.current = false;
+    resetPartnerState();
+    setFormKind("proposal");
+  }, [ctl.present]);
+
   if (!ctl.present) return null;
   return (
     <Panel
@@ -167,6 +208,7 @@ export function ProposalOverlayPanel({ ctl }: { ctl: ProposalController }) {
       send={send}
       setSend={setSend}
       clear={reset}
+      onPartnerSent={onPartnerSent}
     />
   );
 }
@@ -191,6 +233,7 @@ function Panel({
   send,
   setSend,
   clear,
+  onPartnerSent,
 }: {
   ctl: ProposalController;
   draft: Draft;
@@ -205,11 +248,17 @@ function Panel({
   setSend: (s: SendState) => void;
   /** Every answer and detail wiped, back to the first screen. */
   clear: () => void;
+  /** A partnership request has gone from here. */
+  onPartnerSent: () => void;
 }) {
   const reduce = useReducedMotion() ?? false;
   const t = ctl.progress;
   const lang = useLang();
   const say = useT();
+  /* A development company, chosen on the first screen, is asked the
+     partners' questions in the same pane (user, 2026-11-09). */
+  const partner = useFormKind() === "partner";
+  const { draft: partnerDraft, contact: partnerContact, step: partnerStep } = usePartnerState();
 
   /* --- the two ends of the run, in real pixels ------------------------ */
 
@@ -364,7 +413,7 @@ function Panel({
     scroller.current?.scrollTo({ top: 0 });
     const id = window.setTimeout(() => title.current?.focus({ preventScroll: true }), reduce ? 0 : 80);
     return () => window.clearTimeout(id);
-  }, [formOn, step, offline, open, reduce]);
+  }, [formOn, step, partner, partnerStep, offline, open, reduce]);
 
   /* --- the answers ----------------------------------------------------- */
 
@@ -392,6 +441,32 @@ function Panel({
     },
     [setContactState, setErrors],
   );
+  const setPartnerAnswer = useCallback(
+    (patch: Partial<PartnerDraft>) => {
+      setPartnerDraft((d) => ({ ...d, ...patch }));
+      setErrors((e) => {
+        const next = { ...e };
+        for (const key of Object.keys(patch)) delete next[partnerErrorOf(key)];
+        return next;
+      });
+    },
+    [setErrors],
+  );
+  const setPartnerDetail = useCallback(
+    (patch: Partial<Contact>) => {
+      setPartnerContact((c) => ({ ...c, ...patch }));
+      setErrors((e) => {
+        const next = { ...e };
+        for (const key of Object.keys(patch)) delete next[key];
+        return next;
+      });
+    },
+    [setErrors],
+  );
+
+  /** From one form to the other, each where it was left (its warnings and
+      sending state are cleared above, in ProposalOverlayPanel). */
+  const switchTo = (kind: "proposal" | "partner") => setFormKind(kind);
 
   const steps = stepsFor(draft);
   const index = Math.max(0, steps.indexOf(step));
@@ -402,7 +477,9 @@ function Panel({
   const readTrap = useCallback(() => trap.current?.value ?? "", []);
   const openedAt = useRef(Date.now());
 
-  const estimate = useEstimate(step === "estimate" && formOn, draft, readTrap);
+  const estimate = useEstimate(!partner && step === "estimate" && formOn, draft, readTrap);
+  const partnerIndex = Math.max(0, PARTNER_STEPS.indexOf(partnerStep));
+  const notFit = partnerNotFit(partnerDraft);
 
   const goTo = (s: StepId) => {
     setErrors({});
@@ -439,14 +516,33 @@ function Panel({
     }
   };
 
-  const mailto = `mailto:${STUDIO_EMAIL}?subject=${encodeURIComponent(mailSubject(contact.name, say))}&body=${encodeURIComponent(
-    summary(draft, contact, estimate.state.status === "ready" ? estimate.state.estimate : null, lang),
-  )}`;
+  const submitPartner = async () => {
+    setSend({ status: "sending" });
+    const result = await postPartner({
+      draft: partnerDraft,
+      contact: partnerContact,
+      lang,
+      nickname: readTrap(),
+      elapsedMs: Date.now() - openedAt.current,
+      t: say,
+    });
+    if (result === "sent") {
+      setSend({ status: "idle" });
+      setPartnerStep("sent");
+      onPartnerSent();
+    } else setSend(result);
+  };
+
+  const mailto = partner
+    ? partnerMailto(partnerDraft, partnerContact, lang, say)
+    : `mailto:${STUDIO_EMAIL}?subject=${encodeURIComponent(mailSubject(contact.name, say))}&body=${encodeURIComponent(
+        summary(draft, contact, estimate.state.status === "ready" ? estimate.state.estimate : null, lang),
+      )}`;
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!landed) return;
-    if (step === "sent") {
+    if (partner ? partnerStep === "sent" : step === "sent") {
       hide();
       return;
     }
@@ -454,7 +550,15 @@ function Panel({
       window.location.href = mailto;
       return;
     }
-    const found = checkStep(step, draft, contact, lang);
+    // The stack does not fit: the partners' form starts again.
+    if (partner && partnerStep === "fit" && notFit) {
+      setErrors({});
+      resetPartnerState();
+      return;
+    }
+    const found = partner
+      ? checkPartner(partnerStep, partnerDraft, partnerContact, lang, say)
+      : checkStep(step, draft, contact, lang);
     const first = Object.keys(found)[0];
     if (first) {
       setErrors(found);
@@ -467,6 +571,15 @@ function Panel({
         el?.focus({ preventScroll: true });
         el?.closest("[data-question], .prop-row, .pf-consent-row")?.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" });
       });
+      return;
+    }
+    if (partner) {
+      if (partnerStep === "contact") {
+        if (send.status !== "sending") void submitPartner();
+        return;
+      }
+      setErrors({});
+      setPartnerStep(PARTNER_STEPS[partnerIndex + 1]!);
       return;
     }
     if (step === "estimate") {
@@ -490,6 +603,15 @@ function Panel({
       setSend({ status: "idle" });
       return;
     }
+    if (partner) {
+      // On the partners' first screen, back to the free proposal's.
+      if (partnerIndex === 0) switchTo("proposal");
+      else {
+        setErrors({});
+        setPartnerStep(PARTNER_STEPS[partnerIndex - 1]!);
+      }
+      return;
+    }
     const prev = steps[index - 1];
     if (prev) goTo(prev);
   };
@@ -497,9 +619,14 @@ function Panel({
   /* Clearing everything is asked twice, in place: one stray click must not
      lose a whole set of answers. */
   const [confirming, setConfirming] = useState(false);
-  useEffect(() => setConfirming(false), [step, offline]);
+  useEffect(() => setConfirming(false), [step, partner, partnerStep, offline]);
   const clearAll = () => {
-    clear();
+    // Only the answers of the form on screen.
+    if (partner) {
+      resetPartnerState();
+      setErrors({});
+      setSend({ status: "idle" });
+    } else clear();
     setConfirming(false);
     scroller.current?.scrollTo({ top: 0 });
     // Already on the first screen, nothing else would move focus off the
@@ -511,9 +638,17 @@ function Panel({
     ? say("Open in your email app", "Abrir na app de email")
     : send.status === "sending"
       ? say("Sending…", "A enviar…")
-      : actionFor(step, nextStep, say);
-  const canGoBack = landed && index > 0 && step !== "sent";
-  const progress = steps.length > 1 ? index / (steps.length - 1) : 0;
+      : partner
+        ? partnerAction(partnerStep, partnerDraft, say, say("Close", "Fechar"))
+        : actionFor(step, nextStep, say);
+  // The partners' first screen goes back to the free proposal's.
+  const canGoBack = landed && (partner ? partnerStep !== "sent" : index > 0 && step !== "sent");
+  const progress = partner
+    ? partnerIndex / (PARTNER_STEPS.length - 1)
+    : steps.length > 1
+      ? index / (steps.length - 1)
+      : 0;
+  const sent = partner ? partnerStep === "sent" : step === "sent";
 
   return (
     <>
@@ -548,7 +683,7 @@ function Panel({
           ref={formEl}
           noValidate
           onSubmit={onSubmit}
-          aria-label={say("Get your free proposal", "Pedir proposta gratuita")}
+          aria-label={partner ? say("Partnership request", "Pedido de parceria") : say("Get your free proposal", "Pedir proposta gratuita")}
           className="flex min-h-0 flex-col"
           style={{ width: to.w - 2 * pad, height: to.h - 2 * pad }}
         >
@@ -561,14 +696,14 @@ function Panel({
                 {say("Index", "Índice")}
               </motion.span>
               <motion.span id="proposal-title" className="idx-title [grid-area:1/1] justify-self-start" style={{ opacity: labelIn }}>
-                {say("Free proposal", "Proposta gratuita")}
+                {partner ? say("Partnership", "Parceria") : say("Free proposal", "Proposta gratuita")}
               </motion.span>
             </span>
             <motion.span
               className={`flex items-center gap-4 md:gap-6 ${confirming ? "max-md:w-full max-md:justify-between" : ""}`}
               style={{ opacity: form }}
             >
-              {step !== "sent" &&
+              {!sent &&
                 (confirming ? (
                   <span role="group" aria-label={say("Clear all answers?", "Apagar todas as respostas?")} className="flex items-center gap-2">
                     <span className="text-ink">
@@ -643,7 +778,7 @@ function Panel({
               >
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
-                    key={offline ? "offline" : step}
+                    key={offline ? "offline" : partner ? `partner-${partnerStep}` : step}
                     exit={{ opacity: 0, y: -6, transition: { duration: reduce ? 0 : 0.16 } }}
                   >
                     {offline ? (
@@ -653,8 +788,20 @@ function Panel({
                         </h2>
                         <OfflineNote />
                       </>
+                    ) : partner ? (
+                      <PartnerScreen
+                        step={partnerStep}
+                        draft={partnerDraft}
+                        setDraft={setPartnerAnswer}
+                        contact={partnerContact}
+                        setContact={setPartnerDetail}
+                        errors={errors}
+                        send={send}
+                        titleRef={title}
+                      />
                     ) : (
                       <StepScreen
+                        onPartner={() => switchTo("partner")}
                         step={step}
                         draft={draft}
                         setDraft={setDraft}

@@ -26,6 +26,7 @@ import {
 import { useLang, useT } from "@/lib/use-lang";
 import { useOriginFade, useProposal, type ProposalController } from "./proposal-flow";
 import { useProposalState } from "./proposal-state";
+import { setFormKind } from "./form-kind";
 
 /* The free-proposal form set in Let's work together (work-together.tsx),
    kept in a file of its own so it is fetched only as the section comes
@@ -87,6 +88,9 @@ function ProposalPreview({ ctl }: { ctl: ProposalController }) {
   const open = () => {
     if (!box.current) return;
     setLaunched(true);
+    // This is the free proposal's preview: it opens on the free proposal,
+    // even when the overlay was last left on the partners' form.
+    setFormKind("proposal");
     ctl.show(box.current, box.current, false, 0);
   };
 
@@ -393,6 +397,9 @@ function InlineForm() {
                     retryEstimate={estimate.retry}
                     send={send}
                     titleRef={title}
+                    // The partners' form is beside this one: the section
+                    // turns to it (work-together.tsx).
+                    onPartner={() => setFormKind("partner")}
                   />
                 )}
               </motion.div>

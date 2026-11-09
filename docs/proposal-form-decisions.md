@@ -174,3 +174,17 @@ Decided 2026-11-04 (user; the three questions put to the user went unanswered, s
 - A written-in page, or "Not sure, you choose", adds the average page of the association's own list (About, Contact and the list above); a business's average is unchanged. The server refuses a page from the other list.
 - Copy follows the association: "A associação" as the first step's title, "Onde está sediada a associação?", "A associação já possui domínio?", "Qual é o alcance da associação?", the features' notes speak of visitors and the association, and the estimate's notes say "the association".
 - Switching between an association and a business or personal use clears the pages chosen, since the lists differ.
+
+## Development companies from every button
+
+Decided 2026-11-09 (user, option A of three). Every button that opens the form (the bar's "Get your free proposal", How we work, the about FAQ, the portfolio's "Let's work together") opened only the free proposal; the partners' form was only in "Let's work together".
+
+- "O website é para…" ("Who is the website for?") has a fourth key, **"Uma empresa de desenvolvimento"** ("A development company"), with a second sentence in its small print: "Uma empresa de desenvolvimento segue para o formulário de parceria." ("A development company goes on to the partnership form."). The key stays where the question is (third on the first screen): the country is still the first question of all.
+- Choosing it turns the overlay, in the same pane and without closing it, into the partners' form: the label reads "Parceria" ("Partnership"), its questions come in screen by screen, and the request goes to `/api/partner`. "Voltar" on the partners' first screen goes back to the free proposal's, where it was left. It is never an answer of the free proposal: the server does not know it.
+- The partners' answers are kept outside both frames (`partner-state.ts`), as the free proposal's are: closing the overlay keeps them, the bar opens it again where it was left, and "Let's work together" turns to its partners' form with the same answers. Which form the overlay shows is in `form-kind.ts`; the free proposal's preview at the foot of a page always opens the free proposal. Once a partnership is sent from the overlay, the next opening starts afresh on the free proposal. "Apagar respostas" clears only the answers of the form on screen.
+- Where the free proposal is answered in place (a page with no overlay), the same key turns "Let's work together" to its partners' form.
+- The partners' questions live in `partner-steps.tsx`, used by both `partner-form.tsx` (the section) and `proposal-overlay.tsx`.
+
+## Partners: no number of screens or pages
+
+2026-11-09 (user): "How many screens or pages?" (1–10, 11–20, more than 20, then roughly how many) is gone from the partners' form, as the number of pages went from the free proposal. Its first screen is the introduction, what they are building and whether there is a design or brand guidelines. The server no longer asks for it; Notion's "Ecrãs" columns and SQL's `Ecras` stay for the requests sent before, and `SCREENS` stays in `partner.ts` only for their labels (`scripts/sql/rotulos.ts`).

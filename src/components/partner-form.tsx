@@ -1,106 +1,46 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { inLang, type Contact } from "@/lib/proposal/questions";
+import type { Contact } from "@/lib/proposal/questions";
+import { OfflineNote, type Errors, type SendState } from "./proposal-steps";
 import {
-  CREDITS,
-  DELIVERIES,
-  MODELS,
-  NOT_COMPATIBLE,
-  PARTNER_INTRO,
-  PARTNER_YES_NO,
-  PROJECT_TYPES,
-  SCREENS,
-  STACK_QUESTION,
-  STARTS,
-  type CreditId,
-  type DeliveryId,
-  type ModelId,
-  type PartnerAnswers,
-  type PartnerYesNo,
-  type ProjectTypeId,
-  type ScreensId,
-  type StartId,
-} from "@/lib/proposal/partner";
+  PARTNER_STEPS,
+  PartnerScreen,
+  checkPartner,
+  partnerAction,
+  partnerErrorOf,
+  partnerMailto,
+  partnerNotFit,
+  postPartner,
+  type PartnerDraft,
+} from "./partner-steps";
 import {
-  ContactScreen,
-  EMPTY_CONTACT,
-  EMPTY_DRAFT,
-  Field,
-  OfflineNote,
-  Question,
-  ROW,
-  STUDIO_EMAIL,
-  Segmented,
-  Ticks,
-  checkStep,
-  sendError,
-  type Errors,
-  type SendState,
-} from "./proposal-steps";
-import { labelOf } from "@/lib/proposal/questions";
+  resetPartnerState,
+  setPartnerContact,
+  setPartnerDraft,
+  setPartnerStep,
+  usePartnerState,
+} from "./partner-state";
 import { useLang, useT } from "@/lib/use-lang";
-import { MAX } from "@/lib/proposal/questions";
 
 /* ==================================================================
-   The partners' form
+   The partners' form, set in "Let's work together"
 
    For development companies that handle the back end and want us on
    the front end (user, 2026-10-18). It sits beside the free-proposal
-   form in "Let's work together", in the same frame, and keeps the same
-   manner: questions between hairlines, a screen at a time, the button
-   at the foot. Two screens, the project and the details, and no
-   estimate: we get in touch, then send a fixed quote.
-
-   A partner whose stack does not fit ours cannot send: the form says so
-   at once, and its button starts it again.
+   form, in the same frame, and keeps the same manner: questions between
+   hairlines, a screen at a time, the button at the foot. Its questions
+   are partner-steps.tsx's, and its answers partner-state.ts's, shared
+   with the overlay, where the same questions are asked when "A
+   development company" is chosen (user, 2026-11-09).
    ================================================================== */
-
-/** A screen at a time, as the free proposal (user, 2026-10-18: it was
-    one long screen): the project, whether we fit and when, how we would
-    work, then the details. */
-type Step = "project" | "fit" | "terms" | "contact" | "sent";
-const STEPS: Step[] = ["project", "fit", "terms", "contact", "sent"];
-
-type PartnerDraft = {
-  project: ProjectTypeId | "";
-  screens: ScreensId | "";
-  screensEstimate: string;
-  inspiration: PartnerYesNo | "";
-  inspirationLink: string;
-  compatible: PartnerYesNo | "";
-  start: StartId | "";
-  delivery: DeliveryId | "";
-  model: ModelId | "";
-  credit: CreditId | "";
-  nda: boolean;
-};
-
-const EMPTY: PartnerDraft = {
-  project: "",
-  screens: "",
-  screensEstimate: "",
-  inspiration: "",
-  inspirationLink: "",
-  compatible: "",
-  start: "",
-  delivery: "",
-  model: "",
-  credit: "",
-  nda: false,
-};
-
-const NDA = [{ id: "nda", label: "We'll need one", pt: "Vamos precisar de um" }] as const;
 
 export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
   const reduce = useReducedMotion() ?? false;
   const lang = useLang();
   const t = useT();
-  const uid = useId();
-  const [draft, setDraftState] = useState<PartnerDraft>(EMPTY);
-  const [contact, setContactState] = useState<Contact>(EMPTY_CONTACT);
-  const [step, setStep] = useState<Step>("project");
+  const { draft, contact, step } = usePartnerState();
   const [errors, setErrors] = useState<Errors>({});
   const [send, setSend] = useState<SendState>({ status: "idle" });
   const touched = useRef(false);
@@ -110,8 +50,7 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
   const trap = useRef<HTMLInputElement>(null);
   const openedAt = useRef(Date.now());
   const offline = send.status === "offline";
-  const list = <T extends { id: string; label: string; pt: string }>(l: readonly T[]) => inLang(l, lang);
-  const notFit = draft.compatible === "no";
+  const notFit = partnerNotFit(draft);
 
   const touch = useCallback(() => {
     touched.current = true;
@@ -130,18 +69,16 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
 
   const setDraft = (patch: Partial<PartnerDraft>) => {
     touch();
-    setDraftState((d) => ({ ...d, ...patch }));
+    setPartnerDraft((d) => ({ ...d, ...patch }));
     setErrors((e) => {
       const next = { ...e };
-      for (const key of Object.keys(patch)) {
-        delete next[key === "inspirationLink" ? "inspiration" : key === "screensEstimate" ? "screens" : key];
-      }
+      for (const key of Object.keys(patch)) delete next[partnerErrorOf(key)];
       return next;
     });
   };
   const setContact = (patch: Partial<Contact>) => {
     touch();
-    setContactState((c) => ({ ...c, ...patch }));
+    setPartnerContact((c) => ({ ...c, ...patch }));
     setErrors((e) => {
       const next = { ...e };
       for (const key of Object.keys(patch)) delete next[key];
@@ -158,106 +95,26 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
 
   const reset = () => {
     touch();
-    setDraftState(EMPTY);
-    setContactState(EMPTY_CONTACT);
+    resetPartnerState();
     setErrors({});
     setSend({ status: "idle" });
-    setStep("project");
     requestAnimationFrame(() => title.current?.focus({ preventScroll: true }));
   };
 
-  const check = (): Errors => {
-    const pick = t("Choose one to continue.", "Escolher uma opção para continuar.");
-    const e: Errors = {};
-    if (step === "project") {
-      if (!draft.project) e.project = pick;
-      if (!draft.screens) e.screens = pick;
-      else if (draft.screens === "20+" && !draft.screensEstimate.trim()) {
-        e.screens = t("Tell us roughly how many.", "Falta indicar quantos, aproximadamente.");
-      }
-      if (!draft.inspiration) e.inspiration = pick;
-    }
-    if (step === "fit") {
-      if (!draft.compatible) e.compatible = pick;
-      if (!draft.start) e.start = pick;
-      if (!draft.delivery) e.delivery = pick;
-    }
-    if (step === "terms") {
-      if (!draft.model) e.model = pick;
-      if (!draft.credit) e.credit = pick;
-    }
-    if (step === "contact") return checkStep("contact", EMPTY_DRAFT, contact, lang);
-    return e;
-  };
-
-  const answers = (): PartnerAnswers => ({
-    project: draft.project as ProjectTypeId,
-    screens: draft.screens as ScreensId,
-    ...(draft.screens === "20+" ? { screensEstimate: draft.screensEstimate.trim() } : {}),
-    inspiration: draft.inspiration as PartnerYesNo,
-    ...(draft.inspiration === "yes" && draft.inspirationLink.trim() ? { inspirationLink: draft.inspirationLink.trim() } : {}),
-    compatible: "yes",
-    start: draft.start as StartId,
-    delivery: draft.delivery as DeliveryId,
-    model: draft.model as ModelId,
-    credit: draft.credit as CreditId,
-    nda: draft.nda,
-  });
-
   const submit = async () => {
     setSend({ status: "sending" });
-    try {
-      const res = await fetch("/api/partner", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          answers: answers(),
-          contact,
-          lang,
-          nickname: trap.current?.value ?? "",
-          elapsedMs: Date.now() - openedAt.current,
-        }),
-      });
-      if (res.ok) {
-        setSend({ status: "idle" });
-        setStep("sent");
-      } else if (res.status === 503) {
-        setSend({ status: "offline" });
-      } else {
-        const why = (await res.json().catch(() => ({}))) as { waitMs?: number };
-        setSend({ status: "error", message: sendError(res.status, t, why.waitMs) });
-      }
-    } catch {
-      setSend({ status: "error", message: sendError("network", t) });
-    }
-  };
-
-  // The email the request falls back to while the site has nowhere to
-  // send it, with everything written in.
-  const mailto = () => {
-    const label = <T extends { id: string; label: string; pt: string }>(l: readonly T[], id: string) => labelOf(l, id, lang);
-    const lines = [
-      `${t("Name", "Nome")}: ${contact.name}`,
-      `Email: ${contact.email}`,
-      `${t("Phone", "Telefone")}: ${contact.phone}`,
-      `${t("Company", "Empresa")}: ${contact.company}`,
-      "",
-      `${t("Project", "Projeto")}: ${label(PROJECT_TYPES, draft.project)}`,
-      `${t("Screens or pages", "Ecrãs ou páginas")}: ${label(SCREENS, draft.screens)}${draft.screens === "20+" && draft.screensEstimate.trim() ? ` (${draft.screensEstimate.trim()})` : ""}`,
-      `${t("Design or brand guidelines", "Design ou guia de marca")}: ${label(PARTNER_YES_NO, draft.inspiration)}${draft.inspirationLink.trim() ? ` (${draft.inspirationLink.trim()})` : ""}`,
-      `${t("Stack compatible", "Tecnologia compatível")}: ${label(PARTNER_YES_NO, draft.compatible)}`,
-      `${t("Start", "Início")}: ${label(STARTS, draft.start)}`,
-      `${t("Delivery", "Entrega")}: ${label(DELIVERIES, draft.delivery)}`,
-      `${t("Working model", "Modelo de trabalho")}: ${label(MODELS, draft.model)}`,
-      `${t("In our portfolio", "No nosso portefólio")}: ${label(CREDITS, draft.credit)}`,
-      `NDA: ${draft.nda ? t("Needed", "Necessário") : t("Not needed", "Não necessário")}`,
-    ];
-    if (contact.message.trim()) lines.push("", t("Additional notes:", "Notas adicionais:"), contact.message.trim());
-    const subject = t(
-      `Partnership request from ${contact.company.trim() || contact.name.trim() || "the website"}`,
-      `Pedido de parceria de ${contact.company.trim() || contact.name.trim() || "um visitante do website"}`,
-    );
-    return `mailto:${STUDIO_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
+    const result = await postPartner({
+      draft,
+      contact,
+      lang,
+      nickname: trap.current?.value ?? "",
+      elapsedMs: Date.now() - openedAt.current,
+      t,
+    });
+    if (result === "sent") {
+      setSend({ status: "idle" });
+      setPartnerStep("sent");
+    } else setSend(result);
   };
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -268,10 +125,10 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
       return;
     }
     if (offline) {
-      window.location.href = mailto();
+      window.location.href = partnerMailto(draft, contact, lang, t);
       return;
     }
-    const found = check();
+    const found = checkPartner(step, draft, contact, lang, t);
     const first = Object.keys(found)[0];
     if (first) {
       setErrors(found);
@@ -287,7 +144,7 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
     }
     if (step !== "contact") {
       setErrors({});
-      setStep(STEPS[STEPS.indexOf(step) + 1]!);
+      setPartnerStep(PARTNER_STEPS[PARTNER_STEPS.indexOf(step) + 1]!);
       return;
     }
     if (send.status !== "sending") void submit();
@@ -299,22 +156,16 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
       return;
     }
     setErrors({});
-    const i = STEPS.indexOf(step);
-    if (i > 0) setStep(STEPS[i - 1]!);
+    const i = PARTNER_STEPS.indexOf(step);
+    if (i > 0) setPartnerStep(PARTNER_STEPS[i - 1]!);
   };
 
   const action = offline
     ? t("Open in your email app", "Abrir na app de email")
     : send.status === "sending"
       ? t("Sending…", "A enviar…")
-      : step === "sent"
-        ? t("Start a new request", "Fazer um novo pedido")
-        : step === "contact"
-          ? t("Send request", "Enviar pedido")
-          : step === "fit" && notFit
-            ? t("Start again", "Recomeçar")
-            : t("Continue", "Continuar");
-  const progress = Math.max(STEPS.indexOf(step) / (STEPS.length - 1), 0.04);
+      : partnerAction(step, draft, t, t("Start a new request", "Fazer um novo pedido"));
+  const progress = Math.max(PARTNER_STEPS.indexOf(step) / (PARTNER_STEPS.length - 1), 0.04);
 
   return (
     <div ref={box} className="wt-form relative isolate text-ink">
@@ -349,187 +200,17 @@ export function PartnerForm({ onTouch }: { onTouch?: () => void }) {
                     <OfflineNote />
                   </>
                 ) : (
-                  <motion.div
-                    initial="hidden"
-                    animate="shown"
-                    variants={{ hidden: {}, shown: { transition: { staggerChildren: reduce ? 0 : 0.05, delayChildren: 0.04 } } }}
-                  >
-                    <motion.h3 variants={ROW} ref={title} tabIndex={-1} className="pf-title">
-                      {step === "project"
-                        ? t("Your project", "O projeto")
-                        : step === "fit"
-                          ? t("Technology and timing", "Tecnologia e prazos")
-                          : step === "terms"
-                            ? t("How we'd work", "Modelo de colaboração")
-                            : step === "contact"
-                              ? t("Your details", "Dados de contacto")
-                              : t("Request sent", "Pedido enviado")}
-                    </motion.h3>
-
-                    {step === "project" && (
-                      <>
-                        <motion.p variants={ROW} className="pf-lede">
-                          {t(PARTNER_INTRO)}
-                        </motion.p>
-                        <div className="pf-rows">
-                          <Question id="project" label={t("What are you building?", "Que tipo de projeto é?")} error={errors.project}>
-                            <Segmented
-                              name="project"
-                              options={list(PROJECT_TYPES)}
-                              value={draft.project}
-                              onChange={(project) => setDraft({ project })}
-                              labelledBy="project-q"
-                            />
-                          </Question>
-                          <Question id="screens" label={t("How many screens or pages?", "Quantos ecrãs ou páginas?")} error={errors.screens}>
-                            <Segmented
-                              name="screens"
-                              options={list(SCREENS)}
-                              value={draft.screens}
-                              onChange={(screens) => setDraft({ screens })}
-                              labelledBy="screens-q"
-                            />
-                            {draft.screens === "20+" && (
-                              <Field
-                                id={`${uid}-screens`}
-                                label={t("Roughly how many?", "Quantos, aproximadamente?")}
-                                placeholder={t("Roughly how many? e.g. 35", "Quantos, aproximadamente? ex.: 35")}
-                                value={draft.screensEstimate}
-                                onChange={(screensEstimate) => setDraft({ screensEstimate })}
-                              />
-                            )}
-                          </Question>
-                          <Question
-                            id="inspiration"
-                            label={t(
-                              "Do you have a design or brand guidelines we should take as inspiration?",
-                              "Existe um design ou um guia de marca a usar como inspiração?",
-                            )}
-                            error={errors.inspiration}
-                          >
-                            <Segmented
-                              name="inspiration"
-                              options={list(PARTNER_YES_NO)}
-                              value={draft.inspiration}
-                              onChange={(inspiration) => setDraft({ inspiration })}
-                              labelledBy="inspiration-q"
-                            />
-                            {draft.inspiration === "yes" && (
-                              <Field
-                                id={`${uid}-inspiration`}
-                                label={t("Link to it (optional)", "Link (opcional)")}
-                                placeholder={t("Link to it (optional)", "Link (opcional)")}
-                                value={draft.inspirationLink}
-                                onChange={(inspirationLink) => setDraft({ inspirationLink })}
-                                max={MAX.url}
-                                inputMode="url"
-                              />
-                            )}
-                          </Question>
-                        </div>
-                      </>
-                    )}
-
-                    {step === "fit" && (
-                      <>
-                        <div className="pf-rows">
-                          <Question id="compatible" label={t(STACK_QUESTION)} error={errors.compatible}>
-                            <Segmented
-                              name="compatible"
-                              options={list(PARTNER_YES_NO)}
-                              value={draft.compatible}
-                              onChange={(compatible) => setDraft({ compatible })}
-                              labelledBy="compatible-q"
-                            />
-                            {notFit && (
-                              <p role="status" className="pf-out">
-                                {t(NOT_COMPATIBLE)}
-                              </p>
-                            )}
-                          </Question>
-                          {!notFit && (
-                            <>
-                              <Question id="start" label={t("When would you like to start?", "Data de início pretendida?")} error={errors.start}>
-                                <Segmented
-                                  name="start"
-                                  options={list(STARTS)}
-                                  value={draft.start}
-                                  onChange={(start) => setDraft({ start })}
-                                  labelledBy="start-q"
-                                />
-                              </Question>
-                              <Question id="delivery" label={t("When do you need it delivered?", "Prazo de entrega pretendido?")} error={errors.delivery}>
-                                <Segmented
-                                  name="delivery"
-                                  options={list(DELIVERIES)}
-                                  value={draft.delivery}
-                                  onChange={(delivery) => setDraft({ delivery })}
-                                  labelledBy="delivery-q"
-                                />
-                              </Question>
-                            </>
-                          )}
-                        </div>
-                      </>
-                    )}
-
-                    {step === "terms" && (
-                      <>
-                        <div className="pf-rows">
-                            <>
-                              <Question id="model" label={t("How would we work together?", "Que modelo de colaboração?")} error={errors.model}>
-                                <Segmented
-                                  name="model"
-                                  options={list(MODELS)}
-                                  value={draft.model}
-                                  onChange={(model) => setDraft({ model })}
-                                  labelledBy="model-q"
-                                />
-                              </Question>
-                              <Question
-                                id="credit"
-                                label={t("Can we show this work in our portfolio?", "Podemos mostrar este trabalho no nosso portefólio?")}
-                                error={errors.credit}
-                              >
-                                <Segmented
-                                  name="credit"
-                                  options={list(CREDITS)}
-                                  value={draft.credit}
-                                  onChange={(credit) => setDraft({ credit })}
-                                  labelledBy="credit-q"
-                                />
-                              </Question>
-                              <Question
-                                id="nda"
-                                label={t("Confidentiality", "Confidencialidade")}
-                                hint={t("We're happy to sign an NDA", "Assinamos um NDA, se necessário")}
-                                group={false}
-                              >
-                                <Ticks
-                                  name="nda"
-                                  options={list(NDA)}
-                                  value={draft.nda ? ["nda"] : []}
-                                  onChange={(v) => setDraft({ nda: v.length > 0 })}
-                                />
-                              </Question>
-                            </>
-                        </div>
-                      </>
-                    )}
-
-                    {step === "contact" && (
-                      <ContactScreen contact={contact} setContact={setContact} errors={errors} send={send} partner />
-                    )}
-
-                    {step === "sent" && (
-                      <motion.p variants={ROW} className="pf-lede">
-                        {t(
-                          `Thank you, ${contact.name.trim().split(" ")[0]}. We'll get in touch within a few hours to talk it through, then send you a fixed quote.`,
-                          `Obrigado, ${contact.name.trim().split(" ")[0]}. Entraremos em contacto dentro de poucas horas para conversar sobre o projeto e, depois, enviaremos um orçamento fixo.`,
-                        )}
-                      </motion.p>
-                    )}
-                  </motion.div>
+                  <PartnerScreen
+                    step={step}
+                    draft={draft}
+                    setDraft={setDraft}
+                    contact={contact}
+                    setContact={setContact}
+                    errors={errors}
+                    send={send}
+                    titleRef={title}
+                    heading="h3"
+                  />
                 )}
               </motion.div>
             </AnimatePresence>
