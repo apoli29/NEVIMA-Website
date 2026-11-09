@@ -8,7 +8,8 @@ import { addAlert, getRequest, prop, setSteps, updatePage } from "@/lib/proposal
    Notion gets it, and the studio a notice. Answering again changes it: the
    last answer holds, and the studio is told each time. The answer also
    goes into "Histórico" (steps.ts); a failure there only reaches the
-   log. The column keeps its name, "Reunião a meio". */
+   log. The column is "Chamada de acompanhamento" (until 2026-11-09,
+   "Reunião a meio"). */
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,7 @@ export async function POST(request: Request) {
   if (!page) return json({ error: "not_found" }, 404);
   if (page.midCall === answer) return json({ ok: true });
 
-  const saved = await updatePage(token.page, { "Reunião a meio": prop.select(answer) });
+  const saved = await updatePage(token.page, { "Chamada de acompanhamento": prop.select(answer) });
   if (saved) await setSteps(token.page, page.history, {}, `Chamada de acompanhamento: ${answer.toLowerCase()}`, "cliente");
   const told = await sendEmail({
     to: studioInbox(),
