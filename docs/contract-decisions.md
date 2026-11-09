@@ -87,7 +87,7 @@ Cada serviço tem uma cláusula própria (9 a 15) com o que inclui, o que não i
   - não renovação com **2 meses** de aviso;
   - na renovação, a nevima pode passar a cobrar um **valor simbólico** que só cobre custos, **até 60 €/ano**; se o Cliente recusar (ou não renovar), recebe o código sem custo;
   - alojado no plano **Pro** da Vercel;
-  - **limite justo (removido na v1.15):** passou a "Plano da Vercel" (cl. 12.6): como os websites partilham o mesmo plano, se for preciso um plano mais extenso a nevima reserva o direito de o fazer, o que pode levar a cobrar também o valor simbólico da 12.3 (só o custo adicional que cabe a cada website, sem margem), com aviso de pelo menos 3 meses. Não se exige novo contrato: a regra está neste, e quem não aceitar sai com o código (12.4). Decidido (utilizador, 2026-11-09): o alojamento é gratuito no 1.º Ano de contrato; depois, a nevima pode começar a cobrar **a qualquer momento** (não só na renovação), com 3 meses de aviso, que pode ser dado ainda no 1.º ano mas a cobrança só começa depois dele; o Cliente que não aceite pode terminar o contrato sem penalização até à data em que a cobrança começaria. O valor é o custo exato de alojar o website desse Cliente, até 60 €/ano, cobrado uma vez por ano, **sempre em novembro**, desde o primeiro novembro depois do aviso, salvo se nessa data faltar menos de 1 mês para o fim do Ano de contrato (leitura do pedido do utilizador, 2026-11-09: a confirmar).
+  - **limite justo (removido na v1.15):** o regime final (utilizador, 2026-11-09) é este: o alojamento é, em regra, gratuito, e a nevima reserva o direito de mudar essa condição (a) se a Vercel mudar as suas condições (cl. 12.8: aviso, decisão conjunta, saída sem penalização) ou (b) se, pelo volume de clientes, precisar de um plano mais extenso (cl. 12.6): avisa com 1 mês de antecedência face ao dia da mudança, e os contratos que terminem pelo menos 1 mês depois e sejam renovados passam, na renovação, a pagar o valor simbólico da 12.3 (custo exato do website desse Cliente, até 60 €/ano, cobrado anualmente). Não há cobrança a meio do ano nem em novembro, nem aviso de 3 meses. Os contratos que terminem antes desse mês renovam-se ainda sem cobrança (leitura do pedido: a confirmar). Não se exige contrato novo.
   - o site deixou de prometer prazo (2026-10-19, utilizador): saíram "for as long as your website is live", "for life" e "enquanto o website estiver online". O site diz só que o alojamento é gratuito, como a cl. 12.1, sem ressalvas ("gratuito, mas…" não, pedido do utilizador); as condições da renovação e do limite justo ficam no contrato.
 - **16:** o crédito é o logótipo da nevima no rodapé, com −5% no website.
 - **17 (Propriedade intelectual):**
@@ -110,7 +110,7 @@ Cada serviço tem uma cláusula própria (9 a 15) com o que inclui, o que não i
 - **Aviso tardio de não renovação (cl. 23.4):** os 2 meses pagos. Confirmar a leitura e se vale com Particulares (cláusula penal).
 - **SEO &amp; GEO (cl. 14, 6.6):** conteúdo e cobrança (preços provisórios no formulário). O prazo de 8 dias da cl. 6.6 e a cl. 6.7 também estão a laranja.
 - **Identidade visual (cl. 9.4):** quantas rondas de revisão estão incluídas.
-- **Alojamento (cl. 12.3 e 12.6):** o teto de 60 € depende do número de clientes; os sócios duvidam que seja mais. Mantido. O aviso de 3 meses da 12.6 é para confirmar.
+- **Alojamento (cl. 12.3 e 12.6):** o teto de 60 € depende do número de clientes; os sócios duvidam que seja mais. Mantido. 
 - **15% na desmarcação (cl. 10.6):** parecer profissional.
 
 ## Por confirmar
