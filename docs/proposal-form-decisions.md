@@ -188,3 +188,12 @@ Decided 2026-11-09 (user, option A of three). Every button that opens the form (
 ## Partners: no number of screens or pages
 
 2026-11-09 (user): "How many screens or pages?" (1–10, 11–20, more than 20, then roughly how many) is gone from the partners' form, as the number of pages went from the free proposal. Its first screen is the introduction, what they are building and whether there is a design or brand guidelines. The server no longer asks for it; Notion's "Ecrãs" columns and SQL's `Ecras` stay for the requests sent before, and `SCREENS` stays in `partner.ts` only for their labels (`scripts/sql/rotulos.ts`).
+
+## Partners: budget and the company's website
+
+2026-11-09 (user, from five criteria proposed; the interface's languages and the main screens were set aside):
+
+- **"Orçamento previsto para o projeto?"** ("What budget do you have in mind?"), required, on the "Modelo de colaboração" screen after the working model: Até 1 500 €, 1 500–3 000 €, 3 000–6 000 €, Mais de 6 000 €, Ainda não definido (`BUDGETS` in `partner.ts`; the ranges are the studio's to adjust). With no estimate in this form, it says at once whether a project can work.
+- **"Website da empresa"** ("Company website"), required, with the contact details under the company's name: the development company's own website (user: the company's, not the project's), to know it before the call. A dot and no spaces are enough (`looksLikeSite`), checked again on the server.
+- Code delivery (their repository or ours) was not added: the stack question already asks whether our way of working fits theirs; where the code lives is settled on the call.
+- Stored: in the answers (`budget`, `companySite`); in Notion as "Orçamento" (select) and "Website da empresa" (url), sent apart so a database that does not have those columns yet still takes the request (run `scripts/setup-notion.mjs` to add them); in the studio's notice; in SQL through `RespostasJson`, with their rows in `dbo.Perguntas` and the budget's labels in `dbo.Rotulos` (run `nevima-db.sql` again for the sheets to show them).

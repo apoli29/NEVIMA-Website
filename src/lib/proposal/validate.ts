@@ -28,12 +28,14 @@ import {
   type Contact,
 } from "./questions";
 import {
+  BUDGETS,
   CREDITS,
   DELIVERIES,
   MODELS,
   PARTNER_YES_NO,
   PROJECT_TYPES,
   STARTS,
+  looksLikeSite,
   type PartnerAnswers,
 } from "./partner";
 
@@ -245,10 +247,14 @@ export function readPartner(raw: unknown): Result<PartnerAnswers> {
   const start = one(STARTS, raw.start);
   const delivery = one(DELIVERIES, raw.delivery);
   const model = one(MODELS, raw.model);
+  const budget = one(BUDGETS, raw.budget);
   const credit = one(CREDITS, raw.credit);
-  if (!project || !inspiration || !start || !delivery || !model || !credit) {
+  if (!project || !inspiration || !start || !delivery || !model || !budget || !credit) {
     return { ok: false, error: "answers" };
   }
+  // The company's own website (user, 2026-11-09).
+  const companySite = text(raw.companySite, MAX.url);
+  if (!companySite || !looksLikeSite(companySite)) return { ok: false, error: "companySite" };
   if (raw.compatible !== "yes") return { ok: false, error: "compatible" };
   const answers: PartnerAnswers = {
     project,
@@ -257,8 +263,10 @@ export function readPartner(raw: unknown): Result<PartnerAnswers> {
     start,
     delivery,
     model,
+    budget,
     credit,
     nda: raw.nda === true,
+    companySite,
   };
   if (inspiration === "yes") {
     const link = text(raw.inspirationLink, MAX.url);

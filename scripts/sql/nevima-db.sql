@@ -533,6 +533,11 @@ INSERT INTO dbo.Rotulos (Lista, Codigo, Texto) VALUES
     (N'DELIVERIES', N'2m+', N'Mais de 2 meses'),
     (N'MODELS', N'project', N'Um projeto fechado'),
     (N'MODELS', N'ongoing', N'Trabalho contínuo'),
+    (N'BUDGETS', N'1500', N'Até 1 500 €'),
+    (N'BUDGETS', N'1500-3000', N'1 500–3 000 €'),
+    (N'BUDGETS', N'3000-6000', N'3 000–6 000 €'),
+    (N'BUDGETS', N'6000+', N'Mais de 6 000 €'),
+    (N'BUDGETS', N'open', N'Ainda não definido'),
     (N'CREDITS', N'credit', N'Sim, com crédito'),
     (N'CREDITS', N'white', N'Não, sem crédito (white label)'),
     (N'PARTNER_YES_NO', N'yes', N'Sim'),
@@ -593,6 +598,7 @@ INSERT INTO dbo.Perguntas (Formulario, Ordem, Grupo, Pergunta, Caminho, Lista) V
     ('proposta', 52, N'SEO e GEO', N'Alcance', 'search.reach', 'REACH'),
     ('proposta', 53, N'SEO e GEO', N'Plano', 'search.seoPlan', 'SEARCH_PLANS'),
     ('proposta', 54, N'SEO e GEO', N'Plano GEO', 'search.geoPlan', 'SEARCH_PLANS'),
+    ('parceria', 9, N'Empresa', N'Website da empresa', 'companySite', NULL),
     ('parceria', 10, N'Projeto', N'Projeto', 'project', 'PROJECT_TYPES'),
     ('parceria', 11, N'Projeto', N'Ecrãs ou páginas', 'screens', 'SCREENS'),
     ('parceria', 12, N'Projeto', N'Ecrãs (estimativa)', 'screensEstimate', NULL),
@@ -603,7 +609,8 @@ INSERT INTO dbo.Perguntas (Formulario, Ordem, Grupo, Pergunta, Caminho, Lista) V
     ('parceria', 21, N'Condições', N'Entrega', 'delivery', 'DELIVERIES'),
     ('parceria', 22, N'Condições', N'Modelo de trabalho', 'model', 'MODELS'),
     ('parceria', 23, N'Condições', N'No nosso portefólio', 'credit', 'CREDITS'),
-    ('parceria', 24, N'Condições', N'NDA', 'nda', NULL);
+    ('parceria', 24, N'Condições', N'NDA', 'nda', NULL),
+    ('parceria', 25, N'Condições', N'Orçamento', 'budget', 'BUDGETS');
 GO
 
 

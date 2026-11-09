@@ -4,6 +4,7 @@ import { useId } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { inLang, labelOf, MAX, type Contact } from "@/lib/proposal/questions";
 import {
+  BUDGETS,
   CREDITS,
   DELIVERIES,
   MODELS,
@@ -13,6 +14,8 @@ import {
   PROJECT_TYPES,
   STACK_QUESTION,
   STARTS,
+  looksLikeSite,
+  type BudgetId,
   type CreditId,
   type DeliveryId,
   type ModelId,
@@ -71,8 +74,11 @@ export type PartnerDraft = {
   start: StartId | "";
   delivery: DeliveryId | "";
   model: ModelId | "";
+  budget: BudgetId | "";
   credit: CreditId | "";
   nda: boolean;
+  /** The company's website, asked with the contact details. */
+  companySite: string;
 };
 
 export const EMPTY_PARTNER: PartnerDraft = {
@@ -83,8 +89,10 @@ export const EMPTY_PARTNER: PartnerDraft = {
   start: "",
   delivery: "",
   model: "",
+  budget: "",
   credit: "",
   nda: false,
+  companySite: "",
 };
 
 /** Which error a change to the draft answers. */
@@ -107,9 +115,27 @@ export function checkPartner(step: PartnerStep, draft: PartnerDraft, contact: Co
   }
   if (step === "terms") {
     if (!draft.model) e.model = pick;
+    if (!draft.budget) e.budget = pick;
     if (!draft.credit) e.credit = pick;
   }
-  if (step === "contact") return checkStep("contact", EMPTY_DRAFT, contact, lang);
+  if (step === "contact") {
+    const found = checkStep("contact", EMPTY_DRAFT, contact, lang);
+    // Under the company's name, so its warning comes after that one.
+    const site = draft.companySite.trim();
+    const siteError = !site
+      ? t("Enter your company's website.", "Falta indicar o website da empresa.")
+      : !looksLikeSite(site)
+        ? t("This doesn't look like a website address.", "Este endereço não parece ser de um website.")
+        : undefined;
+    if (!siteError) return found;
+    const ordered: Errors = {};
+    for (const [key, value] of Object.entries(found)) {
+      ordered[key] = value;
+      if (key === "company") ordered.companySite = siteError;
+    }
+    if (!ordered.companySite) ordered.companySite = siteError;
+    return ordered;
+  }
   return e;
 }
 
@@ -122,8 +148,10 @@ export function partnerAnswers(draft: PartnerDraft): PartnerAnswers {
     start: draft.start as StartId,
     delivery: draft.delivery as DeliveryId,
     model: draft.model as ModelId,
+    budget: draft.budget as BudgetId,
     credit: draft.credit as CreditId,
     nda: draft.nda,
+    companySite: draft.companySite.trim(),
   };
 }
 
@@ -167,6 +195,7 @@ export function partnerMailto(draft: PartnerDraft, contact: Contact, lang: Lang,
     `Email: ${contact.email}`,
     `${t("Phone", "Telefone")}: ${contact.phone}`,
     `${t("Company", "Empresa")}: ${contact.company}`,
+    `${t("Company website", "Website da empresa")}: ${draft.companySite.trim()}`,
     "",
     `${t("Project", "Projeto")}: ${label(PROJECT_TYPES, draft.project)}`,
     `${t("Design or brand guidelines", "Design ou guia de marca")}: ${label(PARTNER_YES_NO, draft.inspiration)}${draft.inspirationLink.trim() ? ` (${draft.inspirationLink.trim()})` : ""}`,
@@ -174,6 +203,7 @@ export function partnerMailto(draft: PartnerDraft, contact: Contact, lang: Lang,
     `${t("Start", "Início")}: ${label(STARTS, draft.start)}`,
     `${t("Delivery", "Entrega")}: ${label(DELIVERIES, draft.delivery)}`,
     `${t("Working model", "Modelo de trabalho")}: ${label(MODELS, draft.model)}`,
+    `${t("Budget", "Orçamento")}: ${label(BUDGETS, draft.budget)}`,
     `${t("In our portfolio", "No nosso portefólio")}: ${label(CREDITS, draft.credit)}`,
     `NDA: ${draft.nda ? t("Needed", "Necessário") : t("Not needed", "Não necessário")}`,
   ];
@@ -348,6 +378,15 @@ export function PartnerScreen({
               labelledBy="model-q"
             />
           </Question>
+          <Question id="budget" label={t("What budget do you have in mind?", "Orçamento previsto para o projeto?")} error={errors.budget}>
+            <Segmented
+              name="budget"
+              options={list(BUDGETS)}
+              value={draft.budget}
+              onChange={(budget) => setDraft({ budget })}
+              labelledBy="budget-q"
+            />
+          </Question>
           <Question
             id="credit"
             label={t("Can we show this work in our portfolio?", "Podemos mostrar este trabalho no nosso portefólio?")}
@@ -377,7 +416,16 @@ export function PartnerScreen({
         </div>
       )}
 
-      {step === "contact" && <ContactScreen contact={contact} setContact={setContact} errors={errors} send={send} partner />}
+      {step === "contact" && (
+        <ContactScreen
+          contact={contact}
+          setContact={setContact}
+          errors={errors}
+          send={send}
+          partner
+          companySite={{ value: draft.companySite, onChange: (companySite) => setDraft({ companySite }) }}
+        />
+      )}
 
       {step === "sent" && (
         <motion.p variants={ROW} className="pf-lede">

@@ -3,6 +3,7 @@ import type { Lang } from "../i18n";
 import { confirmationHtml, confirmationSubject, confirmationText, STUDIO_EMAIL, summaryOf } from "./email";
 import { addAlert, block, createPage, lastRequestSince, pageIdFromUrl, prop, setSteps } from "./notion";
 import {
+  BUDGETS,
   CREDITS,
   DELIVERIES,
   MODELS,
@@ -237,8 +238,17 @@ function partnerPage(request: PartnerRequest) {
       Recebido: prop.date(request.at),
     },
     children: [block.heading("Respostas"), block.json(JSON.stringify(answers, null, 2))],
+    // Columns added on 2026-11-09 (user): given apart, so a database that
+    // does not have them yet still takes the request (createPage).
+    extra: {
+      "Orçamento": answers.budget ? prop.select(pt(BUDGETS, answers.budget)) : undefined,
+      "Website da empresa": answers.companySite ? prop.url(companyUrl(answers.companySite)) : undefined,
+    },
   };
 }
+
+/** A website as typed ("empresa.pt") as an address Notion opens. */
+const companyUrl = (site: string) => (/^https?:\/\//i.test(site) ? site : `https://${site}`);
 
 export type Mail = {
   to: string[];
@@ -392,8 +402,8 @@ export async function deliverRequest(request: ProposalRequest): Promise<boolean>
 /** True once the request has reached the studio. No confirmation goes
     to a partner: we get in touch ourselves. */
 export async function deliverPartner(request: PartnerRequest): Promise<boolean> {
-  const { properties, children } = partnerPage(request);
-  const page = await createPage(process.env.NOTION_FORM2_LEADS, properties, children);
+  const { properties, children, extra } = partnerPage(request);
+  const page = await createPage(process.env.NOTION_FORM2_LEADS, properties, children, extra);
   if (page === null) {
     console.info(
       "[nevima:partner:undelivered]",
@@ -410,6 +420,8 @@ export async function deliverPartner(request: PartnerRequest): Promise<boolean> 
       `Projeto: ${pt(PROJECT_TYPES, answers.project)}`,
       `Início: ${pt(STARTS, answers.start)} · Entrega: ${pt(DELIVERIES, answers.delivery)}`,
       `Modelo: ${pt(MODELS, answers.model)} · Crédito: ${pt(CREDITS, answers.credit)} · NDA: ${answers.nda ? "Sim" : "Não"}`,
+      ...(answers.budget ? [`Orçamento: ${pt(BUDGETS, answers.budget)}`] : []),
+      ...(answers.companySite ? [`Website da empresa: ${answers.companySite}`] : []),
       `Responder em: ${REPLY_IN[request.lang]}`,
     ],
     page,

@@ -36,6 +36,7 @@ import {
   YES_NO,
 } from "../../src/lib/proposal/questions";
 import {
+  BUDGETS,
   CREDITS,
   DELIVERIES,
   MODELS,
@@ -71,6 +72,7 @@ const LISTS: Record<string, readonly Option[]> = {
   STARTS,
   DELIVERIES,
   MODELS,
+  BUDGETS,
   CREDITS,
   PARTNER_YES_NO,
 };
