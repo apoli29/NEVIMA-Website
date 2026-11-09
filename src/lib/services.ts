@@ -117,7 +117,7 @@ const PT: Record<string, Pick<Service, "title" | "body" | "included">> = {
       items: [
         "Alojamento gratuito, com todas as configurações necessárias para o website ir para o ar sem problemas",
         "SEO básico, para assegurar que o website aparece nos resultados de pesquisa",
-        "Uma chamada gratuita quando parte do projeto estiver desenvolvida. O objetivo? Aplicar alterações ao gosto do cliente e compreender a direção que o projeto deve tomar, para evitar a necessidade de alterações no final",
+        "Uma chamada gratuita quando parte do projeto estiver construída. O objetivo? Aplicar alterações ao gosto do cliente e compreender a direção que o projeto deve tomar, para evitar a necessidade de alterações no final",
       ],
     },
   },

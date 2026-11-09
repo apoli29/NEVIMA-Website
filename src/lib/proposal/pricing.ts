@@ -122,7 +122,7 @@ export const PRICING = {
         automated one (templates with placeholders) has its price set in the
         proposal (contract v1.15, clause 15.1). */
     features: {
-      /** By how many simple forms. */
+      /** By how many (manual) forms. */
       forms: 55,
       /** The sign-up, its welcome email and its record in the database. */
       newsletter: 39,

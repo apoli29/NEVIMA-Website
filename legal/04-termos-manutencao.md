@@ -4,9 +4,9 @@
 |---|---|
 | Versão | 1.1 |
 | Entrada em vigor | [DATA] (quando o contrato passar a remeter para este documento) |
-| Última atualização | 5 de novembro de 2026 |
-| Histórico | 1.1 (05/11/2026): alinhado com o contrato v1.14 (numeração das cláusulas; manutenção das Funcionalidades e SEO & GEO mensal); 1.0 (20/10/2026): primeira versão |
-| Relação com o contrato | Detalha as cláusulas 11.9 a 11.13, 15.6 e 6.7 do contrato v1.14. **Em caso de diferença, prevalece o contrato.** Os pontos **[PROPOSTA]** só valem depois de entrarem no contrato (ver `legal/02`, P9 e P10). |
+| Última atualização | 9 de novembro de 2026 |
+| Histórico | 1.1 (09/11/2026): alinhado com o contrato v1.15 (numeração das cláusulas; manutenção das Funcionalidades e SEO & GEO mensal); 1.0 (20/10/2026): primeira versão |
+| Relação com o contrato | Detalha as cláusulas 11.9 a 11.13, 15.6 e 6.7 do contrato v1.15. **Em caso de diferença, prevalece o contrato.** Os pontos **[PROPOSTA]** só valem depois de entrarem no contrato (ver `legal/02`, P9 e P10). |
 
 ## Em linguagem simples
 
@@ -50,6 +50,6 @@
 
 <!--
 NOTA INTERNA (não publicar)
-Bases legais: contrato v1.14, cl. 6.7, 11.9–11.13, 14, 15.6; DL 84/2021 (conformidade dos conteúdos e serviços digitais com consumidores; prazo a confirmar no texto do diploma antes de o citar ao cliente); DL 446/85, art. 21.º, al. d) (com consumidores, não se pode excluir nem predeterminar a reparação de vícios).
+Bases legais: contrato v1.15, cl. 6.7, 11.9–11.13, 14, 15.6; DL 84/2021 (conformidade dos conteúdos e serviços digitais com consumidores; prazo a confirmar no texto do diploma antes de o citar ao cliente); DL 446/85, art. 21.º, al. d) (com consumidores, não se pode excluir nem predeterminar a reparação de vícios).
 A PREENCHER: prazo de resposta [2].
 -->

@@ -4,9 +4,9 @@
 |---|---|
 | Versão | 1.1 |
 | Entrada em vigor | [DATA] (quando o contrato passar a remeter para este documento) |
-| Última atualização | 5 de novembro de 2026 |
-| Histórico | 1.1 (05/11/2026): alinhado com o contrato v1.14 (duração anual, aviso de não renovação, lembrete); 1.0 (20/10/2026): primeira versão |
-| Relação com o contrato | Detalha as cláusulas 12 (Alojamento), 13 (Domínio) e 23 (Duração, renovação e cessação) e a Parte IV do contrato v1.14. **Em caso de diferença, prevalece o contrato.** Os pontos marcados **[PROPOSTA]** ainda não estão no contrato: só valem depois de lá entrarem (ver `legal/02`, P5). |
+| Última atualização | 9 de novembro de 2026 |
+| Histórico | 1.1 (09/11/2026): alinhado com o contrato v1.15 (duração anual, aviso de não renovação, lembrete); 1.0 (20/10/2026): primeira versão |
+| Relação com o contrato | Detalha as cláusulas 12 (Alojamento), 13 (Domínio) e 23 (Duração, renovação e cessação) e a Parte IV do contrato v1.15. **Em caso de diferença, prevalece o contrato.** Os pontos marcados **[PROPOSTA]** ainda não estão no contrato: só valem depois de lá entrarem (ver `legal/02`, P5). |
 
 ## Em linguagem simples
 
@@ -73,6 +73,6 @@ Enquanto aloja o website, a nevima trata os dados dos visitantes por conta do Cl
 
 <!--
 NOTA INTERNA (não publicar)
-Bases legais: contrato v1.14, cl. 12, 13, 23, Parte IV; Regulamento (UE) 2022/2065 (DSA), arts. 11.º, 12.º, 16.º, 17.º, executado pela Lei 12-A/2026 (ANACOM). A isenção das micro e pequenas empresas (art. 19.º) só cobre as plataformas, não os alojamentos [A CONFIRMAR no texto do DSA no EUR-Lex]; se a nevima for considerada "serviço de alojamento" dos sites dos clientes, os arts. 11.º, 12.º, 16.º e 17.º aplicam-se. Os pontos 1.3 e 6.5 dependem da P5 do legal/02. Vercel: Terms of Service, secção 12 (proibição de revenda) — ver P5.3.
+Bases legais: contrato v1.15, cl. 12, 13, 23, Parte IV; Regulamento (UE) 2022/2065 (DSA), arts. 11.º, 12.º, 16.º, 17.º, executado pela Lei 12-A/2026 (ANACOM). A isenção das micro e pequenas empresas (art. 19.º) só cobre as plataformas, não os alojamentos [A CONFIRMAR no texto do DSA no EUR-Lex]; se a nevima for considerada "serviço de alojamento" dos sites dos clientes, os arts. 11.º, 12.º, 16.º e 17.º aplicam-se. Os pontos 1.3 e 6.5 dependem da P5 do legal/02. Vercel: Terms of Service, secção 12 (proibição de revenda) — ver P5.3.
 Valores entre [ ]: os do contrato, ainda a laranja (pendentes de decisão final dos sócios).
 -->
