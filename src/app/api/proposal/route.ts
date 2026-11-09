@@ -10,8 +10,10 @@ import { readAnswers, readContact } from "@/lib/proposal/validate";
    figure, not whatever the browser says it was shown. */
 
 export const dynamic = "force-dynamic";
-/** Room for the SQL copy's second try while a paused database wakes. */
-export const maxDuration = 60;
+/** Room for the SQL copy's tries while a paused database wakes: up to
+    four connections and two minutes of waits (sql.ts). Hobby with Fluid
+    compute allows up to 300 seconds. */
+export const maxDuration = 240;
 
 /** Less than this between opening the form and sending is a script. */
 const FASTEST_MS = 4000;
