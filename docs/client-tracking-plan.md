@@ -151,7 +151,7 @@ Quando os 100% estão pagos e o site no ar, o Estado geral passa a **Concluído*
 ### 4.10 No próprio Notion, à mão
 
 - Criar as vistas da secção 2 e pôr "Ocultar quando vazia" nas propriedades que só alguns clientes têm.
-- Ordenar as propriedades na ficha pela ordem do processo.
+- Ordenar as propriedades na tabela e na ficha pela ordem de 8.10 (escolhida pelo sócio a 2026-11-09). Faz-se à mão: a API do Notion não muda a ordem das colunas.
 - Preencher "Responsável" e "Motivo de perda" ao longo do uso.
 - Rever o plano do Notion: o histórico de edições é de 7 dias no gratuito, e as automações do Notion dependem do plano (por isso o resumo diário vai por Cron, não por automação).
 
@@ -365,3 +365,21 @@ Este é o ponto onde se pode estragar o site, por isso a ordem conta:
 - **Se a escrita dos passos falhar:** na marcação, os "Alertas" dizem "Marcação por atualizar à mão" (o cliente não vê nada de diferente); no convite e na proposta, o compositor diz "não foi atualizado"; na resposta sobre a chamada de acompanhamento, só fica no registo (é só a linha do histórico).
 - **Bases de ensaio** criadas dentro de `NOTION_PARENT`: "Pedidos (ensaio)" e "Pedidos (ensaio, sem passos)", com um pedido de ensaio cada ("Teste Fase 1", teste@example.com). Podem ser apagadas à mão depois de confirmada a hora de verão.
 - **Como se ensaiou:** em vez do servidor local, um programa chamou as funções e as rotas do próprio site (`deliverRequest`, `/api/studio/email`, `/api/meeting`, `/api/mid-call`) contra a base de ensaio, com o Resend simulado (nada foi enviado). As 50 verificações deram todas certo.
+
+### 8.10 Ordem das colunas e o SQL Server (2026-11-09)
+
+**Ordem** (escolhida pelo sócio): onde está o cliente, depois o que o formulário trouxe, depois os passos pela ordem do processo. Vale para a tabela e para a ficha de cada pedido. A API do Notion não muda a ordem das colunas, por isso arrastam-se à mão (os sócios fazem-no). A lista está em `COLUMN_ORDER` (`src/lib/proposal/steps.ts`), com as 54 colunas da base uma vez cada, e o guia do `/interno` mostra-a.
+
+| Grupo | Colunas |
+|---|---|
+| Resumo | Nome · Estado · Etapa atual · Responsável · Alertas |
+| Formulário | Email · Telefone · Empresa · Idioma · Serviços · Setor · País · Estimativa · Mensal (€) · Prazo · Mensagem · Origem · Recebido |
+| Até à chamada | Confirmação · Preparação da chamada · Documento de preparação · Valor Y (cliente) · Valor X (sugestões) · Convite · Marcação · Reunião · Chamada · Link da chamada · Chamada realizada |
+| Proposta | Proposta · Valor final · Contrato enviado · Válida até · Reunião a meio · Chamada de acompanhamento · Data do acompanhamento |
+| Contrato e sinal | Contrato assinado · Assinado em · Sinal de 25% · Valor do sinal · Sinal recebido em · Documento do sinal · Materiais · Materiais até |
+| Projeto até aos 100% | Chamada de validação · Fatura final · Fatura emitida em · Pagamento até · Pagamento final · Recibo · Lançamento |
+| Fecho | Motivo de perda · Histórico · Spam ou teste |
+
+Uma coluna nova acrescenta-se em `steps.ts` e também nesta lista.
+
+**SQL Server: não é preciso mudar nada.** A cópia em SQL (`src/lib/proposal/sql.ts`, `scripts/sql/nevima-db.sql`) guarda o que o formulário trouxe, no momento em que chega, e não lê nem escreve no Notion: as colunas novas não lhe chegam e não a partem. O acompanhamento (estados, passos, histórico) fica só no Notion, como já estava decidido (o Notion é onde se trabalha cada pedido; o SQL é o registo para consultas). Levar os passos para o SQL obrigaria o site a alterar linhas, e o utilizador `nevima_site` só pode acrescentar pedidos; seria uma decisão à parte (por exemplo, com a mudança para o Supabase, secção 7). Um reparo: as tabelas `PedidosProposta` e `PedidosParceria` têm uma coluna `Estado` (valores `novo`, `em_analise`, …) que fica sempre em `novo`, porque ninguém a atualiza. Não é o estado do pedido; o estado verdadeiro está no Notion.

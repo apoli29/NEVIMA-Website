@@ -192,6 +192,87 @@ export const STEP_COLUMNS: Column[] = [
   { name: "Spam ou teste", type: "checkbox" },
 ];
 
+/** The order of the columns in "Pedidos", in the table and in each
+    request's page (user, 2026-11-09): where the client is, then what the
+    form brought, then the steps in the order of the process. Notion's
+    API cannot order columns: the partners drag them by hand, following
+    this list, which the guide in /interno shows. */
+export const COLUMN_ORDER: { group: string; columns: string[] }[] = [
+  { group: "Resumo", columns: ["Nome", "Estado", "Etapa atual", "Responsável", "Alertas"] },
+  {
+    group: "Formulário",
+    columns: [
+      "Email",
+      "Telefone",
+      "Empresa",
+      "Idioma",
+      "Serviços",
+      "Setor",
+      "País",
+      "Estimativa",
+      "Mensal (€)",
+      "Prazo",
+      "Mensagem",
+      "Origem",
+      "Recebido",
+    ],
+  },
+  {
+    group: "Até à chamada",
+    columns: [
+      "Confirmação",
+      "Preparação da chamada",
+      "Documento de preparação",
+      "Valor Y (cliente)",
+      "Valor X (sugestões)",
+      "Convite",
+      "Marcação",
+      "Reunião",
+      "Chamada",
+      "Link da chamada",
+      "Chamada realizada",
+    ],
+  },
+  {
+    group: "Proposta",
+    columns: [
+      "Proposta",
+      "Valor final",
+      "Contrato enviado",
+      "Válida até",
+      "Reunião a meio",
+      "Chamada de acompanhamento",
+      "Data do acompanhamento",
+    ],
+  },
+  {
+    group: "Contrato e sinal",
+    columns: [
+      "Contrato assinado",
+      "Assinado em",
+      "Sinal de 25%",
+      "Valor do sinal",
+      "Sinal recebido em",
+      "Documento do sinal",
+      "Materiais",
+      "Materiais até",
+    ],
+  },
+  {
+    group: "Projeto até aos 100%",
+    columns: [
+      "Chamada de validação",
+      "Fatura final",
+      "Fatura emitida em",
+      "Pagamento até",
+      "Pagamento final",
+      "Recibo",
+      "Lançamento",
+    ],
+  },
+  { group: "Fecho", columns: ["Motivo de perda", "Histórico", "Spam ou teste"] },
+];
+
 /** The steps' selects, by name: what readPage reads back. */
 export const STEP_SELECTS = STEP_COLUMNS.filter((c) => c.type === "select").map((c) => c.name);
 

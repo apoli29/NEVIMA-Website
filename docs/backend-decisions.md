@@ -129,4 +129,8 @@ The plan is `docs/client-tracking-plan.md` (and `.pdf`); its section 8 is what p
 - **Formulas:** "Chamada" writes the weekday and the month in Portuguese itself ("Qui 26 nov, 15:00"), because Notion's `formatDate` writes them in English; "Valor do sinal" writes "612,63 €" with a comma. Read through the API, a formula is worked out in UTC: a summer call shows one hour early there. In the Notion app it should show the viewer's time; to be confirmed in the app with a summer date. Anything that reads the call's time by API (the daily summary, phase 4) reads "Reunião", not the formula.
 - Everything else (the steps after the contract, the views, "Ocultar quando vazia", "Responsável", "Motivo de perda", "Spam ou teste") is by hand in Notion.
 
+The columns' order in "Pedidos" (user, 2026-11-09): where the client is (Nome, Estado, Etapa atual, Responsável, Alertas), then what the form brought, then the steps in the order of the process. It is `COLUMN_ORDER` in `steps.ts`, shown in the guide; Notion's API cannot order columns, so the partners drag them by hand.
+
+SQL Server needs no change for this (checked 2026-11-09): the copy keeps what the form brought and never reads or writes Notion, so the new columns neither reach nor break it. The tracking stays in Notion only. The SQL tables' own `Estado` column stays at `novo`: nothing updates it, and it is not the request's state.
+
 Not in phase 1: the invitation's third choice ("contactar-nos"), the "Link da chamada" email, the daily summary, the Google Calendar trial (phases 2 to 5 of the plan).
