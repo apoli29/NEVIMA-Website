@@ -19,8 +19,12 @@ import type { PartnerRequest, ProposalRequest } from "./deliver";
    visitor's details.
 
    The database is Azure SQL's free offer, which pauses when unused: the
-   first connection after a pause is refused while it wakes, so a
-   refused write is tried once more after a short wait.
+   first connection after a pause is refused (error 40613) and starts the
+   wake, which "is generally about one minute" (Microsoft). One retry 20
+   seconds later was not enough: a request sent in the evening, after a
+   quiet afternoon, reached Notion and not SQL (user, 2026-11-09). A
+   refused write is now tried again after 20, 40 and 60 seconds, two
+   minutes in all, inside the routes' maxDuration.
 
    Environment variables (set in Vercel, never in the repository):
    - MSSQL_SERVER    e.g. nevima-rg-de.database.windows.net
@@ -30,8 +34,8 @@ import type { PartnerRequest, ProposalRequest } from "./deliver";
    Without all four, nothing is written and nothing fails.
    ================================================================== */
 
-/** Time to wait before the second try, while a paused database wakes. */
-const RETRY_AFTER_MS = 20_000;
+/** The waits before each new try, while a paused database wakes. */
+const RETRY_WAITS_MS = [20_000, 40_000, 60_000];
 
 function config(): sql.config | null {
   const { MSSQL_SERVER, MSSQL_DATABASE, MSSQL_USER, MSSQL_PASSWORD } = process.env;
@@ -101,19 +105,20 @@ function why(error: unknown) {
   return "error";
 }
 
-/** Runs the insert, once more after a short wait if it was refused.
+/** Runs the insert, again after each wait while it is refused.
     The new row's id, or null when nothing was written. */
 async function save(kind: "proposal" | "partner", insert: Insert): Promise<number | null> {
   const settings = config();
   if (!settings) return null;
-  for (let attempt = 1; attempt <= 2; attempt++) {
+  for (let attempt = 1; attempt <= RETRY_WAITS_MS.length + 1; attempt++) {
     try {
       const id = await insert(await connect(settings));
       console.info("[nevima:sql] saved", kind, id);
       return id;
     } catch (error) {
       console.error("[nevima:sql] failed", kind, `attempt ${attempt}`, why(error));
-      if (attempt === 1) await new Promise((wake) => setTimeout(wake, RETRY_AFTER_MS));
+      const wait = RETRY_WAITS_MS[attempt - 1];
+      if (wait !== undefined) await new Promise((wake) => setTimeout(wake, wait));
     }
   }
   return null;

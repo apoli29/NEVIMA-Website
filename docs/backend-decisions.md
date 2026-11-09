@@ -99,11 +99,27 @@ Beside Notion, not instead of it: Notion stays where the studio works on a reque
 
 - **Where:** Azure for Students, Azure SQL Database free offer (serverless, paused until next month when the free amount runs out, so nothing is ever charged). Server `nevima-rg-de` in Germany West Central, database `Nevima`, resource group `nevima-rg`. The subscription may only deploy in a few regions (Azure Policy "Allowed resource deployment regions"), and the free offer is not available in Spain Central, where a first, empty server `nevima-sql` was made and then deleted (user, 2026-11-03).
 - **Schema:** `scripts/sql/nevima-db.sql`, run whole in the `Nevima` database (VS Code with the SQL Server (mssql) extension, signed in as the server admin). It can be run again: it makes what is missing, adds new columns and updates the procedure and the view, deleting nothing. Partner requests go to `PedidosParceria` (contact, each answer in a column, the raw answers as JSON). One row per proposal request in `PedidosProposta` (contact, every answer in a column of its own, the estimate, and the raw answers as JSON), one row per choice in `PedidoServicos`, `PedidoIdiomas` and `PedidoFuncionalidades`, and `vw_PedidosResumo` to read them.
-- **Writing:** `src/lib/proposal/sql.ts`, called from `/api/proposal` and `/api/partner` through `after()`, once the visitor has their answer, so the database never makes anyone wait and never decides whether a request was delivered (Notion still does). The free database pauses when unused and refuses the first connection while it wakes: a refused write is tried once more 20 seconds later (`maxDuration` 60). Failures reach the log as `[nevima:sql]` with the error's code only, never the visitor's details.
+- **Writing:** `src/lib/proposal/sql.ts`, called from `/api/proposal` and `/api/partner` through `after()`, once the visitor has their answer, so the database never makes anyone wait and never decides whether a request was delivered (Notion still does). The free database pauses when unused and refuses the first connection while it wakes: a refused write is tried again after 20, 40 and 60 seconds (`maxDuration` 240; Hobby with Fluid compute allows 300). Until 2026-11-09 there was one retry after 20 seconds, and a request sent in the evening after a quiet afternoon reached Notion and not SQL: Microsoft gives "about one minute" for a paused database to wake. A request missing from SQL is put back by hand: its Notion page keeps the raw answers under "Respostas" (see **Putting back a missing request**). Failures reach the log as `[nevima:sql]` with the error's code only, never the visitor's details.
 - **Access:** the site signs in as `nevima_site`, a contained database user that may only run `dbo.usp_InserirPedidoProposta` and `dbo.usp_InserirPedidoParceria`: it cannot read, change or delete anything. The script grants both every time it runs, once the user exists. The firewall allows every address (Vercel's change from request to request), so the protection is the encrypted connection and that user's password. Reading and deleting is done with the admin account, from the partners' own computers (their IP addresses are added to the firewall).
 - **No fixed lists in the tables (2026-11-05):** the client kind (`Publico`) had a CHECK limiting it to business and personal; when the form gained non-profit associations, such a request would have been refused by SQL and kept only in Notion. The CHECK was dropped: a new option in the form must never stop a row being written. The words for each option come from `dbo.Rotulos` instead.
 - **Reading (user, 2026-11-05):** `SELECT * FROM dbo.vw_Pedidos ORDER BY Id DESC` and `dbo.vw_Parcerias` list the requests in Portuguese (Lisbon time, the services and the estimate written out); `EXEC dbo.Ficha <Id>` and `EXEC dbo.FichaParceria <Id>` show one request question by question, read from its raw answers, so a new question shows up without a new column. The words come from `dbo.Rotulos`, written from the form's own lists by `npx tsx scripts/sql/rotulos.ts` (run it after changing an option, then run the script again); the questions' names and groups are in `dbo.Perguntas`, in the script. A question added to the form needs its line there to appear in the ficha.
 - **Vercel, Production:** `MSSQL_SERVER` (`nevima-rg-de.database.windows.net`), `MSSQL_DATABASE` (`Nevima`), `MSSQL_USER` (`nevima_site`), `MSSQL_PASSWORD`. Without all four nothing is written and nothing fails.
+
+**Putting back a missing request** (as the admin, in a New Query on the Nevima database): copy the JSON under "Respostas" in its Notion page and the contact from the page's properties, then
+
+```sql
+DECLARE @Id INT;
+EXEC dbo.usp_InserirPedidoProposta            -- dbo.usp_InserirPedidoParceria for a partner
+    @Respostas = N'<the JSON from Notion; every ' doubled as ''>',
+    @Contacto  = N'{"name":"…","email":"…","phone":"…","company":"…","message":"…"}',
+    @Idioma    = 'pt',
+    @Origem    = 'other',                       -- not for partners
+    @NovoId    = @Id OUTPUT;
+UPDATE dbo.PedidosProposta SET CriadoEm = '<Recebido in Notion, in UTC>' WHERE Id = @Id;
+EXEC dbo.Ficha @Id;
+```
+
+The estimate is not in the JSON, so its columns stay empty for a request put back this way.
 
 Open:
 
