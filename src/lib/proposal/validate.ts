@@ -33,7 +33,6 @@ import {
   MODELS,
   PARTNER_YES_NO,
   PROJECT_TYPES,
-  SCREENS,
   STARTS,
   type PartnerAnswers,
 } from "./partner";
@@ -242,19 +241,17 @@ export function readContact(raw: unknown, { company: needsCompany = true } = {})
 export function readPartner(raw: unknown): Result<PartnerAnswers> {
   if (!isObject(raw)) return { ok: false, error: "answers" };
   const project = one(PROJECT_TYPES, raw.project);
-  const screens = one(SCREENS, raw.screens);
   const inspiration = one(PARTNER_YES_NO, raw.inspiration);
   const start = one(STARTS, raw.start);
   const delivery = one(DELIVERIES, raw.delivery);
   const model = one(MODELS, raw.model);
   const credit = one(CREDITS, raw.credit);
-  if (!project || !screens || !inspiration || !start || !delivery || !model || !credit) {
+  if (!project || !inspiration || !start || !delivery || !model || !credit) {
     return { ok: false, error: "answers" };
   }
   if (raw.compatible !== "yes") return { ok: false, error: "compatible" };
   const answers: PartnerAnswers = {
     project,
-    screens,
     inspiration,
     compatible: "yes",
     start,
@@ -263,11 +260,6 @@ export function readPartner(raw: unknown): Result<PartnerAnswers> {
     credit,
     nda: raw.nda === true,
   };
-  if (screens === "20+") {
-    const estimate = text(raw.screensEstimate, MAX.short);
-    if (!estimate) return { ok: false, error: "screensEstimate" };
-    answers.screensEstimate = estimate;
-  }
   if (inspiration === "yes") {
     const link = text(raw.inspirationLink, MAX.url);
     if (link === null) return { ok: false, error: "inspirationLink" };

@@ -8,7 +8,6 @@ import {
   MODELS,
   PARTNER_YES_NO,
   PROJECT_TYPES,
-  SCREENS,
   STARTS,
   type PartnerAnswers,
 } from "./partner";
@@ -226,8 +225,6 @@ function partnerPage(request: PartnerRequest) {
       Telefone: prop.phone(contact.phone),
       Empresa: prop.text(contact.company),
       Projeto: prop.select(pt(PROJECT_TYPES, answers.project)),
-      "Ecrãs": prop.select(pt(SCREENS, answers.screens)),
-      "Ecrãs (estimativa)": prop.text(answers.screensEstimate ?? ""),
       "Inspiração": prop.select(pt(PARTNER_YES_NO, answers.inspiration)),
       Link: prop.text(answers.inspirationLink ?? ""),
       "Início": prop.select(pt(STARTS, answers.start)),
@@ -410,7 +407,7 @@ export async function deliverPartner(request: PartnerRequest): Promise<boolean> 
   const noticed = await notify(
     `Novo parceiro: ${contact.company || contact.name}`,
     [
-      `Projeto: ${pt(PROJECT_TYPES, answers.project)} · Ecrãs: ${pt(SCREENS, answers.screens)}`,
+      `Projeto: ${pt(PROJECT_TYPES, answers.project)}`,
       `Início: ${pt(STARTS, answers.start)} · Entrega: ${pt(DELIVERIES, answers.delivery)}`,
       `Modelo: ${pt(MODELS, answers.model)} · Crédito: ${pt(CREDITS, answers.credit)} · NDA: ${answers.nda ? "Sim" : "Não"}`,
       `Responder em: ${REPLY_IN[request.lang]}`,

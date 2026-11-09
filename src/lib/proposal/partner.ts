@@ -23,14 +23,15 @@ export const PROJECT_TYPES = [
 ] as const;
 export type ProjectTypeId = (typeof PROJECT_TYPES)[number]["id"];
 
-/** How many screens or pages (user, 2026-10-18). Past twenty, a field
-    asks roughly how many. */
+/** How many screens or pages (user, 2026-10-18). No longer asked (user,
+    2026-11-09), as the free proposal no longer asks how many pages; the
+    list stays only so the requests sent before still read in words
+    (Notion's "Ecrãs", SQL's Ecras, through scripts/sql/rotulos.ts). */
 export const SCREENS = [
   { id: "1-10", label: "1–10", pt: "1–10" },
   { id: "11-20", label: "11–20", pt: "11–20" },
   { id: "20+", label: "More than 20", pt: "Mais de 20" },
 ] as const;
-export type ScreensId = (typeof SCREENS)[number]["id"];
 
 /** How soon the work would start (user, 2026-10-18). */
 export const STARTS = [
@@ -88,9 +89,6 @@ export const NOT_COMPATIBLE: Copy = {
 
 export type PartnerAnswers = {
   project: ProjectTypeId;
-  screens: ScreensId;
-  /** Past twenty: roughly how many, in the partner's words. */
-  screensEstimate?: string;
   inspiration: PartnerYesNo;
   /** A link to the design or brand guidelines, when there are any. */
   inspirationLink?: string;

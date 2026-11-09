@@ -246,6 +246,16 @@ const URGENT_NOTE: Copy = {
   pt: "Um prazo urgente aumenta o preço em 40%.",
 };
 
+/* A development company, beside the three kinds of client (user,
+   2026-11-09): not an answer of this form (it is never sent, and the
+   server does not know it), but the way to the partners' form from
+   every button that opens this one. */
+const PARTNER_OPTION = [{ id: "partner", label: "A development company", pt: "Uma empresa de desenvolvimento" }] as const;
+const PARTNER_OPTION_NOTE: Copy = {
+  en: "A development company goes on to the partnership form.",
+  pt: "Uma empresa de desenvolvimento segue para o formulário de parceria.",
+};
+
 const NO_REFERENCES: Copy<readonly { id: "none"; label: string }[]> = {
   en: [{ id: "none", label: "I don't have any" }],
   pt: [{ id: "none", label: "Não tenho" }],
@@ -771,6 +781,7 @@ export function StepScreen({
   retryEstimate,
   send,
   titleRef,
+  onPartner,
 }: {
   step: StepId;
   draft: Draft;
@@ -782,6 +793,9 @@ export function StepScreen({
   retryEstimate: () => void;
   send: SendState;
   titleRef: React.Ref<HTMLHeadingElement>;
+  /** "A development company" chosen as who the website is for: the frame
+      goes on to the partners' form (user, 2026-11-09). */
+  onPartner?: () => void;
 }) {
   const reduce = useReducedMotion() ?? false;
   const uid = useId();
@@ -872,21 +886,27 @@ export function StepScreen({
             id="audience"
             label={t("Who is the website for?", "O website é para…")}
             error={errors.audience}
-            footnote={t(AUDIENCE_NOTE)}
+            footnote={`${t(AUDIENCE_NOTE)} ${t(PARTNER_OPTION_NOTE)}`}
           >
             <Segmented
               name="audience"
-              options={list(AUDIENCES)}
+              options={[...list(AUDIENCES), ...list(PARTNER_OPTION)]}
               value={draft.audience}
               // An association's pages are not a business's: switching
-              // between the two lists starts the choice again.
-              onChange={(audience) =>
+              // between the two lists starts the choice again. A
+              // development company is not an answer of this form: it
+              // goes on to the partners' (user, 2026-11-09).
+              onChange={(audience) => {
+                if (audience === "partner") {
+                  onPartner?.();
+                  return;
+                }
                 setDraft(
                   (audience === "nonprofit") !== (draft.audience === "nonprofit")
                     ? { audience, pageTypes: [] }
                     : { audience },
-                )
-              }
+                );
+              }}
               labelledBy="audience-q"
             />
           </Question>

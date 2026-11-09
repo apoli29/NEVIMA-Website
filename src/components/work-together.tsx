@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { useReducedMotion } from "motion/react";
 import { useT } from "@/lib/use-lang";
+import { PARTNER_CHOSEN } from "./form-kind";
 
 /* The two forms are fetched as the section comes near (within a screen
    and a half), not with the page: with every question and the estimate
@@ -157,7 +158,14 @@ export function WorkTogether() {
       if (link instanceof HTMLAnchorElement && new URL(link.href, window.location.href).hash === "#partner") ask();
     };
     document.addEventListener("click", onClick, true);
-    return () => document.removeEventListener("click", onClick, true);
+    // "A development company" chosen in the free proposal, here or in the
+    // overlay (user, 2026-11-09): the section turns to the partners' form,
+    // which holds the same answers as the overlay's.
+    window.addEventListener(PARTNER_CHOSEN, ask);
+    return () => {
+      document.removeEventListener("click", onClick, true);
+      window.removeEventListener(PARTNER_CHOSEN, ask);
+    };
   }, []);
 
   const ASK: Record<Audience, { en: string; pt: string }> = {
