@@ -3,6 +3,7 @@ import { estimate } from "@/lib/proposal/estimate";
 import { deliverRequest, waitBefore, type ProposalRequest } from "@/lib/proposal/deliver";
 import { allow, caught, clientIp, json, readJson } from "@/lib/proposal/guard";
 import { saveRequestToSql } from "@/lib/proposal/sql";
+import { markSaved } from "@/lib/proposal/sync";
 import { readAnswers, readContact } from "@/lib/proposal/validate";
 
 /* The request for a final proposal. The estimate is worked out again
@@ -56,7 +57,11 @@ export async function POST(request: Request) {
   // A copy in SQL Server, written once the visitor has their answer, so
   // the database never makes them wait. Notion still decides whether the
   // request was delivered (user, 2026-11-01; sql.ts).
-  after(() => saveRequestToSql(proposal, elapsed));
+  // Once it is there, the Notion page's "SQL" box is ticked; a copy that
+  // failed is left unticked for the nightly run to put back (sync.ts).
+  after(async () => {
+    if ((await saveRequestToSql(proposal, elapsed)) !== null) await markSaved("proposal", proposal.contact.email, proposal.at);
+  });
 
   const delivered = await deliverRequest(proposal);
   if (!delivered) return json({ error: "not_configured" }, 503);

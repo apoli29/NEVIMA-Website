@@ -184,7 +184,9 @@ CREATE OR ALTER PROCEDURE dbo.usp_InserirPedidoProposta
     @Origem      VARCHAR(30)   = NULL,
     @TempoMs     INT           = NULL,
     @Estimativa  NVARCHAR(MAX) = NULL,   -- estimate (JSON), opcional
-    @NovoId      INT           OUTPUT
+    @NovoId      INT           OUTPUT,
+    @CriadoEm    DATETIME2(0)  = NULL,   -- a hora do pedido em UTC (a mesma do Notion); vazio = agora
+    @Inserido    BIT           = NULL OUTPUT  -- 1 = gravado agora; 0 = já lá estava
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -195,10 +197,27 @@ BEGIN
     IF @Estimativa IS NOT NULL AND ISJSON(@Estimativa) <> 1
         SET @Estimativa = NULL;
 
+    DECLARE @Quando DATETIME2(0)  = COALESCE(@CriadoEm, SYSUTCDATETIME());
+    DECLARE @Email  NVARCHAR(254) = LTRIM(RTRIM(JSON_VALUE(@Contacto, '$.email')));
+    SET @NovoId = NULL;
+
     BEGIN TRANSACTION;
 
+    -- O mesmo pedido já guardado? O site e a recuperação noturna podem
+    -- tentar gravar o mesmo pedido: é o mesmo se tiver o mesmo email e a
+    -- mesma hora (com 2 minutos de folga). Nesse caso não se grava de novo.
+    SELECT TOP (1) @NovoId = Id
+      FROM dbo.PedidosProposta WITH (UPDLOCK, HOLDLOCK)
+     WHERE Email = @Email AND ABS(DATEDIFF(SECOND, CriadoEm, @Quando)) <= 120;
+    IF @NovoId IS NOT NULL
+    BEGIN
+        COMMIT TRANSACTION;
+        SET @Inserido = 0;
+        RETURN;
+    END
+
     INSERT INTO dbo.PedidosProposta (
-        Idioma, Origem, TempoPreenchimentoMs,
+        CriadoEm, Idioma, Origem, TempoPreenchimentoMs,
         Nome, Email, Telefone, Empresa, Mensagem,
         Publico, Setor, SetorOutro, Pais, PaisOutro,
         Design, Paginas, IdiomasOutro, TipoFormularios, Formularios, Complexo, Textos,
@@ -209,7 +228,7 @@ BEGIN
         RespostasJson
     )
     SELECT
-        @Idioma, @Origem, @TempoMs,
+        @Quando, @Idioma, @Origem, @TempoMs,
         LTRIM(RTRIM(c.Nome)), LTRIM(RTRIM(c.Email)),
         NULLIF(LTRIM(RTRIM(c.Telefone)), N''), NULLIF(LTRIM(RTRIM(c.Empresa)), N''), NULLIF(LTRIM(RTRIM(c.Mensagem)), N''),
         NULLIF(r.Publico, ''), NULLIF(r.Setor, N''), NULLIF(r.SetorOutro, N''), NULLIF(r.Pais, N''), NULLIF(r.PaisOutro, N''),
@@ -281,6 +300,7 @@ BEGIN
     WHERE j.[type] = 1 AND LEN(LTRIM(RTRIM(j.[value]))) > 0;
 
     COMMIT TRANSACTION;
+    SET @Inserido = 1;
 END
 GO
 
@@ -337,7 +357,9 @@ CREATE OR ALTER PROCEDURE dbo.usp_InserirPedidoParceria
     @Contacto   NVARCHAR(MAX),          -- contact (JSON)
     @Idioma     CHAR(2),
     @TempoMs    INT = NULL,
-    @NovoId     INT OUTPUT
+    @NovoId     INT OUTPUT,
+    @CriadoEm   DATETIME2(0) = NULL,        -- a hora do pedido em UTC (a mesma do Notion); vazio = agora
+    @Inserido   BIT          = NULL OUTPUT  -- 1 = gravado agora; 0 = já lá estava
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -346,15 +368,32 @@ BEGIN
     IF ISJSON(@Respostas) <> 1 OR ISJSON(@Contacto) <> 1
         THROW 50001, N'As respostas ou o contacto não são JSON válido.', 1;
 
+    DECLARE @Quando DATETIME2(0)  = COALESCE(@CriadoEm, SYSUTCDATETIME());
+    DECLARE @Email  NVARCHAR(254) = LTRIM(RTRIM(JSON_VALUE(@Contacto, '$.email')));
+    SET @NovoId = NULL;
+
+    BEGIN TRANSACTION;
+
+    -- O mesmo pedido já guardado? (ver usp_InserirPedidoProposta)
+    SELECT TOP (1) @NovoId = Id
+      FROM dbo.PedidosParceria WITH (UPDLOCK, HOLDLOCK)
+     WHERE Email = @Email AND ABS(DATEDIFF(SECOND, CriadoEm, @Quando)) <= 120;
+    IF @NovoId IS NOT NULL
+    BEGIN
+        COMMIT TRANSACTION;
+        SET @Inserido = 0;
+        RETURN;
+    END
+
     INSERT INTO dbo.PedidosParceria (
-        Idioma, TempoPreenchimentoMs,
+        CriadoEm, Idioma, TempoPreenchimentoMs,
         Nome, Email, Telefone, Empresa, Mensagem,
         Projeto, Ecras, EcrasEstimativa, Inspiracao, LinkInspiracao,
         Inicio, Entrega, Modelo, Credito, NDA,
         RespostasJson
     )
     SELECT
-        @Idioma, @TempoMs,
+        @Quando, @Idioma, @TempoMs,
         LTRIM(RTRIM(c.Nome)), LTRIM(RTRIM(c.Email)),
         NULLIF(LTRIM(RTRIM(c.Telefone)), N''), NULLIF(LTRIM(RTRIM(c.Empresa)), N''), NULLIF(LTRIM(RTRIM(c.Mensagem)), N''),
         NULLIF(r.Projeto, N''), NULLIF(r.Ecras, N''), NULLIF(r.EcrasEstimativa, N''), NULLIF(r.Inspiracao, N''), NULLIF(r.LinkInspiracao, N''),
@@ -381,6 +420,8 @@ BEGIN
          ) AS r;
 
     SET @NovoId = CAST(SCOPE_IDENTITY() AS INT);
+    COMMIT TRANSACTION;
+    SET @Inserido = 1;
 END
 GO
 
