@@ -109,20 +109,20 @@ export const PRICING = {
     // in the same proportion, to 5.
     identity: { pt: 85, "es-it": 95, us: 150 } satisfies ByMarket,
     /** Portuguese and English are included; each other language costs
-        the same, in every country (user, 2026-10-19; contract clause
-        11.4). More than three is quoted. */
-    perLanguage: 35,
+        the same, in every country (user, 2026-10-19; 25 since 2026-11-05,
+        contract v1.15, clause 11.4). */
+    perLanguage: 25,
     /* Writing the website's texts, when the client has none, is included:
        whether there are texts or not never changes the price (user,
        2026-11-04; contract v1.14, clause 11.1). */
     /** The second level of what a website does (user, 2026-10-29), as
         fixed prices for Portugal; other markets scaled by featuresMarket.
-        A simple form is one with a single automatic email and its answers
-        saved in a database; from there the process is manual. Anything
-        beyond that, and more than three forms, has no price yet: it is
-        said so in the estimate. */
+        A manual form is one with a single automatic email and its answers
+        saved in a database; from there every email is written by hand. An
+        automated one (templates with placeholders) has its price set in the
+        proposal (contract v1.15, clause 15.1). */
     features: {
-      /** By how many simple forms. */
+      /** By how many (manual) forms. */
       forms: 55,
       /** The sign-up, its welcome email and its record in the database. */
       newsletter: 39,
@@ -157,8 +157,8 @@ export const PRICING = {
   photo: { photos: 245, "photos-video": 370 },
   /** Shown under the photo line, as the contract sets it (clause 10.3). */
   photoTravel: {
-    en: "Travel within 30 km of Arcozelo is included. Beyond that, it is charged per km, as set in your proposal.",
-    pt: "A deslocação até 30 km de Arcozelo está incluída. A partir daí, é cobrada ao km, como fica definido na proposta.",
+    en: "Travel within 30 km of Vila Nova de Gaia is included. Beyond that, it is charged per km, as set in your proposal.",
+    pt: "A deslocação até 30 km de Vila Nova de Gaia está incluída. A partir daí, é cobrada ao km, como fica definido na proposta.",
   } satisfies Copy,
 
   /** SEO and GEO are sold only with a website we built, and priced from it

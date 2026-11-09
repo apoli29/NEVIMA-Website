@@ -108,7 +108,7 @@ const FLOWS: { title: string; when: string; chain: { app: AppId; does: string }[
     ],
   },
   {
-    title: "O cliente responde sobre a chamada a meio do projeto",
+    title: "O cliente responde sobre a chamada de acompanhamento",
     when: "Clica em sim ou não no email da proposta final.",
     chain: [
       { app: "mail", does: "O botão abre o site." },
@@ -185,11 +185,11 @@ const STEPS: Step[] = [
     who: "Estúdio",
     apps: ["site", "notion", "resend", "gmail"],
     body: "Separador \"Proposta final\": procurar o cliente pelo email (sem pedido ligado, o email não sai, porque os botões precisam dele). Preencher o valor final e, se houver, o valor mensal; escrever os materiais em falta, que aparecem numa caixa; se for preciso, acrescentar um texto da proposta. Anexar o contrato em PDF, escolher quem assina, ver o email e carregar em Enviar.",
-    behind: "O contrato vai em anexo e o nome do ficheiro aparece no email, para o cliente o procurar. A nota de IVA por baixo do valor pode ser alterada. O email traz dois botões, sim e não, para o cliente dizer se quer a chamada a meio do projeto, que é opcional.",
+    behind: "O contrato vai em anexo e o nome do ficheiro aparece no email, para o cliente o procurar. A nota de IVA por baixo do valor pode ser alterada. O email traz dois botões, sim e não, para o cliente dizer se quer a chamada de acompanhamento, que é opcional.",
     notion: "Estado Proposta enviada, \"Valor final\" preenchido e \"Contrato enviado\" assinalado.",
   },
   {
-    title: "O cliente responde sobre a chamada a meio do projeto",
+    title: "O cliente responde sobre a chamada de acompanhamento",
     who: "Cliente",
     apps: ["mail", "site", "notion", "gmail"],
     body: "O cliente clica em sim ou não no email. Abre-se uma página do site com a resposta e um botão para a confirmar. Se a resposta for sim, o estúdio envia depois, à mão, um email para marcar a data.",
@@ -220,7 +220,7 @@ const LIMITS = [
   "O plano gratuito do Resend envia 100 emails por dia e 3000 por mês, contando as confirmações e os avisos automáticos.",
   "O contrato vai num só PDF, até 4 MB.",
   "Uma só chave para os dois; mudá-la na Vercel fecha todas as sessões abertas. A sessão dura 30 dias em cada navegador.",
-  "Os links dos botões (horários e chamada a meio do projeto) deixam de funcionar se a chave dos links (LINKS_SECRET) mudar na Vercel.",
+  "Os links dos botões (horários e chamada de acompanhamento) deixam de funcionar se a chave dos links (LINKS_SECRET) mudar na Vercel.",
   "A página não impede dois clientes de escolher o mesmo horário: oferecer horários diferentes a cada um.",
   "Nada do que se escreve aqui é guardado: só o que é enviado, e o que fica no Notion.",
 ];
@@ -233,7 +233,7 @@ const SIMPLE: { who: Who; text: string }[] = [
   { who: "Cliente", text: "Escolhe um horário no email e confirma-o no site. O Notion fica com a data." },
   { who: "Estúdio", text: "Cria a videochamada, envia o link à mão e faz a chamada." },
   { who: "Estúdio", text: "Envia daqui a proposta final, com o contrato em anexo e os materiais em falta." },
-  { who: "Cliente", text: "Diz nos botões se quer a chamada a meio do projeto e responde ao email com o contrato assinado." },
+  { who: "Cliente", text: "Diz nos botões se quer a chamada de acompanhamento e responde ao email com o contrato assinado." },
   { who: "Estúdio", text: "Marca o pedido como Ganho ou Perdido no Notion. O projeto começa quando houver todos os materiais." },
 ];
 
@@ -241,7 +241,7 @@ const BY_HAND = [
   "Preparar a chamada no Notion e preencher os valores X e Y.",
   "Criar a videochamada e enviar o link ao cliente.",
   "Mudar o estado para Reunião feita, Ganho ou Perdido.",
-  "Se o cliente disser sim, enviar o email para marcar a chamada a meio do projeto.",
+  "Se o cliente disser sim, enviar o email para marcar a chamada de acompanhamento.",
 ];
 
 /** Pressing "Enviar", in order. */
@@ -258,7 +258,7 @@ const SEND = [
 
 const ACCESS = [
   { who: "Cliente", can: "Receber os emails, responder-lhes e usar os botões do seu próprio pedido.", cannot: "Entrar nesta página, ver o Notion, a caixa do estúdio ou outros pedidos, ou enviar emails em nome do estúdio. Ter o email dele preenchido aqui só diz para onde enviar." },
-  { who: "Quem receber um link reencaminhado", can: "Abrir a página do botão e confirmar ou mudar o horário, ou a resposta sobre a chamada a meio do projeto, desse pedido. O link não identifica quem clica.", cannot: "Ver nome, email ou telefone do cliente, ou usar o link noutro pedido: a assinatura deixa de valer." },
+  { who: "Quem receber um link reencaminhado", can: "Abrir a página do botão e confirmar ou mudar o horário, ou a resposta sobre a chamada de acompanhamento, desse pedido. O link não identifica quem clica.", cannot: "Ver nome, email ou telefone do cliente, ou usar o link noutro pedido: a assinatura deixa de valer." },
   { who: "Visitante do site", can: "Preencher os formulários e ver a estimativa das suas respostas.", cannot: "Ver a tabela de preços (só o servidor a tem) ou entrar nesta página." },
   { who: "Quem tiver a STUDIO_KEY", can: "Entrar aqui, procurar pedidos em \"Pedidos\" pelo email e enviar emails como ola@nevima.studio para qualquer endereço. Atualiza assim o estado desses pedidos.", cannot: "Ver as chaves, abrir o Notion, o Gmail ou o Resend. Não fica registado qual dos dois sócios enviou: \"Assinado por\" é só o nome no email." },
   { who: "Quem tiver acesso à Vercel", can: "Ver e mudar todas as chaves, ler os registos e publicar código. É o acesso mais sensível.", cannot: "" },
@@ -277,7 +277,7 @@ const FAILURES = [
   { when: "O horário fica marcado e o aviso falha", then: "O Notion tem a data e a coluna \"Alertas\" regista que o aviso não saiu.", todo: "Ver as colunas \"Reunião\" e \"Alertas\" no Notion." },
   { when: "O cliente usa um botão antigo do convite", then: "Se o horário ainda não passou, a data muda. Com o pedido em Reunião feita, Proposta enviada, Ganho ou Perdido, o estado não muda. O estúdio é avisado.", todo: "Ver se a nova data ainda faz sentido e falar com o cliente." },
   { when: "O cliente escolhe um horário que já passou", then: "O site recusa e a página diz que o horário já passou.", todo: "Enviar novo convite." },
-  { when: "A resposta sobre a chamada a meio não entra no Notion", then: "Se o aviso ao estúdio sair, o cliente vê sucesso e o aviso diz para atualizar à mão. Se também falhar, o cliente vê o erro.", todo: "Atualizar à mão \"Reunião a meio\"." },
+  { when: "A resposta sobre a chamada de acompanhamento não entra no Notion", then: "Se o aviso ao estúdio sair, o cliente vê sucesso e o aviso diz para atualizar à mão. Se também falhar, o cliente vê o erro.", todo: "Atualizar à mão \"Reunião a meio\"." },
   { when: "A resposta entra no Notion e o aviso falha", then: "A coluna \"Reunião a meio\" tem a resposta e \"Alertas\" regista que o aviso não saiu.", todo: "Ver as duas colunas. Se a resposta for sim, enviar o email para marcar a data." },
   { when: "Muda a LINKS_SECRET", then: "Todos os botões já enviados deixam de funcionar: a página diz que o link não é válido.", todo: "Não a mudar sem necessidade, ou reenviar os emails pendentes." },
   { when: "SITE_URL errado ou em falta", then: "As imagens dos emails não carregam e os botões apontam para o endereço errado.", todo: "Definir o endereço real na Vercel e publicar de novo." },
@@ -303,7 +303,7 @@ const ROUTES = [
   { path: "/meeting", who: "Link assinado", what: "Mostra o horário escolhido. Abrir a página não marca nada." },
   { path: "/api/meeting", who: "Link assinado", what: "Marca o horário no Notion e avisa o estúdio." },
   { path: "/api/meeting/ics", who: "Link assinado", what: "Dá o ficheiro de calendário: só tem a hora e o email do estúdio." },
-  { path: "/mid-call", who: "Link assinado", what: "Mostra a resposta sobre a chamada a meio do projeto. Abrir a página não regista nada." },
+  { path: "/mid-call", who: "Link assinado", what: "Mostra a resposta sobre a chamada de acompanhamento. Abrir a página não regista nada." },
   { path: "/api/mid-call", who: "Link assinado", what: "Guarda a resposta no Notion e avisa o estúdio." },
   { path: "/interno", who: "Chave", what: "Sem sessão válida mostra a porta; com sessão, esta página. Sem links para ela e fora dos motores de busca." },
   { path: "/api/studio/login", who: "Público", what: "Compara a chave e devolve o cookie da sessão; logo a seguir, a porta confirma que o navegador o guardou e diz se não guardou." },
@@ -323,7 +323,7 @@ const NUMBERS = [
   "Proposta e parceiros: 5 pedidos em 15 minutos por IP, e um pedido por email em 24 horas.",
   "Estimativa: 30 cálculos em 10 minutos por IP.",
   "Entrada nesta página: 10 tentativas por minuto por IP.",
-  "Marcar horário e responder sobre a chamada a meio: 10 vezes em 15 minutos por IP.",
+  "Marcar horário e responder sobre a chamada de acompanhamento: 10 vezes em 15 minutos por IP.",
   "Estes limites por IP ficam na memória de cada instância do servidor e são esquecidos quando ela reinicia: travam um script simples, não um ataque determinado.",
   "Pedidos de formulário: até 16 KB. Contrato: um PDF até 4 MB.",
   "Notion e Resend: cada pedido do site espera até 10 segundos pela resposta.",

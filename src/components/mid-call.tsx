@@ -6,7 +6,7 @@ import { PHONES, STUDIO_EMAIL } from "@/lib/proposal/mail";
 import { Wordmark } from "./wordmark";
 
 /* ==================================================================
-   The answer about the call midway through the project
+   The answer about the follow-up call
 
    Where the final proposal's two buttons lead (src/lib/proposal/
    offer.ts). The call is optional, so the client says whether they want
@@ -24,10 +24,10 @@ type State = "idle" | "sending" | "saved" | "failed";
 
 const copy = {
   en: {
-    tag: "Mid-project call",
+    tag: "Follow-up call",
     chosen: "Your answer",
-    yes: "With a call midway through the project.",
-    no: "Without a call midway through the project.",
+    yes: "With a follow-up call.",
+    no: "Without a follow-up call.",
     confirm: "Confirm this answer",
     sending: "Saving…",
     saved: "Answer saved.",
@@ -40,10 +40,10 @@ const copy = {
     help: "Any questions:",
   },
   pt: {
-    tag: "Chamada a meio do projeto",
+    tag: "Chamada de acompanhamento",
     chosen: "Resposta escolhida",
-    yes: "Com chamada a meio do projeto.",
-    no: "Sem chamada a meio do projeto.",
+    yes: "Com chamada de acompanhamento.",
+    no: "Sem chamada de acompanhamento.",
     confirm: "Confirmar esta resposta",
     sending: "A guardar…",
     saved: "Resposta guardada.",

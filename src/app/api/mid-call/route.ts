@@ -3,7 +3,7 @@ import { allow, clientIp, json, readJson } from "@/lib/proposal/guard";
 import { readMidCall } from "@/lib/proposal/meeting";
 import { addAlert, getRequest, prop, updatePage } from "@/lib/proposal/notion";
 
-/* The client's answer about the call midway through the project, confirmed
+/* The client's answer about the follow-up call, confirmed
    on the page the final proposal's buttons lead to. The request's page in
    Notion gets it, and the studio a notice. Answering again changes it: the
    last answer holds, and the studio is told each time. */
@@ -26,11 +26,11 @@ export async function POST(request: Request) {
   const told = await sendEmail({
     to: studioInbox(),
     reply_to: page.email || undefined,
-    subject: `Chamada a meio do projeto: ${answer.toLowerCase()} (${page.name}${page.company ? `, ${page.company}` : ""})`,
+    subject: `Chamada de acompanhamento: ${answer.toLowerCase()} (${page.name}${page.company ? `, ${page.company}` : ""})`,
     text: [
       yes
-        ? `${page.name} quer a chamada a meio do projeto. Falta enviar um email para marcar a data.`
-        : `${page.name} não quer a chamada a meio do projeto.`,
+        ? `${page.name} quer a chamada de acompanhamento. Falta enviar um email para marcar a data.`
+        : `${page.name} não quer a chamada de acompanhamento.`,
       "",
       `Email: ${page.email}`,
       `Idioma: ${page.lang}`,
@@ -39,6 +39,6 @@ export async function POST(request: Request) {
     ].join("\n"),
   });
   if (!saved && !told) return json({ error: "not_configured" }, 503);
-  if (!told) await addAlert(token.page, page.alerts, `Aviso não enviado: chamada a meio, ${answer.toLowerCase()}`);
+  if (!told) await addAlert(token.page, page.alerts, `Aviso não enviado: chamada de acompanhamento, ${answer.toLowerCase()}`);
   return json({ ok: true });
 }

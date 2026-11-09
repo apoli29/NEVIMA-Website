@@ -51,7 +51,7 @@ export function readMeeting(token: unknown): Meeting | null {
 }
 
 /** The token behind the final proposal's two buttons, about the call
-    midway through the project, or null when LINKS_SECRET is not set. */
+    the follow-up call, or null when LINKS_SECRET is not set. */
 export function signMidCall(page: string, lang: Lang) {
   const body = b64(JSON.stringify({ k: "mid", p: page, l: lang }));
   const sig = signature(body);

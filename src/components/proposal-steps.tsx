@@ -227,8 +227,8 @@ export type Errors = Partial<Record<string, string>>;
 
 /* Small print under the questions that change the price (user). */
 const PHOTO_NOTE: Copy = {
-  en: "The photo shoot is only available in Portugal. Travel beyond 30 km of Arcozelo is added to the price of the service.",
-  pt: "A sessão fotográfica só está disponível em Portugal. A deslocação para lá dos 30 km de Arcozelo acresce ao preço do serviço.",
+  en: "The photo shoot is only available in Portugal. Travel beyond 30 km of Vila Nova de Gaia is added to the price of the service.",
+  pt: "A sessão fotográfica só está disponível em Portugal. A deslocação para lá dos 30 km de Vila Nova de Gaia acresce ao preço do serviço.",
 };
 // Short and plain (user, 2026-11-04); the estimate still says the client
 // registers it in their own name and pays for it directly.

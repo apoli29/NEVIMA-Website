@@ -13,7 +13,7 @@ import { attachment, boxed, figure, PHONES, phoneChips, plain, prose, shell, sig
    materials still to come in a box, which is there even when empty
    (user, 2026-10-31).
 
-   The call midway through the project is the client's to ask for: the
+   The follow-up call is the client's to ask for: the
    two buttons lead to the site (src/components/mid-call.tsx), which
    records the answer in Notion and tells the studio, who then emails
    to set a date.
@@ -53,8 +53,8 @@ const WORDS = {
     file: "Contract attached",
     next: "To go ahead, just reply to this email with the signed contract. If you have any questions, we are glad to answer them, by email or by phone:",
     materials: "We will start the project as soon as we have all the materials mentioned on the call:",
-    mid: "If you opted for a call midway through the project, select the option below and we will soon email you to set a date.",
-    midLabel: "Call midway through the project",
+    mid: "If you opted for a follow-up call, select the option below and we will soon email you to set a date.",
+    midLabel: "Follow-up call",
     yes: "Yes, I would like it",
     no: "No, it is not needed",
     excited: "We are very excited about this project. Thank you once again!",
@@ -73,8 +73,8 @@ const WORDS = {
     file: "Contrato em anexo",
     next: "Para avançar, basta responder a este e-mail com o contrato assinado. Se tiver alguma dúvida, estamos ao dispor para a esclarecer, por e-mail ou por telefone:",
     materials: "Iniciamos o projeto assim que tivermos disponíveis todos os materiais mencionados na chamada:",
-    mid: "Caso tenha optado por fazermos uma chamada a meio do projeto, selecione a opção abaixo e em breve enviamos-lhe um e-mail para marcarmos uma data.",
-    midLabel: "Chamada a meio do projeto",
+    mid: "Caso tenha optado por uma chamada de acompanhamento, selecione a opção abaixo e em breve enviamos-lhe um e-mail para marcarmos uma data.",
+    midLabel: "Chamada de acompanhamento",
     yes: "Sim, pretendo a chamada",
     no: "Não é necessária",
     excited: "Estamos muito entusiasmados com este projeto. Obrigado mais uma vez!",

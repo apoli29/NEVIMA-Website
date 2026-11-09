@@ -2,11 +2,11 @@
 
 | | |
 |---|---|
-| Versão | 1.0 |
+| Versão | 1.1 |
 | Entrada em vigor | [DATA] (quando o contrato passar a remeter para este documento) |
-| Última atualização | 20 de outubro de 2026 |
-| Histórico | 1.0 (20/10/2026): primeira versão |
-| Relação com o contrato | Detalha as cláusulas 11.9 a 11.14 e 6.7 do contrato v1.11. **Em caso de diferença, prevalece o contrato.** Os pontos **[PROPOSTA]** só valem depois de entrarem no contrato (ver `legal/02`, P9 e P10). |
+| Última atualização | 9 de novembro de 2026 |
+| Histórico | 1.1 (09/11/2026): alinhado com o contrato v1.15 (numeração das cláusulas; manutenção das Funcionalidades e SEO & GEO mensal); 1.0 (20/10/2026): primeira versão |
+| Relação com o contrato | Detalha as cláusulas 11.9 a 11.13, 15.6 e 6.7 do contrato v1.15. **Em caso de diferença, prevalece o contrato.** Os pontos **[PROPOSTA]** só valem depois de entrarem no contrato (ver `legal/02`, P9 e P10). |
 
 ## Em linguagem simples
 
@@ -16,7 +16,7 @@
 
 ## 1. Defeitos
 
-1. Um defeito é algo que não funciona como consta da Proposta. É corrigido sem custo (cl. 11.14). Pedidos de alteração não são defeitos (cl. 11.13).
+1. Um defeito é algo que não funciona como consta da Proposta. É corrigido sem custo (cl. 11.13). Pedidos de alteração não são defeitos (cl. 11.12).
 2. **[PROPOSTA]** Os defeitos devem ser comunicados nos 30 dias seguintes ao Lançamento.
 3. Com Particulares, aplicam-se sempre as garantias legais de conformidade dos conteúdos e serviços digitais (DL 84/2021), sem o limite do número 2.
 
@@ -42,12 +42,14 @@
 
 **[PROPOSTA]** As atualizações de segurança que a nevima considere necessárias estão incluídas no alojamento (ver `legal/03`, ponto 1.3). As outras atualizações (de versões, de funcionalidades) são alterações maiores.
 
-## 6. Plano mensal
+## 6. Serviços mensais
 
-Não existe hoje um plano de manutenção mensal. Se vier a existir, será descrito aqui, com o preço, o número de horas incluídas e as regras de cancelamento. Os serviços mensais de SEO e GEO têm cláusulas próprias (cl. 14 e 15).
+1. A manutenção das Funcionalidades (formulário, newsletter, calendário e reservas) cobre mantê-las a funcionar, acompanhar as plataformas e aplicar os ajustes técnicos necessários. Não inclui alterações nem funcionalidades novas, que seguem a cláusula 11 (cl. 15.6).
+2. O serviço mensal de SEO & GEO mantém as práticas aplicadas o mais eficazes possível (cl. 14.2).
+3. Os Serviços mensais são faturados no dia 1 de cada mês, acompanham o Ano de contrato e só existem se constarem da Proposta (cl. 6.6 e 23.7). Os planos das plataformas são pagos pelo Cliente diretamente a elas (cl. 15.2).
 
 <!--
 NOTA INTERNA (não publicar)
-Bases legais: contrato v1.11, cl. 6.7, 11.9–11.14; DL 84/2021 (conformidade dos conteúdos e serviços digitais com consumidores; prazo a confirmar no texto do diploma antes de o citar ao cliente); DL 446/85, art. 21.º, al. d) (com consumidores, não se pode excluir nem predeterminar a reparação de vícios).
+Bases legais: contrato v1.15, cl. 6.7, 11.9–11.13, 14, 15.6; DL 84/2021 (conformidade dos conteúdos e serviços digitais com consumidores; prazo a confirmar no texto do diploma antes de o citar ao cliente); DL 446/85, art. 21.º, al. d) (com consumidores, não se pode excluir nem predeterminar a reparação de vícios).
 A PREENCHER: prazo de resposta [2].
 -->

@@ -33,7 +33,7 @@ Todas as páginas legais estão fora dos motores de busca (`noindex`) até a mor
 | Autorização de uso de imagem (modelo) | `05-autorizacao-uso-imagem.md` | Pessoas fotografadas, via cliente |
 | Texto para orçamentos, propostas e faturas | `06-texto-orcamentos-faturas.md` | Sócios e contabilista |
 | Política interna de dados e segurança | `07-politica-interna-dados-seguranca.md` | Sócios |
-| Contrato de prestação de serviços | `../contratos/contrato-nevima.html` (v1.11, PDF ao lado) | Clientes |
+| Contrato de prestação de serviços | `../contratos/contrato-nevima.html` (v1.15, PDF ao lado) | Clientes |
 | Decisões do contrato | `../docs/contract-decisions.md` | Sócios |
 
 ## 2. O que falta da vossa parte
