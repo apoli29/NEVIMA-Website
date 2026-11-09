@@ -9,7 +9,8 @@
    table's order and what was merged, docs/backend-decisions.md.
 
    The table reads in three parts (user, 2026-11-09): the client, then
-   the client's project as the form brought it, then the lead's
+   the client's project as the form brought it (the services, and every
+   other answer in one column of text), then the lead's
    follow-up, from the first contact to the signed contract. What comes
    after the contract (deposit, materials, invoices, launch) is not a
    lead's: it will have a table of its own. Every step is a choice of
@@ -20,20 +21,19 @@
    ================================================================== */
 
 import {
+  ALL_PAGE_TYPES,
   DESIGN,
   FEATURES,
-  FORM_KINDS,
   LANGUAGES,
-  PAGE_MODES,
   PAGES,
   PHOTO_PLANS,
   REACH,
+  REGIONS,
   SEARCH_PLANS,
   SECTORS,
   SERVICES,
-  TEXTS,
-  YES_NO,
-  type PageTypeId,
+  labelOf,
+  type Answers,
 } from "./questions";
 
 /** Notion's colours for a select's options. */
@@ -68,41 +68,6 @@ export const REQUEST_STATES: Option[] = [
 /** The partners' database keeps the states it had: the same. */
 export const PARTNER_STATES: Option[] = REQUEST_STATES;
 
-/** The kinds of page, as Notion's options hold them: short, and with no
-    comma (Notion's options cannot hold one). */
-export const PAGE_TYPE_NAMES: Record<PageTypeId, string> = {
-  services: "Serviços (uma página)",
-  servicesPages: "Serviços (página por serviço)",
-  items: "Itens (sem página própria)",
-  itemsPages: "Itens (página por item)",
-  team: "Equipa",
-  portfolio: "Portefólio e casos",
-  gallery: "Galeria",
-  prices: "Preços",
-  testimonials: "Testemunhos",
-  faq: "Perguntas frequentes",
-  events: "Eventos",
-  process: "Como funciona",
-  partners: "Parceiros e marcas",
-  work: "Trabalhe connosco",
-  resources: "Recursos e descarregáveis",
-  projects: "Projetos (uma página)",
-  projectsPages: "Projetos (página por projeto)",
-  help: "Como ajudar",
-  activities: "Eventos e atividades",
-  news: "Notícias",
-  board: "Equipa e órgãos sociais",
-  transparency: "Transparência",
-  supporters: "Parceiros e apoios",
-  impact: "Impacto e testemunhos",
-};
-
-/** "Not sure, you choose" on the pages, as the studio reads it. */
-export const PAGES_UNSURE = "Não sei (o estúdio escolhe)";
-
-/** The third level ticked: a project the studio does not take on. */
-export const COMPLEX_FEATURE = "Loja / login / pagamentos (fora do âmbito)";
-
 /** The client's columns, before the project (written by the site). */
 export const CLIENT_COLUMNS: Column[] = [
   {
@@ -112,38 +77,104 @@ export const CLIENT_COLUMNS: Column[] = [
   },
 ];
 
-/** The project as the form brought it, one answer per column (user,
-    2026-11-09): until then the answers were only in each page's body.
-    A column that does not apply to a request (the photo shoot's, with
-    no shoot) stays empty. */
+/** The column with the project's characteristics, all in one text (user,
+    2026-11-09: one column instead of one per answer). */
+export const PROJECT_TEXT = "Características do projeto";
+
+/** The project's columns: the services, and everything else the form
+    asked, in one column of text (projectLines). */
 export const PROJECT_COLUMNS: Column[] = [
   { name: "Serviços", type: "multi", options: plain(SERVICES) },
-  { name: "Tipo de site", type: "select", options: plain(PAGE_MODES) },
-  { name: "N.º de páginas", type: "select", options: plain(PAGES) },
-  {
-    name: "Páginas e secções",
-    type: "multi",
-    options: [...Object.values(PAGE_TYPE_NAMES).map((name) => o(name, "default")), o(PAGES_UNSURE, "gray")],
-  },
-  { name: "Outras páginas", type: "text" },
-  { name: "Design", type: "select", options: plain(DESIGN) },
-  { name: "Idiomas do site", type: "multi", options: plain(LANGUAGES) },
-  {
-    name: "Funcionalidades",
-    type: "multi",
-    options: [...plain(FEATURES), o(COMPLEX_FEATURE, "red")],
-  },
-  { name: "Emails dos formulários", type: "select", options: plain(FORM_KINDS) },
-  { name: "Textos prontos", type: "select", options: plain(TEXTS) },
-  { name: "Referências", type: "text" },
-  { name: "Tem domínio", type: "select", options: plain(YES_NO) },
-  { name: "Urgente", type: "select", options: plain(YES_NO) },
-  { name: "Sessão fotográfica", type: "select", options: plain(PHOTO_PLANS) },
-  { name: "Local da sessão", type: "text" },
-  { name: "SEO e GEO", type: "select", options: plain(SEARCH_PLANS) },
-  { name: "Alcance", type: "select", options: plain(REACH) },
-  { name: "Site atual", type: "url" },
+  { name: PROJECT_TEXT, type: "text" },
 ];
+
+/** A line of "Características do projeto": its title (in bold in
+    Notion) and what follows it. */
+export type ProjectLine = { label: string; value: string };
+
+/** The project's characteristics as the studio reads them: one line per
+    subject, in Portuguese, in the form's order. A subject the form did
+    not ask (no photo shoot, say) has no line. Every answer is read as
+    possibly missing, so a request from before a question existed gets
+    the lines it can. */
+export function projectLines(answers: Answers): ProjectLine[] {
+  const pt = (list: Parameters<typeof labelOf>[0], id: string | undefined) =>
+    id && list.some((item) => item.id === id) ? labelOf(list, id, "pt") : "";
+  const { web, photo, search } = answers;
+  const lines: ProjectLine[] = [];
+  const add = (label: string, ...parts: (string | false | undefined)[]) => {
+    const value = parts.filter(Boolean).join(" · ");
+    if (value) lines.push({ label, value });
+  };
+
+  if (web) {
+    const landing = web.pageMode === "landing";
+    const mode =
+      web.pageMode === "landing"
+        ? "Landing page (tudo numa só página)"
+        : web.pageMode === "website"
+          ? "Website"
+          : web.pageMode === "unsure"
+            ? "Landing page ou website: não sabe"
+            : "";
+    const size = landing ? "" : web.pages === "unsure" ? "páginas por definir" : pt(PAGES, web.pages) && `${pt(PAGES, web.pages)} páginas`;
+    const design = web.design === "unsure" ? "Design por definir (não sabe)" : pt(DESIGN, web.design) && `Design ${pt(DESIGN, web.design)}`;
+    add("Site", mode, size, design);
+
+    const kinds = (web.pageTypes ?? []).map((id) => pt(ALL_PAGE_TYPES, id) || id);
+    const others = web.pageOthers ?? [];
+    if (!landing && (kinds.length || others.length || web.pagesUnsure)) {
+      add(
+        "Páginas e secções",
+        "Página principal, Sobre nós e Contactos (sempre incluídas)",
+        ...kinds,
+        others.length > 0 && `escritas pelo cliente: ${others.join(", ")}`,
+        web.pagesUnsure && "mais algumas, à escolha do estúdio",
+      );
+    }
+
+    const languages = (web.languages ?? []).map((id) =>
+      id === "other" ? (web.languagesOther ? web.languagesOther : "Outras") : id === "unsure" ? "Não sabe" : pt(LANGUAGES, id),
+    );
+    add("Idiomas", languages.join(", "));
+
+    const emails = web.formKind === "simple" ? "emails manuais" : web.formKind === "complex" ? "emails automatizados" : "";
+    const features = (web.features ?? []).map((id) =>
+      (id === "forms" || id === "newsletter") && emails ? `${pt(FEATURES, id)} (${emails})` : pt(FEATURES, id),
+    );
+    if (web.complex) features.push("Loja, login, pagamentos ou ligação a software interno (fora do que o estúdio faz)");
+    add("Funcionalidades", features.length ? features.join(" · ") : web.features ? "Nenhuma: só apresentar" : "");
+
+    add(
+      "Textos",
+      web.texts === "yes" ? "O cliente já os tem" : web.texts === "no" ? "O cliente não os tem (o estúdio escreve-os)" : web.texts === "unsure" ? "Não sabe" : "",
+    );
+    add("Domínio", web.domain === "yes" ? "Já tem" : web.domain === "no" ? "Não tem" : "");
+    add("Urgente", web.urgent === "yes" ? "Sim" : web.urgent === "no" ? "Não" : "");
+    const references = web.references ?? [];
+    add("Referências", references.length ? references.join(" · ") : web.noReferences ? "Não tem" : "");
+  }
+
+  if (photo) {
+    const plan = photo.plan === "unsure" ? "Plano por definir (não sabe)" : pt(PHOTO_PLANS, photo.plan);
+    const region = photo.region && photo.region !== "mainland" ? ` (${pt(REGIONS, photo.region)})` : "";
+    const town = photo.town?.trim();
+    add("Sessão fotográfica", plan, town && `em ${town}${region}`);
+  }
+
+  if (search) {
+    const plan = search.seoPlan === "unsure" ? "Modalidade por definir (não sabe)" : pt(SEARCH_PLANS, search.seoPlan);
+    const pages = !web && search.pages ? (search.pages === "unsure" ? "páginas: não sabe" : `${pt(PAGES, search.pages)} páginas`) : "";
+    add(
+      "SEO e GEO",
+      plan,
+      search.reach && `Alcance ${pt(REACH, search.reach).toLowerCase()}`,
+      search.site && `Site atual: ${search.site}`,
+      pages,
+    );
+  }
+  return lines;
+}
 
 /** The lead's follow-up, in the order of the process, from the first
     contact to the signed contract (docs/client-tracking-plan.md, with
@@ -238,6 +269,25 @@ export const REMOVED_COLUMNS = [
   "Pagamento final",
   "Recibo",
   "Lançamento",
+  // The project, one column per answer (earlier the same day): now all
+  // in "Características do projeto".
+  "Tipo de site",
+  "N.º de páginas",
+  "Páginas e secções",
+  "Outras páginas",
+  "Design",
+  "Idiomas do site",
+  "Funcionalidades",
+  "Emails dos formulários",
+  "Textos prontos",
+  "Referências",
+  "Tem domínio",
+  "Urgente",
+  "Sessão fotográfica",
+  "Local da sessão",
+  "SEO e GEO",
+  "Alcance",
+  "Site atual",
 ];
 
 /** What a removed column held, as the column that took its place says
@@ -268,30 +318,7 @@ export const COLUMN_ORDER: { group: string; columns: string[] }[] = [
   },
   {
     group: "Projeto",
-    columns: [
-      "Serviços",
-      "Tipo de site",
-      "N.º de páginas",
-      "Páginas e secções",
-      "Outras páginas",
-      "Design",
-      "Idiomas do site",
-      "Funcionalidades",
-      "Emails dos formulários",
-      "Textos prontos",
-      "Referências",
-      "Tem domínio",
-      "Urgente",
-      "Sessão fotográfica",
-      "Local da sessão",
-      "SEO e GEO",
-      "Alcance",
-      "Site atual",
-      "Mensagem",
-      "Estimativa",
-      "Mensal (€)",
-      "Prazo",
-    ],
+    columns: ["Serviços", PROJECT_TEXT, "Mensagem", "Estimativa", "Mensal (€)", "Prazo"],
   },
   {
     group: "Acompanhamento",

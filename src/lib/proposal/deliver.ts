@@ -12,27 +12,8 @@ import {
   STARTS,
   type PartnerAnswers,
 } from "./partner";
-import {
-  DESIGN,
-  FEATURES,
-  FORM_KINDS,
-  LANGUAGES,
-  PAGE_MODES,
-  PAGES,
-  PHOTO_PLANS,
-  REACH,
-  REGIONS,
-  SEARCH_PLANS,
-  SERVICES,
-  TEXTS,
-  YES_NO,
-  labelOf,
-  type Answers,
-  type Contact,
-  type Estimate,
-  type Range,
-} from "./questions";
-import { COMPLEX_FEATURE, historyLine, ON_ARRIVAL, PAGE_TYPE_NAMES, PAGES_UNSURE } from "./steps";
+import { SERVICES, labelOf, type Answers, type Contact, type Estimate, type Range } from "./questions";
+import { historyLine, ON_ARRIVAL, PROJECT_TEXT, projectLines } from "./steps";
 
 /* ==================================================================
    Where simulations and requests go
@@ -128,52 +109,11 @@ function estimateLines(estimate: Estimate) {
   return [...lines, ...onRequest, ...later];
 }
 
-/** The project's columns in "Pedidos" (steps.ts, PROJECT_COLUMNS): each
-    answer of the form in a column of its own, in Portuguese. A column
-    whose question was not asked is left out, so it stays empty. Every
-    answer is read as possibly missing: the requests from before a
-    question existed were filled the same way (2026-11-09). */
+/** The project's characteristics in "Pedidos": every answer of the form
+    but the services, one line per subject with its title in bold
+    (steps.ts, projectLines). */
 export function projectProperties(answers: Answers): Record<string, unknown> {
-  // An answer missing, or not in the list, leaves its column out.
-  const pick = (list: Parameters<typeof labelOf>[0], id: string | undefined) =>
-    id && list.some((item) => item.id === id) ? prop.select(labelOf(list, id, "pt")) : undefined;
-  const { web, photo, search } = answers;
-  const languages = (web?.languages ?? []).map((id) =>
-    id === "other" && web?.languagesOther ? web.languagesOther : labelOf(LANGUAGES, id, "pt"),
-  );
-  const pageTypes = [
-    ...(web?.pageTypes ?? []).map((id) => PAGE_TYPE_NAMES[id] ?? id),
-    ...(web?.pagesUnsure ? [PAGES_UNSURE] : []),
-  ];
-  const features = [
-    ...(web?.features ?? []).map((id) => labelOf(FEATURES, id, "pt")),
-    ...(web?.complex ? [COMPLEX_FEATURE] : []),
-  ];
-  const references = web?.references ?? [];
-  const place = photo
-    ? [photo.town?.trim(), photo.region && photo.region !== "mainland" ? `(${labelOf(REGIONS, photo.region, "pt")})` : ""]
-        .filter(Boolean)
-        .join(" ")
-    : "";
-  return {
-    "Tipo de site": pick(PAGE_MODES, web?.pageMode),
-    "N.º de páginas": pick(PAGES, web?.pages ?? search?.pages),
-    "Páginas e secções": pageTypes.length ? prop.multi(pageTypes) : undefined,
-    "Outras páginas": prop.text((web?.pageOthers ?? []).join(" · ")),
-    Design: pick(DESIGN, web?.design),
-    "Idiomas do site": languages.length ? prop.multi(languages) : undefined,
-    Funcionalidades: features.length ? prop.multi(features) : undefined,
-    "Emails dos formulários": pick(FORM_KINDS, web?.formKind),
-    "Textos prontos": pick(TEXTS, web?.texts),
-    "Referências": prop.text(references.length ? references.join("\n") : web?.noReferences ? "Não tem" : ""),
-    "Tem domínio": pick(YES_NO, web?.domain),
-    Urgente: pick(YES_NO, web?.urgent),
-    "Sessão fotográfica": pick(PHOTO_PLANS, photo?.plan),
-    "Local da sessão": prop.text(place),
-    "SEO e GEO": pick(SEARCH_PLANS, search?.seoPlan),
-    Alcance: pick(REACH, search?.reach),
-    "Site atual": search?.site ? prop.url(search.site) : undefined,
-  };
+  return { [PROJECT_TEXT]: prop.lines(projectLines(answers)) };
 }
 
 function proposalPage(request: ProposalRequest) {
