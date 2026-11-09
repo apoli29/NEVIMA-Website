@@ -33,7 +33,7 @@
 
 ## 3. Plano da Vercel e mudanças na Vercel
 
-1. Os websites alojados pela nevima partilham o mesmo plano da Vercel. Se, dado o número de clientes, esse plano deixar de chegar e a nevima precisar de passar a um plano mais extenso, pode fazê-lo a qualquer momento, avisando o Cliente por escrito com, pelo menos, 1 mês de antecedência face ao dia da mudança. A partir desse dia, os contratos que terminem pelo menos 1 mês depois e sejam renovados passam, na renovação, a ter o valor simbólico do ponto 2.3. Os que terminem antes desse prazo renovam-se ainda sem essa cobrança (cl. 12.6).
+1. Os websites alojados pela nevima partilham o mesmo plano da Vercel. Se, dado o número de clientes, esse plano deixar de chegar e a nevima precisar de passar a um plano mais extenso, pode fazê-lo a qualquer momento, avisando o Cliente por escrito com, pelo menos, 1 mês de antecedência face ao dia da mudança. A partir desse dia, os contratos que terminem pelo menos 1 mês depois e sejam renovados passam, na renovação, a ter o valor simbólico do ponto 2.3. Os que terminem antes desse prazo renovam-se sem essa cobrança, que só se aplica na renovação seguinte (cl. 12.6).
 2. Se a Vercel alterar os seus preços, planos, limites ou termos, ou deixar de prestar o serviço, de forma que afete o custo ou o funcionamento do alojamento, a nevima avisa o Cliente por escrito logo que tenha conhecimento, e as partes decidem em conjunto: manter o alojamento com o valor que resultar da mudança, mudar para uma plataforma equivalente ou terminar o alojamento. Sem acordo até a mudança entrar em vigor, qualquer das partes pode terminar o alojamento sem penalização (cl. 12.8).
 
 ## 4. Domínio
