@@ -13,7 +13,7 @@ import { PAST_BOOKING, shortSlot } from "@/lib/proposal/steps";
    date. If the notice cannot be sent, the page's "Alertas" says so.
 
    Then, in a change of their own, the steps (steps.ts): "Marcação"
-   Agendada and "Link da chamada" Por enviar, with a line of "Histórico";
+   Agendada (the call's link still to send), with a line of "Histórico";
    past the booking, only the line. If that change fails, "Alertas" says
    so too: the booking itself stands. */
 
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
   const stepped = await setSteps(
     meeting.page,
     page.history,
-    PAST_BOOKING.has(page.state) ? {} : { "Marcação": "Agendada", "Link da chamada": "Por enviar" },
+    PAST_BOOKING.has(page.state) ? {} : { "Marcação": "Agendada" },
     `Chamada ${moved ? "mudada" : "marcada"} para ${shortSlot(slot)}`,
     "cliente",
   );

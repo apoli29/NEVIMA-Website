@@ -49,6 +49,7 @@ export const prop = {
   /** A time on a clock, "2026-11-06T15:00", in a time zone. */
   localDate: (local: string, zone: string) => ({ date: { start: `${local}:00`, time_zone: zone } }),
   checkbox: (value: boolean) => ({ checkbox: value }),
+  url: (value: string) => (value ? { url: clip(value.trim(), 2000) } : undefined),
 };
 
 export const block = {
@@ -205,7 +206,8 @@ export type RequestPage = {
   state: string;
   received: string;
   meeting: string;
-  /** "Sim" or "Não": whether the client wants the call midway through. */
+  /** "Sim", "Não" or "Por responder": whether the client wants the
+      follow-up call ("Chamada de acompanhamento"). */
   midCall: string;
   /** Emails that could not be sent: nobody else would know. */
   alerts: string;
@@ -235,7 +237,7 @@ function readPage(page: RawPage): RequestPage | null {
     state: select("Estado"),
     received: date("Recebido"),
     meeting: date("Reunião"),
-    midCall: select("Reunião a meio"),
+    midCall: select("Chamada de acompanhamento"),
     alerts: text("Alertas", "rich_text"),
     history: text("Histórico", "rich_text"),
     steps: Object.fromEntries(STEP_SELECTS.map((name) => [name, select(name)])),

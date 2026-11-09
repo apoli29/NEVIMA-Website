@@ -105,7 +105,7 @@ const FLOWS: { title: string; when: string; chain: { app: AppId; does: string }[
     chain: [
       { app: "mail", does: "O botão do horário abre o site." },
       { app: "site", does: "Mostra o horário e pede um clique para o confirmar." },
-      { app: "notion", does: "Guarda a data em \"Reunião\", muda o estado para Reunião marcada, a \"Marcação\" para Agendada e o \"Link da chamada\" para Por enviar." },
+      { app: "notion", does: "Guarda a data em \"Reunião\", muda o estado para Reunião marcada e a \"Marcação\" para Agendada (o link da chamada fica por enviar)." },
       { app: "resend", does: "Avisa o estúdio, que recebe o aviso no Gmail." },
     ],
   },
@@ -115,7 +115,7 @@ const FLOWS: { title: string; when: string; chain: { app: AppId; does: string }[
     chain: [
       { app: "mail", does: "O botão abre o site." },
       { app: "site", does: "Mostra a resposta e pede um clique para a confirmar." },
-      { app: "notion", does: "Guarda \"Sim\" ou \"Não\" em \"Reunião a meio\"." },
+      { app: "notion", does: "Guarda \"Sim\" ou \"Não\" em \"Chamada de acompanhamento\"." },
       { app: "resend", does: "Avisa o estúdio, que recebe o aviso no Gmail." },
     ],
   },
@@ -139,7 +139,7 @@ const STEPS: Step[] = [
     apps: ["site", "notion"],
     body: "O cliente responde ao formulário do site (no fim de cada página, ou pelo botão da barra). No último passo escolhe a língua da resposta, português ou inglês, já marcada com a língua em que usou o site, e envia.",
     behind: "O servidor do site volta a verificar as respostas e recalcula a estimativa, para não depender do que o navegador mostrou. Recusa um segundo pedido do mesmo email em 24 horas, e pedidos feitos depressa demais (robôs).",
-    notion: "Nova página em \"Pedidos\" (ou \"Parceiros\"), estado Novo, com as respostas, a estimativa mostrada ao cliente, a origem, a data em \"Recebido\" e a língua em \"Idioma\". A página já traz os títulos de \"Preparação da reunião\". Os passos começam no estado de partida (Preparação da chamada Por iniciar, Convite Não enviado, Link da chamada Aguarda marcação, Chamada realizada Por efetuar, Proposta Por enviar) e o \"Histórico\" regista \"Pedido recebido\".",
+    notion: "Nova página em \"Pedidos\" (ou \"Parceiros\"), estado Novo, com os dados do cliente, cada resposta do projeto na sua coluna (tipo de site, páginas e secções, design, idiomas, funcionalidades, textos, referências, domínio, urgência, sessão fotográfica, SEO e GEO), a estimativa mostrada ao cliente, a data em \"Recebido\" e a língua em \"Idioma\". A página já traz os títulos de \"Preparação da reunião\" e, no fim, as respostas tal como chegaram. Os passos começam no estado de partida (Preparação da chamada Por iniciar, Marcação Convite por enviar, Chamada realizada Por efetuar, Proposta Por enviar) e o \"Histórico\" regista \"Pedido recebido\".",
   },
   {
     title: "Confirmação e aviso",
@@ -147,7 +147,7 @@ const STEPS: Step[] = [
     apps: ["resend", "mail", "gmail"],
     body: "No mesmo instante, o cliente recebe a confirmação automática, na língua que escolheu (pode vê-la no separador \"Confirmação automática\"). O estúdio recebe no Gmail um aviso com o resumo do pedido, a estimativa e o link para a página do Notion.",
     behind: "Os dois emails saem pelo Resend. Se o Resend falhar, o pedido não se perde, porque já está no Notion, e a coluna \"Alertas\" diz qual dos emails não saiu. Responder ao aviso responde diretamente ao cliente.",
-    notion: "\"Confirmação\" fica Enviada ou Falhou, e o \"Histórico\" regista-o.",
+    notion: "O \"Histórico\" regista se a confirmação saiu; se não saiu, os \"Alertas\" dizem-no.",
   },
   {
     title: "Preparar a chamada",
@@ -162,7 +162,7 @@ const STEPS: Step[] = [
     apps: ["site", "notion", "resend", "gmail"],
     body: "Separador \"Convite para chamada\": escrever o email do cliente e carregar em Procurar; o nome, a empresa e a língua vêm do Notion e podem ser corrigidos. Escolher dois horários, na hora de Lisboa. Ver o email à direita e carregar em Enviar.",
     behind: "Cada botão de horário leva um link assinado, que só serve para este pedido e estes dois horários; não leva o nome nem o email do cliente. O Resend envia o convite e uma cópia oculta chega ao Gmail do estúdio.",
-    notion: "Estado passa de Novo a Contactado. \"Convite\" fica Enviado e \"Marcação\" A aguardar resposta; o \"Histórico\" regista quem assinou. Com o pedido já depois da marcação (Reunião feita ou mais à frente), a \"Marcação\" não muda.",
+    notion: "Estado passa de Novo a Contactado. \"Marcação\" fica A aguardar resposta; o \"Histórico\" regista quem assinou. Com o pedido já depois da marcação (Reunião feita ou mais à frente), a \"Marcação\" não muda.",
   },
   {
     title: "O cliente escolhe um horário",
@@ -170,20 +170,20 @@ const STEPS: Step[] = [
     apps: ["mail", "site", "notion", "calendar"],
     body: "O cliente clica num dos horários no email. Abre-se uma página do site com esse horário, a indicação da hora de Lisboa e um botão \"Confirmar este horário\"; o outro horário fica a um clique. Depois de confirmar, pode juntá-lo ao calendário.",
     behind: "O clique no email só abre a página; a marcação só acontece com o segundo clique, para que um programa de email que abra links sozinho não marque nada. Se o cliente mudar de ideias e confirmar o outro horário, a marcação muda e o estúdio é avisado de novo. Um horário que já passou não pode ser marcado.",
-    notion: "\"Reunião\" fica com a data e a hora (hora de Lisboa); estado Reunião marcada; \"Marcação\" Agendada e \"Link da chamada\" Por enviar. A fórmula \"Chamada\" mostra o dia e a hora, e o \"Histórico\" regista a marcação ou a mudança. Com o pedido já depois da marcação, só a data e o \"Histórico\" mudam. O estúdio recebe no Gmail o aviso \"Reunião marcada\".",
+    notion: "\"Reunião\" fica com a data e a hora (hora de Lisboa); estado Reunião marcada; \"Marcação\" Agendada (falta enviar o link). O \"Histórico\" regista a marcação ou a mudança. Com o pedido já depois da marcação, só a data e o \"Histórico\" mudam. O estúdio recebe no Gmail o aviso \"Reunião marcada\".",
   },
   {
     title: "Enviar o link da chamada",
     who: "Estúdio",
     apps: ["call", "gmail"],
     body: "À mão: criar a chamada (Google Meet ou outra) para o horário escolhido e enviar o convite com o link ao cliente, a partir do calendário ou do Gmail. A página do site já disse ao cliente que o link segue por email.",
-    notion: "À mão: \"Link da chamada\" Enviado.",
+    notion: "À mão: \"Marcação\" Link enviado.",
   },
   {
     title: "A chamada",
     who: "Estúdio",
     apps: ["call", "notion"],
-    body: "Na chamada, apresentar a proposta e rever as escolhas, com os dois valores preparados. Depois, à mão no Notion: estado Reunião feita, \"Chamada realizada\" Efetuada (ou Cliente faltou) e as notas do que ficou decidido. O sinal de 25% pede-se na chamada: \"Sinal de 25%\" passa a Pedido à mão, depois de a proposta seguir.",
+    body: "Na chamada, apresentar a proposta e rever as escolhas, com os dois valores preparados. Depois, à mão no Notion: estado Reunião feita, \"Chamada realizada\" Efetuada (ou Cliente faltou) e as notas do que ficou decidido. O sinal de 25% pede-se na chamada.",
   },
   {
     title: "Proposta final e contrato",
@@ -191,7 +191,7 @@ const STEPS: Step[] = [
     apps: ["site", "notion", "resend", "gmail"],
     body: "Separador \"Proposta final\": procurar o cliente pelo email (sem pedido ligado, o email não sai, porque os botões precisam dele). Preencher o valor final e, se houver, o valor mensal; escrever os materiais em falta, que aparecem numa caixa; se for preciso, acrescentar um texto da proposta. Anexar o contrato em PDF, escolher quem assina, ver o email e carregar em Enviar.",
     behind: "O contrato vai em anexo e o nome do ficheiro aparece no email, para o cliente o procurar. A nota de IVA por baixo do valor pode ser alterada. O email traz dois botões, sim e não, para o cliente dizer se quer a chamada de acompanhamento, que é opcional.",
-    notion: "Estado Proposta enviada, \"Valor final\" preenchido e \"Contrato enviado\" assinalado. Depois, \"Proposta\" Enviada e \"Válida até\" a 10 dias; e abrem-se, só se ainda estiverem vazios, os passos de depois: \"Reunião a meio\" Por responder, \"Contrato assinado\" Por receber, \"Sinal de 25%\" Por pedir, \"Documento do sinal\" Por emitir e \"Materiais\" Por receber. Reenviar a proposta não faz recuar nenhum passo.",
+    notion: "Estado Proposta enviada e \"Valor final\" preenchido. Depois, \"Proposta\" Enviada, \"Válida até\" a 10 dias, \"Contrato\" Enviado (com o PDF; sem ele, Por enviar) e \"Chamada de acompanhamento\" Por responder, se ainda estiver vazia. Reenviar a proposta não faz recuar nenhum passo: um contrato Assinado continua Assinado.",
   },
   {
     title: "O cliente responde sobre a chamada de acompanhamento",
@@ -199,14 +199,14 @@ const STEPS: Step[] = [
     apps: ["mail", "site", "notion", "gmail"],
     body: "O cliente clica em sim ou não no email. Abre-se uma página do site com a resposta e um botão para a confirmar. Se a resposta for sim, o estúdio envia depois, à mão, um email para marcar a data.",
     behind: "Tal como nos horários, o clique no email só abre a página; a resposta só conta com o segundo clique. Se o cliente mudar de ideias, vale a última resposta e o estúdio é avisado de novo.",
-    notion: "\"Reunião a meio\" fica com Sim ou Não, e o \"Histórico\" regista a resposta. O estúdio recebe no Gmail um aviso com a resposta.",
+    notion: "\"Chamada de acompanhamento\" fica com Sim ou Não, e o \"Histórico\" regista a resposta. O estúdio recebe no Gmail um aviso com a resposta.",
   },
   {
     title: "Fecho",
     who: "Estúdio",
     apps: ["gmail", "notion"],
     body: "O cliente responde ao email com o contrato assinado; a resposta chega ao Gmail. O projeto começa quando estiverem disponíveis todos os materiais. À mão no Notion: estado Ganho, ou Perdido se não avançar (com o \"Motivo de perda\").",
-    notion: "À mão, à medida que acontece: \"Contrato assinado\" e \"Assinado em\" (a fórmula \"Materiais até\" soma-lhe 8 dias), \"Sinal de 25%\" e \"Sinal recebido em\", \"Documento do sinal\", \"Materiais\"; depois \"Chamada de validação\", \"Fatura final\" e \"Fatura emitida em\" (\"Pagamento até\" soma-lhe 72 horas), \"Pagamento final\", \"Recibo\" e \"Lançamento\". A fórmula \"Etapa atual\" mostra o primeiro passo por fazer. Os estados Em projeto e Concluído também são à mão.",
+    notion: "À mão: \"Contrato\" Assinado e a data em \"Assinado em\"; estado Ganho. É aqui que a lead acaba: o que vem depois do contrato (sinal, materiais, faturas, lançamento) terá uma tabela própria.",
   },
 ];
 
@@ -246,8 +246,8 @@ const SIMPLE: { who: Who; text: string }[] = [
 const BY_HAND = [
   "Preparar a chamada no Notion e preencher os valores X e Y.",
   "Criar a videochamada e enviar o link ao cliente.",
-  "Mudar o estado para Reunião feita, Ganho, Em projeto, Concluído ou Perdido.",
-  "Marcar os passos que o site não vê: a preparação, o link enviado, a chamada realizada e tudo o que vem depois do contrato.",
+  "Mudar o estado para Reunião feita, Ganho ou Perdido.",
+  "Marcar os passos que o site não vê: a preparação, o link enviado, a chamada realizada e o contrato assinado.",
   "Se o cliente disser sim, enviar o email para marcar a chamada de acompanhamento.",
 ];
 
@@ -259,7 +259,7 @@ const SEND = [
   { title: "Verificações", body: "O servidor confirma, por esta ordem: a sessão; o nome; a ligação ao pedido no Notion; no convite, os dois horários; a LINKS_SECRET; na proposta, o PDF (até 4 MB); o email do cliente; a RESEND_API_KEY. Se algo falhar, nada é enviado e a página diz o que falta." },
   { title: "O email é montado", body: "O servidor volta a gerar o email e assina os links dos botões. Os campos do cliente ficam só no texto do email: o cliente recebe uma mensagem normal, sem acesso a nada." },
   { title: "O Resend envia", body: "De: ola@nevima.studio (MAIL_FROM). Para: o cliente, o único destinatário visível. Cópia oculta: a caixa do estúdio (NOTIFY_TO). Respostas: ola@nevima.studio. Um email enviado já não pode ser cancelado." },
-  { title: "O Notion é atualizado", body: "Convite: de Novo para Contactado; noutro estado, não muda. Proposta: Proposta enviada e Valor final; com PDF, também Contrato enviado. Depois, noutra atualização, os passos e uma linha do \"Histórico\" com quem assinou. Só acontece depois de o Resend aceitar o email, e a página só diz que o Notion foi atualizado quando as duas atualizações correram bem." },
+  { title: "O Notion é atualizado", body: "Convite: de Novo para Contactado; noutro estado, não muda. Proposta: Proposta enviada e Valor final. Depois, noutra atualização, os passos e uma linha do \"Histórico\" com quem assinou. Só acontece depois de o Resend aceitar o email, e a página só diz que o Notion foi atualizado quando as duas atualizações correram bem." },
   { title: "A resposta no ecrã", body: "Verde: enviado, e se o Notion foi atualizado. Vermelho: não enviado, e porquê. Se disser que o email saiu mas o Notion não foi atualizado, atualizar à mão e não carregar outra vez em Enviar, ou o cliente recebe o email duas vezes." },
 ];
 
@@ -283,10 +283,10 @@ const FAILURES = [
   { when: "O cliente confirma um horário e o Notion falha", then: "A marcação não fica feita, o estúdio não é avisado e o cliente é convidado a tentar de novo ou a ligar.", todo: "Atender a chamada ou o email do cliente." },
   { when: "O horário fica marcado e o aviso falha", then: "O Notion tem a data e a coluna \"Alertas\" regista que o aviso não saiu.", todo: "Ver as colunas \"Reunião\" e \"Alertas\" no Notion." },
   { when: "Os passos não entram no Notion", then: "O pedido, o email ou a marcação valem na mesma: os passos escrevem-se a seguir, à parte. Um pedido novo chega sem eles se a base não tiver as colunas. No envio daqui, a página diz que o Notion não foi atualizado; na marcação, a coluna \"Alertas\" diz \"Marcação por atualizar à mão\".", todo: "Atualizar os passos à mão. Se acontecer sempre, ver nos registos da Vercel o que o Notion recusou (uma coluna em falta: correr scripts/setup-notion.mjs)." },
-  { when: "O cliente usa um botão antigo do convite", then: "Se o horário ainda não passou, a data muda. Com o pedido em Reunião feita, Proposta enviada, Ganho, Em projeto, Concluído ou Perdido, o estado e a \"Marcação\" não mudam; o \"Histórico\" regista a nova data. O estúdio é avisado.", todo: "Ver se a nova data ainda faz sentido e falar com o cliente." },
+  { when: "O cliente usa um botão antigo do convite", then: "Se o horário ainda não passou, a data muda. Com o pedido em Reunião feita, Proposta enviada, Ganho ou Perdido, o estado e a \"Marcação\" não mudam; o \"Histórico\" regista a nova data. O estúdio é avisado.", todo: "Ver se a nova data ainda faz sentido e falar com o cliente." },
   { when: "O cliente escolhe um horário que já passou", then: "O site recusa e a página diz que o horário já passou.", todo: "Enviar novo convite." },
-  { when: "A resposta sobre a chamada de acompanhamento não entra no Notion", then: "Se o aviso ao estúdio sair, o cliente vê sucesso e o aviso diz para atualizar à mão. Se também falhar, o cliente vê o erro.", todo: "Atualizar à mão \"Reunião a meio\"." },
-  { when: "A resposta entra no Notion e o aviso falha", then: "A coluna \"Reunião a meio\" tem a resposta e \"Alertas\" regista que o aviso não saiu.", todo: "Ver as duas colunas. Se a resposta for sim, enviar o email para marcar a data." },
+  { when: "A resposta sobre a chamada de acompanhamento não entra no Notion", then: "Se o aviso ao estúdio sair, o cliente vê sucesso e o aviso diz para atualizar à mão. Se também falhar, o cliente vê o erro.", todo: "Atualizar à mão \"Chamada de acompanhamento\"." },
+  { when: "A resposta entra no Notion e o aviso falha", then: "A coluna \"Chamada de acompanhamento\" tem a resposta e \"Alertas\" regista que o aviso não saiu.", todo: "Ver as duas colunas. Se a resposta for sim, enviar o email para marcar a data." },
   { when: "Muda a LINKS_SECRET", then: "Todos os botões já enviados deixam de funcionar: a página diz que o link não é válido.", todo: "Não a mudar sem necessidade, ou reenviar os emails pendentes." },
   { when: "SITE_URL errado ou em falta", then: "As imagens dos emails não carregam e os botões apontam para o endereço errado.", todo: "Definir o endereço real na Vercel e publicar de novo." },
 ];
@@ -340,22 +340,20 @@ const NUMBERS = [
 ];
 
 const NOTION_FIELDS = [
-  { field: "Novo, e os dados do formulário", by: "Automático", when: "Quando o pedido chega." },
+  { field: "Novo, os dados do cliente e as colunas do projeto", by: "Automático", when: "Quando o pedido chega." },
   { field: "Passos no estado de partida, e Histórico", by: "Automático", when: "Quando o pedido chega." },
-  { field: "Confirmação", by: "Automático", when: "Depois de a confirmação sair, ou falhar." },
   { field: "Valor Y, Valor X, notas, Preparação da chamada, Documento de preparação e Responsável", by: "À mão", when: "A preparar a chamada." },
-  { field: "Contactado, Convite e Marcação (A aguardar resposta)", by: "Automático", when: "Convite enviado com Enviar. Contactado só se o pedido estava em Novo." },
-  { field: "Reunião, Reunião marcada, Marcação (Agendada) e Link da chamada (Por enviar)", by: "Automático", when: "O cliente confirma um horário." },
+  { field: "Contactado e Marcação (A aguardar resposta)", by: "Automático", when: "Convite enviado com Enviar. Contactado só se o pedido estava em Novo." },
+  { field: "Reunião, Reunião marcada e Marcação (Agendada)", by: "Automático", when: "O cliente confirma um horário." },
   { field: "Reunião e Marcação (Agendada)", by: "À mão", when: "Quando a hora fica combinada por telefone ou email." },
-  { field: "Link da chamada (Enviado)", by: "À mão", when: "Depois de enviar o link." },
+  { field: "Marcação (Link enviado)", by: "À mão", when: "Depois de enviar o link." },
   { field: "Reunião feita e Chamada realizada", by: "À mão", when: "Depois da chamada." },
   { field: "Proposta enviada, Valor final, Proposta e Válida até", by: "Automático", when: "Proposta enviada com Enviar." },
-  { field: "Contrato enviado", by: "Automático", when: "Proposta enviada com Enviar e com PDF." },
-  { field: "Reunião a meio, Contrato assinado, Sinal de 25%, Documento do sinal e Materiais, no estado de partida", by: "Automático", when: "Proposta enviada com Enviar, só nos que estavam vazios." },
-  { field: "Reunião a meio (Sim ou Não)", by: "Automático", when: "O cliente confirma sim ou não." },
-  { field: "Os passos do contrato ao lançamento, as suas datas e a Chamada de acompanhamento", by: "À mão", when: "À medida que acontecem." },
+  { field: "Contrato (Enviado; sem PDF, Por enviar) e Chamada de acompanhamento (Por responder)", by: "Automático", when: "Proposta enviada com Enviar; nunca fazem recuar um passo." },
+  { field: "Chamada de acompanhamento (Sim ou Não)", by: "Automático", when: "O cliente confirma sim ou não." },
+  { field: "Contrato (Assinado) e Assinado em", by: "À mão", when: "Quando o contrato assinado chega." },
   { field: "Histórico", by: "Automático", when: "Cada vez que o site muda um passo: data e hora de Lisboa, o quê e quem (o sócio que assina, o cliente ou o site)." },
-  { field: "Ganho, Em projeto, Concluído ou Perdido, e Motivo de perda", by: "À mão", when: "No fecho e durante o projeto." },
+  { field: "Ganho ou Perdido, e Motivo de perda", by: "À mão", when: "No fecho da lead." },
   { field: "Spam ou teste", by: "À mão", when: "Num pedido de ensaio ou de lixo, para não contar nos números." },
   { field: "Alertas", by: "Automático", when: "Quando um email automático não sai. Apagar à mão depois de resolver." },
 ];
