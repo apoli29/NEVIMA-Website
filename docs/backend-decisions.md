@@ -13,10 +13,10 @@ Decided 2026-10-26, changed 2026-10-27 (user), free tools only.
 
 1. notion.so/my-integrations: a new internal integration; its secret is `NOTION_TOKEN`.
 2. An empty Notion page, shared with the integration (••• > Connections).
-3. `.env.local` (never committed): `NOTION_TOKEN` and `NOTION_PARENT` (the page's address). Then `node --env-file=.env.local scripts/setup-notion.mjs` makes the two databases and prints their ids. Run it once: twice makes them twice.
+3. `.env.local` (never committed): `NOTION_TOKEN` and `NOTION_PARENT` (the page's address). Then `npx tsx --env-file=.env.local scripts/setup-notion.mjs` makes the two databases and prints their ids. Run it once: twice makes them twice. (It runs with `tsx` since 2026-11-09, because it reads the steps' catalogue, `src/lib/proposal/steps.ts`.)
 4. Vercel, Production: `NOTION_TOKEN`, `NOTION_FORM1_LEADS` (proposal requests: "Pedidos"), `NOTION_FORM2_LEADS` (partners: "Parceiros"), `RESEND_API_KEY`; optional `MAIL_FROM` (default `nevima <ola@nevima.studio>`), `NOTIFY_TO` (commas between addresses), `SITE_URL` (default `https://nevima.studio`, where the email's wordmark loads from: `public/email/wordmark.png`). Then redeploy.
 
-The properties' names are in two places that must change together: `scripts/setup-notion.mjs` and `deliver.ts`.
+The properties' names are in two places that must change together: `scripts/setup-notion.mjs` and `deliver.ts`. The request's steps (below) are the exception: their names, options and formulas are in one catalogue, `src/lib/proposal/steps.ts`, that both read.
 
 ## Decisions
 
@@ -109,3 +109,24 @@ Open:
 
 - The privacy policy (`src/lib/legal/privacy.ts`) does not name Microsoft (Azure) among those who receive data, nor Notion or Resend, and still says requests go by email until direct sending is active. To be updated by the partners, in both languages.
 - Requests that do not lead to a contract are deleted after 3 months (privacy policy): that now includes their rows in SQL Server (`DELETE FROM dbo.PedidosProposta WHERE Id = …` deletes the choices with them).
+
+## Client tracking, phase 1: a state per step (2026-11-09)
+
+The plan is `docs/client-tracking-plan.md` (and `.pdf`); its section 8 is what phase 1 built. Each step of the process, from the form to the final payment, is a column of its own on the request's row in "Pedidos", with its own states, so one row shows where a client is.
+
+- **One catalogue:** `src/lib/proposal/steps.ts` (no `server-only`, so the script can read it): every step's column (select, date, link, text, tick or formula) with its options and colours, the formulas, the states of "Estado" ("Em projeto" and "Concluído" added, "Pedidos" only: "Parceiros" keeps its states), what a request starts with, what sending the proposal opens, `PAST_BOOKING`, and the history's format.
+- **The script** (`scripts/setup-notion.mjs`, with `tsx`): adds the columns a database lacks, then the formulas in a second call; adds the missing options to the steps' selects ("Reunião a meio" gains "Por responder") and to "Estado", always resending the options already there with their ids, so no request loses its value. `--ver` writes nothing and lists what it would add, with how many requests hold each state; `--ensaio` makes a trial "Pedidos (ensaio)" (`--sem-passos`: one with the columns from before); `--base=<id>` updates only that database; `--formulas` resends the formulas.
+- **What the site writes** (`notion.ts` `setSteps`, always in a change of its own after what it wrote before, so the steps never stand in the way of what the client or the studio did):
+  - a new request: the starting states (Preparação da chamada Por iniciar, Convite Não enviado, Link da chamada Aguarda marcação, Chamada realizada Por efetuar, Proposta Por enviar) and "Histórico". If Notion refuses the page with them (a database without the columns), it is made again without them and the log says `[nevima:notion] sem os passos`;
+  - after the two emails: "Confirmação" Enviada or Falhou;
+  - the invitation sent from `/interno`: "Convite" Enviado, "Marcação" A aguardar resposta (only "Convite" past the booking);
+  - a time booked: "Marcação" Agendada, "Link da chamada" Por enviar (past the booking, only the history line); if that change fails, "Alertas" says "Marcação por atualizar à mão";
+  - the proposal sent from `/interno`: "Proposta" Enviada, "Válida até" (today in Lisbon plus 10 days), and, only where still empty, "Reunião a meio" Por responder, "Contrato assinado" Por receber, "Sinal de 25%" Por pedir, "Documento do sinal" Por emitir, "Materiais" Por receber: sending it again takes nothing back;
+  - the answer about the follow-up call: a line in "Histórico".
+- **"Histórico":** one line per event, `09/11 17:32 · Convite enviado (António)`, on Lisbon's clock, the newest last, the oldest cut past 6000 characters. Who: the partner who signs (first name), "cliente" or "site".
+- The composer says "O Notion foi atualizado" only when both changes (the state and the steps) went through.
+- `PAST_BOOKING` (a booking never takes a request back from these) now also holds "Em projeto" and "Concluído".
+- **Formulas:** "Chamada" writes the weekday and the month in Portuguese itself ("Qui 26 nov, 15:00"), because Notion's `formatDate` writes them in English; "Valor do sinal" writes "612,63 €" with a comma. Read through the API, a formula is worked out in UTC: a summer call shows one hour early there. In the Notion app it should show the viewer's time; to be confirmed in the app with a summer date. Anything that reads the call's time by API (the daily summary, phase 4) reads "Reunião", not the formula.
+- Everything else (the steps after the contract, the views, "Ocultar quando vazia", "Responsável", "Motivo de perda", "Spam ou teste") is by hand in Notion.
+
+Not in phase 1: the invitation's third choice ("contactar-nos"), the "Link da chamada" email, the daily summary, the Google Calendar trial (phases 2 to 5 of the plan).

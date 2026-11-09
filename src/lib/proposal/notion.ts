@@ -1,4 +1,5 @@
 import "server-only";
+import { historyLine, STEP_SELECTS, withLine } from "./steps";
 
 /* ==================================================================
    Notion, as far as the requests need it: one new page in a database
@@ -43,6 +44,8 @@ export const prop = {
   phone: (value: string) => (value ? { phone_number: value } : undefined),
   number: (value: number | null) => (value === null || !Number.isFinite(value) ? undefined : { number: value }),
   date: (iso: string) => ({ date: { start: iso } }),
+  /** A day with no time: "2026-11-19". */
+  day: (iso: string) => ({ date: { start: iso.slice(0, 10) } }),
   /** A time on a clock, "2026-11-06T15:00", in a time zone. */
   localDate: (local: string, zone: string) => ({ date: { start: `${local}:00`, time_zone: zone } }),
   checkbox: (value: boolean) => ({ checkbox: value }),
@@ -77,13 +80,37 @@ export const block = {
   }),
 };
 
+const defined = (properties: Record<string, unknown>) =>
+  Object.fromEntries(Object.entries(properties).filter(([, v]) => v !== undefined));
+
 /** The new page's address, or null when it could not be made (or Notion
-    is not set up). */
+    is not set up). `extra` is the request's steps (steps.ts): when
+    Notion refuses the page with them (400, a column it does not have
+    yet), it is made again without them, so a request never depends on
+    the steps. */
 export async function createPage(
   databaseId: string | undefined,
   properties: Record<string, unknown>,
   children: unknown[],
+  extra?: Record<string, unknown>,
 ): Promise<string | null> {
+  if (extra) {
+    const made = await postPage(databaseId, { ...properties, ...extra }, children, true);
+    if (made !== 400) return made;
+    console.error("[nevima:notion] sem os passos", 400);
+  }
+  const made = await postPage(databaseId, properties, children, false);
+  return made === 400 ? null : made;
+}
+
+/** The page's address, null, or 400 when `quiet` and Notion refused it
+    with that status. */
+async function postPage(
+  databaseId: string | undefined,
+  properties: Record<string, unknown>,
+  children: unknown[],
+  quiet: boolean,
+): Promise<string | null | 400> {
   const token = process.env.NOTION_TOKEN;
   if (!token || !databaseId) return null;
   try {
@@ -96,11 +123,12 @@ export async function createPage(
       },
       body: JSON.stringify({
         parent: { database_id: databaseId },
-        properties: Object.fromEntries(Object.entries(properties).filter(([, v]) => v !== undefined)),
+        properties: defined(properties),
         children,
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
+    if (quiet && res.status === 400) return 400;
     if (!res.ok) {
       // What Notion says about a refusal names the property, never the visitor's words.
       const why = (await res.json().catch(() => ({}))) as { code?: string; message?: string };
@@ -181,6 +209,11 @@ export type RequestPage = {
   midCall: string;
   /** Emails that could not be sent: nobody else would know. */
   alerts: string;
+  /** One line per event: date, what, who (steps.ts). */
+  history: string;
+  /** Each step's select, by its column's name ("" when empty or the
+      column does not exist yet). */
+  steps: Record<string, string>;
 };
 
 type RawPage = { id?: string; url?: string; properties?: Record<string, Record<string, unknown>> };
@@ -204,6 +237,8 @@ function readPage(page: RawPage): RequestPage | null {
     meeting: date("Reunião"),
     midCall: select("Reunião a meio"),
     alerts: text("Alertas", "rich_text"),
+    history: text("Histórico", "rich_text"),
+    steps: Object.fromEntries(STEP_SELECTS.map((name) => [name, select(name)])),
   };
 }
 
@@ -268,7 +303,7 @@ export async function updatePage(pageId: string, properties: Record<string, unkn
       method: "PATCH",
       headers: headers(token),
       body: JSON.stringify({
-        properties: Object.fromEntries(Object.entries(properties).filter(([, v]) => v !== undefined)),
+        properties: defined(properties),
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
@@ -283,3 +318,22 @@ export async function updatePage(pageId: string, properties: Record<string, unkn
     return false;
   }
 }
+
+/** Moves a request's steps on and adds a line to its "Histórico", in one
+    change, after what the site already wrote: the steps never stand in
+    the way of what the client or the studio did. True once Notion took
+    it; a failure only reaches the log. `history` is the page's
+    "Histórico" as read before. */
+export const setSteps = (
+  pageId: string,
+  history: string,
+  steps: Record<string, string>,
+  what: string,
+  who: string,
+  more: Record<string, unknown> = {},
+) =>
+  updatePage(pageId, {
+    ...Object.fromEntries(Object.entries(steps).map(([name, value]) => [name, prop.select(value)])),
+    ...more,
+    "Histórico": prop.text(withLine(history, historyLine(what, who))),
+  });

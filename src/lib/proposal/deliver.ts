@@ -1,7 +1,7 @@
 import "server-only";
 import type { Lang } from "../i18n";
 import { confirmationHtml, confirmationSubject, confirmationText, STUDIO_EMAIL, summaryOf } from "./email";
-import { addAlert, block, createPage, lastRequestSince, pageIdFromUrl, prop } from "./notion";
+import { addAlert, block, createPage, lastRequestSince, pageIdFromUrl, prop, setSteps } from "./notion";
 import {
   CREDITS,
   DELIVERIES,
@@ -13,6 +13,7 @@ import {
   type PartnerAnswers,
 } from "./partner";
 import { SERVICES, labelOf, type Answers, type Contact, type Estimate, type Range } from "./questions";
+import { historyLine, ON_ARRIVAL } from "./steps";
 
 /* ==================================================================
    Where simulations and requests go
@@ -51,6 +52,11 @@ import { SERVICES, labelOf, type Answers, type Contact, type Estimate, type Rang
    in Portuguese whatever the visitor's language, which has a property of
    its own. The databases are made by scripts/setup-notion.mjs, and the
    names of the properties below must stay as it makes them.
+
+   A proposal request is also born with its steps (steps.ts): their
+   starting states and a first line of "Histórico", and, once the two
+   emails are out, "Confirmação". The page is never refused over them:
+   createPage makes it without them when the database lacks the columns.
 
    Each simulation is written to the server log as one JSON line, tagged
    [nevima:simulation]. It is anonymous: the answers and the estimate, no
@@ -268,7 +274,12 @@ export async function waitBefore(kind: "proposal" | "partner", email: string): P
 /** True once the request has reached the studio. */
 export async function deliverRequest(request: ProposalRequest): Promise<boolean> {
   const { properties, children } = proposalPage(request);
-  const page = await createPage(process.env.NOTION_FORM1_LEADS, properties, children);
+  const arrived = historyLine("Pedido recebido", "site");
+  const steps = {
+    ...Object.fromEntries(Object.entries(ON_ARRIVAL).map(([name, value]) => [name, prop.select(value)])),
+    "Histórico": prop.text(arrived),
+  };
+  const page = await createPage(process.env.NOTION_FORM1_LEADS, properties, children, steps);
   if (page === null) {
     // Logged without the contact details: the logs are not the inbox.
     console.info(
@@ -306,6 +317,13 @@ export async function deliverRequest(request: ProposalRequest): Promise<boolean>
     !confirmed && "Confirmação ao cliente não enviada",
   ].filter(Boolean);
   if (missing.length) await addAlert(pageIdFromUrl(page), "", missing.join(" · "));
+  await setSteps(
+    pageIdFromUrl(page),
+    arrived,
+    { "Confirmação": confirmed ? "Enviada" : "Falhou" },
+    confirmed ? "Confirmação enviada" : "Confirmação não enviada",
+    "site",
+  );
   return true;
 }
 
