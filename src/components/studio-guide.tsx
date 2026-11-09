@@ -139,7 +139,7 @@ const STEPS: Step[] = [
     apps: ["site", "notion"],
     body: "O cliente responde ao formulário do site (no fim de cada página, ou pelo botão da barra). No último passo escolhe a língua da resposta, português ou inglês, já marcada com a língua em que usou o site, e envia.",
     behind: "O servidor do site volta a verificar as respostas e recalcula a estimativa, para não depender do que o navegador mostrou. Recusa um segundo pedido do mesmo email em 24 horas, e pedidos feitos depressa demais (robôs).",
-    notion: "Nova página em \"Pedidos\" (ou \"Parceiros\"), estado Novo, com os dados do cliente, cada resposta do projeto na sua coluna (tipo de site, páginas e secções, design, idiomas, funcionalidades, textos, referências, domínio, urgência, sessão fotográfica, SEO e GEO), a estimativa mostrada ao cliente, a data em \"Recebido\" e a língua em \"Idioma\". A página já traz os títulos de \"Preparação da reunião\" e, no fim, as respostas tal como chegaram. Os passos começam no estado de partida (Preparação da chamada Por iniciar, Marcação Convite por enviar, Chamada realizada Por efetuar, Proposta Por enviar) e o \"Histórico\" regista \"Pedido recebido\".",
+    notion: "Nova página em \"Pedidos\" (ou \"Parceiros\"), estado Novo, com os dados do cliente, os serviços e, em \"Características do projeto\", todas as outras respostas, uma linha por tema (site, páginas e secções, idiomas, funcionalidades, textos, domínio, urgência, referências, sessão fotográfica, SEO e GEO), a estimativa mostrada ao cliente, a data em \"Recebido\" e a língua em \"Idioma\". A página já traz os títulos de \"Preparação da reunião\" e, no fim, as respostas tal como chegaram. Os passos começam no estado de partida (Preparação da chamada Por iniciar, Marcação Convite por enviar, Chamada realizada Por efetuar, Proposta Por enviar) e o \"Histórico\" regista \"Pedido recebido\".",
   },
   {
     title: "Confirmação e aviso",
@@ -340,7 +340,7 @@ const NUMBERS = [
 ];
 
 const NOTION_FIELDS = [
-  { field: "Novo, os dados do cliente e as colunas do projeto", by: "Automático", when: "Quando o pedido chega." },
+  { field: "Novo, os dados do cliente, os serviços e as Características do projeto", by: "Automático", when: "Quando o pedido chega." },
   { field: "Passos no estado de partida, e Histórico", by: "Automático", when: "Quando o pedido chega." },
   { field: "Valor Y, Valor X, notas, Preparação da chamada, Documento de preparação e Responsável", by: "À mão", when: "A preparar a chamada." },
   { field: "Contactado e Marcação (A aguardar resposta)", by: "Automático", when: "Convite enviado com Enviar. Contactado só se o pedido estava em Novo." },

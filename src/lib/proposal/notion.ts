@@ -50,6 +50,14 @@ export const prop = {
   localDate: (local: string, zone: string) => ({ date: { start: `${local}:00`, time_zone: zone } }),
   checkbox: (value: boolean) => ({ checkbox: value }),
   url: (value: string) => (value ? { url: clip(value.trim(), 2000) } : undefined),
+  /** Lines of text, each with its title in bold: "Site: Website · …". */
+  lines: (lines: { label: string; value: string }[]) => {
+    const parts = lines.flatMap((line, i) => [
+      { type: "text", text: { content: `${i ? "\n" : ""}${line.label}: ` }, annotations: { bold: true } },
+      ...pieces(line.value),
+    ]);
+    return parts.length ? { rich_text: parts.slice(0, 100) } : undefined;
+  },
 };
 
 export const block = {
