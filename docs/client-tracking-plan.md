@@ -1,6 +1,6 @@
 # Acompanhamento dos clientes no Notion: alterações a fazer
 
-Plano de 2026-11-09. **A fase 1 está construída e ensaiada numa base de ensaio (ver 8.9); falta aplicá-la à base real e pô-la no ar (8.6, passos 3 a 6). O resto do plano ainda não está construído.** Regista tudo o que é preciso mudar no Notion, no site e no `/interno` para que cada pedido tenha, do formulário ao pagamento dos 100%, um estado por passo, visível numa só ficha. As respostas dos sócios estão em "Decisões já tomadas"; o que ainda depende deles está em "Decisões em aberto".
+Plano de 2026-11-09. **A fase 1 está construída, ensaiada numa base de ensaio (ver 8.9) e aplicada à base real a 2026-11-09, com o sim do sócio; falta o ensaio em produção (8.6, passo 6). O resto do plano ainda não está construído.** Regista tudo o que é preciso mudar no Notion, no site e no `/interno` para que cada pedido tenha, do formulário ao pagamento dos 100%, um estado por passo, visível numa só ficha. As respostas dos sócios estão em "Decisões já tomadas"; o que ainda depende deles está em "Decisões em aberto".
 
 Nomes e estados em português, como o Notion do estúdio. Os textos novos que os clientes vêem (emails e páginas do site) escrevem-se nas duas línguas, como o resto do site.
 
@@ -345,8 +345,8 @@ Este é o ponto onde se pode estragar o site, por isso a ordem conta:
 - [x] Confirmar a hora na página de marcação: "Reunião", "Estado" Reunião marcada, "Marcação" Agendada, "Link da chamada" Por enviar. Escolher o outro horário: tudo muda. Num pedido já em "Proposta enviada", o estado e a marcação não recuam.
 - [x] Enviar a proposta: "Proposta" Enviada, "Válida até" a 10 dias, e os passos de depois do contrato com o estado de partida. Reenviar a proposta com "Reunião a meio" já em Sim: não volta a Por responder; com "Contrato assinado" já em Recebido assinado: não volta a Por receber.
 - [x] A resposta Sim ou Não sobre a chamada de acompanhamento continua a funcionar.
-- [ ] Na base real, depois do script, "Reunião a meio" mantém Sim e Não e os pedidos que já as tinham continuam com o seu valor (confirmar com `--ver` antes e uma consulta depois). O mesmo para o "Estado". *Ensaiado na base "sem passos": um pedido em Proposta enviada e Sim continuou assim; falta na base real (8.6, passo 4).*
-- [ ] Um pedido de parceria continua a ser entregue e a base "Parceiros" não ganhou colunas nem estados. *O código da entrega de parcerias não mudou (o `createPage` sem passos é o de antes); falta confirmar depois do passo 4 e no ensaio em produção.*
+- [x] Na base real, depois do script, "Reunião a meio" mantém Sim e Não e os pedidos que já as tinham continuam com o seu valor (confirmar com `--ver` antes e uma consulta depois). O mesmo para o "Estado". *Aplicado a 2026-11-09: antes e depois, os 5 pedidos em Novo e "Reunião a meio" vazia; a segunda passagem não tem nada a acrescentar.*
+- [ ] Um pedido de parceria continua a ser entregue e a base "Parceiros" não ganhou colunas nem estados. *"Parceiros" ficou sem colunas novas e com os mesmos estados (os 2 pedidos em Novo). O código da entrega de parcerias não mudou; falta o ensaio em produção.*
 - [x] Nenhum registo leva nome, email, telefone ou mensagem (só o estado HTTP e o que o Notion diz, que nomeia propriedades).
 - [x] `src/components/studio-guide.tsx` (os passos, o que muda em cada etapa e os limites) e `docs/backend-decisions.md` descrevem o que ficou feito; esta secção tem os itens feitos assinalados.
 
