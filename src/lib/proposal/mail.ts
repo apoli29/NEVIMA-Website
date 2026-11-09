@@ -26,6 +26,25 @@ import type { Lang } from "../i18n";
    for; the apps that load web fonts (Apple Mail, iOS) show them, the
    others fall back to Helvetica and the system's monospace.
 
+   Black that holds in dark mode (user, 2026-11-09). Gmail on the iPhone
+   rewrites a dark email in dark mode: plain black backgrounds turn
+   light and white type turns dark, but pictures are left as they are.
+   A pasted email came out in three bands, black where the light's
+   pictures were and white between them. So:
+   - every black surface outside the words is also painted as a picture
+     (a one-colour gradient), which Gmail leaves alone; the light's
+     pictures lie on it with no colour of their own;
+   - the words sit in two wrappers (keep) that blend Gmail's rewrite
+     back: what it turned light becomes black again and the dark type
+     white. Elsewhere the two blends change nothing. They are inline,
+     not in a <style>, because Gmail drops the <style> of a pasted
+     email, and the pasted email is how most are sent;
+   - pictures stay out of the wrappers (the blend would turn them into
+     negatives), and the wordmarks carry their own black, so they never
+     vanish on an app that lightens the background anyway.
+   Rows hold nothing wider than a phone: the phones wrap one under the
+   other on a narrow screen.
+
    Pure strings, so the studio's composer can draw the same email in
    the browser that the server sends.
    ================================================================== */
@@ -59,8 +78,22 @@ export const escapeHtml = (value: string) =>
 
 const PAD = "32px";
 
-/** A row of the column: transparent, so the background's light shows. */
-const row = (inner: string, padding = `0 ${PAD}`) => `<tr><td class="nv-pad" style="padding:${padding};">${inner}</td></tr>`;
+/** Black painted as a picture too: Gmail's dark mode turns a plain black
+    background light, but leaves a picture, a gradient included, alone. */
+const BLACK = `background-color:${INK};background-image:linear-gradient(${INK},${INK});`;
+
+/** The words, kept as they are in Gmail's dark mode. Gmail turns the
+    two black backgrounds light and the type dark; the first wrapper's
+    blend lets only what is lighter than black through, the second's
+    turns what is inside back the other way round. Where nothing is
+    rewritten both leave everything as it is. No pictures inside. */
+const keep = (inner: string, display = "block") =>
+  `<div style="display:${display};background-color:${INK};mix-blend-mode:screen;"><div style="background-color:${INK};mix-blend-mode:difference;">${inner}</div></div>`;
+
+/** A row of the column: transparent, so the background's light shows,
+    with its words kept. */
+const row = (inner: string, padding = `0 ${PAD}`) =>
+  `<tr><td class="nv-pad" style="padding:${padding};">${keep(inner)}</td></tr>`;
 
 const P = `margin:0 0 18px;font-family:${READ};font-size:16px;line-height:1.6;color:${PAPER};`;
 
@@ -104,14 +137,19 @@ export function slotButton(href: string, day: string, time: string) {
 export const slotBlock = (buttons: string, caption: string) =>
   row(`${buttons}<p style="margin:4px 0 26px;">${caption ? label(caption) : ""}</p>`);
 
-/** The phones, each a box to tap that calls it. */
+/** The phones, each a box to tap that calls it. Side by side where they
+    fit, one under the other on a narrow phone: each is a table of its
+    own, aligned left, which every mail app wraps. The cell around them
+    holds them, so the wrappers reach round both. */
 export function phoneChips() {
   const chips = PHONES.map(
-    (phone) => `<td style="padding:0 8px 8px 0;">
+    (phone) => `<table role="presentation" align="left" cellpadding="0" cellspacing="0"><tr><td style="padding:0 8px 8px 0;">
       <a href="tel:${phone.tel}" style="display:inline-block;padding:9px 12px;border:1px solid ${PAPER};font-family:${MONO};font-size:13px;line-height:1;letter-spacing:0.04em;color:${PAPER};text-decoration:none;white-space:nowrap;">${phone.label}</a>
-    </td>`,
+    </td></tr></table>`,
   ).join("");
-  return row(`<table role="presentation" cellpadding="0" cellspacing="0" style="margin:-4px 0 18px;"><tr>${chips}</tr></table>`);
+  return row(
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:-4px 0 18px;"><tr><td>${chips}</td></tr></table>`,
+  );
 }
 
 /** A figure with its label above and a note under it: the final value. */
@@ -131,14 +169,13 @@ export function figure(caption: string, value: string, extra: string, note: stri
 }
 
 /** The attachment, named, so it is looked for. */
-export function attachment(caption: string, name: string) {
+export function attachment(caption: string, name: string, kind = "PDF") {
   return row(
     `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 26px;"><tr>
       <td style="padding:14px 16px;border:1px solid ${PAPER};">
-        ${label(caption)}<br>
-        <span style="font-family:${MONO};font-size:14px;line-height:1.5;color:${PAPER};">${escapeHtml(name)}</span>
+        ${caption ? `${label(caption)}<br>` : ""}<span style="font-family:${MONO};font-size:14px;line-height:1.5;color:${PAPER};">${escapeHtml(name)}</span>
       </td>
-      <td width="60" align="center" bgcolor="${PAPER}" style="background:${PAPER};width:60px;">${label("PDF", INK)}</td>
+      <td width="60" align="center" bgcolor="${PAPER}" style="background:${PAPER};width:60px;">${label(kind, INK)}</td>
     </tr></table>`,
   );
 }
@@ -153,13 +190,17 @@ export function boxed(text: string) {
   );
 }
 
-/** The closing, who signs it when a person does, and the wordmark. */
+/** The wordmark on its own black, so it never vanishes. */
+const wordmark = (siteUrl: string, width: number) =>
+  `<img src="${siteUrl}/email/wordmark-on-black.png" width="${width}" alt="nevima" style="display:block;border:0;width:${width}px;height:auto;">`;
+
+/** The closing, who signs it when a person does, and the wordmark (out
+    of the wrappers, as every picture). */
 export function signoff(words: string, siteUrl: string, signer = "") {
-  return row(
-    `<p style="margin:8px 0 14px;font-family:${READ};font-size:16px;line-height:1.6;color:${PAPER};">${escapeHtml(words)}${signer ? `<br>${escapeHtml(signer)}` : ""}</p>
-    <img src="${siteUrl}/email/wordmark.png" width="96" alt="nevima" style="display:block;border:0;width:96px;height:auto;">`,
-    `0 ${PAD} 8px`,
-  );
+  return `<tr><td class="nv-pad" style="padding:0 ${PAD} 8px;">
+    ${keep(`<p style="margin:8px 0 14px;font-family:${READ};font-size:16px;line-height:1.6;color:${PAPER};">${escapeHtml(words)}${signer ? `<br>${escapeHtml(signer)}` : ""}</p>`)}
+    ${wordmark(siteUrl, 96)}
+  </td></tr>`;
 }
 
 type Shell = {
@@ -182,22 +223,28 @@ type Shell = {
     it, centred on the column at its real size (1600px), and the column
     inside. Plain black where background images are not drawn. */
 const band = (image: string, position: string, column: string) =>
-  `<tr><td align="center" bgcolor="${INK}" background="${image}" style="padding:0;background-color:${INK};background-image:url('${image}');background-repeat:no-repeat;background-position:${position};background-size:1600px auto;">
-    <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;">${column}</table>
+  `<tr><td align="center" bgcolor="${INK}" style="padding:0;${BLACK}">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+      <td align="center" background="${image}" style="padding:0;background-image:url('${image}');background-repeat:no-repeat;background-position:${position};background-size:1600px auto;">
+        <!--[if mso]><table role="presentation" width="600" align="center" cellpadding="0" cellspacing="0"><tr><td><![endif]-->
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;">${column}</table>
+        <!--[if mso]></td></tr></table><![endif]-->
+      </td>
+    </tr></table>
   </td></tr>`;
 
 export function shell({ lang, subject, preheader, tag, greeting, body, why, siteUrl }: Shell) {
   const site = siteUrl.replace(/^https?:\/\//, "");
-  const top = row(
-    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
-          <td style="vertical-align:middle;"><img src="${siteUrl}/email/wordmark.png" width="104" alt="nevima" style="display:block;border:0;width:104px;height:auto;"></td>
+  // Built by hand, not with row: the wordmark stays out of the wrappers.
+  const top = `<tr><td class="nv-pad" style="padding:30px ${PAD} 42px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+          <td style="vertical-align:middle;">${wordmark(siteUrl, 104)}</td>
           <td align="right" style="vertical-align:middle;">
-            <span style="display:inline-block;padding:6px 9px;border:1px solid ${HAIR_STRONG};">${label(tag, PAPER)}</span>
+            ${keep(`<span style="display:inline-block;padding:6px 9px;border:1px solid ${HAIR_STRONG};">${label(tag, PAPER)}</span>`, "inline-block")}
           </td>
         </tr></table>
-        <h1 style="margin:128px 0 0;font-family:${TITLE};font-size:34px;line-height:1.12;font-weight:500;letter-spacing:-0.025em;color:${PAPER};">${escapeHtml(greeting)}</h1>`,
-    `30px ${PAD} 42px`,
-  );
+        ${keep(`<h1 style="margin:128px 0 0;font-family:${TITLE};font-size:34px;line-height:1.12;font-weight:500;letter-spacing:-0.025em;color:${PAPER};">${escapeHtml(greeting)}</h1>`)}
+      </td></tr>`;
   // The mark's picture carries its glow round it, 32px on each side and
   // fading to nothing at its edge, so it fills the column and the letters
   // line up with the text above.
@@ -238,7 +285,7 @@ export function shell({ lang, subject, preheader, tag, greeting, body, why, site
 </head>
 <body bgcolor="${INK}" style="margin:0;padding:0;background:${INK};">
 <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:${INK};">${escapeHtml(preheader)}&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;&#8199;&#65279;&#847;</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${INK}" style="background:${INK};">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="${INK}" style="${BLACK}">
   ${band(`${siteUrl}/email/light-head.jpg`, "center top", top + body)}
   ${band(`${siteUrl}/email/light-foot.jpg`, "center top", foot)}
 </table>
