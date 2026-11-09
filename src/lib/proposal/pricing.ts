@@ -157,8 +157,8 @@ export const PRICING = {
   photo: { photos: 245, "photos-video": 370 },
   /** Shown under the photo line, as the contract sets it (clause 10.3). */
   photoTravel: {
-    en: "Travel within 30 km of Arcozelo is included. Beyond that, it is charged per km, as set in your proposal.",
-    pt: "A deslocação até 30 km de Arcozelo está incluída. A partir daí, é cobrada ao km, como fica definido na proposta.",
+    en: "Travel within 30 km of Vila Nova de Gaia is included. Beyond that, it is charged per km, as set in your proposal.",
+    pt: "A deslocação até 30 km de Vila Nova de Gaia está incluída. A partir daí, é cobrada ao km, como fica definido na proposta.",
   } satisfies Copy,
 
   /** SEO and GEO are sold only with a website we built, and priced from it

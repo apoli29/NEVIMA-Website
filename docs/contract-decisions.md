@@ -72,7 +72,7 @@ Cada serviço tem uma cláusula própria (9 a 15) com o que inclui, o que não i
   - "Prazos do contrato" foi fundida aqui.
 - **9 (Identidade visual):** a nevima acompanha o registo de marca **sem custo adicional**, mas não o faz por inteiro.
 - **10 (Sessão fotográfica):**
-  - deslocações incluídas até 30 km de Arcozelo; acima disso, €/km na Proposta;
+  - deslocações incluídas até 30 km de Vila Nova de Gaia (antes Arcozelo, mudado em 2026-11-09); acima disso, €/km na Proposta;
   - desmarcação com menos de 48 horas: **15%** do preço da sessão, mais as deslocações (a laranja: "a confirmar com parecer profissional").
 - **11 (Web design):**
   - o português e o inglês estão sempre incluídos; cada língua adicional custa 25 €, com reunião de revisão (v1.15; v1.11 a 35 €; antes 35 / 55 / 80 € e só o português incluído);
@@ -114,7 +114,7 @@ Cada serviço tem uma cláusula própria (9 a 15) com o que inclui, o que não i
 - **15% na desmarcação (cl. 10.6):** parecer profissional.
 
 ## Por confirmar
-- Qual Arcozelo (o concelho), na cl. 10.3.
+- ~~Qual Arcozelo, na cl. 10.3~~: passou a Vila Nova de Gaia (v1.15).
 - ~~Se o web design inclui a escrita dos textos~~: sim, sem alterar o preço (v1.14).
 - Diferenças entre o site e o contrato: resolvidas na auditoria legal de 2026-10-19 (alojamento, alterações pequenas, domínio, línguas, páginas legais, SEO e fotografias).
 - **Atualizações de segurança (a explorar mais tarde):** se o alojamento gratuito inclui aplicar as correções de segurança do Next.js (por exemplo, as falhas de março de 2025 e o "React2Shell" de dezembro de 2025), e como fazê-lo em muitos sites (a mesma base em todos, Dependabot). Frase proposta: "O alojamento inclui manter o website no ar tal como foi entregue e aplicar as atualizações de segurança que a nevima considere necessárias. Não inclui alterações, funcionalidades novas nem atualizações de outra natureza, que seguem a cláusula 11."
