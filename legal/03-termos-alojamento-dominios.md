@@ -29,15 +29,12 @@
 
 1. O alojamento é gratuito durante o primeiro Ano de contrato, que vai da assinatura da Proposta até ao dia 1 do mês seguinte ao da assinatura, no ano seguinte. Renova-se depois com o contrato, de ano em ano, de dia 1 a dia 1 (cl. 12.1 e 23.1 a 23.2).
 2. A nevima envia ao Cliente, pelo menos 60 dias antes do fim de cada Ano de contrato, um lembrete da renovação (cl. 23.3). O Cliente pode não renovar, avisando por escrito até 8 dias antes do fim do Ano de contrato (cl. 23.4). A nevima pode não renovar, dizendo-o no lembrete (cl. 23.5). Ver a cl. 12.2.
-3. Na renovação, a nevima pode passar a cobrar um valor simbólico, só para cobrir os seus custos e nunca superior a [60 € por ano], indicando-o no lembrete da renovação. Se o Cliente não aceitar, recebe sem custo o código e os ficheiros do website (cl. 12.3, 12.4 e 23.6).
+3. Na renovação, se as condições da Vercel se mantiverem mas o custo de alojar o website se revelar superior ao previsto, a nevima pode passar a cobrar um valor simbólico, igual apenas a esse custo, sem margem, e nunca superior a [60 € por ano], indicando-o no lembrete da renovação, com a explicação do custo. Se o Cliente não aceitar, recebe sem custo o código e os ficheiros do website (cl. 12.3, 12.4 e 23.6).
 
-## 3. Limite justo
+## 3. Plano da Vercel e mudanças na Vercel
 
-Para manter o alojamento gratuito há um limite de [100 mil] pedidos ao servidor por mês. Se o website o ultrapassar em dois meses seguidos (cl. 12.6):
-- entre [100 mil e 1 milhão] por mês, o alojamento passa a custar [120 € por ano];
-- acima de [1 milhão], a nevima apresenta um orçamento especializado.
-
-Em ambos os casos, a nevima avisa o Cliente antes de qualquer cobrança.
+1. Os websites alojados pela nevima partilham o mesmo plano da Vercel. Se esse plano deixar de chegar e a nevima precisar de passar a um plano mais extenso, pode passar a cobrar também o valor simbólico do ponto 2.3, que é a parte do custo adicional que cabe ao website do Cliente, sem margem. Avisa por escrito com, pelo menos, 3 meses de antecedência, indicando o valor. Se o Cliente não aceitar, recebe o código e os ficheiros do website (cl. 12.4 e 12.6).
+2. Se a Vercel alterar os seus preços, planos, limites ou termos, ou deixar de prestar o serviço, de forma que afete o custo ou o funcionamento do alojamento, a nevima avisa o Cliente por escrito logo que tenha conhecimento, e as partes decidem em conjunto: manter o alojamento com o valor que resultar da mudança, mudar para uma plataforma equivalente ou terminar o alojamento. Sem acordo até a mudança entrar em vigor, qualquer das partes pode terminar o alojamento sem penalização (cl. 12.8).
 
 ## 4. Domínio
 

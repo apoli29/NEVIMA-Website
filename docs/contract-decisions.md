@@ -87,7 +87,7 @@ Cada serviço tem uma cláusula própria (9 a 15) com o que inclui, o que não i
   - não renovação com **2 meses** de aviso;
   - na renovação, a nevima pode passar a cobrar um **valor simbólico** que só cobre custos, **até 60 €/ano**; se o Cliente recusar (ou não renovar), recebe o código sem custo;
   - alojado no plano **Pro** da Vercel;
-  - **limite justo:** 100 mil CDN requests por mês; acima disso, **120 €/ano** entre 100 mil e 1 milhão, e **orçamento especializado** acima de 1 milhão (valores a laranja, para os sócios confirmarem que são justos);
+  - **limite justo (removido na v1.15):** passou a "Plano da Vercel" (cl. 12.6): como os websites partilham o mesmo plano, se for preciso um plano mais extenso a nevima reserva o direito de o fazer, o que pode levar a cobrar também o valor simbólico da 12.3 (só o custo adicional que cabe a cada website, sem margem), com aviso de pelo menos 3 meses. Não se exige novo contrato: a regra está neste, e quem não aceitar sai com o código (12.4).
   - o site deixou de prometer prazo (2026-10-19, utilizador): saíram "for as long as your website is live", "for life" e "enquanto o website estiver online". O site diz só que o alojamento é gratuito, como a cl. 12.1, sem ressalvas ("gratuito, mas…" não, pedido do utilizador); as condições da renovação e do limite justo ficam no contrato.
 - **16:** o crédito é o logótipo da nevima no rodapé, com −5% no website.
 - **17 (Propriedade intelectual):**
@@ -110,7 +110,7 @@ Cada serviço tem uma cláusula própria (9 a 15) com o que inclui, o que não i
 - **Aviso tardio de não renovação (cl. 23.4):** os 2 meses pagos. Confirmar a leitura e se vale com Particulares (cláusula penal).
 - **SEO &amp; GEO (cl. 14, 6.6):** conteúdo e cobrança (preços provisórios no formulário). O prazo de 8 dias da cl. 6.6 e a cl. 6.7 também estão a laranja.
 - **Identidade visual (cl. 9.4):** quantas rondas de revisão estão incluídas.
-- **Alojamento (cl. 12.3 e 12.6):** se os 60 €, os 100 mil, os 120 € e o 1 milhão são justos.
+- **Alojamento (cl. 12.3 e 12.6):** o teto de 60 € depende do número de clientes; os sócios duvidam que seja mais. Mantido. O aviso de 3 meses da 12.6 é para confirmar.
 - **15% na desmarcação (cl. 10.6):** parecer profissional.
 
 ## Por confirmar
