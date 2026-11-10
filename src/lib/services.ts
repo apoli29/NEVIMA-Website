@@ -38,7 +38,7 @@ export const SERVICES: Service[] = [
     slug: "web-design",
     title: "Web Design",
     tier: "main",
-    body: "Web design is Nevima’s main service, and not by chance: it is where we achieve our best results. We deliver websites that reflect the essence of each business and catch the attention of the potential clients and other stakeholders of our partners.",
+    body: "Web design is Nevima’s main service for a reason: it is where we achieve our best results. We deliver websites that reflect the essence of each business and catch the attention of the potential clients and other stakeholders of our partners.",
     included: {
       title: "Also included",
       items: [
