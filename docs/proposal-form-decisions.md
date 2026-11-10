@@ -243,3 +243,37 @@ Decided 2026-11-09 (user, option A of three). Every button that opens the form (
 - A website of more than 10 pages is now priced by the sum of its pages, like any other, and SEO & GEO with it. Example, Saúde, Essencial+, 14 pages: web design 545–705, SEO & GEO 120–160.
 - The size label `10+` stays for the timeline and the records. Its timeline is 16–22 working days (provisional, the scale carried on from 7–10's 12–16; left to me).
 
+## Time per service
+
+2026-11-10 (user): every service shows its own price and its own time, and the project's time is the sum of them all, as the price is. Whatever is on request in price is "to be defined" in time too. Until then the estimate screen showed no time at all, and only Notion's "Prazo" had the website's time, by size.
+
+Days, in working days (`PRICING.days`; what the user did not give is mine and provisional):
+
+- **Web design:** landing page 4–7. Website: 5–7 for the three pages always included, plus 1–1.5 for each page or section on top. Pages written in count, and "Não sei, prefiro que escolham por mim" counts as 2. Advanced design: +30%. Each additional language: +1. No texts: +2–3 for writing them. "Não sei" on the design, the languages or the texts counts on the upper end. "Não sei" on what is needed takes the sector's usual website, 35% lower and higher, as the price does.
+- **Visual identity:** within the website's time (user): "Incluído no prazo do website".
+- **Photo shoot:** 7, for editing and delivery (user).
+- **SEO & GEO** (one-time work): landing page 1–2 (the user's reference). Website: 2–3 plus 0.25–0.5 for each page on top.
+- **Back-end features:**
+  - a form (the form and its automatic email): 1 day (user);
+  - the newsletter: 1 day;
+  - on top, each platform set up in the client's name: Brevo for forms and the newsletter, 1–2 days (the sender domain's DNS can take up to two days); Cal.com for the calendar, 1–2 days; the restaurants' own reservation platform in Portugal, 1–2 days (its onboarding is on their side).
+  - Automated emails: on request, so their time is to be defined.
+- Lowest ends round down to whole days, highest ends up.
+- **On screen:**
+  - each line shows its days under its price ("9–13 dias úteis");
+  - the identity shows "Incluído no prazo do website";
+  - an on-request row shows "Prazo por definir" under "Sob consulta";
+  - the total shows the summed days, or "Prazo a combinar" on an urgent deadline, or "Prazo por definir" when nothing could be priced. With items on request it reads "Mais os itens sob consulta, em preço e prazo";
+  - one footnote: "Os prazos são em dias úteis e contam a partir da entrega de todos os materiais."
+- **Notion:** "Prazo" is the sum (with "+ itens por definir"), "a combinar" or "por definir". The estimate shown in the request's page has each line's days.
+- **Examples, Portugal, Essencial+:**
+
+  | Project | Time |
+  |---|---|
+  | Landing page | 4–7 |
+  | Landing page + SEO & GEO | 5–9 |
+  | Saúde, 7 pages, form, SEO & GEO | 9–13 + 2–3 + 3–5 = 14–21 |
+  | 14 pages Advanced, one more language, identity, shoot, SEO & GEO | 21–32 + 7 + 4–9 = 32–48 |
+
+- **Open:** the about FAQ says a large web design project "por norma não passa dos 18 a 22 dias úteis", and How we work says "from 4 working days for a one-page site". The second still holds; the first no longer does for the largest websites.
+

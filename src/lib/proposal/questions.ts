@@ -592,6 +592,12 @@ export type Estimate = {
       monthlyMax?: number;
       monthlyNote?: string;
     }[];
+    /** How long the service takes, in working days (user, 2026-11-10).
+        Left out on an urgent deadline, when the time is agreed. */
+    days?: Range;
+    /** Made within another service's time (the visual identity, within
+        the website's). */
+    daysIncluded?: true;
     /** The figure rests on prices the studio has not confirmed yet:
         underlined in orange when the form is opened with ?revisao. */
     provisional?: boolean;
@@ -610,9 +616,11 @@ export type Estimate = {
   /** The project needs the third level (complex systems): nothing is
       priced, and the visitor is told it is beyond what we take on now. */
   outOfScope?: true;
-  /** How long the website takes, when web design was chosen: working
-      days, or agreed between both sides on an urgent deadline. */
-  timeline: { kind: "days"; min: number; max: number } | { kind: "agreed" } | null;
+  /** How long the project takes: the sum of every service's working days
+      (user, 2026-11-10; it was the website's alone), or agreed between
+      both sides on an urgent deadline. `partial` when some item is on
+      request, its time to be defined on top. */
+  timeline: { kind: "days"; min: number; max: number; partial?: true } | { kind: "agreed" } | null;
 };
 
 /** Said wherever languages other than Portuguese and English are asked

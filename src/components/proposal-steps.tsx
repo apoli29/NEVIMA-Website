@@ -522,11 +522,24 @@ export function summary(draft: Draft, contact: Contact, estimate: Estimate | nul
         l.monthly !== undefined
           ? t(`, then ${monthSpan(l.monthly, l.monthlyMax)}/month`, `, depois ${monthSpan(l.monthly, l.monthlyMax)}/mês`)
           : "";
-      lines.push(`${l.label}: ${span(l.amount)}${then}`);
+      const days = l.days
+        ? ` · ${l.days.min === l.days.max ? l.days.min : `${l.days.min}–${l.days.max}`} ${t("working days", "dias úteis")}`
+        : "";
+      lines.push(`${l.label}: ${span(l.amount)}${then}${days}`);
       for (const part of l.parts ?? []) lines.push(`  ${part.label}: ${span(part.amount)}`);
     }
     for (const r of estimate.onRequest) lines.push(`${r.label}: ${t("on request", "sob consulta")} (${r.reason})`);
     if (estimate.total !== null) lines.push(`Total: ${span(estimate.total)}`);
+    const tl = estimate.timeline;
+    if (tl) {
+      lines.push(
+        `${t("Time", "Prazo")}: ${
+          tl.kind === "agreed"
+            ? t("to be agreed", "a combinar")
+            : `${tl.min}–${tl.max} ${t("working days", "dias úteis")}${tl.partial ? t(", plus the items on request", ", mais os itens sob consulta") : ""}`
+        }`,
+      );
+    }
     if (estimate.later?.length) lines.push(`+ ${estimate.later.join(", ")} (${t("price to be defined", "preço a definir")})`);
     if (estimate.monthly !== null) lines.push(`${t("Then monthly", "Depois, por mês")}: ${monthSpan(estimate.monthly, estimate.monthlyMax)}`);
   }
@@ -1560,6 +1573,13 @@ function EstimateScreen({
     );
   }
   const someOnRequest = estimate.onRequest.length > 0;
+  // Each service's time beside its price, the project's under the total
+  // (user, 2026-11-10).
+  const daysText = ({ min, max }: Range) =>
+    min === max
+      ? t(`${min} working ${min === 1 ? "day" : "days"}`, `${min} ${min === 1 ? "dia útil" : "dias úteis"}`)
+      : t(`${min}–${max} working days`, `${min}–${max} dias úteis`);
+  const timeline = estimate.timeline;
   // When the back end is the only monthly fee, it is said in its own row
   // and not again under the total (user, 2026-11-04).
   const monthlyLines = estimate.lines.filter((l) => l.monthly !== undefined);
@@ -1587,6 +1607,11 @@ function EstimateScreen({
               >
                 {span(line.amount)}
               </span>
+              {(line.days || line.daysIncluded) && (
+                <span className="mono-label mt-1 block text-ash-2">
+                  {line.days ? daysText(line.days) : t("Within the website's time", "Incluído no prazo do website")}
+                </span>
+              )}
               {line.monthly !== undefined && !line.parts && (
                 <span className="mono-label mt-1 block text-ash-2">
                   {t(
@@ -1625,7 +1650,11 @@ function EstimateScreen({
             <span className="pf-line-name block">{item.label}</span>
             <span className="mono-label mt-1 block text-ash-2">{item.reason}</span>
           </span>
-          <span className="pf-line-value pf-line-quiet">{t("On request", "Sob consulta")}</span>
+          <span className="text-right">
+            <span className="pf-line-value pf-line-quiet block">{t("On request", "Sob consulta")}</span>
+            {/* What has no price has no time yet either (user, 2026-11-10). */}
+            <span className="mono-label mt-1 block text-ash-2">{t("Time to be defined", "Prazo por definir")}</span>
+          </span>
         </motion.div>
       ))}
       <motion.div variants={ROW} className="pf-line pf-total">
@@ -1639,7 +1668,7 @@ function EstimateScreen({
           ) : null}
           {someOnRequest && estimate.total !== null && (
             <span className="mono-label mt-1 block text-white/70">
-              {t("Plus the items on request", "Mais os itens sob consulta")}
+              {t("Plus the items on request, in price and time", "Mais os itens sob consulta, em preço e prazo")}
             </span>
           )}
         </span>
@@ -1647,6 +1676,15 @@ function EstimateScreen({
           <span className="pf-line-value block">
             {estimate.total === null ? t("On request", "Sob consulta") : span(estimate.total)}
           </span>
+          {timeline?.kind === "days" && (
+            <span className="mono-label mt-1 block text-white/70">{daysText(timeline)}</span>
+          )}
+          {timeline?.kind === "agreed" && (
+            <span className="mono-label mt-1 block text-white/70">{t("Time to be agreed", "Prazo a combinar")}</span>
+          )}
+          {!timeline && someOnRequest && (
+            <span className="mono-label mt-1 block text-white/70">{t("Time to be defined", "Prazo por definir")}</span>
+          )}
           {estimate.monthly !== null && !monthlyInBackEnd && (
             <span className="mono-label mt-1 block text-white/70">
               {t(
@@ -1669,6 +1707,14 @@ function EstimateScreen({
       <motion.p variants={ROW} className="mono-label pf-foot-note">
         {t("An estimate from your answers", "Uma estimativa a partir das respostas")}
       </motion.p>
+      {timeline?.kind === "days" && (
+        <motion.p variants={ROW} className="pf-footnote mt-2 max-w-[38em]">
+          {t(
+            "Times are in working days, counted from the day all the materials are in.",
+            "Os prazos são em dias úteis e contam a partir da entrega de todos os materiais.",
+          )}
+        </motion.p>
+      )}
       {/* What the ranges promise (user, 2026-10-17). */}
       <motion.p variants={ROW} className="pf-footnote mt-2 max-w-[38em]">
         {t(
