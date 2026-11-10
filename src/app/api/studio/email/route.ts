@@ -7,7 +7,7 @@ import { SIGNERS, STUDIO_EMAIL } from "@/lib/proposal/mail";
 import { getRequest, prop, setSteps, updatePage } from "@/lib/proposal/notion";
 import { offerHtml, offerSubject, offerText } from "@/lib/proposal/offer";
 import { isSlot } from "@/lib/proposal/slots";
-import { firstName, lisbonDayAfter, OFFER_DAYS, PAST_BOOKING } from "@/lib/proposal/steps";
+import { firstName, lisbonDayAfter, OFFER_DAYS, PAST_BOOKING, PEDIDOS } from "@/lib/proposal/steps";
 import { fromStudio } from "@/lib/proposal/studio";
 
 /* ==================================================================
@@ -195,18 +195,16 @@ export async function POST(request: Request) {
       "Valor final": prop.number(euros(f.total)),
     });
     if (page) {
-      const contract = page.steps["Contrato"];
-      const opened: Record<string, string> = {
-        ...(attachments ? (contract === "Assinado" ? {} : { Contrato: "Enviado" }) : contract ? {} : { Contrato: "Por enviar" }),
-        ...(page.steps["Chamada de acompanhamento"] ? {} : { "Chamada de acompanhamento": "Por responder" }),
-      };
+      // The contract's own columns ("Contrato", "Contrato Recebido?") are
+      // the studio's, by hand.
+      const opened: Record<string, string> = page.steps[PEDIDOS.followUp] ? {} : { [PEDIDOS.followUp]: "Por responder" };
       const moved = await setSteps(
         f.page,
         page.history,
-        { Proposta: "Enviada", ...opened },
+        { [PEDIDOS.offer]: "Enviado", ...opened },
         attachments ? "Proposta enviada, com o contrato" : "Proposta enviada",
         who,
-        { "Válida até": prop.day(lisbonDayAfter(new Date(), OFFER_DAYS)) },
+        { [PEDIDOS.validUntil]: prop.day(lisbonDayAfter(new Date(), OFFER_DAYS)) },
       );
       notion = notion && moved;
     } else {

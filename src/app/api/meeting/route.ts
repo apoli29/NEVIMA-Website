@@ -33,7 +33,8 @@ export async function POST(request: Request) {
   if (page.meeting.startsWith(slot)) return json({ ok: true, slot });
 
   const booked = await updatePage(meeting.page, {
-    "Reunião": prop.localDate(slot, ZONE),
+    // "Data da Reunião" in "Pedidos", "Reunião" in "Parceiros".
+    [page.meetingKey]: prop.localDate(slot, ZONE),
     Estado: PAST_BOOKING.has(page.state) ? undefined : prop.select("Reunião marcada"),
   });
   if (!booked) return json({ error: "not_configured" }, 503);

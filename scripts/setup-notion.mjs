@@ -57,6 +57,7 @@ import {
   CLIENT_COLUMNS,
   MOVED,
   PARTNER_STATES,
+  PEDIDOS,
   PROJECT_COLUMNS,
   REMOVED_COLUMNS,
   REQUEST_STATES,
@@ -98,13 +99,14 @@ function definition(column) {
   return { [kind]: column.options ? { options: column.options } : {} };
 }
 
-const common = (states) => ({
+// "Pedidos" names three of these its own way (PEDIDOS in steps.ts).
+const common = (states, names = { company: "Empresa", meeting: "Reunião" }) => ({
   Nome: { title: {} },
   Estado: { select: { options: states } },
   Email: { email: {} },
   Telefone: { phone_number: {} },
-  Empresa: { rich_text: {} },
-  "Reunião": { date: {} },
+  [names.company]: { rich_text: {} },
+  [names.meeting]: { date: {} },
   // An email that could not be sent, written by the site (user, 2026-10-31).
   Alertas: { rich_text: {} },
 });
@@ -120,22 +122,19 @@ const databases = [
     title: "Pedidos",
     states: REQUEST_STATES,
     properties: {
-      ...common(REQUEST_STATES),
+      ...common(REQUEST_STATES, PEDIDOS),
       ...(BARE
         ? { "Serviços": { multi_select: { options: PROJECT_COLUMNS[0].options } } }
         : {}),
       "País": one("Portugal", "Espanha", "Itália", "EUA", "Outro"),
-      Idioma: one("pt", "en"),
+      [PEDIDOS.lang]: one("pt", "en"),
       Recebido: { date: {} },
       Mensagem: { rich_text: {} },
       Estimativa: { rich_text: {} },
       "Mensal (€)": euro,
       Prazo: { rich_text: {} },
-      // What the studio works out for the call: the price with what the
-      // client chose (Y), with what the studio suggests (X), and what is
-      // agreed. The notes for the call are in each page's body.
-      "Valor Y (cliente)": euro,
-      "Valor X (sugestões)": euro,
+      // What is agreed (the values X and Y were removed by the partners,
+      // 2026-11-10).
       "Valor final": euro,
       // The client's, the project's and the follow-up's (steps.ts).
       ...asProperties(columns),
