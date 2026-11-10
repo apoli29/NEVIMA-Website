@@ -93,18 +93,23 @@ function totalText(estimate: Estimate) {
   return estimate.total ? range(estimate.total) : "sob consulta";
 }
 
+/** The project's time: the sum of the services' days (user, 2026-11-10),
+    with what is on request to be defined on top. */
 function timelineText(estimate: Estimate) {
   const { timeline } = estimate;
-  if (!timeline) return "";
-  return timeline.kind === "days" ? `${timeline.min}–${timeline.max} dias úteis` : "a combinar";
+  if (!timeline) return estimate.onRequest.length ? "por definir" : "";
+  if (timeline.kind === "agreed") return "a combinar";
+  return `${range(timeline)} dias úteis${timeline.partial ? " + itens por definir" : ""}`;
 }
 
 /** The estimate, line by line, as the visitor was shown it. */
 function estimateLines(estimate: Estimate) {
   const lines = estimate.lines.map(
-    (line) => `${line.label}: ${range(line.amount)} €${line.monthly ? ` + ${line.monthly}${line.monthlyMax ? `–${line.monthlyMax}` : ""} €/mês` : ""}`,
+    (line) =>
+      `${line.label}: ${range(line.amount)} €${line.monthly ? ` + ${line.monthly}${line.monthlyMax ? `–${line.monthlyMax}` : ""} €/mês` : ""}` +
+      (line.days ? ` · ${range(line.days)} dias úteis` : line.daysIncluded ? " · no prazo do website" : ""),
   );
-  const onRequest = estimate.onRequest.map((item) => `Sob consulta: ${item.label}`);
+  const onRequest = estimate.onRequest.map((item) => `Sob consulta: ${item.label} (prazo por definir)`);
   const later = (estimate.later ?? []).map((label) => `Sob consulta: ${label}`);
   return [...lines, ...onRequest, ...later];
 }

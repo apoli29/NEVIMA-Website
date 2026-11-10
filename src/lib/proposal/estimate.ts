@@ -2,6 +2,7 @@ import "server-only";
 import { translator, type Lang, type Translate } from "../i18n";
 import { MARKET, PRICING, type Market, type PageKey, type Pricing } from "./pricing";
 import {
+  ALWAYS_PAGES,
   REGIONS,
   SECTOR_PAGES,
   pageTypesFor,
@@ -578,14 +579,89 @@ export function estimate(answers: Answers, pricing: Pricing = PRICING, lang: Lan
     if (monthly > 0 && monthlyMax > monthly) out.monthlyMax = monthlyMax;
   }
 
-  // The website's timeline, whatever the country: it is the work's length.
-  if (webAnswers) {
-    if (webAnswers.urgent === "yes") out.timeline = { kind: "agreed" };
-    else {
-      const [min, max] = pricing.web.days[webAnswers.pages];
-      out.timeline = { kind: "days", min, max };
+  // Each service's time beside its price, and the project's time the sum of
+  // them all (user, 2026-11-10). What is on request has its time to be
+  // defined with it; on an urgent deadline the time is agreed.
+  if (webAnswers?.urgent === "yes") {
+    if (out.lines.length || out.onRequest.length) out.timeline = { kind: "agreed" };
+  } else if (webAnswers && market) {
+    for (const line of out.lines) {
+      if (line.id === "identity") line.daysIncluded = true;
+      else line.days = daysOf(line.id, webAnswers, answers, market, pricing);
+    }
+    if (out.lines.length) {
+      const sum = (end: "min" | "max") => out.lines.reduce((a, l) => a + (l.days?.[end] ?? 0), 0);
+      out.timeline = { kind: "days", min: sum("min"), max: sum("max"), ...(out.onRequest.length ? { partial: true as const } : {}) };
     }
   }
 
   return out;
+}
+
+/* --- how long each service takes ----------------------------------- */
+
+type Pair = readonly [number, number];
+/** Working days as whole days: the lowest down, the highest up. */
+const dayRange = ([lo, hi]: Pair): Range => ({ min: Math.floor(lo), max: Math.ceil(hi) });
+
+/** Days that grow with the website's pages: a landing page's own figure,
+    or the three pages always included and each page on top. "Not sure"
+    on what is needed takes the sector's usual website, its lowest end
+    lowered and its highest raised by the same share as the price. */
+function byPages(
+  a: NonNullable<Answers["web"]>,
+  d: { landing: Pair; base: Pair; perPage: Pair },
+  unsurePercent: number,
+  usualPages: number,
+): [number, number] {
+  if (a.pageMode === "landing") return [d.landing[0], d.landing[1]];
+  if (a.pageMode === "website") {
+    const extra = countPages(a.pageTypes, a.pageOthers?.length ?? 0, a.pagesUnsure === true) - ALWAYS_PAGES;
+    return [d.base[0] + extra * d.perPage[0], d.base[1] + extra * d.perPage[1]];
+  }
+  const u = unsurePercent / 100;
+  return [(d.base[0] + usualPages * d.perPage[0]) * (1 - u), (d.base[1] + usualPages * d.perPage[1]) * (1 + u)];
+}
+
+function daysOf(id: ServiceId, a: NonNullable<Answers["web"]>, answers: Answers, market: Market, pricing: Pricing): Range {
+  const d = pricing.days;
+  const usual = SECTOR_PAGES[
+    answers.audience === "personal" ? "personal" : answers.audience === "nonprofit" ? "nonprofit" : (answers.sector ?? "other")
+  ].length;
+  switch (id) {
+    case "web": {
+      let [lo, hi] = byPages(a, d.web, pricing.web.unsurePercent, usual);
+      // "Not sure" counts on the upper end, as in the price.
+      const advanced = 1 + d.web.advancedPercent / 100;
+      if (a.design === "advanced") lo *= advanced;
+      if (a.design !== "essential") hi *= advanced;
+      const others = a.languages.includes("other") ? countLanguages(a.languagesOther ?? "") : 0;
+      lo += others * d.web.perLanguage;
+      hi += (others + (a.languages.includes("unsure") ? 1 : 0)) * d.web.perLanguage;
+      if (a.texts === "no") lo += d.web.writing[0];
+      if (a.texts !== "yes") hi += d.web.writing[1];
+      return dayRange([lo, hi]);
+    }
+    case "seo":
+      return dayRange(byPages(a, d.seo, pricing.web.unsurePercent, usual));
+    case "photo":
+      return { min: d.photo, max: d.photo };
+    case "backend": {
+      const has = (f: (typeof a.features)[number]) => a.features.includes(f);
+      const b = d.backend;
+      let lo = 0;
+      let hi = 0;
+      const add = ([l, h]: Pair) => {
+        lo += l;
+        hi += h;
+      };
+      if (has("forms")) add([b.form, b.form]);
+      if (has("newsletter")) add([b.newsletter, b.newsletter]);
+      if (has("forms") || has("newsletter")) add(b.brevo);
+      if (has("booking")) add(answers.sector === "hospitality" && market === "pt" ? b.restaurant : b.calcom);
+      return dayRange([lo, hi]);
+    }
+    case "identity":
+      return { min: d.identity, max: d.identity };
+  }
 }

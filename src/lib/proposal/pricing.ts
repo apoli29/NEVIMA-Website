@@ -16,9 +16,10 @@ import type { PageTypeId } from "./questions";
 export type Market = "pt" | "es-it" | "us";
 export type ByMarket = Record<Market, number>;
 
-type Size = "landing" | "3" | "4-6" | "7-10" | "10+" | "unsure";
-
 export const MARKET = { PT: "pt", ES: "es-it", IT: "es-it", US: "us" } as const;
+
+/** A lowest and a highest figure. */
+type Pair = [number, number];
 
 /** What a website's pages are priced by. */
 export type PageKey = "landing" | "home" | "about" | "contact" | PageTypeId;
@@ -91,16 +92,6 @@ export const PRICING = {
     unsurePercent: 35,
     /** Page prices by market, against Portugal. */
     pagesMarket: { pt: 1, "es-it": 1.155, us: 1.75 } satisfies Record<Market, number>,
-    /** How long the site takes, in working days, by size. PROVISIONAL. */
-    days: {
-      landing: [4, 7],
-      "3": [6, 9],
-      "4-6": [8, 11],
-      "7-10": [12, 16],
-      // Priced since 2026-11-10 (user); the scale carried on, PROVISIONAL.
-      "10+": [16, 22],
-      unsure: [6, 14],
-    } as Record<Size, [number, number]>,
     /** What every website comes with, shown under its line. Kept in
         step with the contract (clauses 11 and 12). */
     includes: {
@@ -181,6 +172,46 @@ export const PRICING = {
       highest end under the real figure. Every reach is priced the same way
       (user, 2026-11-10; international was on request). PROVISIONAL. */
   search: { setup: 22.5, monthlyOfSetup: 30 },
+
+  /** How long each service takes, in working days, as [lowest, highest]
+      (user, 2026-11-10): every service shows its own time beside its price,
+      and the project's time is the sum of them all. A service on request
+      has its time to be defined too. On an urgent deadline the time is
+      agreed between both sides. Counted from the day all the materials
+      are in. PROVISIONAL where the user did not give the figure. */
+  days: {
+    web: {
+      /** A landing page (as the old table had it). */
+      landing: [4, 7] as Pair,
+      /** A website's three pages always included (Home, About, Contact). */
+      base: [5, 7] as Pair,
+      /** Each page or section on top: ticked, written in, and "not sure,
+          you choose" as two. */
+      perPage: [1, 1.5] as Pair,
+      /** The Advanced design, on the website's days. */
+      advancedPercent: 30,
+      /** Each language besides Portuguese and English. */
+      perLanguage: 1,
+      /** Writing the texts, when there are none (it never changes the
+          price, user 2026-11-04, but it takes time). */
+      writing: [2, 3] as Pair,
+    },
+    /** The visual identity is made within the website's time (user). */
+    identity: 0,
+    /** Editing and delivering the photos (user). */
+    photo: 7,
+    /** SEO & GEO's one-time work: 1–2 days for a landing page, the
+        reference the user gave; a website from there by its pages. */
+    seo: { landing: [1, 2] as Pair, base: [2, 3] as Pair, perPage: [0.25, 0.5] as Pair },
+    /** The back-end features: a form (the form and its automatic email) is
+        one day (user); the newsletter the same; each platform set up in
+        the client's name on top: Brevo for forms and the newsletter
+        (account, sender domain, whose DNS can take up to two days), Cal.com
+        for the calendar, the restaurants' own reservation platform in
+        Portugal (onboarding on their side). Automated emails are on
+        request, their time with them. */
+    backend: { form: 1, newsletter: 1, brevo: [1, 2] as Pair, calcom: [1, 2] as Pair, restaurant: [1, 2] as Pair },
+  },
 };
 
 export type Pricing = typeof PRICING;
