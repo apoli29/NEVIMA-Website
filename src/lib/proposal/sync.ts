@@ -4,6 +4,7 @@ import type { PartnerRequest, ProposalRequest } from "./deliver";
 import { findRequest, prop, updatePage } from "./notion";
 import type { Contact } from "./questions";
 import { savePartnerToSql, saveRequestToSql } from "./sql";
+import { PEDIDOS } from "./steps";
 import { readAnswers, readPartner } from "./validate";
 
 /* ==================================================================
@@ -145,22 +146,25 @@ async function rawAnswers(pageId: string): Promise<unknown> {
 }
 
 /** The request's contact, language, origin and time, from the page's
-    properties (deliver.ts writes them). */
+    properties (deliver.ts writes them). "Pedidos" renamed some columns
+    (steps.ts, PEDIDOS; user, 2026-11-10) and "Parceiros" kept the old
+    names: each is read under its new name, else its old one. */
 function fields(page: RawPage) {
   const p = page.properties ?? {};
-  const text = (key: string) => plain(p[key]?.rich_text);
-  const select = (key: string) => (p[key]?.select as { name?: string } | null | undefined)?.name ?? "";
+  const key = (name: string, old: string) => (name in p ? name : old);
+  const text = (name: string) => plain(p[name]?.rich_text);
+  const select = (name: string) => (p[name]?.select as { name?: string } | null | undefined)?.name ?? "";
   const contact: Contact = {
     name: plain(p.Nome?.title),
     email: (p.Email?.email as string | null | undefined) ?? "",
     phone: (p.Telefone?.phone_number as string | null | undefined) ?? "",
-    company: text("Empresa"),
+    company: text(key(PEDIDOS.company, "Empresa")),
     message: text("Mensagem"),
   };
   const origin = select("Origem");
   return {
     contact,
-    lang: (select("Idioma") === "pt" ? "pt" : "en") as "pt" | "en",
+    lang: (select(key(PEDIDOS.lang, "Idioma")) === "pt" ? "pt" : "en") as "pt" | "en",
     origin: (origin === "page" || origin === "overlay" ? origin : "other") as ProposalRequest["origin"],
     at: (p.Recebido?.date as { start?: string } | null | undefined)?.start ?? "",
   };
