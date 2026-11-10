@@ -124,7 +124,8 @@ export type CountryId = (typeof COUNTRIES)[number]["id"];
 /** Website size. The price is no longer keyed by it (since 2026-11-04 it
     is the sum of the ranges of the pages ticked, see PRICING.web.pages);
     it is kept as a label for the timeline, the texts, SEO/GEO and the
-    records. Web design stops at 10 pages; past that is quoted. It is not
+    records. Past 10 pages it is "10+", priced like the rest since
+    2026-11-10 (user; it was quoted on request). It is not
     asked: the server works it out from the page types (see pagesFor). */
 export const PAGES = [
   { id: "landing", label: "Landing page", pt: "Landing page" },
@@ -218,7 +219,8 @@ export const ALWAYS_PAGES = 3;
 export const MIN_CHOSEN = 2;
 /** A non-profit association needs only one (user, 2026-11-05). */
 export const minChosenFor = (audience: string) => (audience === "nonprofit" ? 1 : MIN_CHOSEN);
-/** Counting stops here: past 10 pages the price is on request. */
+/** The last size label with a number: past it the website is "10+",
+    priced like any other by the sum of its pages (user, 2026-11-10). */
 export const MAX_PAGES = 10;
 
 /** The two kinds of item list, one or the other. */
@@ -254,7 +256,7 @@ export const SECTOR_PAGES: Record<SectorId | "personal" | "nonprofit", readonly 
 };
 
 /** The size label from how many pages there are (Home, About and Contact
-    count). Past 10 it is on request. */
+    count), for the timeline and the records. */
 export function pagesBucket(count: number): Exclude<PagesId, "unsure"> {
   if (count <= 1) return "landing";
   if (count <= 3) return "3";

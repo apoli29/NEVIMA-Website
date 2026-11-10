@@ -16,7 +16,7 @@ import type { PageTypeId } from "./questions";
 export type Market = "pt" | "es-it" | "us";
 export type ByMarket = Record<Market, number>;
 
-type Size = "landing" | "3" | "4-6" | "7-10" | "unsure";
+type Size = "landing" | "3" | "4-6" | "7-10" | "10+" | "unsure";
 
 export const MARKET = { PT: "pt", ES: "es-it", IT: "es-it", US: "us" } as const;
 
@@ -97,6 +97,8 @@ export const PRICING = {
       "3": [6, 9],
       "4-6": [8, 11],
       "7-10": [12, 16],
+      // Priced since 2026-11-10 (user); the scale carried on, PROVISIONAL.
+      "10+": [16, 22],
       unsure: [6, 14],
     } as Record<Size, [number, number]>,
     /** What every website comes with, shown under its line. Kept in

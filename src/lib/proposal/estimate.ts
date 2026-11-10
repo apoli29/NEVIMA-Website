@@ -65,7 +65,8 @@ function web(
 ): Priced {
   const personal = audience === "personal";
   const nonprofit = audience === "nonprofit";
-  if (a.pages === "10+") return { reason: t("More than 10 pages", "Mais de 10 páginas") };
+  // More than 10 pages is priced like any other website, by the sum of its
+  // pages (user, 2026-11-10): "on request" was left from the price by size.
 
   // Portuguese and English are included; each other language is paid, the
   // same amount however many there are (user, 2026-11-10).
@@ -578,7 +579,7 @@ export function estimate(answers: Answers, pricing: Pricing = PRICING, lang: Lan
   }
 
   // The website's timeline, whatever the country: it is the work's length.
-  if (webAnswers && webAnswers.pages !== "10+") {
+  if (webAnswers) {
     if (webAnswers.urgent === "yes") out.timeline = { kind: "agreed" };
     else {
       const [min, max] = pricing.web.days[webAnswers.pages];
