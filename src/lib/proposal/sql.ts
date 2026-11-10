@@ -66,9 +66,23 @@ function connect(settings: sql.config) {
   return pool;
 }
 
-type Insert = (db: sql.ConnectionPool) => Promise<number>;
+/* The request's own time goes in as the row's, the same as the Notion
+   page's "Recebido": with the email, it is how the procedures know a
+   request already saved (the route's copy and the nightly catch-up,
+   sync.ts, may both try it), and skip it. */
+type Insert = (db: sql.ConnectionPool) => Promise<{ id: number; inserted: boolean }>;
 
-const proposalInsert = (request: ProposalRequest, elapsedMs: number): Insert => async (db) => {
+const received = (iso: string) => {
+  const at = new Date(iso);
+  return Number.isNaN(at.getTime()) ? null : at;
+};
+
+const outcome = (output: Record<string, unknown>) => ({
+  id: output.NovoId as number,
+  inserted: output.Inserido !== false,
+});
+
+const proposalInsert = (request: ProposalRequest, elapsedMs: number | null): Insert => async (db) => {
   const result = await db
     .request()
     .input("Respostas", sql.NVarChar(sql.MAX), JSON.stringify(request.answers))
@@ -77,24 +91,31 @@ const proposalInsert = (request: ProposalRequest, elapsedMs: number): Insert => 
     .input("Origem", sql.VarChar(30), request.origin)
     .input("TempoMs", sql.Int, clampMs(elapsedMs))
     .input("Estimativa", sql.NVarChar(sql.MAX), JSON.stringify(request.estimate))
+    .input("CriadoEm", sql.DateTime2(0), received(request.at))
     .output("NovoId", sql.Int)
+    .output("Inserido", sql.Bit)
     .execute("dbo.usp_InserirPedidoProposta");
-  return result.output.NovoId as number;
+  return outcome(result.output);
 };
 
-const partnerInsert = (request: PartnerRequest, elapsedMs: number): Insert => async (db) => {
+const partnerInsert = (request: PartnerRequest, elapsedMs: number | null): Insert => async (db) => {
   const result = await db
     .request()
     .input("Respostas", sql.NVarChar(sql.MAX), JSON.stringify(request.answers))
     .input("Contacto", sql.NVarChar(sql.MAX), JSON.stringify(request.contact))
     .input("Idioma", sql.Char(2), request.lang)
     .input("TempoMs", sql.Int, clampMs(elapsedMs))
+    .input("CriadoEm", sql.DateTime2(0), received(request.at))
     .output("NovoId", sql.Int)
+    .output("Inserido", sql.Bit)
     .execute("dbo.usp_InserirPedidoParceria");
-  return result.output.NovoId as number;
+  return outcome(result.output);
 };
 
-const clampMs = (ms: number) => Math.min(Math.max(Math.round(ms), 0), 2_147_483_647);
+/** The time it took to fill in, or null when not known (a request put
+    back from Notion). */
+const clampMs = (ms: number | null) =>
+  ms === null || !Number.isFinite(ms) ? null : Math.min(Math.max(Math.round(ms), 0), 2_147_483_647);
 
 /** What the log may say about a failure: its kind and code, never a value. */
 function why(error: unknown) {
@@ -106,14 +127,15 @@ function why(error: unknown) {
 }
 
 /** Runs the insert, again after each wait while it is refused.
-    The new row's id, or null when nothing was written. */
+    The row's id (new, or the one already there), or null when it could
+    not be written. */
 async function save(kind: "proposal" | "partner", insert: Insert): Promise<number | null> {
   const settings = config();
   if (!settings) return null;
   for (let attempt = 1; attempt <= RETRY_WAITS_MS.length + 1; attempt++) {
     try {
-      const id = await insert(await connect(settings));
-      console.info("[nevima:sql] saved", kind, id);
+      const { id, inserted } = await insert(await connect(settings));
+      console.info("[nevima:sql]", inserted ? "saved" : "already there", kind, id);
       return id;
     } catch (error) {
       console.error("[nevima:sql] failed", kind, `attempt ${attempt}`, why(error));
@@ -125,9 +147,9 @@ async function save(kind: "proposal" | "partner", insert: Insert): Promise<numbe
 }
 
 /** A proposal request, into PedidosProposta. */
-export const saveRequestToSql = (request: ProposalRequest, elapsedMs: number) =>
+export const saveRequestToSql = (request: ProposalRequest, elapsedMs: number | null) =>
   save("proposal", proposalInsert(request, elapsedMs));
 
 /** A partner request, into PedidosParceria. */
-export const savePartnerToSql = (request: PartnerRequest, elapsedMs: number) =>
+export const savePartnerToSql = (request: PartnerRequest, elapsedMs: number | null) =>
   save("partner", partnerInsert(request, elapsedMs));

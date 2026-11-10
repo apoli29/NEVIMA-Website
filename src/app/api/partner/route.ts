@@ -2,6 +2,7 @@ import { after } from "next/server";
 import { deliverPartner, waitBefore, type PartnerRequest } from "@/lib/proposal/deliver";
 import { allow, caught, clientIp, json, readJson } from "@/lib/proposal/guard";
 import { savePartnerToSql } from "@/lib/proposal/sql";
+import { markSaved } from "@/lib/proposal/sync";
 import { readContact, readPartner } from "@/lib/proposal/validate";
 
 /* A development company's request to work with us on a front end (the
@@ -50,7 +51,9 @@ export async function POST(request: Request) {
 
   // A copy in SQL Server once the visitor has their answer, as for
   // proposal requests (user, 2026-11-02; sql.ts).
-  after(() => savePartnerToSql(partner, elapsed));
+  after(async () => {
+    if ((await savePartnerToSql(partner, elapsed)) !== null) await markSaved("partner", partner.contact.email, partner.at);
+  });
 
   const delivered = await deliverPartner(partner);
   if (!delivered) return json({ error: "not_configured" }, 503);
