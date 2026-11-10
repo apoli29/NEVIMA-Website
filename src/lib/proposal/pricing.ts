@@ -170,13 +170,15 @@ export const PRICING = {
   } satisfies Copy,
 
   /** SEO and GEO are sold only with a website we built, and priced from it
-      (user, 2026-11-04), as ranges: the one-time work is 17.5% (was 20%) of the
-      website's lowest figure up to 22.5% (was 25%) of its highest; the monthly
-      service is 28% of the one-time work's lowest up to 30% of its highest,
-      both ends to the nearest 5, a half going up on the lowest and down on
-      the highest. Every reach is priced the same way (user, 2026-11-10;
-      international was on request). PROVISIONAL. */
-  search: { setup: { min: 17.5, max: 22.5 }, monthlyOfSetup: { min: 28, max: 30 } },
+      (user, 2026-11-04) by fixed shares (user, 2026-11-10): the one-time
+      work is 22.5% of the website, the monthly service 30% of the one-time
+      work. They are ranges only because the website is one; the lowest end
+      rounds down to 5 and the highest up, so the real figure is always
+      inside. Until 2026-11-10 the shares were ranges themselves (17.5–22.5%
+      and 28–30%) with both ends to the nearest 5, which could put the
+      highest end under the real figure. Every reach is priced the same way
+      (user, 2026-11-10; international was on request). PROVISIONAL. */
+  search: { setup: 22.5, monthlyOfSetup: 30 },
 };
 
 export type Pricing = typeof PRICING;
