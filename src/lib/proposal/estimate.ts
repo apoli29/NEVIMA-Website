@@ -170,24 +170,22 @@ function web(
     lows = total([...always, ...chosen], 0) + written * writtenLow + (unsureWeb ? unsureLow : 0);
     highs = total([...always, ...chosen], 1) + written * writtenHigh + (unsureWeb ? unsureHigh : 0);
   } else {
-    // Not sure on what is needed: from the pages always included up to
-    // those usual in the business's sector (user, 2026-11-10; it gave no
-    // estimate from 2026-11-04).
+    // Not sure on what is needed: the sector's usual website, its lowest
+    // end lowered and its highest raised by the same share, to cover a
+    // simpler or a fuller choice (user, 2026-11-10).
     const usual = SECTOR_PAGES[personal ? "personal" : nonprofit ? "nonprofit" : (sector ?? "other")];
-    lows = total(always, 0);
-    highs = total([...always, ...usual], 1);
+    const typical = [...always, ...usual];
+    lows = total(typical, 0) * (1 - p.unsurePercent / 100);
+    highs = total(typical, 1) * (1 + p.unsurePercent / 100);
+    const who = personal
+      ? t("projects like yours", "projetos semelhantes")
+      : nonprofit
+        ? t("associations", "as associações")
+        : t("businesses in your sector", "os negócios do setor");
     notes.push(
       t(
-        personal
-          ? "What is needed is still open, so the range runs from the pages always included to those projects like yours usually have. We choose them together on a call."
-          : nonprofit
-            ? "What is needed is still open, so the range runs from the pages always included to those associations usually have. We choose them together on a call."
-            : "What is needed is still open, so the range runs from the pages always included to those businesses in your sector usually have. We choose them together on a call.",
-        personal
-          ? "Como o que é necessário ainda está em aberto, o intervalo vai das páginas sempre incluídas às que projetos semelhantes costumam ter. A escolha faz-se em conjunto, numa reunião."
-          : nonprofit
-            ? "Como o que é necessário ainda está em aberto, o intervalo vai das páginas sempre incluídas às que as associações costumam ter. A escolha faz-se em conjunto, numa reunião."
-            : "Como o que é necessário ainda está em aberto, o intervalo vai das páginas sempre incluídas às que os negócios do setor costumam ter. A escolha faz-se em conjunto, numa reunião.",
+        `What is needed is still open, so the range starts from the website ${who} usually have, ${p.unsurePercent}% lower and higher, to allow for a simpler or a fuller choice. We choose the pages together on a call.`,
+        `Como o que é necessário ainda está em aberto, o intervalo parte do website que ${who} costumam ter, ${p.unsurePercent}% abaixo e acima, para contemplar uma escolha mais simples ou mais completa. A escolha das páginas faz-se em conjunto, numa reunião.`,
       ),
     );
   }
@@ -486,18 +484,18 @@ function search(
   const perMonth = monthlyMax > monthly ? `${monthly}–${monthlyMax}` : `${monthly}`;
   // How the figures are worked out, said plainly (user, 2026-11-10).
   const pct = (n: number) => (t<Lang>("en", "pt") === "pt" ? String(n).replace(".", ",") : String(n));
-  const share = `${pct(setup.min)}–${pct(setup.max)}%`;
-  const monthShare = `${pct(monthlyOfSetup.min)}–${pct(monthlyOfSetup.max)}%`;
-  const how =
-    plan === "once"
-      ? t(
-          `Worked out from the website: the one-time work is ${share} of its price.`,
-          `Calculado a partir do website: o trabalho pontual corresponde a ${share} do seu valor.`,
-        )
-      : t(
-          `Worked out from the website: the one-time work is ${share} of its price, and the monthly service ${monthShare} of the one-time work.`,
-          `Calculado a partir do website: o trabalho pontual corresponde a ${share} do seu valor, e o serviço mensal a ${monthShare} do valor pontual.`,
-        );
+  // Each end from the same end of the website (user, 2026-11-10).
+  const lowWeb = `${pct(setup.min)}%`;
+  const highWeb = `${pct(setup.max)}%`;
+  const how = t(
+    `Worked out from the website: the lowest figure is ${lowWeb} of the website's lowest, and the highest ${highWeb} of its highest.`,
+    `Calculado a partir do website: o valor mais baixo é ${lowWeb} do valor mais baixo do website, e o mais alto ${highWeb} do mais alto.`,
+  ) + (plan === "once"
+    ? ""
+    : t(
+        ` The monthly service follows the same rule, with ${pct(monthlyOfSetup.min)}% and ${pct(monthlyOfSetup.max)}% of the one-time work.`,
+        ` O serviço mensal segue a mesma regra, com ${pct(monthlyOfSetup.min)}% e ${pct(monthlyOfSetup.max)}% do trabalho pontual.`,
+      ));
   const notes = [
     t(
       "One-time: strongest in the short term, its effect fades over the medium to long term.",
