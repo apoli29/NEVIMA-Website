@@ -153,7 +153,8 @@ export const PRICING = {
     urgentPercent: 40,
   },
 
-  /** Mainland Portugal only; anywhere else is quoted on request. */
+  /** Mainland Portugal only (user, 2026-11-10): the form and the server
+      refuse the shoot anywhere else. */
   photo: { photos: 245, "photos-video": 370 },
   /** Shown under the photo line, as the contract sets it (clause 10.3). */
   photoTravel: {
@@ -166,8 +167,8 @@ export const PRICING = {
       website's lowest figure up to 22.5% (was 25%) of its highest; the monthly
       service is 28% of the one-time work's lowest up to 30% of its highest,
       both ends to the nearest 5, a half going up on the lowest and down on
-      the highest. International
-      reach is on request. PROVISIONAL. */
+      the highest. Every reach is priced the same way (user, 2026-11-10;
+      international was on request). PROVISIONAL. */
   search: { setup: { min: 17.5, max: 22.5 }, monthlyOfSetup: { min: 28, max: 30 } },
 };
 

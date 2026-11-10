@@ -25,6 +25,7 @@ import {
   countPages,
   pagesFor,
   PERSONAL_ABROAD,
+  PHOTO_MAINLAND_ONLY,
   PERSONAL_FEATURE_NOTES,
   NONPROFIT_FEATURE_NOTES,
   ALL_PAGE_TYPES,
@@ -168,7 +169,7 @@ export type StepId = "basics" | "site" | "web" | "photo" | "search" | "estimate"
 
 /** The screens this draft goes through, in order. */
 export function stepsFor(draft: Draft): StepId[] {
-  const groups = groupsFor(draft.services);
+  const groups = groupsFor(photoOff(draft) ? draft.services.filter((s) => s !== "photo") : draft.services);
   // Needing the third level stops the form on its own screen (checkStep),
   // with a message saying the project is beyond what we take on now.
   return [
@@ -227,8 +228,8 @@ export type Errors = Partial<Record<string, string>>;
 
 /* Small print under the questions that change the price (user). */
 const PHOTO_NOTE: Copy = {
-  en: "The photo shoot is only available in Portugal. Travel beyond 30 km of Vila Nova de Gaia is added to the price of the service.",
-  pt: "A sessão fotográfica só está disponível em Portugal. A deslocação para lá dos 30 km de Vila Nova de Gaia acresce ao preço do serviço.",
+  en: "The photo shoot is only available in mainland Portugal. Travel beyond 30 km of Vila Nova de Gaia is added to the price of the service.",
+  pt: "A sessão fotográfica só está disponível em Portugal continental. A deslocação para lá dos 30 km de Vila Nova de Gaia acresce ao preço do serviço.",
 };
 // Short and plain (user, 2026-11-04); the estimate still says the client
 // registers it in their own name and pays for it directly.
@@ -236,10 +237,11 @@ const DOMAIN_NOTE: Copy = {
   en: "Don't have one? Don't worry: we'll help you buy it in a couple of minutes.",
   pt: "Sem domínio? Não há problema: ajudamos a comprá-lo em poucos minutos.",
 };
-// "Not sure" gives no estimate (user, 2026-11-04).
+// "Not sure" is estimated again, from the pages always included to the
+// sector's usual ones (user, 2026-11-10; it gave none from 2026-11-04).
 const PAGES_NOTE: Copy = {
-  en: "With this option, there's no estimate at the end. But don't worry: finish the form, send it, and we'll set up a video call to help you out.",
-  pt: "Com esta opção, não há estimativa no fim. Mas não há problema: basta terminar e enviar o formulário, e marcamos uma videochamada para ajudar.",
+  en: "With this option, the estimate runs from the pages always included to those your sector usually has. Finish the form, send it, and we'll set up a video call to help you choose.",
+  pt: "Com esta opção, a estimativa vai das páginas sempre incluídas às que o setor costuma ter. Basta terminar e enviar o formulário, e marcamos uma videochamada para ajudar a escolher.",
 };
 const URGENT_NOTE: Copy = {
   en: "An urgent deadline raises the price by 40%.",
@@ -264,6 +266,13 @@ const NO_REFERENCES: Copy<readonly { id: "none"; label: string }[]> = {
 /** Personal use outside Portugal: not taken on for now. */
 export const personalAbroad = (draft: Draft) =>
   draft.audience === "personal" && draft.country !== "" && draft.country !== "PT";
+
+/** The photo shoot is only offered in mainland Portugal (user, 2026-11-10):
+    it cannot be ticked once another country is chosen. */
+const photoOff = (draft: Draft) => draft.country !== "" && draft.country !== "PT";
+/** Asked for in Madeira or the Azores: the form says so and goes no further. */
+const photoIslands = (draft: Draft) =>
+  draft.services.includes("photo") && draft.country === "PT" && draft.region !== "" && draft.region !== "mainland";
 
 /** The pages or sections written in, without the empty slots. */
 /** Forms and the newsletter send emails, and ask how they work. */
@@ -336,6 +345,7 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
   if (step === "photo") {
     if (!draft.plan) e.plan = PICK_ONE;
     if (draft.country === "PT" && !draft.region) e.town = t("Choose where in Portugal.", "Falta escolher a zona de Portugal.");
+    else if (photoIslands(draft)) e.town = t(PHOTO_MAINLAND_ONLY);
     else if (!draft.town.trim()) e.town = t("Tell us the town or city.", "Falta indicar a localidade.");
   }
   if (step === "search") {
@@ -363,9 +373,11 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
 
 /** The draft as the server reads it: only the groups that were asked. */
 export function toAnswers(draft: Draft): Answers {
-  const groups = groupsFor(draft.services);
+  // The photo shoot is never sent from outside Portugal (user, 2026-11-10).
+  const services = photoOff(draft) ? draft.services.filter((s) => s !== "photo") : draft.services;
+  const groups = groupsFor(services);
   const answers: Answers = {
-    services: draft.services,
+    services,
     audience: draft.audience as AudienceId,
     country: draft.country as CountryId,
   };
@@ -626,6 +638,7 @@ function Multi<T extends string>({
   value,
   onChange,
   locked = [],
+  off = [],
   starWord = "",
 }: {
   name: string;
@@ -634,17 +647,23 @@ function Multi<T extends string>({
   value: T[];
   onChange: (v: T[]) => void;
   locked?: readonly T[];
+  /** Keys that cannot be ticked here: shown unticked and dimmed. */
+  off?: readonly T[];
 }) {
   return (
     <div className="pf-multi">
       {options.map((o) => (
-        <label key={o.id} className={`pf-key pf-chip ${locked.includes(o.id) ? "cursor-default hover:bg-ink" : ""}`}>
+        <label
+          key={o.id}
+          className={`pf-key pf-chip ${locked.includes(o.id) ? "cursor-default hover:bg-ink" : ""}`}
+          data-off={off.includes(o.id) ? "" : undefined}
+        >
           <input
             type="checkbox"
             name={name}
             value={o.id}
-            checked={value.includes(o.id) || locked.includes(o.id)}
-            disabled={locked.includes(o.id)}
+            checked={(value.includes(o.id) && !off.includes(o.id)) || locked.includes(o.id)}
+            disabled={locked.includes(o.id) || off.includes(o.id)}
             onChange={(e) =>
               onChange(
                 e.target.checked
@@ -843,7 +862,11 @@ export function StepScreen({
               name="country"
               options={list(COUNTRIES)}
               value={draft.country}
-              onChange={(country) => setDraft({ country })}
+              // Outside Portugal the photo shoot is unticked: it is not
+              // offered there (user, 2026-11-10).
+              onChange={(country) =>
+                setDraft(country === "PT" ? { country } : { country, services: draft.services.filter((s) => s !== "photo") })
+              }
               labelledBy="country-q"
             />
             {draft.country === "other" && (
@@ -874,6 +897,7 @@ export function StepScreen({
               options={list(SERVICES).map((o) => (o.id === "photo" ? { ...o, label: `${o.label}*` } : o))}
               value={draft.services}
               locked={["web"]}
+              off={photoOff(draft) ? ["photo"] : []}
               onChange={(services) =>
                 setDraft({ services: services.includes("web") ? services : ["web", ...services] })
               }
@@ -1317,11 +1341,6 @@ export function StepScreen({
                   ? t("Where is your association located?", "Onde fica a associação?")
                   : t("Where is your business located?", "Onde fica o negócio?")
             }
-            hint={
-              draft.country === "PT"
-                ? undefined
-                : t("Outside Portugal, the shoot is quoted on request", "Fora de Portugal, a sessão é orçamentada sob consulta")
-            }
             footnote={
               draft.country === "PT"
                 ? t(
@@ -1334,7 +1353,8 @@ export function StepScreen({
                   )
                 : undefined
             }
-            error={errors.town}
+            // The note below says it as soon as an island is picked.
+            error={photoIslands(draft) ? undefined : errors.town}
           >
             {draft.country === "PT" && (
               <Segmented
@@ -1344,6 +1364,11 @@ export function StepScreen({
                 onChange={(region) => setDraft({ region })}
                 labelledBy="town-q"
               />
+            )}
+            {photoIslands(draft) && (
+              <p role="status" className="pf-out">
+                {t(PHOTO_MAINLAND_ONLY)}
+              </p>
             )}
             <Field
               id={`${uid}-town`}

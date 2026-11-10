@@ -180,16 +180,16 @@ export function readAnswers(raw: unknown): Result<Answers> {
   }
 
   if (groups.photo) {
+    // The shoot is only offered in mainland Portugal (user, 2026-11-10).
+    if (country !== "PT") return { ok: false, error: "photo" };
     const p = isObject(raw.photo) ? raw.photo : {};
     const plan = one(PHOTO_PLANS, p.plan);
     const town = text(p.town, MAX.short);
     if (!plan || !town) return { ok: false, error: "photo" };
     answers.photo = { plan, town };
-    if (country === "PT") {
-      const region = one(REGIONS, p.region);
-      if (!region) return { ok: false, error: "region" };
-      answers.photo.region = region;
-    }
+    const region = one(REGIONS, p.region);
+    if (region !== "mainland") return { ok: false, error: "region" };
+    answers.photo.region = region;
   }
 
   if (groups.search) {

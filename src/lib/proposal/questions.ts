@@ -439,13 +439,21 @@ export const PHOTO_PLANS = [
 ] as const;
 export type PhotoPlanId = (typeof PHOTO_PLANS)[number]["id"];
 
-/** The shoot is only offered on the mainland; the islands are quoted. */
+/** The shoot is only offered in mainland Portugal (user, 2026-11-10): the
+    islands are asked so the form can say so, and go no further. */
 export const REGIONS = [
   { id: "mainland", label: "Mainland", pt: "Continente" },
   { id: "madeira", label: "Madeira", pt: "Madeira" },
   { id: "azores", label: "Azores", pt: "Açores" },
 ] as const;
 export type RegionId = (typeof REGIONS)[number]["id"];
+
+/** Said when the shoot is asked for in Madeira or the Azores (user,
+    2026-11-10); outside Portugal the service cannot be ticked. */
+export const PHOTO_MAINLAND_ONLY: Copy = {
+  en: "For now, the photo shoot is only available in mainland Portugal. To continue, untick it under the services, on the first screen.",
+  pt: "De momento, a sessão fotográfica só está disponível em Portugal continental. Para continuar, retirar a sessão nos serviços pretendidos, no primeiro ecrã.",
+};
 
 /** SEO and GEO each come as a one-time set of practices, with a monthly
     service on top if wanted (user, 2026-10-17). */
