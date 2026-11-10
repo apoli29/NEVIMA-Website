@@ -44,7 +44,7 @@ The website's price is the **sum of the ranges of its pages** (Portugal, Essenti
 - **Advanced design** moves each page's whole range up by 50% of its middle, rounded to 5 (`advancedShift`; user, 2026-11-04): the same amount on both ends, so the range is as wide as Essential+ and the price about 1.5x. It was the lowest ×1.35 and the highest ×1.45, which made the Advanced range much wider.
 - **A page or section written in**, and **"Not sure, you choose"**, each add the average page: the average of the lowest ends up to the average of the highest, rounded up to 5 (Essential+: 40–50), so they keep within the 30% too (user, 2026-11-04). It used to be the lowest to the highest page (5–130) and, for "not sure", the average up to the two dearest.
 - Both add a note to the estimate saying the range is wider.
-- The floor rounds down to 5 and the ceiling up to 5. More than 10 pages is on request.
+- The floor rounds down to 5 and the ceiling up to 5. More than 10 pages is priced the same way, by the sum of its pages (user, 2026-11-10; it was on request, a rule left from the price by size).
 - **"Not sure" on what is needed** (not the list) is estimated around the sector's usual website (Home, About, Contact and the sector's usual pages): its lowest end 35% lower and its highest 35% higher (`unsurePercent`; user, 2026-11-10), with a note saying so; the pages are still chosen with the client on a call. From 2026-11-04 to 2026-11-10 it gave no estimate ("on request"), and briefly on 2026-11-10 it ran from the three pages always included to the usual website.
 
 ## What is stored
@@ -206,7 +206,7 @@ Decided 2026-11-09 (user, option A of three). Every button that opens the form (
 - **"Not sure" on what is needed** is estimated again (see the pages section above). Its note: "Com esta opção, a estimativa vai das páginas sempre incluídas às que o setor costuma ter. Basta terminar e enviar o formulário, e marcamos uma videochamada para ajudar a escolher." / "With this option, the estimate runs from the pages always included to those your sector usually has. Finish the form, send it, and we'll set up a video call to help you choose." Example, Saúde, Essencial+: 175–365.
 - **Languages:** no more limit of three other languages; each costs 25, however many.
 - **SEO & GEO:** the same calculation for every reach and market (user: "o que muda de país para país é a variável", the website's price). Its line now says how it is worked out: "Calculado a partir do website: o trabalho pontual corresponde a 17,5–22,5% do seu valor, e o serviço mensal a 28–30% do valor pontual." (the monthly half only when the monthly service is chosen or "Não sei"), built from `PRICING.search`.
-- Still on request: a country "Outro" (no market priced), more than 10 pages (asked of the user), and automated emails (to be priced after the rest, user).
+- Still on request: a country "Outro" (no market priced) and automated emails (to be priced after the rest, user). More than 10 pages was priced later the same day (see below).
 
 ## "Not sure" around the sector's website, and the SEO & GEO note
 
@@ -235,4 +235,11 @@ Decided 2026-11-09 (user, option A of three). Every button that opens the form (
 - **Automated emails** stay on request (user): their own row, "Emails automatizados · Preço definido na proposta · Sob consulta", under the lines. The website and the total keep their price, and the total says "Mais os itens sob consulta". The automated option's note now ends "Preço sob consulta." `later` is no longer filled; it stays in the type for older records.
 - **Rule (user):** every additional service whose price depends on another is worked out from the web design alone, as the main service. So SEO & GEO is 22.5% of the website without the back-end features.
 - **Contract:** in Section 02, "Funcionalidades" has its own box instead of sitting inside the web design (see `docs/contract-decisions.md`).
+
+## More than 10 pages, priced
+
+2026-11-10 (user): "on request" past 10 pages should have gone when the price became the sum of the pages (2026-11-04). It was a leftover of the price by size (landing, 3, 4–6, 7–10, more than 10). The count is the 3 pages always included, plus each one ticked, each one written in and 2 for "Não sei, prefiro que escolham por mim", so it can reach 21. It never stopped at 10, and nothing warned the visitor.
+
+- A website of more than 10 pages is now priced by the sum of its pages, like any other, and SEO & GEO with it. Example, Saúde, Essencial+, 14 pages: web design 545–705, SEO & GEO 120–160.
+- The size label `10+` stays for the timeline and the records. Its timeline is 16–22 working days (provisional, the scale carried on from 7–10's 12–16; left to me).
 
