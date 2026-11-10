@@ -45,7 +45,7 @@ The website's price is the **sum of the ranges of its pages** (Portugal, Essenti
 - **A page or section written in**, and **"Not sure, you choose"**, each add the average page: the average of the lowest ends up to the average of the highest, rounded up to 5 (Essential+: 40–50), so they keep within the 30% too (user, 2026-11-04). It used to be the lowest to the highest page (5–130) and, for "not sure", the average up to the two dearest.
 - Both add a note to the estimate saying the range is wider.
 - The floor rounds down to 5 and the ceiling up to 5. More than 10 pages is on request.
-- **"Not sure" on what is needed** (not the list) gives no estimate (user, 2026-11-04): the website, and SEO & GEO with it, show "on request" ("Pages to choose together on a call"); the answers can still be sent, and the pages are chosen with the client on a call. It used to estimate from Home + About + Contact up to the sector's usual pages.
+- **"Not sure" on what is needed** (not the list) is estimated again (user, 2026-11-10): from Home + About + Contact up to those three plus the sector's usual pages, with a note saying so; the pages are still chosen with the client on a call. From 2026-11-04 to 2026-11-10 it gave no estimate ("on request").
 
 ## What is stored
 
@@ -55,7 +55,7 @@ The website's price is the **sum of the ranges of its pages** (Portugal, Essenti
 
 - Texts never change the price (user, 2026-11-04): the question stays, for the studio to know, and writing them when there are none is included. The texts ranges are gone from `pricing.ts`.
 - Provisional: timeline days by bucket; the ranges of pages the user did not price (How it works, Work with us, Downloads were given: 25–40, 25–40, 5–15).
-- SEO and GEO are one service, "SEO & GEO" (id `seo`; user, 2026-11-04), with one modality question (one-time or one-time + monthly). Priced from the website (provisional): sold only with a website Nevima built; setup = 20% of the website line (25% until 2026-11-04) (floor rounded down and ceiling up to 5); the optional monthly service = 30% of the setup's middle (25% until 2026-11-04, briefly 50%), to the nearest 5 (a single figure). Local and national cost the same; international, a website on request and a country quoted on request make it on request. The old size tables are gone (`PRICING.search` in `pricing.ts`). A form left open from before the change, still sending "geo", is refused.
+- SEO and GEO are one service, "SEO & GEO" (id `seo`; user, 2026-11-04), with one modality question (one-time or one-time + monthly). Priced from the website (provisional): sold only with a website Nevima built; setup = 20% of the website line (25% until 2026-11-04) (floor rounded down and ceiling up to 5); the optional monthly service = 30% of the setup's middle (25% until 2026-11-04, briefly 50%), to the nearest 5 (a single figure). Local, national and international cost the same (international was on request until 2026-11-10); a website on request and a country quoted on request make it on request. The old size tables are gone (`PRICING.search` in `pricing.ts`). A form left open from before the change, still sending "geo", is refused.
 - Back-end services (Brevo, cal.com, restaurant reservations, per-country platforms, setup + monthly maintenance, a free-plan and a pro-plan scenario) are set aside, with the contract clauses on passwords, 2FA and data processing for the partners and legal review.
 
 ## What the website does: back-end prices
@@ -197,3 +197,14 @@ Decided 2026-11-09 (user, option A of three). Every button that opens the form (
 - **"Website da empresa"** ("Company website"), required, with the contact details under the company's name: the development company's own website (user: the company's, not the project's), to know it before the call. A dot and no spaces are enough (`looksLikeSite`), checked again on the server.
 - Code delivery (their repository or ours) was not added: the stack question already asks whether our way of working fits theirs; where the code lives is settled on the call.
 - Stored: in the answers (`budget`, `companySite`); in Notion as "Orçamento" (select) and "Website da empresa" (url), sent apart so a database that does not have those columns yet still takes the request (run `scripts/setup-notion.mjs` to add them); in the studio's notice; in SQL through `RespostasJson`, with their rows in `dbo.Perguntas` and the budget's labels in `dbo.Rotulos` (run `nevima-db.sql` again for the sheets to show them).
+
+## Fewer items on request
+
+2026-11-10 (user, after test requests in Notion came back "sob consulta"):
+
+- **Photo shoot: mainland Portugal only.** With a country other than Portugal the "Sessão fotográfica" key is dimmed and cannot be ticked (it is unticked if it was). In Portugal, Madeira or the Azores show "De momento, a sessão fotográfica só está disponível em Portugal continental. Para continuar, retirar a sessão nos serviços pretendidos, no primeiro ecrã." and the form goes no further (the same pattern as personal use abroad). The server refuses the shoot outside Portugal or off the mainland. The note under the services says "Portugal continental". (The way to block it was left to me: dim the key abroad and stop at the islands.)
+- **"Not sure" on what is needed** is estimated again (see the pages section above). Its note: "Com esta opção, a estimativa vai das páginas sempre incluídas às que o setor costuma ter. Basta terminar e enviar o formulário, e marcamos uma videochamada para ajudar a escolher." / "With this option, the estimate runs from the pages always included to those your sector usually has. Finish the form, send it, and we'll set up a video call to help you choose." Example, Saúde, Essencial+: 175–365.
+- **Languages:** no more limit of three other languages; each costs 25, however many.
+- **SEO & GEO:** the same calculation for every reach and market (user: "o que muda de país para país é a variável", the website's price). Its line now says how it is worked out: "Calculado a partir do website: o trabalho pontual corresponde a 17,5–22,5% do seu valor, e o serviço mensal a 28–30% do valor pontual." (the monthly half only when the monthly service is chosen or "Não sei"), built from `PRICING.search`.
+- Still on request: a country "Outro" (no market priced), more than 10 pages (asked of the user), and automated emails (to be priced after the rest, user).
+

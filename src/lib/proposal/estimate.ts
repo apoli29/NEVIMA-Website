@@ -65,16 +65,11 @@ function web(
   const personal = audience === "personal";
   const nonprofit = audience === "nonprofit";
   if (a.pages === "10+") return { reason: t("More than 10 pages", "Mais de 10 páginas") };
-  // "Not sure" on what is needed gives no estimate (user, 2026-11-04): the
-  // answers are still sent, and the pages are chosen together on a call.
-  if (a.pages === "unsure") {
-    return { reason: t("Pages to choose together on a call", "Páginas a escolher em conjunto numa reunião") };
-  }
   const notes = [t(p.includes), t(p.marginNote)];
 
-  // Portuguese and English are included; each other language is paid.
+  // Portuguese and English are included; each other language is paid, the
+  // same amount however many there are (user, 2026-11-10).
   const others = a.languages.includes("other") ? countLanguages(a.languagesOther ?? "") : 0;
-  if (others > 3) return { reason: t("More than three additional languages", "Mais de três línguas adicionais") };
 
   // "Not sure" about the design or the languages (user, 2026-10-27; the
   // texts never change the price since 2026-11-04): the range runs from the price with the cheaper answers
@@ -175,11 +170,26 @@ function web(
     lows = total([...always, ...chosen], 0) + written * writtenLow + (unsureWeb ? unsureLow : 0);
     highs = total([...always, ...chosen], 1) + written * writtenHigh + (unsureWeb ? unsureHigh : 0);
   } else {
-    // Not sure: from the pages always included up to those usual in the
-    // business's sector.
+    // Not sure on what is needed: from the pages always included up to
+    // those usual in the business's sector (user, 2026-11-10; it gave no
+    // estimate from 2026-11-04).
     const usual = SECTOR_PAGES[personal ? "personal" : nonprofit ? "nonprofit" : (sector ?? "other")];
     lows = total(always, 0);
     highs = total([...always, ...usual], 1);
+    notes.push(
+      t(
+        personal
+          ? "What is needed is still open, so the range runs from the pages always included to those projects like yours usually have. We choose them together on a call."
+          : nonprofit
+            ? "What is needed is still open, so the range runs from the pages always included to those associations usually have. We choose them together on a call."
+            : "What is needed is still open, so the range runs from the pages always included to those businesses in your sector usually have. We choose them together on a call.",
+        personal
+          ? "Como o que é necessário ainda está em aberto, o intervalo vai das páginas sempre incluídas às que projetos semelhantes costumam ter. A escolha faz-se em conjunto, numa reunião."
+          : nonprofit
+            ? "Como o que é necessário ainda está em aberto, o intervalo vai das páginas sempre incluídas às que as associações costumam ter. A escolha faz-se em conjunto, numa reunião."
+            : "Como o que é necessário ainda está em aberto, o intervalo vai das páginas sempre incluídas às que os negócios do setor costumam ter. A escolha faz-se em conjunto, numa reunião.",
+      ),
+    );
   }
   const scale = p.pagesMarket[market];
   let min = lows * scale + extras;
@@ -448,14 +458,15 @@ function photo(a: NonNullable<Answers["photo"]>, country: Answers["country"], p:
 function search(
   id: "seo",
   plan: SearchPlanId,
-  reach: NonNullable<Answers["search"]>["reach"],
   site: Range | undefined,
   p: Pricing,
   t: Translate,
 ): Priced {
-  if (reach === "international") return { reason: t("International reach", "Alcance internacional") };
-  // Priced from the website we build (user, 2026-11-04): with no price for
-  // the site (more than 10 pages, a country quoted on request) there is none.
+  // The same calculation for every reach and every market (user,
+  // 2026-11-10): what changes from one to another is the website's price
+  // it is worked out from. International reach was quoted on request until
+  // then. Priced from the website we build (user, 2026-11-04): with no
+  // price for the site (more than 10 pages) there is none.
   if (!site) return { reason: t("Quoted in your proposal", "Orçamentado na proposta") };
   const { setup, monthlyOfSetup } = p.search;
   // The one-time work, from its lowest share of the website's lowest figure
@@ -473,6 +484,20 @@ function search(
   const monthly = month.min;
   const monthlyMax = month.max;
   const perMonth = monthlyMax > monthly ? `${monthly}–${monthlyMax}` : `${monthly}`;
+  // How the figures are worked out, said plainly (user, 2026-11-10).
+  const pct = (n: number) => (t<Lang>("en", "pt") === "pt" ? String(n).replace(".", ",") : String(n));
+  const share = `${pct(setup.min)}–${pct(setup.max)}%`;
+  const monthShare = `${pct(monthlyOfSetup.min)}–${pct(monthlyOfSetup.max)}%`;
+  const how =
+    plan === "once"
+      ? t(
+          `Worked out from the website: the one-time work is ${share} of its price.`,
+          `Calculado a partir do website: o trabalho pontual corresponde a ${share} do seu valor.`,
+        )
+      : t(
+          `Worked out from the website: the one-time work is ${share} of its price, and the monthly service ${monthShare} of the one-time work.`,
+          `Calculado a partir do website: o trabalho pontual corresponde a ${share} do seu valor, e o serviço mensal a ${monthShare} do valor pontual.`,
+        );
   const notes = [
     t(
       "One-time: strongest in the short term, its effect fades over the medium to long term.",
@@ -486,6 +511,7 @@ function search(
         `The monthly service, which keeps the practices as effective as they can be, is optional: €${perMonth} a month. We settle it together.`,
         `O serviço mensal, que mantém as práticas o mais eficazes possível, é opcional: ${perMonth} € por mês. Definimos em conjunto.`,
       ),
+      how,
     );
     return { line: { amount: first, notes, provisional: true } };
   }
@@ -495,9 +521,11 @@ function search(
         "Plus the monthly service, which keeps the practices as effective as they can be.",
         "Mais o serviço mensal, que mantém as práticas o mais eficazes possível.",
       ),
+      how,
     );
     return { line: { amount: first, monthly, monthlyMax: monthlyMax > monthly ? monthlyMax : undefined, notes, provisional: true } };
   }
+  notes.push(how);
   return { line: { amount: first, notes, provisional: true } };
 }
 
@@ -550,7 +578,7 @@ export function estimate(answers: Answers, pricing: Pricing = PRICING, lang: Lan
       const plan = searchAnswers.seoPlan ?? "once";
       // With the website on request, SEO and GEO are quoted for the same reason.
       const why = out.onRequest.find((o) => o.id === "web")?.reason;
-      add(id, () => (!site && why ? { reason: why } : search(id, plan, searchAnswers.reach, site, pricing, t)));
+      add(id, () => (!site && why ? { reason: why } : search(id, plan, site, pricing, t)));
     }
   }
 
