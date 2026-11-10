@@ -150,9 +150,12 @@ export function readAnswers(raw: unknown): Result<Answers> {
     if (languages.includes("unsure") && languages.length > 1) return { ok: false, error: "languages" };
     // The second level: any of its items, none included. Forms come with
     // their kind, and simple ones with how many.
+    // They are asked only with the back-end features service, which needs
+    // at least one of them (user, 2026-11-10).
     const rawFeatures = w.features === undefined ? [] : w.features;
     const features = Array.isArray(rawFeatures) && rawFeatures.length === 0 ? [] : many(FEATURES, rawFeatures);
     if (!features) return { ok: false, error: "features" };
+    if (groups.backend !== features.length > 0) return { ok: false, error: "features" };
     // Forms and the newsletter come with how their emails work.
     const formKind = features.includes("forms") || features.includes("newsletter") ? one(FORM_KINDS, w.formKind) : undefined;
     if (formKind === null) return { ok: false, error: "formKind" };

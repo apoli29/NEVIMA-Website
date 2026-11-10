@@ -18,6 +18,11 @@ import type { Copy, Lang } from "../i18n";
 export const SERVICES = [
   { id: "web", label: "Web design", pt: "Web design" },
   { id: "identity", label: "Visual identity", pt: "Identidade visual" },
+  /** Forms, the newsletter, calendar and reservations: a service of their
+      own since 2026-11-10 (user), paid apart from the website. Asked on a
+      screen of their own; the answers stay under `web` (features,
+      formKind), so the requests stored before still read. */
+  { id: "backend", label: "Back-end features", pt: "Funcionalidades de back end" },
   { id: "photo", label: "Photo shoot", pt: "Sessão fotográfica" },
   /** SEO and GEO are one service (user, 2026-11-04), kept under the id
       "seo" so that requests already stored still read. */
@@ -326,6 +331,13 @@ export const FEATURES = [
 ] as const;
 export type FeatureId = (typeof FEATURES)[number]["id"];
 
+/** Said under the back-end features' key among the services (user,
+    2026-11-10). */
+export const BACKEND_NOTE: Copy = {
+  en: "Back-end features: forms, newsletter, calendar and reservations, and more.",
+  pt: "Funcionalidades de back end: formulários, newsletter, calendário e reservas, entre outras.",
+};
+
 /** Said under forms and the newsletter (user, 2026-11-04). */
 export const CONFIRMATION_INCLUDED: Copy = {
   en: "Automatic email confirmation included",
@@ -351,8 +363,8 @@ export const FORM_KINDS = [
     id: "complex",
     label: "Automated",
     pt: "Automatizado",
-    note: "Templates with placeholders: the base of each email is already written, and only what changes is filled in. Price set later.",
-    notePt: "Modelos com campos variáveis: a base de cada email já está escrita, e só se preenche o que muda. Preço a definir depois.",
+    note: "Templates with placeholders: the base of each email is already written, and only what changes is filled in. Price on request.",
+    notePt: "Modelos com campos variáveis: a base de cada email já está escrita, e só se preenche o que muda. Preço sob consulta.",
   },
 ] as const;
 export type FormKindId = (typeof FORM_KINDS)[number]["id"];
@@ -658,6 +670,7 @@ export function inLang<T extends Option>(list: readonly T[], lang: Lang) {
 export function groupsFor(services: readonly ServiceId[]) {
   return {
     web: services.includes("web"),
+    backend: services.includes("backend"),
     photo: services.includes("photo"),
     search: services.includes("seo"),
   };

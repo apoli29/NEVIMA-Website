@@ -140,3 +140,7 @@ Cada serviço tem uma cláusula própria (9 a 15) com o que inclui, o que não i
 - Cl. 7.4 b), 8.3, 10.6 e 21.2: cláusulas penais (art. 19.º, al. c)).
 - **Cl. 17 (mais urgente):** CDADC, art. 43.º, n.º 2 (transmissão parcial: escrito com reconhecimento notarial das assinaturas) e art. 44.º (transmissão total: escritura pública), ambos sob pena de nulidade (confirmado no DRE). A cl. 17.1 apoia-se no art. 14.º, mas, ao dar os direitos ao Cliente "a partir do pagamento integral", pode ser lida como transmissão diferida.
 - Cl. 11.13 (aceitação 72 horas depois da Chamada de Validação, sem defeitos por escrito): ver DL 446/85, art. 19.º, al. d), que proíbe "ficções de [...] aceitação [...] com base em factos para tal insuficientes".
+
+## Depois da v1.15 (ainda sem PDF)
+
+- 2026-11-10 (utilizador): as Funcionalidades (formulário, newsletter, calendário e reservas) passam a ser um serviço à parte do Web design, pago à parte; no formulário de proposta chamam-se "Funcionalidades de back end". Na Secção 02, a linha "Funcionalidades" deixa de estar dentro do Web design (`part-of`) e tem caixa própria. A cláusula 15 já as tratava à parte e não muda. Imprimir a v1.16 quando houver mais alterações.

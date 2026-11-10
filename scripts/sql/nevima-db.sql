@@ -39,6 +39,7 @@ SELECT v.Codigo, v.Nome, v.Principal
 FROM (VALUES
         ('web',      N'Web Design',          1),
         ('identity', N'Identidade Visual',   0),
+        ('backend',  N'Funcionalidades de back end', 0),
         ('photo',    N'Sessão Fotográfica',  0),
         ('seo',      N'SEO',                 0),
         ('geo',      N'GEO',                 0)
@@ -481,6 +482,7 @@ DELETE FROM dbo.Rotulos;
 INSERT INTO dbo.Rotulos (Lista, Codigo, Texto) VALUES
     (N'SERVICES', N'web', N'Web design'),
     (N'SERVICES', N'identity', N'Identidade visual'),
+    (N'SERVICES', N'backend', N'Funcionalidades de back end'),
     (N'SERVICES', N'photo', N'Sessão fotográfica'),
     (N'SERVICES', N'seo', N'SEO e GEO'),
     (N'AUDIENCES', N'business', N'Um negócio'),
