@@ -82,6 +82,13 @@ export const PRICING = {
         and its range is as wide (user, 2026-11-04; it was +35% on the
         lowest end and +45% on the highest, which widened the range). */
     advancedShift: 50,
+    /** "Not sure" on what is needed: the sector's usual website (Home,
+        About, Contact and the sector's usual pages), its lowest end lowered
+        and its highest raised by this share, so the range covers a simpler
+        or a fuller choice (user, 2026-11-10). 35% sits near what the
+        sectors need to reach their cheapest website (24–43% down) and a
+        fuller 9-page one (29–55% up), without going to the extremes. */
+    unsurePercent: 35,
     /** Page prices by market, against Portugal. */
     pagesMarket: { pt: 1, "es-it": 1.155, us: 1.75 } satisfies Record<Market, number>,
     /** How long the site takes, in working days, by size. PROVISIONAL. */

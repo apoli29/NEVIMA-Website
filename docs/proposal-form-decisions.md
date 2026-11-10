@@ -45,7 +45,7 @@ The website's price is the **sum of the ranges of its pages** (Portugal, Essenti
 - **A page or section written in**, and **"Not sure, you choose"**, each add the average page: the average of the lowest ends up to the average of the highest, rounded up to 5 (Essential+: 40–50), so they keep within the 30% too (user, 2026-11-04). It used to be the lowest to the highest page (5–130) and, for "not sure", the average up to the two dearest.
 - Both add a note to the estimate saying the range is wider.
 - The floor rounds down to 5 and the ceiling up to 5. More than 10 pages is on request.
-- **"Not sure" on what is needed** (not the list) is estimated again (user, 2026-11-10): from Home + About + Contact up to those three plus the sector's usual pages, with a note saying so; the pages are still chosen with the client on a call. From 2026-11-04 to 2026-11-10 it gave no estimate ("on request").
+- **"Not sure" on what is needed** (not the list) is estimated around the sector's usual website (Home, About, Contact and the sector's usual pages): its lowest end 35% lower and its highest 35% higher (`unsurePercent`; user, 2026-11-10), with a note saying so; the pages are still chosen with the client on a call. From 2026-11-04 to 2026-11-10 it gave no estimate ("on request"), and briefly on 2026-11-10 it ran from the three pages always included to the usual website.
 
 ## What is stored
 
@@ -207,4 +207,11 @@ Decided 2026-11-09 (user, option A of three). Every button that opens the form (
 - **Languages:** no more limit of three other languages; each costs 25, however many.
 - **SEO & GEO:** the same calculation for every reach and market (user: "o que muda de país para país é a variável", the website's price). Its line now says how it is worked out: "Calculado a partir do website: o trabalho pontual corresponde a 17,5–22,5% do seu valor, e o serviço mensal a 28–30% do valor pontual." (the monthly half only when the monthly service is chosen or "Não sei"), built from `PRICING.search`.
 - Still on request: a country "Outro" (no market priced), more than 10 pages (asked of the user), and automated emails (to be priced after the rest, user).
+
+## "Not sure" around the sector's website, and the SEO & GEO note
+
+2026-11-10 (user, the same day):
+
+- **"Not sure" on what is needed:** a share below and above the website the sector usually has, close to covering the cheapest choice and the dearest one, without going too far (user: a client who does not know accepts a wider estimate). The share was left to me: **35%**, on both ends of the usual website's range. Checked per sector against the cheapest website (Home, About, Contact and the two cheapest pages, about 210) and a fuller one (the usual pages in their dearer kind plus the two dearest others, 9 pages): reaching them needs 24–43% down and 29–55% up, a median near 37% each way. Examples, Essencial+, Portugal: Saúde 175–495 (usual 275–365), Imobiliário 215–595; Saúde with Advanced 280–710. Note: "Como o que é necessário ainda está em aberto, o intervalo parte do website que os negócios do setor costumam ter, 35% abaixo e acima, para contemplar uma escolha mais simples ou mais completa. A escolha das páginas faz-se em conjunto, numa reunião." The note under the option: "Com esta opção, a estimativa parte do website que o setor costuma ter, com margem para uma escolha mais simples ou mais completa. …"
+- **SEO & GEO:** the calculation was already the user's rule (each end from the same end of the website: website 420–460 gives 75–105, and 20–30 a month); the note said it badly. It now reads: "Calculado a partir do website: o valor mais baixo é 17,5% do valor mais baixo do website, e o mais alto 22,5% do mais alto. O serviço mensal segue a mesma regra, com 28% e 30% do trabalho pontual." (the monthly sentence only when the monthly service is chosen or "Não sei").
 

@@ -237,11 +237,11 @@ const DOMAIN_NOTE: Copy = {
   en: "Don't have one? Don't worry: we'll help you buy it in a couple of minutes.",
   pt: "Sem domínio? Não há problema: ajudamos a comprá-lo em poucos minutos.",
 };
-// "Not sure" is estimated again, from the pages always included to the
-// sector's usual ones (user, 2026-11-10; it gave none from 2026-11-04).
+// "Not sure" is estimated around the sector's usual website, with room for
+// a simpler or a fuller choice (user, 2026-11-10).
 const PAGES_NOTE: Copy = {
-  en: "With this option, the estimate runs from the pages always included to those your sector usually has. Finish the form, send it, and we'll set up a video call to help you choose.",
-  pt: "Com esta opção, a estimativa vai das páginas sempre incluídas às que o setor costuma ter. Basta terminar e enviar o formulário, e marcamos uma videochamada para ajudar a escolher.",
+  en: "With this option, the estimate starts from the website your sector usually has, with room for a simpler or a fuller choice. Finish the form, send it, and we'll set up a video call to help you choose.",
+  pt: "Com esta opção, a estimativa parte do website que o setor costuma ter, com margem para uma escolha mais simples ou mais completa. Basta terminar e enviar o formulário, e marcamos uma videochamada para ajudar a escolher.",
 };
 const URGENT_NOTE: Copy = {
   en: "An urgent deadline raises the price by 40%.",
