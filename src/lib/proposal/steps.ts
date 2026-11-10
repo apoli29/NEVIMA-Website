@@ -176,11 +176,32 @@ export function projectLines(answers: Answers): ProjectLine[] {
   return lines;
 }
 
+/** The columns of "Pedidos" the partners renamed in Notion (2026-11-09),
+    by what they hold. Notion knows a column by its name, to the space:
+    a column renamed there and not here stops the site writing a request
+    ("Parceiros" keeps the first names: "Empresa", "Idioma", "Reunião").
+    Change a name here in the same moment as in Notion. */
+export const PEDIDOS = {
+  company: "Nome da Empresa",
+  lang: "Idiomas escolhidos",
+  meeting: "Data da Reunião",
+  owner: "Responsável por contactar",
+  /** The proposal's email, with the contract (Por enviar, Enviado). */
+  offer: "E-mail da Proposta +  Contrato",
+  validUntil: "Válido até",
+  /** The client's answer to the proposal's two buttons. Ends in a space. */
+  followUp: "Chamada de acompanhamento (sim / não) ? ",
+  /** The contract being drawn up (Por fazer, Feito), by hand. */
+  contract: "Contrato",
+  /** Whether the signed contract came back (Sim, Não), by hand. */
+  contractReceived: "Contrato Recebido?",
+} as const;
+
 /** The lead's follow-up, in the order of the process, from the first
     contact to the signed contract (docs/client-tracking-plan.md, with
     what was merged on 2026-11-09: one column per step). */
 export const STEP_COLUMNS: Column[] = [
-  { name: "Responsável", type: "select", options: [o("António", "blue"), o("Emanuel", "purple")] },
+  { name: PEDIDOS.owner, type: "select", options: [o("António", "blue"), o("Emanuel", "purple")] },
   {
     name: "Preparação da chamada",
     type: "select",
@@ -204,20 +225,16 @@ export const STEP_COLUMNS: Column[] = [
     type: "select",
     options: [o("Por efetuar", "gray"), o("Efetuada", "green"), o("Cliente faltou", "red")],
   },
-  { name: "Proposta", type: "select", options: [o("Por enviar", "gray"), o("Enviada", "green")] },
-  { name: "Válida até", type: "date" },
+  { name: PEDIDOS.offer, type: "select", options: [o("Por enviar", "gray"), o("Enviado", "green")] },
+  { name: PEDIDOS.validUntil, type: "date" },
   // The client's answer to the final proposal's two buttons.
   {
-    name: "Chamada de acompanhamento",
+    name: PEDIDOS.followUp,
     type: "select",
     options: [o("Por responder", "gray"), o("Sim", "green"), o("Não", "default")],
   },
-  {
-    name: "Contrato",
-    type: "select",
-    options: [o("Por enviar", "gray"), o("Enviado", "yellow"), o("Assinado", "green")],
-  },
-  { name: "Assinado em", type: "date" },
+  { name: PEDIDOS.contract, type: "select", options: [o("Por fazer", "gray"), o("Feito", "green")] },
+  { name: PEDIDOS.contractReceived, type: "select", options: [o("Não", "gray"), o("Sim", "green")] },
   {
     name: "Motivo de perda",
     type: "select",
@@ -230,8 +247,6 @@ export const STEP_COLUMNS: Column[] = [
       o("Outro", "default"),
     ],
   },
-  { name: "Histórico", type: "text" },
-  { name: "Spam ou teste", type: "checkbox" },
 ];
 
 /** The columns that left "Pedidos" on 2026-11-09 (user): repeated by
@@ -314,7 +329,7 @@ export const MOVED: [string, string, string, string][] = [
 export const COLUMN_ORDER: { group: string; columns: string[] }[] = [
   {
     group: "Cliente",
-    columns: ["Nome", "Estado", "Email", "Telefone", "Empresa", "Setor", "País", "Idioma", "Recebido"],
+    columns: ["Nome", "Estado", "Email", "Telefone", PEDIDOS.company, "Setor", "País", PEDIDOS.lang, "Recebido"],
   },
   {
     group: "Projeto",
@@ -323,24 +338,20 @@ export const COLUMN_ORDER: { group: string; columns: string[] }[] = [
   {
     group: "Acompanhamento",
     columns: [
-      "Responsável",
+      PEDIDOS.owner,
       "Alertas",
       "Preparação da chamada",
       "Documento de preparação",
-      "Valor Y (cliente)",
-      "Valor X (sugestões)",
       "Marcação",
-      "Reunião",
+      PEDIDOS.meeting,
       "Chamada realizada",
-      "Proposta",
+      PEDIDOS.offer,
       "Valor final",
-      "Válida até",
-      "Chamada de acompanhamento",
-      "Contrato",
-      "Assinado em",
+      PEDIDOS.validUntil,
+      PEDIDOS.followUp,
+      PEDIDOS.contract,
+      PEDIDOS.contractReceived,
       "Motivo de perda",
-      "Histórico",
-      "Spam ou teste",
     ],
   },
 ];
@@ -354,7 +365,7 @@ export const ON_ARRIVAL: Record<string, string> = {
   "Preparação da chamada": "Por iniciar",
   "Marcação": "Convite por enviar",
   "Chamada realizada": "Por efetuar",
-  Proposta: "Por enviar",
+  [PEDIDOS.offer]: "Por enviar",
 };
 
 /** The states a booking must not take a request back from. */

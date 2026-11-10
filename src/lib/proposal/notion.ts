@@ -1,5 +1,5 @@
 import "server-only";
-import { historyLine, STEP_SELECTS, withLine } from "./steps";
+import { historyLine, PEDIDOS, STEP_SELECTS, withLine } from "./steps";
 
 /* ==================================================================
    Notion, as far as the requests need it: one new page in a database
@@ -92,63 +92,89 @@ export const block = {
 const defined = (properties: Record<string, unknown>) =>
   Object.fromEntries(Object.entries(properties).filter(([, v]) => v !== undefined));
 
-/** The new page's address, or null when it could not be made (or Notion
-    is not set up). `extra` is the request's steps (steps.ts): when
-    Notion refuses the page with them (400, a column it does not have
-    yet), it is made again without them, so a request never depends on
-    the steps. */
+/* The partners rename and delete columns in Notion by hand, and Notion
+   refuses a whole page or change over one column it does not have (or
+   of another type). So a refusal that names a column is answered by
+   sending the rest again without it: a renamed column costs that one
+   value, never the request (user, 2026-11-10). What was left out goes to
+   the log and, on a new page, to its "Alertas". */
+const MISSING = [/^(.+?) is not a property that exists/, /^(.+?) is expected to be /];
+
+type Sent = { ok: boolean; status: number; data: Record<string, unknown>; dropped: string[] };
+
+/** Sends `properties` (with `send`), leaving out, one at a time, each
+    column Notion says it does not have, up to a dozen. */
+async function sendLeavingOut(
+  properties: Record<string, unknown>,
+  send: (properties: Record<string, unknown>) => Promise<Response>,
+): Promise<Sent> {
+  const left = defined(properties);
+  const dropped: string[] = [];
+  for (let tries = 0; ; tries += 1) {
+    const res = await send(left);
+    const data = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+    const column =
+      res.status === 400 && tries < 12
+        ? MISSING.map((pattern) => String(data.message ?? "").match(pattern)?.[1]).find((name) => name && name in left)
+        : undefined;
+    if (!column) return { ok: res.ok, status: res.status, data, dropped };
+    delete left[column];
+    dropped.push(column);
+  }
+}
+
+/** The new page's address and the columns left out of it (Notion no
+    longer has them), or null when it could not be made (or Notion is
+    not set up). `extra` (the project's text, the steps) goes with the
+    rest; when Notion refuses the page for another reason than a missing
+    column, it is made again without `extra`, so a request never depends
+    on it. */
 export async function createPage(
   databaseId: string | undefined,
   properties: Record<string, unknown>,
   children: unknown[],
   extra?: Record<string, unknown>,
-): Promise<string | null> {
-  if (extra) {
-    const made = await postPage(databaseId, { ...properties, ...extra }, children, true);
-    if (made !== 400) return made;
+): Promise<{ url: string; dropped: string[] } | null> {
+  let made = await postPage(databaseId, { ...properties, ...extra }, children);
+  if (made.status === 400 && extra) {
     console.error("[nevima:notion] sem os passos", 400);
+    made = await postPage(databaseId, properties, children);
   }
-  const made = await postPage(databaseId, properties, children, false);
-  return made === 400 ? null : made;
+  if (!made.ok) {
+    if (made.status) {
+      // What Notion says about a refusal names the property, never the visitor's words.
+      console.error("[nevima:notion] status", made.status, String(made.data.code ?? ""), clip(String(made.data.message ?? ""), 200));
+    }
+    return null;
+  }
+  if (made.dropped.length) console.error("[nevima:notion] colunas em falta", made.dropped.join(", "));
+  return { url: String(made.data.url ?? ""), dropped: made.dropped };
 }
 
-/** The page's address, null, or 400 when `quiet` and Notion refused it
-    with that status. */
-async function postPage(
-  databaseId: string | undefined,
-  properties: Record<string, unknown>,
-  children: unknown[],
-  quiet: boolean,
-): Promise<string | null | 400> {
+/** What "Alertas" says about the columns a new page was made without.
+    The history is left out of it: it is a nicety, and the partners
+    removed its column. */
+export function droppedAlert(dropped: string[]) {
+  const named = dropped.filter((name) => name !== "Histórico");
+  return named.length ? `Colunas que já não existem no Notion, por preencher: ${named.join(", ")}` : "";
+}
+
+/** Makes the page, leaving out the columns Notion does not have. */
+async function postPage(databaseId: string | undefined, properties: Record<string, unknown>, children: unknown[]): Promise<Sent> {
   const token = process.env.NOTION_TOKEN;
-  if (!token || !databaseId) return null;
+  if (!token || !databaseId) return { ok: false, status: 0, data: {}, dropped: [] };
   try {
-    const res = await fetch(`${API}/pages`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-        "Notion-Version": VERSION,
-      },
-      body: JSON.stringify({
-        parent: { database_id: databaseId },
-        properties: defined(properties),
-        children,
+    return await sendLeavingOut(properties, (left) =>
+      fetch(`${API}/pages`, {
+        method: "POST",
+        headers: headers(token),
+        body: JSON.stringify({ parent: { database_id: databaseId }, properties: left, children }),
+        signal: AbortSignal.timeout(TIMEOUT_MS),
       }),
-      signal: AbortSignal.timeout(TIMEOUT_MS),
-    });
-    if (quiet && res.status === 400) return 400;
-    if (!res.ok) {
-      // What Notion says about a refusal names the property, never the visitor's words.
-      const why = (await res.json().catch(() => ({}))) as { code?: string; message?: string };
-      console.error("[nevima:notion] status", res.status, why.code ?? "", clip(why.message ?? "", 200));
-      return null;
-    }
-    const page = (await res.json()) as { url?: string };
-    return page.url ?? "";
+    );
   } catch (error) {
     console.error("[nevima:notion] failed", error instanceof Error ? error.name : "error");
-    return null;
+    return { ok: false, status: 0, data: {}, dropped: [] };
   }
 }
 
@@ -214,8 +240,11 @@ export type RequestPage = {
   state: string;
   received: string;
   meeting: string;
+  /** The name of the call's date column on this page: "Pedidos" and
+      "Parceiros" name it differently (steps.ts, PEDIDOS). */
+  meetingKey: string;
   /** "Sim", "Não" or "Por responder": whether the client wants the
-      follow-up call ("Chamada de acompanhamento"). */
+      follow-up call. */
   midCall: string;
   /** Emails that could not be sent: nobody else would know. */
   alerts: string;
@@ -235,17 +264,21 @@ function readPage(page: RawPage): RequestPage | null {
     ((p[key]?.[kind] as { plain_text?: string }[] | undefined) ?? []).map((t) => t.plain_text ?? "").join("");
   const select = (key: string) => (p[key]?.select as { name?: string } | null | undefined)?.name ?? "";
   const date = (key: string) => (p[key]?.date as { start?: string } | null | undefined)?.start ?? "";
+  // The page's own name for a column: "Pedidos"' first, else "Parceiros"'.
+  const key = (pedidos: string, parceiros: string) => (pedidos in p ? pedidos : parceiros);
+  const meetingKey = key(PEDIDOS.meeting, "Reunião");
   return {
     id: page.id,
     url: page.url ?? "",
     name: text("Nome", "title"),
     email: (p.Email?.email as string | null | undefined) ?? "",
-    company: text("Empresa", "rich_text"),
-    lang: select("Idioma") === "pt" ? "pt" : "en",
+    company: text(key(PEDIDOS.company, "Empresa"), "rich_text"),
+    lang: select(key(PEDIDOS.lang, "Idioma")) === "pt" ? "pt" : "en",
     state: select("Estado"),
     received: date("Recebido"),
-    meeting: date("Reunião"),
-    midCall: select("Chamada de acompanhamento"),
+    meeting: date(meetingKey),
+    meetingKey,
+    midCall: select(PEDIDOS.followUp),
     alerts: text("Alertas", "rich_text"),
     history: text("Histórico", "rich_text"),
     steps: Object.fromEntries(STEP_SELECTS.map((name) => [name, select(name)])),
@@ -304,25 +337,26 @@ export const pageIdFromUrl = (url: string) => url.split(/[?#]/)[0].replace(/-/g,
 export const addAlert = (pageId: string, current: string, words: string) =>
   updatePage(pageId, { Alertas: prop.text(current ? `${current} · ${words}` : words) });
 
-/** True once the page's properties were changed. */
+/** True once the page's properties were changed: at least one of them,
+    when Notion no longer has some (they are left out, and logged). */
 export async function updatePage(pageId: string, properties: Record<string, unknown>): Promise<boolean> {
   const token = process.env.NOTION_TOKEN;
   if (!token) return false;
   try {
-    const res = await fetch(`${API}/pages/${pageId}`, {
-      method: "PATCH",
-      headers: headers(token),
-      body: JSON.stringify({
-        properties: defined(properties),
+    const sent = await sendLeavingOut(properties, (left) =>
+      fetch(`${API}/pages/${pageId}`, {
+        method: "PATCH",
+        headers: headers(token),
+        body: JSON.stringify({ properties: left }),
+        signal: AbortSignal.timeout(TIMEOUT_MS),
       }),
-      signal: AbortSignal.timeout(TIMEOUT_MS),
-    });
-    if (!res.ok) {
-      const why = (await res.json().catch(() => ({}))) as { code?: string; message?: string };
-      console.error("[nevima:notion] update status", res.status, why.code ?? "", clip(why.message ?? "", 200));
+    );
+    if (sent.dropped.length) console.error("[nevima:notion] colunas em falta", sent.dropped.join(", "));
+    if (!sent.ok) {
+      console.error("[nevima:notion] update status", sent.status, String(sent.data.code ?? ""), clip(String(sent.data.message ?? ""), 200));
       return false;
     }
-    return true;
+    return sent.dropped.length < Object.keys(defined(properties)).length;
   } catch (error) {
     console.error("[nevima:notion] update failed", error instanceof Error ? error.name : "error");
     return false;
@@ -333,17 +367,21 @@ export async function updatePage(pageId: string, properties: Record<string, unkn
     change, after what the site already wrote: the steps never stand in
     the way of what the client or the studio did. True once Notion took
     it; a failure only reaches the log. `history` is the page's
-    "Histórico" as read before. */
-export const setSteps = (
+    "Histórico" as read before. The history is a nicety: with no column
+    for it (the partners removed it, 2026-11-10) the line is left out,
+    and a change that was only the line counts as done. */
+export async function setSteps(
   pageId: string,
   history: string,
   steps: Record<string, string>,
   what: string,
   who: string,
   more: Record<string, unknown> = {},
-) =>
-  updatePage(pageId, {
+) {
+  const done = await updatePage(pageId, {
     ...Object.fromEntries(Object.entries(steps).map(([name, value]) => [name, prop.select(value)])),
     ...more,
     "Histórico": prop.text(withLine(history, historyLine(what, who))),
   });
+  return done || Object.keys(steps).length + Object.keys(more).length === 0;
+}

@@ -1,7 +1,7 @@
 import "server-only";
 import type { Lang } from "../i18n";
 import { confirmationHtml, confirmationSubject, confirmationText, STUDIO_EMAIL, summaryOf } from "./email";
-import { addAlert, block, createPage, lastRequestSince, pageIdFromUrl, prop, setSteps } from "./notion";
+import { addAlert, block, createPage, droppedAlert, lastRequestSince, pageIdFromUrl, prop, setSteps } from "./notion";
 import {
   BUDGETS,
   CREDITS,
@@ -13,7 +13,7 @@ import {
   type PartnerAnswers,
 } from "./partner";
 import { SERVICES, labelOf, type Answers, type Contact, type Estimate, type Range } from "./questions";
-import { historyLine, ON_ARRIVAL, PROJECT_TEXT, projectLines } from "./steps";
+import { historyLine, ON_ARRIVAL, PEDIDOS, PROJECT_TEXT, projectLines } from "./steps";
 
 /* ==================================================================
    Where simulations and requests go
@@ -126,7 +126,7 @@ function proposalPage(request: ProposalRequest) {
       Estado: prop.select("Novo"),
       Email: prop.email(contact.email.toLowerCase()),
       Telefone: prop.phone(contact.phone),
-      Empresa: prop.text(contact.company),
+      [PEDIDOS.company]: prop.text(contact.company),
       "Serviços": prop.multi(answers.services.map((id) => labelOf(SERVICES, id, "pt"))),
       Setor: prop.select(who.value),
       "País": prop.select(country.value),
@@ -134,7 +134,7 @@ function proposalPage(request: ProposalRequest) {
       "Mensal (€)": prop.number(estimate.monthly),
       Prazo: prop.text(timelineText(estimate)),
       Mensagem: prop.text(contact.message),
-      Idioma: prop.select(request.lang),
+      [PEDIDOS.lang]: prop.select(request.lang),
       Recebido: prop.date(request.at),
     },
     children: [
@@ -296,8 +296,8 @@ export async function deliverRequest(request: ProposalRequest): Promise<boolean>
     ...Object.fromEntries(Object.entries(ON_ARRIVAL).map(([name, value]) => [name, prop.select(value)])),
     "Histórico": prop.text(arrived),
   };
-  const page = await createPage(process.env.NOTION_FORM1_LEADS, properties, children, steps);
-  if (page === null) {
+  const made = await createPage(process.env.NOTION_FORM1_LEADS, properties, children, steps);
+  if (made === null) {
     // Logged without the contact details: the logs are not the inbox.
     console.info(
       "[nevima:request:undelivered]",
@@ -306,6 +306,7 @@ export async function deliverRequest(request: ProposalRequest): Promise<boolean>
     return false;
   }
 
+  const page = made.url;
   const { answers, contact, estimate } = request;
   const [services, who, country] = summaryOf(answers, "pt");
   const [noticed, confirmed] = await Promise.all([
@@ -332,6 +333,7 @@ export async function deliverRequest(request: ProposalRequest): Promise<boolean>
   const missing = [
     !noticed && "Aviso ao estúdio não enviado",
     !confirmed && "Confirmação ao cliente não enviada",
+    droppedAlert(made.dropped),
   ].filter(Boolean);
   if (missing.length) await addAlert(pageIdFromUrl(page), "", missing.join(" · "));
   // A confirmation that did not go is in "Alertas" too.
@@ -343,8 +345,8 @@ export async function deliverRequest(request: ProposalRequest): Promise<boolean>
     to a partner: we get in touch ourselves. */
 export async function deliverPartner(request: PartnerRequest): Promise<boolean> {
   const { properties, children, extra } = partnerPage(request);
-  const page = await createPage(process.env.NOTION_FORM2_LEADS, properties, children, extra);
-  if (page === null) {
+  const made = await createPage(process.env.NOTION_FORM2_LEADS, properties, children, extra);
+  if (made === null) {
     console.info(
       "[nevima:partner:undelivered]",
       JSON.stringify({ at: request.at, lang: request.lang, answers: request.answers }),
@@ -352,6 +354,7 @@ export async function deliverPartner(request: PartnerRequest): Promise<boolean> 
     return false;
   }
 
+  const page = made.url;
   const { answers, contact } = request;
   const pt = (list: Parameters<typeof labelOf>[0], id: string) => labelOf(list, id, "pt");
   const noticed = await notify(
@@ -367,6 +370,7 @@ export async function deliverPartner(request: PartnerRequest): Promise<boolean> 
     page,
     contact,
   );
-  if (!noticed) await addAlert(pageIdFromUrl(page), "", "Aviso ao estúdio não enviado");
+  const missing = [!noticed && "Aviso ao estúdio não enviado", droppedAlert(made.dropped)].filter(Boolean);
+  if (missing.length) await addAlert(pageIdFromUrl(page), "", missing.join(" · "));
   return true;
 }

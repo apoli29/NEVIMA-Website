@@ -2,14 +2,15 @@ import { sendEmail, studioInbox } from "@/lib/proposal/deliver";
 import { allow, clientIp, json, readJson } from "@/lib/proposal/guard";
 import { readMidCall } from "@/lib/proposal/meeting";
 import { addAlert, getRequest, prop, setSteps, updatePage } from "@/lib/proposal/notion";
+import { PEDIDOS } from "@/lib/proposal/steps";
 
 /* The client's answer about the follow-up call, confirmed
    on the page the final proposal's buttons lead to. The request's page in
    Notion gets it, and the studio a notice. Answering again changes it: the
    last answer holds, and the studio is told each time. The answer also
    goes into "Histórico" (steps.ts); a failure there only reaches the
-   log. The column is "Chamada de acompanhamento" (until 2026-11-09,
-   "Reunião a meio"). */
+   log. The column's name is PEDIDOS.followUp in steps.ts (until
+   2026-11-09, "Reunião a meio"). */
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +26,7 @@ export async function POST(request: Request) {
   if (!page) return json({ error: "not_found" }, 404);
   if (page.midCall === answer) return json({ ok: true });
 
-  const saved = await updatePage(token.page, { "Chamada de acompanhamento": prop.select(answer) });
+  const saved = await updatePage(token.page, { [PEDIDOS.followUp]: prop.select(answer) });
   if (saved) await setSteps(token.page, page.history, {}, `Chamada de acompanhamento: ${answer.toLowerCase()}`, "cliente");
   const told = await sendEmail({
     to: studioInbox(),
