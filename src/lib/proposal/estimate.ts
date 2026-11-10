@@ -467,34 +467,32 @@ function search(
   // price for the site (more than 10 pages) there is none.
   if (!site) return { reason: t("Quoted in your proposal", "Orçamentado na proposta") };
   const { setup, monthlyOfSetup } = p.search;
-  // The one-time work, from its lowest share of the website's lowest figure
-  // to its highest share of the highest (user, 2026-11-04).
-  // Both ends go to the nearest 5; exactly half-way, the lowest goes up and
-  // the highest down (22.5 is 25, 37.5 is 35; user, 2026-11-04). Never
-  // crossing.
-  const inward = (lo: number, hi: number): Range => {
-    const min = Math.max(5, Math.round(lo / 5) * 5);
-    return { min, max: Math.max(min, -Math.round(-hi / 5) * 5) };
+  // Fixed shares (user, 2026-11-10): the one-time work is a share of the
+  // website, the monthly service a share of the one-time work, each worked
+  // out on the figures before rounding. The lowest end rounds down to 5 and
+  // the highest up, so whatever the final figure inside the website's
+  // range, its SEO & GEO stays inside this one. Never under 5.
+  const outward = (lo: number, hi: number): Range => {
+    const min = Math.max(5, Math.floor(lo / 5) * 5);
+    return { min, max: Math.max(min, Math.ceil(hi / 5) * 5) };
   };
-  const first = inward((site.min * setup.min) / 100, (site.max * setup.max) / 100);
-  // The monthly service, the same way from the one-time work's ends.
-  const month = inward((first.min * monthlyOfSetup.min) / 100, (first.max * monthlyOfSetup.max) / 100);
+  const setupLo = (site.min * setup) / 100;
+  const setupHi = (site.max * setup) / 100;
+  const first = outward(setupLo, setupHi);
+  const month = outward((setupLo * monthlyOfSetup) / 100, (setupHi * monthlyOfSetup) / 100);
   const monthly = month.min;
   const monthlyMax = month.max;
   const perMonth = monthlyMax > monthly ? `${monthly}–${monthlyMax}` : `${monthly}`;
   // How the figures are worked out, said plainly (user, 2026-11-10).
   const pct = (n: number) => (t<Lang>("en", "pt") === "pt" ? String(n).replace(".", ",") : String(n));
-  // Each end from the same end of the website (user, 2026-11-10).
-  const lowWeb = `${pct(setup.min)}%`;
-  const highWeb = `${pct(setup.max)}%`;
   const how = t(
-    `Worked out from the website: the lowest figure is ${lowWeb} of the website's lowest, and the highest ${highWeb} of its highest.`,
-    `Calculado a partir do website: o valor mais baixo é ${lowWeb} do valor mais baixo do website, e o mais alto ${highWeb} do mais alto.`,
+    `Worked out from the website: the one-time work is ${pct(setup)}% of the website's price.`,
+    `Calculado a partir do website: o trabalho pontual corresponde a ${pct(setup)}% do valor do website.`,
   ) + (plan === "once"
     ? ""
     : t(
-        ` The monthly service follows the same rule, with ${pct(monthlyOfSetup.min)}% and ${pct(monthlyOfSetup.max)}% of the one-time work.`,
-        ` O serviço mensal segue a mesma regra, com ${pct(monthlyOfSetup.min)}% e ${pct(monthlyOfSetup.max)}% do trabalho pontual.`,
+        ` The monthly service is ${pct(monthlyOfSetup)}% of the one-time work.`,
+        ` O serviço mensal corresponde a ${pct(monthlyOfSetup)}% do trabalho pontual.`,
       ));
   const notes = [
     t(
