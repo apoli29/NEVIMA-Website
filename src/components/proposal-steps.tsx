@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "motion/react";
 import {
   AUDIENCES,
   AUDIENCE_NOTE,
+  BACKEND_NOTE,
   COMPLEX,
   COUNTRIES,
   DESIGN,
@@ -165,7 +166,7 @@ export const EMPTY_CONTACT: Contact = {
   message: "",
 };
 
-export type StepId = "basics" | "site" | "web" | "photo" | "search" | "estimate" | "contact" | "sent";
+export type StepId = "basics" | "site" | "web" | "backend" | "photo" | "search" | "estimate" | "contact" | "sent";
 
 /** The screens this draft goes through, in order. */
 export function stepsFor(draft: Draft): StepId[] {
@@ -178,6 +179,8 @@ export function stepsFor(draft: Draft): StepId[] {
     // goal, so this screen is never left out.
     "site",
     ...(groups.web ? (["web"] as const) : []),
+    // The back-end features, a service of their own (user, 2026-11-10).
+    ...(groups.web && groups.backend ? (["backend"] as const) : []),
     ...(groups.photo ? (["photo"] as const) : []),
     ...(groups.search ? (["search"] as const) : []),
     "estimate",
@@ -209,6 +212,8 @@ function titleFor(step: StepId, draft: Draft, t: Translate) {
       return t("Your website", "O website");
     case "web":
       return "Web design";
+    case "backend":
+      return t("Back-end features", "Funcionalidades de back end");
     case "photo":
       return t("Photo shoot", "Sessão fotográfica");
     case "search":
@@ -325,9 +330,11 @@ export function checkStep(step: StepId, draft: Draft, contact: Contact, lang: La
           `Escolher pelo menos ${minChosenFor(draft.audience)} ${minChosenFor(draft.audience) === 1 ? "página ou secção" : "páginas ou secções"} para continuar.`,
         );
       }
-      // The forms come after the pages (user, 2026-11-04).
-      if (mailing(draft.features) && !draft.formKind) e.formKind = PICK_ONE;
     }
+  }
+  if (step === "backend") {
+    if (!draft.features.length) e.features = PICK_ANY;
+    if (mailing(draft.features) && !draft.formKind) e.formKind = PICK_ONE;
   }
   if (step === "web") {
     if (draft.complex) return e;
@@ -396,13 +403,15 @@ export function toAnswers(draft: Draft): Answers {
     const pageTypes = pageMode === "website" ? draft.pageTypes : [];
     const pageOthers = pageMode === "website" ? writtenIn(draft) : [];
     const pagesUnsure = pageMode === "website" && draft.pagesUnsure;
+    // Asked only with the back-end features service (user, 2026-11-10).
+    const features = groups.backend ? draft.features : [];
     answers.web = {
       design: draft.design as DesignId,
       pages: pagesFor(pageMode, pageTypes, pageOthers.length, pagesUnsure),
       pageMode,
       pageTypes,
       languages: draft.languages,
-      features: draft.features,
+      features,
       texts: draft.texts as TextsId,
       references,
       domain: draft.domain as YesNo,
@@ -411,7 +420,7 @@ export function toAnswers(draft: Draft): Answers {
     if (draft.languages.includes("other")) answers.web.languagesOther = draft.languagesOther.trim();
     if (pageOthers.length) answers.web.pageOthers = pageOthers;
     if (pagesUnsure) answers.web.pagesUnsure = true;
-    if (mailing(draft.features) && draft.formKind) {
+    if (mailing(features) && draft.formKind) {
       answers.web.formKind = draft.formKind;
     }
     if (draft.complex) answers.web.complex = true;
@@ -890,11 +899,13 @@ export function StepScreen({
             label={t("Which of our services are you interested in?", "Quais os serviços pretendidos?")}
             hint={t("Web design is always included", "O web design está sempre incluído")}
             error={errors.services}
-            footnote={`*${t(PHOTO_NOTE)}`}
+            footnote={`*${t(PHOTO_NOTE)} **${t(BACKEND_NOTE)}`}
           >
             <Multi
               name="services"
-              options={list(SERVICES).map((o) => (o.id === "photo" ? { ...o, label: `${o.label}*` } : o))}
+              options={list(SERVICES).map((o) =>
+                o.id === "photo" ? { ...o, label: `${o.label}*` } : o.id === "backend" ? { ...o, label: `${o.label}**` } : o,
+              )}
               value={draft.services}
               locked={["web"]}
               off={photoOff(draft) ? ["photo"] : []}
@@ -1118,72 +1129,73 @@ export function StepScreen({
               })()}
             </Question>
           )}
-          {/* What the website has to do behind it, in two levels (user,
-              2026-10-18; the first, presenting the business, is every
-              website and is no longer shown, 2026-11-04); asked after the
-              pages (user, 2026-11-04). The second level ends the form at
-              the estimate, whatever else was answered. */}
+          {/* The third level stays with the website (user, 2026-11-10):
+              the forms, the newsletter and the calendar became a service of
+              their own, asked on their own screen. Ticking it ends the form
+              here. */}
+          <Question
+            id="features"
+            label={t("Complex systems behind the website", "Sistemas complexos por trás do website")}
+            hint={t("Only if the website needs them", "Só se o website precisar")}
+            error={errors.complex}
+            group={false}
+          >
+            <Ticks
+              name="complex"
+              options={list(COMPLEX)}
+              value={draft.complex ? ["complex"] : []}
+              onChange={(v) => {
+                setDraft({ complex: v.length > 0 });
+                setOutOpen(v.length > 0);
+              }}
+            />
+            {draft.complex && (
+              <p role="status" className="pf-out">
+                {t(OUT_OF_SCOPE)}
+              </p>
+            )}
+          </Question>
+        </div>
+      )}
+
+      {/* The back-end features, a service of their own (user,
+          2026-11-10): what the website receives from its visitors, and how
+          its emails work. */}
+      {step === "backend" && (
+        <div className="pf-rows">
           <Question
             id="features"
             label={t("Which features does your website need?", "De que funcionalidades precisa o website?")}
             hint={t("What works behind the website", "O que funciona por trás do website")}
-            error={errors.complex}
+            error={errors.features}
             group={false}
           >
-            <div className="pf-levels">
-              <div className="pf-level" role="group" aria-labelledby={`${uid}-level2`}>
-                <p id={`${uid}-level2`} className="pf-level-name">
-                  {personal || nonprofit
-                    ? t("Receive information from visitors", "Receber informação dos visitantes")
-                    : t("Receive information from your clients", "Receber informação dos clientes")}
-                </p>
-                <Ticks
-                  name="features"
-                  options={list(FEATURES).map((o) => ({
-                    ...o,
-                    ...(personal ? { note: t(PERSONAL_FEATURE_NOTES[o.id]) } : {}),
-                    ...(nonprofit ? { note: t(NONPROFIT_FEATURE_NOTES[o.id]) } : {}),
-                    // Forms and the newsletter send a confirmation by
-                    // themselves (user, 2026-11-04).
-                    ...(o.id === "forms" || o.id === "newsletter" ? { extra: t(CONFIRMATION_INCLUDED) } : {}),
-                  }))}
-                  value={draft.features}
-                  onChange={(features) => setDraft({ features })}
-                />
-                {/* The platforms behind these, said plainly (user,
-                    2026-10-19): the client's own free account, set up
-                    together. */}
-                <p className="pf-footnote">
-                  {t(
-                    "We handle the whole process for you, so you can use the platforms without any worry or difficulty.",
-                    "Tratamos de todo o processo, para que as plataformas possam ser utilizadas sem qualquer preocupação ou dificuldade.",
-                  )}
-                </p>
-              </div>
-              <div className="pf-level" role="group" aria-labelledby={`${uid}-level3`}>
-                <p id={`${uid}-level3`} className="pf-level-name">
-                  {t("Complex systems behind the website", "Sistemas complexos por trás do website")}
-                </p>
-                <Ticks
-                  name="complex"
-                  options={list(COMPLEX)}
-                  value={draft.complex ? ["complex"] : []}
-                  onChange={(v) => {
-                    setDraft({ complex: v.length > 0 });
-                    setOutOpen(v.length > 0);
-                  }}
-                />
-                {draft.complex && (
-                  <p role="status" className="pf-out">
-                    {t(OUT_OF_SCOPE)}
-                  </p>
-                )}
-              </div>
-            </div>
+            <Ticks
+              name="features"
+              options={list(FEATURES).map((o) => ({
+                ...o,
+                ...(personal ? { note: t(PERSONAL_FEATURE_NOTES[o.id]) } : {}),
+                ...(nonprofit ? { note: t(NONPROFIT_FEATURE_NOTES[o.id]) } : {}),
+                // Forms and the newsletter send a confirmation by
+                // themselves (user, 2026-11-04).
+                ...(o.id === "forms" || o.id === "newsletter" ? { extra: t(CONFIRMATION_INCLUDED) } : {}),
+              }))}
+              value={draft.features}
+              onChange={(features) => setDraft({ features })}
+            />
+            {/* The platforms behind these, said plainly (user,
+                2026-10-19): the client's own free account, set up
+                together. */}
+            <p className="pf-footnote">
+              {t(
+                "We handle the whole process for you, so you can use the platforms without any worry or difficulty.",
+                "Tratamos de todo o processo, para que as plataformas possam ser utilizadas sem qualquer preocupação ou dificuldade.",
+              )}
+            </p>
           </Question>
           {/* How the emails work, for forms or the newsletter (user,
               2026-11-04). */}
-          {!draft.complex && mailing(draft.features) && (
+          {mailing(draft.features) && (
             <Question
               id="formKind"
               label={t("How should the emails work?", "Como devem funcionar os emails?")}

@@ -224,3 +224,15 @@ Decided 2026-11-09 (user, option A of three). Every button that opens the form (
 - Examples, Portugal: website 420–460 gives 90–105 and 25–35 a month; landing page 215–275 gives 45–65 and 10–20 a month; "Não sei", Saúde (175–495) gives 35–115 and 10–35 a month.
 - Note: "Calculado a partir do website: o trabalho pontual corresponde a 22,5% do valor do website. O serviço mensal corresponde a 30% do trabalho pontual." (the second sentence only with the monthly service or "Não sei").
 
+## Back-end features: a service of their own
+
+2026-11-10 (user): forms, the newsletter, calendar and reservations are paid apart from the website, so they became a service of their own.
+
+- **Choosing it:** a fifth key among the services, "Back-end features" / "Funcionalidades de back end" (the user's name; id `backend`). It is offered only with web design, like the others. A second footnote under the services says "**Funcionalidades de back end: formulários, newsletter, calendário e reservas, entre outras." / "**Back-end features: forms, newsletter, calendar and reservations, and more."
+- **Its screen:** right after "Web design", with "De que funcionalidades precisa o website?" (at least one) and "Como devem funcionar os emails?" when there is a form or the newsletter. "Complex systems behind the website" stays on the website's screen, on its own, and still ends the form there.
+- **Stored:** the answers stay under `web` (`features`, `formKind`), so stored requests and the Notion and SQL columns still read the same. They are sent only with the service; the server refuses features without it, and the service without features. SQL: `backend` added to `dbo.Servicos`, and the labels regenerated (run `nevima-db.sql` again).
+- **Estimate:** the website's line no longer has Front end and Back end parts. The website's notes start with what it is made of ("Uma landing page, design Essencial+, português e inglês."). The back-end features have their own line, with their price (raised by 40% on an urgent deadline, like every one-time service), the options chosen, the notes on manual emails and the monthly fee, and "Pontual, depois X €/mês".
+- **Automated emails** stay on request (user): their own row, "Emails automatizados · Preço definido na proposta · Sob consulta", under the lines. The website and the total keep their price, and the total says "Mais os itens sob consulta". The automated option's note now ends "Preço sob consulta." `later` is no longer filled; it stays in the type for older records.
+- **Rule (user):** every additional service whose price depends on another is worked out from the web design alone, as the main service. So SEO & GEO is 22.5% of the website without the back-end features.
+- **Contract:** in Section 02, "Funcionalidades" has its own box instead of sitting inside the web design (see `docs/contract-decisions.md`).
+

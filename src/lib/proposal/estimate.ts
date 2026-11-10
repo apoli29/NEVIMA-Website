@@ -36,6 +36,7 @@ import {
 
 const LABEL: Record<ServiceId, { en: string; pt: string }> = {
   web: { en: "Web design", pt: "Web design" },
+  backend: { en: "Back-end features", pt: "Funcionalidades de back end" },
   identity: { en: "Visual identity", pt: "Identidade visual" },
   photo: { en: "Photo shoot", pt: "Sessão fotográfica" },
   seo: { en: "SEO & GEO", pt: "SEO e GEO" },
@@ -65,11 +66,12 @@ function web(
   const personal = audience === "personal";
   const nonprofit = audience === "nonprofit";
   if (a.pages === "10+") return { reason: t("More than 10 pages", "Mais de 10 páginas") };
-  const notes = [t(p.includes), t(p.marginNote)];
 
   // Portuguese and English are included; each other language is paid, the
   // same amount however many there are (user, 2026-11-10).
   const others = a.languages.includes("other") ? countLanguages(a.languagesOther ?? "") : 0;
+  // What the website is made of first, then what it always includes.
+  const notes = [madeOf(a, others, t), t(p.includes), t(p.marginNote)];
 
   // "Not sure" about the design or the languages (user, 2026-10-27; the
   // texts never change the price since 2026-11-04): the range runs from the price with the cheaper answers
@@ -96,32 +98,21 @@ function web(
       a.design === "unsure" && t("the Advanced design level", "o nível de design Avançado"),
       languagesUnsure && t("one more language", "mais uma língua"),
     ].filter(Boolean);
-    // The two parts follow the same ends as the line, with the sentences
-    // written from the answers as given.
-    const [lf, lb] = low.line.parts ?? [];
-    const [hf, hb] = high.line.parts ?? [];
-    const parts: Line["parts"] =
-      lf && lb && hf && hb
-        ? [
-            { ...lf, detail: `${t("What visitors see: ", "O que os visitantes veem: ")}${frontDetail(a, others, t)}.`, amount: { min: lf.amount.min, max: hf.amount.max } },
-            { ...lb, amount: { min: lb.amount.min, max: hb.amount.max } },
-          ]
-        : undefined;
+    // The first note says what the website is made of, from the answers as
+    // given rather than the cheaper ones.
+    const [, ...rest] = low.line.notes;
     return {
       line: {
         amount: { min: low.line.amount.min, max: high.line.amount.max },
-        parts,
         notes: [
-          ...low.line.notes,
+          madeOf(a, others, t),
+          ...rest,
           t(
             `Some answers are "not sure", so the upper end also allows for ${what.join(", ")}.`,
             `Algumas respostas são "não sei", por isso o valor mais alto contempla também ${what.join(", ")}.`,
           ),
         ],
         provisional: low.line.provisional || high.line.provisional,
-        // The back end does not depend on the design or the languages.
-        monthly: low.line.monthly,
-        monthlyMax: low.line.monthlyMax,
       },
     };
   }
@@ -246,69 +237,24 @@ function web(
     );
   }
 
-  // A fixed price (the landing page) is not rounded down.
-  const floor = min === max ? min : down5(min);
-  const ceiling = min === max ? max : up5(max);
-
-  // What the website receives from its visitors (the second level), each
-  // item a range of its own, carried whole: added after the cap, raised
-  // with the rest on an urgent deadline.
-  const f = features(a, market, p, t, sector);
-  const rush = a.urgent === "yes" ? 1 + p.urgentPercent / 100 : 1;
-  notes.push(...f.notes);
-  const lo = floor + f.min * rush;
-  const hi = ceiling + f.max * rush;
+  // A fixed price (the landing page) is rounded up, a range outward.
+  // The back-end features are a service of their own since 2026-11-10
+  // (user): this is the website alone, what every other service that
+  // depends on a price is worked out from.
+  const amount = min === max ? { min: up5(min), max: up5(max) } : { min: down5(min), max: up5(max) };
   // With no range there is no upper end to explain.
-  const kept = lo === hi ? notes.filter((n) => n !== t(p.marginNote)) : notes;
-  const amount = lo === hi ? { min: up5(lo), max: up5(hi) } : { min: down5(lo), max: up5(hi) };
-
-  // With a back end the price shows in two parts that add up to the line:
-  // the front end is the website itself, the back end what its forms and
-  // newsletter do behind it (user, 2026-10-30).
-  let parts: Line["parts"];
-  if (f.listed.length) {
-    const front = lo === hi ? { min: up5(floor), max: up5(floor) } : { min: floor, max: ceiling };
-    parts = [
-      {
-        id: "frontend",
-        label: "Front end",
-        detail: `${t("What visitors see: ", "O que os visitantes veem: ")}${frontDetail(a, others, t)}.`,
-        amount: front,
-      },
-      {
-        id: "backend",
-        label: "Back end",
-        // The options chosen, said plainly (user, 2026-11-04), and the
-        // monthly fee in this row, with what it pays for.
-        detail: `${t("Options chosen: ", "Opções escolhidas: ")}${f.chosen.join(", ")}.`,
-        amount: { min: amount.min - front.min, max: amount.max - front.max },
-        ...(f.monthly
-          ? {
-              monthly: f.monthly,
-              monthlyMax: f.monthlyMax > f.monthly ? f.monthlyMax : undefined,
-              monthlyNote: t(
-                "The monthly fee covers the platforms' costs and our maintenance: if, by some miracle, something goes wrong, we fix it.",
-                "A mensalidade cobre os custos das plataformas e a manutenção: se, por milagre, alguma coisa correr mal, resolvemos.",
-              ),
-            }
-          : {}),
-      },
-    ];
-  }
-  return {
-    line: {
-      amount,
-      notes: kept,
-      parts,
-      monthly: f.monthly || undefined,
-      monthlyMax: f.monthlyMax > f.monthly ? f.monthlyMax : undefined,
-    },
-  };
+  const kept = amount.min === amount.max ? notes.filter((n) => n !== t(p.marginNote)) : notes;
+  return { line: { amount, notes: kept } };
 }
 
-/** What the front end is made of, as a phrase: the size, the design level,
+/** What the website is made of, as a sentence: the size, the design level,
     the languages, the texts when they are written for the client, and an
     urgent deadline. "Not sure" answers are said as they are. */
+function madeOf(a: NonNullable<Answers["web"]>, others: number, t: Translate) {
+  const phrase = frontDetail(a, others, t);
+  return `${phrase.charAt(0).toUpperCase()}${phrase.slice(1)}.`;
+}
+
 function frontDetail(a: NonNullable<Answers["web"]>, others: number, t: Translate) {
   // A website says how many pages it was counted to (and one more we
   // cannot foresee, when "Other" was ticked).
@@ -412,6 +358,32 @@ function features(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["we
     );
   }
   return out;
+}
+
+/** The back-end features as a service of their own (user, 2026-11-10):
+    what was the website's "Back end" part, with its monthly fee, raised
+    like every one-time service on an urgent deadline (contract v1.13,
+    clause 4.5). Automated emails are named apart, on request. */
+function backend(a: NonNullable<Answers["web"]>, market: Market, p: Pricing["web"], t: Translate, sector?: string): Priced {
+  const f = features(a, market, p, t, sector);
+  const rush = a.urgent === "yes" ? 1 + p.urgentPercent / 100 : 1;
+  const notes = [`${t("Options chosen: ", "Opções escolhidas: ")}${f.chosen.join(", ")}.`, ...f.notes];
+  if (f.monthly) {
+    notes.push(
+      t(
+        "The monthly fee covers the platforms' costs and our maintenance: if, by some miracle, something goes wrong, we fix it.",
+        "A mensalidade cobre os custos das plataformas e a manutenção: se, por milagre, alguma coisa correr mal, resolvemos.",
+      ),
+    );
+  }
+  return {
+    line: {
+      amount: { min: Math.round(f.min * rush), max: Math.round(f.max * rush) },
+      notes,
+      monthly: f.monthly || undefined,
+      monthlyMax: f.monthlyMax > f.monthly ? f.monthlyMax : undefined,
+    },
+  };
 }
 
 /** The logo and, where it applies, the symbol: a fixed price, raised
@@ -564,6 +536,9 @@ export function estimate(answers: Answers, pricing: Pricing = PRICING, lang: Lan
   const { web: webAnswers, photo: photoAnswers, search: searchAnswers } = answers;
   for (const id of answers.services) {
     if (id === "web" && webAnswers) add("web", (m) => web(webAnswers, m, pricing.web, t, answers.audience, answers.sector));
+    if (id === "backend" && webAnswers?.features.length) {
+      add("backend", (m) => backend(webAnswers, m, pricing.web, t, answers.sector));
+    }
     if (id === "identity") add("identity", (m) => identity(webAnswers?.urgent === "yes", m, pricing.web, t));
     if (id === "photo" && photoAnswers) add("photo", () => photo(photoAnswers, answers.country, pricing, t, webAnswers?.urgent === "yes"));
   }
@@ -578,12 +553,17 @@ export function estimate(answers: Answers, pricing: Pricing = PRICING, lang: Lan
     }
   }
 
-  // Automated emails have no price yet (user, 2026-11-04): they are named
-  // under the total, so the visitor knows the price comes later and on top
-  // of it.
+  // Automated emails have no price yet: they are an item on request of
+  // their own, under the back-end features, and the website and the total
+  // keep their price (user, 2026-11-10; named under the total since
+  // 2026-11-04).
   const mailing = webAnswers?.features.some((f) => f === "forms" || f === "newsletter");
-  if (mailing && webAnswers?.formKind === "complex" && out.lines.some((l) => l.id === "web")) {
-    out.later = [t("Automated emails", "Emails automatizados")];
+  if (mailing && webAnswers?.formKind === "complex" && out.lines.some((l) => l.id === "backend")) {
+    out.onRequest.push({
+      id: "automated",
+      label: t("Automated emails", "Emails automatizados"),
+      reason: t("Price set in your proposal", "Preço definido na proposta"),
+    });
   }
 
   if (out.lines.length) {
