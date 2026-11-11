@@ -99,7 +99,7 @@ export const SERVICES: Service[] = [
     slug: "photo-shoot",
     title: "Photo Shoot",
     tier: "additional",
-    body: "We provide this service within Portugal, as a solution for businesses that want a highly personalized website but have no photos of their business, their premises or their products and/or services. A website is only personalized when it reflects the essence of the business, and that includes visual elements that portray it.",
+    body: "We provide this service within mainland Portugal, as a solution for businesses that want a highly personalized website but have no photos of their business, their premises or their products and/or services. A website is only personalized when it reflects the essence of the business, and that includes visual elements that portray it.",
     aura: "120 120 120",
     // Waiting for the studio's three Unsplash links.
     photos: [],
@@ -138,7 +138,7 @@ const PT: Record<string, Pick<Service, "title" | "body" | "included">> = {
   },
   "photo-shoot": {
     title: "Sessão Fotográfica",
-    body: "Fornecemos este serviço dentro de Portugal, como solução para os negócios que querem um website altamente personalizado, mas que não têm fotografias do seu negócio, do seu estabelecimento ou dos seus produtos e/ou serviços. Um website só é personalizado quando reflete a essência do negócio, o que inclui a presença de elementos visuais que o retratem.",
+    body: "Fornecemos este serviço em Portugal continental, como solução para os negócios que querem um website altamente personalizado, mas que não têm fotografias do seu negócio, do seu estabelecimento ou dos seus produtos e/ou serviços. Um website só é personalizado quando reflete a essência do negócio, o que inclui a presença de elementos visuais que o retratem.",
   },
 };
 
