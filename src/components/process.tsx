@@ -64,12 +64,14 @@ const WHO: Record<Who, Copy> = {
 };
 
 /** The services only done if the client asks for them. */
-type Extra = "photo" | "identity" | "seo" | "geo";
+// SEO and GEO are one service, and the back-end features one of their
+// own (user, 2026-11-11).
+type Extra = "photo" | "identity" | "backend" | "seo";
 const EXTRAS: { id: Extra; label: Copy }[] = [
   { id: "photo", label: { en: "Photo shoot", pt: "Sessão fotográfica" } },
   { id: "identity", label: { en: "Visual identity", pt: "Identidade visual" } },
-  { id: "seo", label: { en: "SEO", pt: "SEO" } },
-  { id: "geo", label: { en: "GEO", pt: "GEO" } },
+  { id: "backend", label: { en: "Back-end features", pt: "Funcionalidades de back end" } },
+  { id: "seo", label: { en: "SEO & GEO", pt: "SEO e GEO" } },
 ];
 
 type Cta = { proposal: true } | { href: string; label: string };
@@ -164,22 +166,22 @@ const PT_STEPS: Record<string, Pick<Step, "name" | "principle" | "text"> & { cta
     principle: "Concluído, e pronto para ser encontrado.",
     text: "Concluímos o website e aplicamos o SEO básico que vem com o nosso serviço de web design. Depois, marcamos uma chamada para apresentar o resultado final e receber a aprovação ou os pedidos de alteração. As primeiras quatro alterações pequenas, de até 15 minutos cada, não são cobradas; para algo maior, enviamos um orçamento antes de começar.",
   },
+  backend: {
+    name: "Configuramos as funcionalidades de back end",
+    principle: "Em nome do cliente, prontas a funcionar.",
+    text: "Configuramos os formulários, a newsletter, o calendário e as reservas nas respetivas plataformas, em nome do negócio, e testamos que cada pedido, inscrição e marcação chega ao destino. Depois do lançamento, mantemo-los todos os meses.",
+    cta: "Saber mais sobre Funcionalidades de Back End",
+  },
   hosting: {
     name: "Logística",
     principle: "Tratamos da logística.",
     text: "Tratamos de tudo o que envolve o website, desde as páginas legais (política de privacidade, política de cookies e as restantes, cujo conteúdo é da responsabilidade do negócio; nós colocamo-las no website) até ao alojamento e à ligação do domínio.",
   },
   seo: {
-    name: "Aplicamos práticas de SEO",
+    name: "Aplicamos práticas de SEO e GEO",
     principle: "Primeiro aplicado, depois publicado.",
-    text: "Para trazer tráfego desde o primeiro dia, aplicamos o nosso trabalho pontual de SEO antes de o website ficar online. Este trabalho tem mais efeito nos primeiros meses; para que o tráfego não caia depois disso, recomendamos o nosso serviço mensal.",
-    cta: "Saber mais sobre SEO",
-  },
-  geo: {
-    name: "Aplicamos práticas de GEO",
-    principle: "Recomendado desde o primeiro dia.",
-    text: "Também é feito antes do lançamento, para que as ferramentas de IA tenham mais probabilidade de recomendar o negócio desde o dia em que fica online.",
-    cta: "Saber mais sobre GEO",
+    text: "Para trazer tráfego desde o primeiro dia, aplicamos o nosso trabalho pontual de SEO e GEO antes de o website ficar online, para que apareça nas pesquisas e para que as ferramentas de IA tenham mais probabilidade de recomendar o negócio desde o dia em que fica online. Este trabalho tem mais efeito nos primeiros meses; para que o tráfego não caia depois disso, recomendamos o nosso serviço mensal.",
+    cta: "Saber mais sobre SEO e GEO",
   },
   "launch-step": {
     name: "Lançamento",
@@ -302,6 +304,15 @@ const PHASES: Phase[] = [
         wide: true,
       },
       {
+        id: "backend",
+        name: "Setting up the back-end features",
+        extra: "backend",
+        principle: "In your name, ready to work.",
+        text: "We set up your forms, newsletter, calendar and reservations on their platforms, in your business's name, and test that every request, sign-up and booking reaches you. After launch, we look after them every month.",
+        who: "Us",
+        cta: [explore("back-end-features", "Back-end Features")],
+      },
+      {
         id: "hosting",
         name: "Logistics",
         principle: "We handle the logistics.",
@@ -317,22 +328,13 @@ const PHASES: Phase[] = [
     steps: [
       {
         id: "seo",
-        name: "We apply SEO practices",
+        name: "We apply SEO & GEO practices",
         extra: "seo",
         principle: "Applied, then published.",
-        text: "To bring in traffic from day one, we apply our one-off SEO work before your website goes live. It carries you through the first months; to keep traffic from slipping after that, we recommend our monthly service.",
+        text: "To bring in traffic from day one, we apply our one-off SEO and GEO work before your website goes live, so it shows up in searches and AI tools are more likely to recommend your business from the day it goes online. It carries you through the first months; to keep traffic from slipping after that, we recommend our monthly service.",
         who: "Us",
         wide: true,
-        cta: [explore("seo", "SEO")],
-      },
-      {
-        id: "geo",
-        name: "We apply GEO practices",
-        extra: "geo",
-        principle: "Recommended from day one.",
-        text: "This is also done before launch, so AI tools are more likely to recommend your business from the day it goes online.",
-        who: "Us",
-        cta: [explore("geo", "GEO")],
+        cta: [explore("seo", "SEO & GEO")],
       },
       {
         id: "launch-step",

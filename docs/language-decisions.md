@@ -25,3 +25,4 @@
 - Headline: "Criamos websites que contam. / inspiram confiança. / trazem clientes. / captam atenção." The services title plays "Fazemos só websites" → "Fazemos muito mais do que websites".
 - Layout fitted to the copy, never the other way round: the home subtitle's first sentence is set on two lines in Portuguese so it stays beside the headline; soft hyphens in the studio statement (jovens, amigos, nascemos) keep its justified lines even. On phones under ~440px the portfolio's two buttons stack in Portuguese (the CSS's own wrap; English stacks under ~380px).
 - The invisible placeholder form under the index (`proposal-form.tsx`) is translated too, so no English text sits in the Portuguese page.
+- 2026-11-11: `/pt/servicos/geo` is gone. SEO and GEO are one service at `/pt/servicos/seo`, and the old address redirects there. The new service's Portuguese address is `/pt/servicos/funcionalidades-back-end`.

@@ -38,7 +38,7 @@ const PT_PATHS: Record<string, string> = {
   "/portfolio": "/portefolio",
   "/services/visual-identity": "/servicos/identidade-visual",
   "/services/seo": "/servicos/seo",
-  "/services/geo": "/servicos/geo",
+  "/services/back-end-features": "/servicos/funcionalidades-back-end",
   "/services/photo-shoot": "/servicos/sessao-fotografica",
   "/privacy": "/privacidade",
   "/terms": "/termos",

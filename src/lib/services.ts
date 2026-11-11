@@ -1,7 +1,10 @@
 /* ==================================================================
    The services, in one place. Web Design is the studio's main service;
-   Visual Identity is sold only with it, so it is shown inside it; SEO,
-   GEO and the photo shoot are additional services.
+   Visual Identity is sold only with it, so it is shown inside it; the
+   back-end features, SEO & GEO and the photo shoot are additional
+   services. SEO and GEO became one service on 2026-11-11 (user), under
+   the slug "seo" (/services/geo redirects there), as in the free-proposal
+   form; the back-end features joined the list the same day.
 
    The section on the home page and each service's own page are set
    from the same record, so a description is written once and the card
@@ -71,29 +74,25 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "seo",
-    title: "SEO",
+    slug: "back-end-features",
+    title: "Back-end Features",
     tier: "additional",
-    full: "Search Engine Optimization",
-    body: "Search Engine Optimization is what puts a website in the top positions of the results of the searches its audience makes. With poorly worked SEO, a website ends up going unnoticed among the last pages of results. With personalized SEO, websites have a much better chance of reaching the first pages.",
+    body: "Forms, newsletter sign-ups, calendar and reservations: what a website does with what its visitors send. We set them up on reliable platforms, in the client’s own name, and look after them every month, so requests, sign-ups and bookings reach the business with no worries about the technical side.",
+    aura: "92 196 140",
+    // Waiting for the studio's three Unsplash links.
+    photos: [],
+  },
+  {
+    slug: "seo",
+    title: "SEO & GEO",
+    tier: "additional",
+    full: "Search & Generative Engine Optimization",
+    body: "SEO puts a website in the top positions of the searches its audience makes: poorly worked, it goes unnoticed among the last pages of results; personalized, it has a much better chance of reaching the first ones. GEO does the same in AI tools, which more and more people turn to for businesses that solve their problems: it raises the chances of a business being recommended.",
     aura: "218 158 86",
     photos: [
       photo("1614849963640-9cc74b2a826f"),
       photo("1544383835-bda2bc66a55d"),
       photo("1518065896235-a4c93e088e7a"),
-    ],
-  },
-  {
-    slug: "geo",
-    title: "GEO",
-    tier: "additional",
-    full: "Generative Engine Optimization",
-    body: "More and more people turn to AI to find businesses that solve their problems or meet their needs. GEO raises the chances of a business appearing in the recommendations and search results of AI tools.",
-    aura: "84 132 255",
-    photos: [
-      photo("1708311000280-861d2c89305a"),
-      photo("1699500518986-f43f798cde1b"),
-      photo("1706257038615-2d80b92587b7"),
     ],
   },
   {
@@ -129,13 +128,13 @@ const PT: Record<string, Pick<Service, "title" | "body" | "included">> = {
       items: ["Logótipo", "Símbolo (se aplicável)"],
     },
   },
-  seo: {
-    title: "SEO",
-    body: "O SEO (Search Engine Optimization) é responsável por colocar um website nas melhores posições dos resultados das pesquisas feitas pelo seu público. Com um SEO mal trabalhado, um website acaba por passar despercebido entre as últimas páginas de resultados. Com um SEO personalizado, os websites têm muito mais hipóteses de alcançar as primeiras páginas.",
+  "back-end-features": {
+    title: "Funcionalidades de Back End",
+    body: "Formulários, inscrições na newsletter, calendário e reservas: o que o website faz com o que os visitantes lhe enviam. Configuramo-los em plataformas fiáveis, em nome do cliente, e mantemo-los todos os meses, para que pedidos, inscrições e marcações cheguem ao negócio sem preocupações com a parte técnica.",
   },
-  geo: {
-    title: "GEO",
-    body: "Cada vez mais pessoas recorrem à IA para encontrar negócios que resolvam os seus problemas ou necessidades. O GEO aumenta a probabilidade de um negócio aparecer nas recomendações e nos resultados de pesquisa das ferramentas de IA.",
+  seo: {
+    title: "SEO e GEO",
+    body: "O SEO coloca um website nas melhores posições das pesquisas do seu público: mal trabalhado, passa despercebido nas últimas páginas; personalizado, tem muito mais hipóteses de chegar às primeiras. O GEO faz o mesmo nas ferramentas de IA, a que cada vez mais pessoas recorrem para encontrar negócios que resolvam os seus problemas: aumenta a probabilidade de um negócio ser recomendado.",
   },
   "photo-shoot": {
     title: "Sessão Fotográfica",

@@ -17,6 +17,14 @@ const nextConfig: NextConfig = {
   // Each language has its own root layout, so a missing page has one of
   // its own above both (src/app/global-not-found.tsx).
   experimental: { globalNotFound: true },
+  // SEO and GEO became one service, at SEO's address (user, 2026-11-11):
+  // GEO's old page sends links and search engines there for good.
+  async redirects() {
+    return [
+      { source: "/services/geo", destination: "/services/seo", permanent: true },
+      { source: "/pt/servicos/geo", destination: "/pt/servicos/seo", permanent: true },
+    ];
+  },
   async headers() {
     return [
       { source: "/:path*", headers: SECURITY_HEADERS },
