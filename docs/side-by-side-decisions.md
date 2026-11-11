@@ -57,13 +57,15 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   nothing was downloaded for a demonstration.
 - Indexed (`index: true` in `SEO_PAGES`), unlike the about page and the
   portfolio, which are still moulds.
-- Nothing links to it yet. The link belongs under the home page's
-  comparison table, which is a section already decided, so it waits for
-  the user's word (raised 2026-11-11).
+- The way in is a link at the foot of the home page's comparison table,
+  "See the same business built twice" / "Ver a mesma empresa construída
+  duas vezes" (user, 2026-11-11: the page was built and left unlinked,
+  and the user asked for it to be reachable). Not the bar: its links are
+  settled (user, 2026-10-11). White mono on the section's black, a
+  hairline under it and an arrow that moves on hover.
 
 ## Open
 
 - Whether the clinic keeps the name Verdela.
 - Whether the demonstration should have a photograph of its own rather
   than borrowing the studio's.
-- Where the page is linked from.
