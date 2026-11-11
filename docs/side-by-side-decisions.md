@@ -57,7 +57,13 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   nothing was downloaded for a demonstration.
 - Indexed (`index: true` in `SEO_PAGES`), unlike the about page and the
   portfolio, which are still moulds.
-- The way in is a link at the foot of the home page's comparison table,
+- On the bar, as its fourth link (user, 2026-11-11: "mete na navbar o
+  que fizeste para eu poder clicar"), which settles the 2026-10-11 rule
+  the other way. With four links the bar no longer fits a small tablet,
+  so it folds into "Menu" at 768px instead of 640px and keeps the links'
+  numbers for 1024px and up; the Portuguese labels are what the width is
+  measured against, being the longer ones.
+- Also a link at the foot of the home page's comparison table,
   "See the same business built twice" / "Ver a mesma empresa construída
   duas vezes" (user, 2026-11-11: the page was built and left unlinked,
   and the user asked for it to be reachable). Not the bar: its links are

@@ -32,6 +32,10 @@ const NAV: { label: Copy; href: string }[] = [
   { label: { en: "Home", pt: "Início" }, href: "#top" },
   { label: { en: "Portfolio", pt: "Portefólio" }, href: "/portfolio" },
   { label: { en: "About nevima", pt: "Sobre a nevima" }, href: "/about" },
+  // The side-by-side page, on the bar at the user's word (2026-11-11):
+  // it was reachable only from the foot of the comparison, which is a
+  // long way down the home page.
+  { label: { en: "Side by side", pt: "Lado a lado" }, href: "/side-by-side" },
 ];
 
 /** A link to a section of the home page, from wherever the bar is: off the
@@ -180,8 +184,11 @@ const MENU_EXTRA: { label: Copy; href: string } = {
   href: "#work-together",
 };
 
-/** The width under which the bar's links fold into the menu (sm). */
-const PHONE = "(max-width: 639.98px)";
+/** The width under which the bar's links fold into the menu. It was the
+    phone's width (sm) while the bar held three links; with the fourth on
+    it (2026-11-11) the Portuguese labels and the proposal no longer fit
+    a small tablet, so the fold is at md. */
+const PHONE = "(max-width: 767.98px)";
 
 function useMenu(tucked: boolean) {
   const [open, setOpen] = useState(false);
@@ -208,7 +215,7 @@ function useMenu(tucked: boolean) {
 function MenuButton({ open, panel, onToggle }: { open: boolean; panel: string; onToggle: () => void }) {
   const t = useT();
   return (
-    <span className="flex items-stretch border-l border-paper/15 sm:hidden">
+    <span className="flex items-stretch border-l border-paper/15 md:hidden">
       <button
         type="button"
         data-menu-toggle
@@ -287,7 +294,7 @@ function MenuPanel({
       animate={reduce ? { opacity: 1 } : { clipPath: "inset(0 0 0% 0)" }}
       exit={reduce ? { opacity: 0 } : { clipPath: "inset(0 0 100% 0)" }}
       transition={{ duration: reduce ? 0.15 : 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="ftr fixed inset-0 z-40 isolate overflow-y-auto overscroll-contain text-paper sm:hidden"
+      className="ftr fixed inset-0 z-40 isolate overflow-y-auto overscroll-contain text-paper md:hidden"
     >
       <LiquidLens host={panel} mark={sign} src="/nevima-wordmark-white.svg" still={still} />
       {/* Clear of the bar at the top, and of the phone's own bar at the foot. */}
@@ -440,7 +447,7 @@ export function FloatingNav({
           between the gutter and that padding as the float. */}
       <div className="shell">
         {/* Square-cornered, as everything set on the gallery wall is. */}
-        <div ref={bar} className="pointer-events-auto -mx-3 flex items-center max-sm:min-h-[3.25rem] justify-between gap-4 bg-ink px-3 py-2.5 max-[399.98px]:gap-2.5 md:-mx-5 md:gap-8 md:px-5 md:py-[0.8125rem] xl:-mx-8 xl:px-8">
+        <div ref={bar} className="pointer-events-auto -mx-3 flex items-center max-md:min-h-[3.25rem] justify-between gap-4 bg-ink px-3 py-2.5 max-[399.98px]:gap-2.5 md:-mx-5 md:px-5 md:py-[0.8125rem] lg:gap-8 xl:-mx-8 xl:px-8">
           <a
             href={onHome ? "#top" : href("/")}
             aria-label={t("nevima, home", "nevima, início")}
@@ -477,13 +484,18 @@ export function FloatingNav({
                 href={href(homeSection(item.href, onHome))}
                 label={
                   <>
-                    <span className="mr-2 align-[0.12em] font-mono text-[0.625rem] tracking-[0.06em] text-paper/45 tabular-nums">
+                    {/* The numbers are the second screen's hang, and the
+                        first thing the bar can do without: with a fourth
+                        link on it (2026-11-11) four numbers and their
+                        room pushed the proposal off the end of a narrow
+                        bar, so they are kept for lg and up. */}
+                    <span className="mr-2 hidden align-[0.12em] font-mono text-[0.625rem] tracking-[0.06em] text-paper/45 tabular-nums lg:inline">
                       0{i + 1}
                     </span>
                     <span className="nav-link-label">{t(item.label)}</span>
                   </>
                 }
-                className="nav-link hidden border-l border-paper/15 px-4 text-[0.9375rem] text-paper sm:inline-flex lg:px-6"
+                className="nav-link hidden border-l border-paper/15 px-2.5 text-[0.9375rem] text-paper md:inline-flex lg:px-6"
               />
             ))}
             {/* The one thing to press: a white drop (see .cta-drop), in a cell
@@ -493,7 +505,7 @@ export function FloatingNav({
                 bar is the wordmark and the menu, as tall as it was with the
                 drop on it. */}
             <span
-              className="flex items-center border-l border-paper/15 py-2.5 pl-4 max-sm:hidden md:py-[0.8125rem] md:pl-5"
+              className="flex items-center border-l border-paper/15 py-2.5 pl-4 max-md:hidden md:py-[0.8125rem] lg:pl-5"
               onClickCapture={() => menuOpen && setMenuOpen(false)}
             >
               <ProposalAsk />
