@@ -31,6 +31,7 @@ const LOOPS = [
   ".live-dot",
   ".fo-drift",
   ".rp-ba",
+  ".sbs-run",
 ].join(",");
 
 /** Let go this far ahead of the screen's edges, so a loop is already

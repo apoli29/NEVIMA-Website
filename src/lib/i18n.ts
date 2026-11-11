@@ -36,6 +36,7 @@ export const PT_PREFIX = "/pt";
 const PT_PATHS: Record<string, string> = {
   "/about": "/sobre",
   "/portfolio": "/portefolio",
+  "/side-by-side": "/lado-a-lado",
   "/services/visual-identity": "/servicos/identidade-visual",
   "/services/seo": "/servicos/seo",
   "/services/back-end-features": "/servicos/funcionalidades-back-end",

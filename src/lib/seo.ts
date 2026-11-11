@@ -91,6 +91,26 @@ export const SEO_PAGES: SeoPage[] = [
     card: { en: "About nevima", pt: "Sobre a nevima" },
   },
   {
+    path: "/side-by-side",
+    index: true,
+    title: {
+      en: "Side by side",
+      pt: "Lado a lado",
+    },
+    description: {
+      en: "The same clinic as two websites, running side by side: one put together from an off-the-shelf template, one of ours.",
+      pt: "A mesma clínica em dois websites, lado a lado: um montado a partir de um modelo pré-feito, outro nosso.",
+    },
+    share: {
+      title: { en: "The same business, built twice", pt: "A mesma empresa, construída duas vezes" },
+      description: {
+        en: "An off-the-shelf template on one side, our work on the other. Both start together and go down the page together.",
+        pt: "Um modelo pré-feito de um lado, o nosso trabalho do outro. Começam ao mesmo tempo e descem a página ao mesmo tempo.",
+      },
+    },
+    card: { en: "Side by side", pt: "Lado a lado" },
+  },
+  {
     path: "/portfolio",
     // Its fields and photos are still stand-ins.
     index: false,
