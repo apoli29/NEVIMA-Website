@@ -3906,3 +3906,296 @@
   .ck-note { display: block; font-size: 0.875rem; color: var(--color-ash); }
   .ck-row input { width: 1.1rem; height: 1.1rem; accent-color: var(--color-ink); flex: none; margin-top: 0.2rem; }
 }
+
+/* ---- side by side (side-by-side.tsx) --------------------------------
+   The same clinic as two websites, on the comparison's ground. Both
+   plates run one loop of the same length, given to them in the same
+   render so they never drift apart; it is held off the screen through
+   .sbs-run (offscreen-pause.tsx) and is not given at all to anyone who
+   has asked for less motion, who sees both pages as they end up.
+
+   Each page is laid out at 1200px and scaled by --sbs-k, written on the
+   plate by a ResizeObserver, so the type inside is real type.          */
+@layer components {
+  .sbs-stage { --sbs-loop: 12s; }
+  .sbs-ground {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0) 42%),
+      #0b0b0b;
+  }
+  .sbs-ground::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+  }
+
+  /* Wider than the rest of the page: two pages have to stand side by
+     side on one screen, and every pixel taken off them is type nobody
+     can read. */
+  .sbs-wide { width: 100%; max-width: 102rem; margin-inline: auto; padding-inline: var(--gutter); }
+  .sbs-pair { display: grid; gap: clamp(1.75rem, 3.5vw, 3rem); }
+  @media (min-width: 900px) { .sbs-pair { grid-template-columns: 1fr 1fr; } }
+
+  .sbs-cap { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.75rem; }
+  /* The template's name is held back a tone, so ours reads as the answer. */
+  .sbs-cap .mono-label { color: var(--color-paper); }
+  .sbs-cap .mono-label[data-quiet] { color: rgb(255 255 255 / 0.62); }
+
+  .sbs-sheet { background: var(--color-paper); }
+  /* The address a browser would carry, in the gallery's own label. */
+  .sbs-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid rgb(0 0 0 / 0.12);
+    background: #f4f3f1;
+    color: var(--color-ash-2);
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+  .sbs-screen { position: relative; aspect-ratio: 9 / 7; overflow: hidden; --sbs-k: 0.5; }
+  /* The page itself, at its own size, shrunk into the plate. */
+  .sbs-mini {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 900px;
+    transform-origin: 0 0;
+    scale: var(--sbs-k);
+    font-family: var(--font-read);
+    color: var(--color-ink);
+    text-align: left;
+  }
+  /* The box the loop is given to; it carries nothing of its own. */
+  .sbs-screen > div { position: absolute; inset: 0; }
+
+  /* ---- the page going down, the same on both sides ---------------- */
+  /* The stops are written in the page's own pixels; translate is applied
+     outside the scale, so each is taken down to the plate by --sbs-k. */
+  @keyframes sbs-scroll {
+    0%, 26% { translate: 0 0; }
+    32%, 58% { translate: 0 calc(var(--sbs-stop-1) * var(--sbs-k)); }
+    64%, 90% { translate: 0 calc(var(--sbs-stop-2) * var(--sbs-k)); }
+    100% { translate: 0 0; }
+  }
+  .sbs-run .sbs-mini {
+    animation: sbs-scroll var(--sbs-loop) cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+
+  /* ================= the off-the-shelf template ==================== */
+  /* The two stops are each side's own, so each page ends on its own
+     foot: the moments are shared, the distances are not. */
+  .sbs-t-page { --sbs-stop-1: -556px; --sbs-stop-2: -1039px; background: #fff; }
+
+  /* The bar that never gets there: it crawls, stalls, and starts again. */
+  .sbs-load {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    height: 3px;
+    width: 96%;
+    background: #2d6cdf;
+  }
+  .sbs-run .sbs-load { animation: sbs-load var(--sbs-loop) linear infinite; }
+  @keyframes sbs-load {
+    0% { width: 0; }
+    8% { width: 18%; }
+    14%, 22% { width: 24%; }
+    30% { width: 52%; }
+    44%, 70% { width: 61%; }
+    88% { width: 92%; }
+    96%, 100% { width: 96%; }
+  }
+
+  .sbs-t-top { display: flex; align-items: center; gap: 18px; padding: 11px 26px; background: #1e3a5f; color: #fff; font-size: 12px; }
+  .sbs-t-brand { font-weight: 700; font-size: 15px; letter-spacing: 0.5px; }
+  .sbs-t-nav { display: flex; gap: 14px; margin-left: auto; }
+  .sbs-t-cta { background: #f0a500; color: #1e3a5f; font-weight: 700; padding: 6px 12px; border-radius: 3px; }
+  /* The header does not arrive, it lands in jolts. */
+  .sbs-run .sbs-t-top { animation: sbs-jolt var(--sbs-loop) steps(1) infinite; }
+  @keyframes sbs-jolt {
+    0%, 4% { opacity: 0; }
+    5%, 9% { opacity: 1; translate: 0 -6px; }
+    10%, 100% { opacity: 1; translate: 0 0; }
+  }
+
+  /* The banner that lands late and shoves everything under it down. */
+  .sbs-t-banner {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 300px;
+    background: #c9ccd1;
+    color: #9aa0a6;
+    overflow: hidden;
+  }
+  .sbs-run .sbs-t-banner { animation: sbs-late var(--sbs-loop) steps(1) infinite; }
+  @keyframes sbs-late {
+    0%, 17% { height: 0; }
+    18%, 100% { height: 300px; }
+  }
+  .sbs-t-stock { width: 190px; height: 120px; }
+  .sbs-t-dots { position: absolute; bottom: 14px; left: 50%; translate: -50% 0; display: flex; gap: 7px; }
+  .sbs-t-dots i { width: 9px; height: 9px; border-radius: 50%; background: rgb(255 255 255 / 0.65); }
+  .sbs-t-dots i.on { background: #f0a500; }
+  /* A carousel nobody asked for, turning over on its own. */
+  .sbs-run .sbs-t-dots i { animation: sbs-dot var(--sbs-loop) steps(1) infinite; }
+  .sbs-run .sbs-t-dots i:nth-child(2) { animation-delay: calc(var(--sbs-loop) * -0.75); }
+  .sbs-run .sbs-t-dots i:nth-child(3) { animation-delay: calc(var(--sbs-loop) * -0.5); }
+  .sbs-run .sbs-t-dots i:nth-child(4) { animation-delay: calc(var(--sbs-loop) * -0.25); }
+  @keyframes sbs-dot {
+    0%, 24% { background: #f0a500; }
+    25%, 100% { background: rgb(255 255 255 / 0.65); }
+  }
+
+  .sbs-t-copy { padding: 26px 26px 6px; text-align: center; }
+  .sbs-t-copy h3 { margin: 0 0 10px; font-size: 38px; font-weight: 800; letter-spacing: -0.5px; color: #1e3a5f; }
+  .sbs-t-copy p { margin: 0 auto 18px; max-width: 60ch; font-size: 15px; line-height: 1.5; color: #6b6b6b; }
+  .sbs-t-b1 { display: inline-block; background: #f0a500; color: #1e3a5f; font-weight: 700; font-size: 13px; padding: 11px 20px; border-radius: 4px; }
+  .sbs-t-b2 { display: inline-block; margin-left: 10px; border: 2px solid #1e3a5f; color: #1e3a5f; font-weight: 700; font-size: 13px; padding: 9px 18px; border-radius: 4px; }
+
+  .sbs-t-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 28px 26px; }
+  .sbs-t-card { border: 1px solid #dcdcdc; border-radius: 4px; padding: 14px; }
+  .sbs-t-ph { display: block; height: 70px; margin-bottom: 12px; background: #e3e3e3; }
+  .sbs-t-card h4 { margin: 0 0 7px; font-size: 14px; color: #1e3a5f; }
+  .sbs-t-card p { margin: 0 0 8px; font-size: 12px; line-height: 1.5; color: #6b6b6b; }
+  .sbs-t-more { font-size: 12px; color: #2d6cdf; }
+
+  .sbs-t-band { padding: 26px; background: #f3f4f6; text-align: center; }
+  .sbs-t-band h4 { margin: 0 0 16px; font-size: 20px; font-weight: 800; color: #1e3a5f; }
+  .sbs-t-faces { display: flex; justify-content: center; gap: 18px; }
+  .sbs-t-faces i { width: 76px; height: 76px; border-radius: 50%; background: #dcdee1; }
+
+  .sbs-t-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 26px 44px; background: #1e3a5f; color: rgb(255 255 255 / 0.8); font-size: 12px; }
+  .sbs-t-badge { border: 1px solid rgb(255 255 255 / 0.35); padding: 4px 9px; font-size: 11px; }
+
+  /* The wall over the foot of it, which comes up and stays. Its type is
+     the plate's, not the page's, so it reads at the size a cookie wall
+     reads at on the real thing. */
+  .sbs-cookie {
+    position: absolute;
+    z-index: 6;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 0.8rem;
+    background: #202833;
+    color: #fff;
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    translate: 0 0;
+  }
+  .sbs-run .sbs-cookie { animation: sbs-cookie var(--sbs-loop) cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+  @keyframes sbs-cookie {
+    0%, 22% { translate: 0 100%; }
+    28%, 100% { translate: 0 0; }
+  }
+  .sbs-cookie-ok { flex: none; background: #f0a500; color: #1e3a5f; font-weight: 700; padding: 0.4rem 0.7rem; border-radius: 3px; }
+  .sbs-cookie-no { flex: none; text-decoration: underline; opacity: 0.85; }
+
+  /* ========================= ours ================================== */
+  .sbs-n-page { --sbs-stop-1: -644px; --sbs-stop-2: -1005px; background: #fff; }
+  /* It arrives once, in one move, and then holds still: the whole of it
+     at once, where the other side's parts come in one at a time. */
+
+
+  .sbs-n-top { display: flex; align-items: center; padding: 26px 44px; }
+  .sbs-n-brand { font-family: var(--font-title); font-weight: 500; font-size: 21px; letter-spacing: -0.01em; }
+  .sbs-n-nav { display: flex; gap: 28px; margin-left: auto; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-ash); }
+  .sbs-n-hero { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 44px; align-items: center; padding: 44px 44px 60px; }
+  .sbs-n-hero h3 { margin: 0; font-family: var(--font-title); font-size: 54px; line-height: 1.04; letter-spacing: -0.03em; }
+  .sbs-n-hero h3 span { display: block; font-weight: 300; }
+  .sbs-n-hero h3 strong { display: block; font-weight: 500; }
+  .sbs-n-hero p { margin: 24px 0 0; max-width: 34ch; font-size: 16px; line-height: 1.6; color: var(--color-ash); }
+  .sbs-n-act { display: inline-block; margin-top: 30px; background: var(--color-ink); color: var(--color-paper); font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 14px 22px; }
+  .sbs-n-shot { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; }
+  .sbs-n-rule { height: 1px; margin: 0 44px; background: var(--color-hair); }
+  .sbs-n-next, .sbs-n-end { display: grid; grid-template-columns: 0.55fr 1.45fr; gap: 44px; padding: 40px 44px 48px; }
+  .sbs-n-lab { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-ash-2); }
+  .sbs-n-next h4 { margin: 0 0 30px; max-width: 24ch; font-family: var(--font-title); font-weight: 300; font-size: 32px; line-height: 1.14; letter-spacing: -0.02em; }
+  .sbs-n-list > div { display: grid; grid-template-columns: 0.42fr 1fr; gap: 24px; padding: 15px 0; border-top: 1px solid var(--color-hair); }
+  .sbs-n-list dt { font-size: 15px; }
+  .sbs-n-list dd { margin: 0; font-size: 15px; color: var(--color-ash); }
+  .sbs-n-end { align-items: start; }
+  .sbs-n-end p { margin: 0; font-size: 17px; }
+  .sbs-n-quiet { margin-top: 6px; color: var(--color-ash-2); }
+
+  .sbs-note { margin-top: clamp(1.5rem, 3vw, 2.25rem); color: rgb(255 255 255 / 0.62); text-transform: none; letter-spacing: 0.02em; }
+
+  /* Held still: both pages as they end up, the template's mess included. */
+  @media (prefers-reduced-motion: reduce) {
+    .sbs-run .sbs-mini,
+    .sbs-run .sbs-load,
+    .sbs-run .sbs-t-top,
+    .sbs-run .sbs-t-banner,
+    .sbs-run .sbs-t-dots i,
+    .sbs-run .sbs-cookie { animation: none; }
+  }
+}
+
+/* The rest of what a template has: reviews with five stars each, a
+   gallery of nothing in particular, and a contact strip with a map. */
+@layer components {
+  .sbs-t-quotes { padding: 30px 26px; background: #fff; text-align: center; }
+  .sbs-t-quotes h4 { margin: 0 0 20px; font-size: 20px; font-weight: 800; color: #1e3a5f; }
+  .sbs-t-quoterow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .sbs-t-quote { border: 1px solid #dcdcdc; border-radius: 4px; padding: 16px; }
+  .sbs-t-stars { color: #f0a500; font-size: 15px; letter-spacing: 2px; }
+  .sbs-t-quote p { margin: 9px 0; font-size: 12px; line-height: 1.5; color: #6b6b6b; font-style: italic; }
+  .sbs-t-who { font-size: 12px; font-weight: 700; color: #1e3a5f; }
+
+  .sbs-t-gallery { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; padding: 24px 26px; background: #f3f4f6; }
+  .sbs-t-gallery span { display: block; aspect-ratio: 1; background: #dcdee1; }
+
+  .sbs-t-contact { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: center; padding: 30px 26px; }
+  .sbs-t-contact h4 { margin: 0 0 9px; font-size: 22px; font-weight: 800; color: #1e3a5f; }
+  .sbs-t-contact p { margin: 0 0 16px; font-size: 13px; line-height: 1.5; color: #6b6b6b; }
+  .sbs-t-map { display: block; height: 170px; background: repeating-linear-gradient(45deg, #e6e8ea 0 12px, #dcdee1 12px 24px); }
+
+  /* Ours: the room itself, once, across the page. */
+  .sbs-n-room { padding: 8px 44px 48px; }
+  .sbs-n-room img { width: 100%; height: 300px; object-fit: cover; display: block; }
+  .sbs-n-room p { margin: 18px 0 0; font-size: 16px; color: var(--color-ash); }
+}
+
+/* On a phone the two plates stand one over the other, and a desktop page
+   shrunk to a third of itself is a picture of type, not type. Both pages
+   are laid out narrow instead, and the plate is taller than it is wide,
+   so what is inside is read rather than guessed at. */
+@layer components {
+  @media (max-width: 899.98px) {
+    .sbs-mini { width: 620px; }
+    .sbs-screen { aspect-ratio: 3 / 4; }
+
+    .sbs-t-page { --sbs-stop-1: -640px; --sbs-stop-2: -1267px; }
+    .sbs-t-top { gap: 10px; padding: 10px 18px; font-size: 11px; }
+    .sbs-t-nav { gap: 9px; }
+    .sbs-t-copy { padding: 20px 18px 4px; }
+    .sbs-t-copy h3 { font-size: 30px; }
+    .sbs-t-cards, .sbs-t-quoterow { grid-template-columns: 1fr 1fr; }
+    .sbs-t-cards > :last-child, .sbs-t-quoterow > :last-child { display: none; }
+    .sbs-t-gallery { grid-template-columns: repeat(3, 1fr); }
+    .sbs-t-contact { grid-template-columns: 1fr; }
+    .sbs-t-foot { padding: 16px 18px 40px; }
+
+    .sbs-n-page { --sbs-stop-1: -610px; --sbs-stop-2: -1022px; }
+    .sbs-n-top { padding: 22px 30px; }
+    .sbs-n-hero { grid-template-columns: 1fr; gap: 30px; padding: 32px 30px 44px; }
+    .sbs-n-hero h3 { font-size: 44px; }
+    .sbs-n-shot { aspect-ratio: 16 / 10; }
+    .sbs-n-rule { margin: 0 30px; }
+    .sbs-n-next, .sbs-n-end { grid-template-columns: 1fr; gap: 18px; padding: 32px 30px 36px; }
+    .sbs-n-room { padding: 8px 30px 36px; }
+  }
+}
