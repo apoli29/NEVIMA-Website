@@ -4199,3 +4199,26 @@
     .sbs-n-room { padding: 8px 30px 36px; }
   }
 }
+
+/* The way through to the side-by-side page, at the foot of the
+   comparison (comparison.tsx). The table makes the argument in words;
+   the link is where it is shown instead. */
+@layer components {
+  .cmp-more {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    padding-bottom: 0.45rem;
+    color: var(--color-paper);
+    border-bottom: 1px solid rgb(255 255 255 / 0.3);
+    transition: border-color 0.35s var(--ease-out-quint);
+  }
+  .cmp-more:hover, .cmp-more:focus-visible { border-bottom-color: var(--color-paper); }
+  .cmp-more:focus-visible { outline: 1px solid var(--color-paper); outline-offset: 0.4rem; }
+  .cmp-more-arrow { transition: translate 0.35s var(--ease-out-quint); }
+  .cmp-more:hover .cmp-more-arrow, .cmp-more:focus-visible .cmp-more-arrow { translate: 0.4rem 0; }
+  @media (prefers-reduced-motion: reduce) {
+    .cmp-more, .cmp-more-arrow { transition: none; }
+    .cmp-more:hover .cmp-more-arrow, .cmp-more:focus-visible .cmp-more-arrow { translate: none; }
+  }
+}

@@ -3,7 +3,7 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
 import type { Copy } from "@/lib/i18n";
-import { useLang, useT } from "@/lib/use-lang";
+import { useHref, useLang, useT } from "@/lib/use-lang";
 import { SlideIn } from "./enter";
 import { LiquidEdge } from "./liquid-edge";
 import { Illuminated } from "./services";
@@ -187,6 +187,7 @@ export function Comparison({ ready }: { ready: boolean }) {
   const reduce = useReducedMotion() ?? false;
   const t = useT();
   const lang = useLang();
+  const href = useHref();
   const rows = lang === "pt" ? ROWS.map((row) => ({ id: row.id, ...PT_ROWS[row.id]! })) : ROWS;
   const scroller = useRef<HTMLDivElement>(null);
   const answers = useRef<(HTMLTableCellElement | null)[]>([]);
@@ -391,6 +392,19 @@ export function Comparison({ ready }: { ready: boolean }) {
               </div>
             </div>
           </div>
+        </SlideIn>
+
+        {/* The table argues it; the side-by-side page shows it. The one
+            way in, since the bar's links are settled (user, 2026-10-11). */}
+        <SlideIn ready distance={0} delay={0.1} className="mt-10 md:mt-14">
+          <a href={href("/side-by-side")} className="cmp-more mono-label">
+            <span>
+              {t("See the same business built twice", "Ver a mesma empresa construída duas vezes")}
+            </span>
+            <span aria-hidden="true" className="cmp-more-arrow">
+              {"→"}
+            </span>
+          </a>
         </SlideIn>
       </div>
     </section>
