@@ -67,6 +67,12 @@ export type ValuesControl = {
   probe: ((i: number, dir: 1 | -1) => { cx: number; cy: number; ex: number; ey: number } | null) | null;
   /** The four are back where they rest. */
   onParted: () => void;
+  /** How much of the screen is water, 0 (plain white) to 1, set by the
+      page from the scroll (about-values.tsx). */
+  water: number;
+  /** 1 once the screen is all water: the drops come in on their own
+      clock, and go before the water does. */
+  drops: 0 | 1;
 };
 
 /* ---- the water, as on the home page ---------------------------------- */
@@ -114,6 +120,10 @@ export const padX = () =>
 export const padY = () =>
   typeof window !== "undefined" && window.innerWidth < 640 ? 2.2 : PIECE_PAD.y;
 const WORDS_IN_S = 0.38;
+/** How long the drops take to come in once the screen is water, and to go
+    before it turns white again. */
+const DROPS_IN_S = 0.7;
+const DROPS_OUT_S = 0.35;
 /** The joined piece: how much its outline still wanders and how much of
     its highlight it keeps, as shares of the loose drops'. */
 const JOINED_WARP = 0.5;
@@ -192,6 +202,9 @@ uniform float u_warp;   // how far the outline wanders: less as they join
 uniform float u_spec;   // the highlight: down to a glint once joined
 uniform float u_join;   // 0 apart, 1 joined
 uniform sampler2D u_slab;
+uniform vec2 u_shift;   // the section's corner on the canvas: the drops are laid out on the section
+uniform float u_water;  // how much of the screen is water: 0 plain white
+uniform float u_drops;  // how far the drops are in
 
 float drops(vec2 p) {
   vec2 w = p + (vec2(sin(p.y * 0.0061 + u_td * 0.31), cos(p.x * 0.0053 - u_td * 0.27)) * 16.0
@@ -267,20 +280,26 @@ void main() {
   vec3 ns = normalize(vec3(-gs, 1.0));
 
   float d = 1.5;
-  float fd = drops(q);
+  vec2 qs = q - u_shift;
+  float fd = u_drops > 0.0 ? drops(qs) : 0.0;
   float hd = dome(fd);
-  vec2 gd = vec2(dome(drops(q + vec2(d, 0.0))) - hd, dome(drops(q + vec2(0.0, d))) - hd) / d;
-  float bodyD = smoothstep(0.44, 0.56, fd);
-  float shade = smoothstep(0.15, 0.9, drops(q - vec2(14.0, 20.0))) * 0.1;
+  vec2 gd = u_drops > 0.0
+    ? vec2(dome(drops(qs + vec2(d, 0.0))) - hd, dome(drops(qs + vec2(0.0, d))) - hd) / d
+    : vec2(0.0);
+  // The drops come in and go as a whole, glass and shadow.
+  float bodyD = smoothstep(0.44, 0.56, fd) * u_drops;
+  float shade = u_drops > 0.0 ? smoothstep(0.15, 0.9, drops(qs - vec2(14.0, 20.0))) * 0.1 * u_drops : 0.0;
   float col = 1.0 - shade;
   col = mix(col, glass(gd, 70.0, fd), bodyD);
 
+  // The water's light, as much of it as the screen has turned: none of it
+  // is plain white.
   vec3 l = normalize(LIGHT);
   vec3 h = normalize(l + vec3(0.0, 0.0, 1.0));
-  col *= 1.0 - clamp(curve * ${CAUSTIC.toFixed(1)}, 0.0, 0.11);
+  col *= 1.0 - clamp(curve * ${CAUSTIC.toFixed(1)}, 0.0, 0.11) * u_water;
   float lit = dot(ns, l) - l.z;
-  col *= 1.0 + lit * 0.35;
-  float sheen = pow(max(dot(ns, h), 0.0), 90.0);
+  col *= 1.0 + lit * 0.35 * u_water;
+  float sheen = pow(max(dot(ns, h), 0.0), 90.0) * u_water;
   // Not over the joined piece, where it would glint behind the words.
   sheen *= 1.0 - bodyD * u_join * 0.9;
   col += sheen * 0.5 * (1.0 - col);
@@ -355,6 +374,7 @@ export function useValuesWater(
   canvasRef: RefObject<HTMLCanvasElement | null>,
   control: RefObject<ValuesControl>,
   reduce: boolean,
+  sectionRef: RefObject<HTMLElement | null>,
 ) {
   useEffect(() => {
     const view = canvasRef.current;
@@ -405,7 +425,8 @@ export function useValuesWater(
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.uniform1i(u("u_slab"), 0);
 
-    const section = view.closest("section") ?? view.parentElement ?? view;
+    const section = sectionRef.current;
+    if (!section) return;
 
     let disposed = false;
     let w = 0;
@@ -479,11 +500,18 @@ export function useValuesWater(
     /* ---- where the drops rest, and where they meet ---- */
 
     let homes: Home[] = [];
+    /** Where the section's corner is on the canvas, read every frame: the
+        canvas is held to the screen while the section goes by under it. */
+    const shift = { x: 0, y: 0 };
+    /** How far the drops are in, 0 to 1, on their own clock. */
+    let shown: number = reduce ? control.current.drops : 0;
     let meet: Meet | null = null;
 
     const measure = () => {
       const c = control.current;
-      const o = view.getBoundingClientRect();
+      // On the section, not the canvas: the canvas is held to the screen,
+      // the drops go up with the page (see shift).
+      const o = section.getBoundingClientRect();
       homes = c.slots.map((el) => {
         if (!el) return { x: -999, y: -999, r: 0 };
         const b = el.getBoundingClientRect();
@@ -565,7 +593,7 @@ export function useValuesWater(
       lastCall = n;
       const i = n % DROPS.length;
       const home = homes[i];
-      if (home) falls.push({ x: home.x, y: home.y, depth: BECKON_DEPTH, radius: home.r * 1.1 });
+      if (home) falls.push({ x: home.x + shift.x, y: home.y + shift.y, depth: BECKON_DEPTH, radius: home.r * 1.1 });
       open.push({ n, until: calling + CALL_LIFE_S });
       c.onBeckon(i, n);
     };
@@ -692,6 +720,10 @@ export function useValuesWater(
     };
 
     const draw = () => {
+      const sr = section.getBoundingClientRect();
+      const vr = view.getBoundingClientRect();
+      shift.x = sr.left - vr.left;
+      shift.y = sr.top - vr.top;
       placeDrops();
       const words = clamp01((k - 1) / (END - 1));
       const joined = clamp01(k);
@@ -705,6 +737,9 @@ export function useValuesWater(
       gl.uniform1f(u("u_warp"), lerp(1, JOINED_WARP, joined));
       gl.uniform1f(u("u_spec"), lerp(1, JOINED_SPEC, joined));
       gl.uniform1f(u("u_join"), joined);
+      gl.uniform2f(u("u_shift"), shift.x, shift.y);
+      gl.uniform1f(u("u_water"), easeInOut(clamp01(control.current.water)));
+      gl.uniform1f(u("u_drops"), easeInOut(shown));
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
       // The words come in once the piece has formed, and go first.
@@ -717,6 +752,10 @@ export function useValuesWater(
     const advance = (dt: number) => {
       const c = control.current;
       if (c.remeasure) measure();
+      // The drops come in once the screen is all water, and go first.
+      if (reduce) shown = c.drops;
+      else if (shown < c.drops) shown = Math.min(1, shown + dt / DROPS_IN_S);
+      else if (shown > c.drops) shown = Math.max(0, shown - dt / DROPS_OUT_S);
       const ease = 1 - Math.exp(-dt * 10);
       hovered.forEach((v, i) => {
         hovered[i] = v + ((c.hover === i && k === 0 ? 1 : 0) - v) * ease;
@@ -730,7 +769,7 @@ export function useValuesWater(
       const met = k >= 1;
       if (met && !wasMet && meet && !reduce) {
         const cx = (meet.xs[0] + meet.xs[BLOBS - 1]) / 2;
-        falls.push({ x: cx, y: meet.y, depth: MEET_DEPTH, radius: meet.r * 1.6 });
+        falls.push({ x: cx + shift.x, y: meet.y + shift.y, depth: MEET_DEPTH, radius: meet.r * 1.6 });
       }
       wasMet = met;
 
@@ -761,7 +800,10 @@ export function useValuesWater(
       draw();
       // Held still for anyone who asked for less motion: one frame per
       // change, and none in between.
-      frame = visible && !reduce ? requestAnimationFrame(tick) : 0;
+      // And held while the screen is plain white: nothing there moves.
+      const c = control.current;
+      const blank = c.water <= 0 && c.drops === 0 && shown === 0 && k === 0;
+      frame = visible && !reduce && !blank ? requestAnimationFrame(tick) : 0;
       if (!frame) last = 0;
     };
 
@@ -800,6 +842,13 @@ export function useValuesWater(
 
     const resize = new ResizeObserver(refit);
     resize.observe(view);
+    // The drops are laid out on the section, which can change without the
+    // screen doing so.
+    const reflow = new ResizeObserver(() => {
+      control.current.remeasure = true;
+      wake();
+    });
+    reflow.observe(section);
 
     const approach = new IntersectionObserver(
       ([entry]) => {
@@ -883,7 +932,9 @@ export function useValuesWater(
     const onPick = (event: Event) => {
       const i = (event as CustomEvent<number>).detail;
       const home = homes[i];
-      if (home && !reduce) falls.push({ x: home.x, y: home.y, depth: PICK_DEPTH, radius: home.r });
+      if (home && !reduce) {
+        falls.push({ x: home.x + shift.x, y: home.y + shift.y, depth: PICK_DEPTH, radius: home.r });
+      }
     };
 
     if (!reduce) {
@@ -903,6 +954,7 @@ export function useValuesWater(
       cancelAnimationFrame(frame);
       cancelAnimationFrame(queued);
       resize.disconnect();
+      reflow.disconnect();
       approach.disconnect();
       seen.disconnect();
       section.removeEventListener("values:change", nudge);
@@ -919,5 +971,5 @@ export function useValuesWater(
       gl.deleteShader(vs);
       gl.deleteShader(fs);
     };
-  }, [canvasRef, control, reduce]);
+  }, [canvasRef, control, reduce, sectionRef]);
 }

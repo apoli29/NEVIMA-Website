@@ -3,6 +3,7 @@
 import { AboutFaq } from "./about-faq";
 import { AboutHero } from "./about-hero";
 import { AboutMission } from "./about-mission";
+import { AboutRoom } from "./about-room";
 import { AboutValues } from "./about-values";
 import { CoFounders } from "./cofounders";
 import { FloatingNav } from "./floating-nav";
@@ -45,9 +46,13 @@ export function About() {
               <CoFounders ready standalone />
             </div>
           </section>
-          <AboutMission />
-          <AboutValues />
-          <AboutFaq />
+          {/* One screen of water under the three: white, then water, then
+              white again (see about-room.tsx). */}
+          <AboutRoom>
+            <AboutMission />
+            <AboutValues />
+            <AboutFaq />
+          </AboutRoom>
         </main>
         <WorkTogether />
         <Footer />

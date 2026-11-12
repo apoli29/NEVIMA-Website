@@ -66,7 +66,7 @@ export function AboutMission() {
       // whole screen, the two pieces held in the middle of it as one hang,
       // with a full section's room at least above (clear of the
       // co-founders) and below (clear of the values' water).
-      className="relative flex min-h-[100svh] flex-col justify-center bg-paper py-(--section-gap)"
+      className="relative flex min-h-[100svh] flex-col justify-center py-(--section-gap)"
     >
       <div className="shell">
         <h2 id="mission-title" className="sr-only">
