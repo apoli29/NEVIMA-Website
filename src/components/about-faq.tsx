@@ -332,7 +332,7 @@ export function AboutFaq() {
     <section
       id="faq"
       aria-labelledby="faq-title"
-      className="relative bg-paper pt-(--section-gap) pb-28 md:pb-40"
+      className="relative pt-(--section-gap) pb-28 md:pb-40"
     >
       <div className="shell grid grid-cols-1 gap-y-12 lg:grid-cols-12 lg:gap-x-4">
         <div className="lg:col-span-4">

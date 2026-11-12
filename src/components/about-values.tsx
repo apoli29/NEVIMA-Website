@@ -10,9 +10,9 @@ import {
 } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useLang, useT } from "@/lib/use-lang";
+import { useRoomCanvas } from "./about-room";
 import { SlideIn } from "./enter";
 import { useInkAlign } from "./ink-align";
-import { useSeen } from "./use-seen";
 import { padX, padY, useValuesWater, type ValuesControl } from "./values-water";
 
 /* ==================================================================
@@ -99,14 +99,20 @@ type Aim = { kind: "drop"; i: number } | { kind: "piece" } | null;
 export function AboutValues() {
   const reduce = useReducedMotion() ?? false;
   const section = useRef<HTMLElement>(null);
-  const canvas = useRef<HTMLCanvasElement>(null);
+  // The water is the screen's, not the section's (about-room.tsx).
+  const roomCanvas = useRoomCanvas();
+  const ownCanvas = useRef<HTMLCanvasElement>(null);
+  const canvas = roomCanvas ?? ownCanvas;
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subRef = useRef<HTMLParagraphElement>(null);
   const field = useRef<HTMLDivElement>(null);
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const mergedRef = useRef<HTMLButtonElement>(null);
   useInkAlign(titleRef, subRef);
-  const seen = useSeen(field, { threshold: 0.35 });
+  // Whether the screen is all water, and so the drops are in.
+  const [dropsIn, setDropsIn] = useState(false);
+  // Letting the four go, for the scroll to call (set once part exists).
+  const partRef = useRef<() => void>(() => {});
   const t = useT();
   const lang = useLang();
   const values = lang === "pt" ? VALUES.map((v) => ({ ...v, ...PT_VALUES[v.id] })) : VALUES;
@@ -154,6 +160,8 @@ export function AboutValues() {
     onBeckon: () => {},
     onBeckonEnd: () => {},
     probe: null,
+    water: 0,
+    drops: 0,
   });
 
   const tell = useCallback((name: string, detail?: number) => {
@@ -183,7 +191,63 @@ export function AboutValues() {
     focusBack.current = null;
   }, [chosen]);
 
-  useValuesWater(canvas, control, reduce);
+  useValuesWater(canvas, control, reduce, section);
+
+  /* The screen turns from white to water as the values come up, and back
+     to white as the questions do (user, 2026-11-12). It follows the
+     scroll: it starts as the section peeks over the foot of the screen
+     and is all water once it has come up a quarter of it; stop and it
+     stops halfway, go back and it goes back. Eased in and out at the ends
+     (in the water). Only then do the drops come in, on their own clock;
+     on the way out, or back, they go first. */
+  useEffect(() => {
+    const sec = section.current;
+    if (!sec) return;
+    // The way out is timed on the questions' heading, not their edge: the
+    // values are a screen high, so the edge would start the way out the
+    // moment the section filled the screen, and the drops would be gone
+    // at the first pixel past it. The room over the heading is the dwell.
+    const after = sec.nextElementSibling as HTMLElement | null;
+    const next = after?.querySelector<HTMLElement>("h2") ?? after;
+    let queued = 0;
+    const update = () => {
+      queued = 0;
+      const vh = window.innerHeight || 1;
+      const span = vh * 0.25;
+      const into = Math.min(Math.max((vh - sec.getBoundingClientRect().top) / span, 0), 1);
+      const out = next
+        ? Math.min(Math.max((vh - next.getBoundingClientRect().top) / span, 0), 1)
+        : 0;
+      const c = control.current;
+      const water = into * (1 - out);
+      const drops = into >= 1 && out <= 0 ? 1 : 0;
+      if (water === c.water && drops === c.drops) return;
+      c.water = water;
+      c.drops = drops;
+      c.beckon = drops === 1;
+      // Drops going while the four are together: they part first, so the
+      // value's white words are not left on the white.
+      if (!drops && c.target) partRef.current();
+      setDropsIn(drops === 1);
+      tell("values:change");
+    };
+    const queue = () => {
+      if (!queued) queued = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", queue, { passive: true });
+    window.addEventListener("resize", queue);
+    // The page settling (fonts, photos) moves the section without a scroll:
+    // a reload that lands on the values would otherwise keep the white.
+    const settle = new ResizeObserver(queue);
+    settle.observe(document.body);
+    return () => {
+      cancelAnimationFrame(queued);
+      settle.disconnect();
+      window.removeEventListener("scroll", queue);
+      window.removeEventListener("resize", queue);
+    };
+  }, [tell]);
 
   // The words are laid out on the chosen value before the four set off,
   // so they travel to the size the piece will actually need.
@@ -212,6 +276,9 @@ export function AboutValues() {
     setJoined(false);
     tell("values:change");
   }, [tell]);
+  useEffect(() => {
+    partRef.current = part;
+  }, [part]);
 
   useEffect(() => {
     if (chosen === null) return;
@@ -223,7 +290,7 @@ export function AboutValues() {
   }, [chosen, part]);
 
   const value = values[chosen ?? 0];
-  const on = seen || reduce;
+  const on = dropsIn;
   // Where each callout up on the water was drawn, so a new one can keep
   // clear of them (see Callout).
   const placed = useRef(new Map<string, Lead>());
@@ -240,13 +307,16 @@ export function AboutValues() {
         if (joined) part();
       }}
       data-joined={joined ? "" : undefined}
-      className="abt-val relative isolate flex min-h-[100svh] flex-col justify-center overflow-hidden bg-paper pt-[calc(var(--section-gap)*0.85)]"
+      className="abt-val relative isolate flex min-h-[100svh] flex-col justify-center overflow-hidden pt-[calc(var(--section-gap)*0.85)]"
     >
-      <canvas
-        ref={canvas}
-        aria-hidden="true"
-        className="absolute inset-0 -z-10 block size-full"
-      />
+      {/* Its own water only where there is no screen's to draw on. */}
+      {!roomCanvas && (
+        <canvas
+          ref={ownCanvas}
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 block size-full"
+        />
+      )}
 
       {/* A whole screen of water (user, 2026-10-14: the values are a
           section of their own), the heading and the drops held in the
