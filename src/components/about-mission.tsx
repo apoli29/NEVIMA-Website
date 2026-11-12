@@ -28,7 +28,7 @@ const PIECES = [
     id: "mission",
     label: "Mission",
     tense: "What we do, today",
-    text: "To give small and medium-sized busi\u00adness\u00ades all over the world top-tier web de\u00advel\u00adop\u00adment: ef\u00adfi\u00adcient, com\u00adplete and free of the red tape and com\u00adpli\u00adca\u00adtions the in\u00addus\u00adtry is known for, powered by the most cutting-edge tech\u00adnol\u00adogy and know-how available.",
+    text: "To give small and medium-sized busi\u00adness\u00ades all over the world top-tier web de\u00advel\u00adop\u00adment so\u00adlu\u00adtions: ef\u00adfi\u00adcient, com\u00adplete and free of the red tape and com\u00adpli\u00adca\u00adtions the in\u00addus\u00adtry is known for, powered by the most cutting-edge tech\u00adnol\u00adogy and know-how available.",
     place: "lg:col-span-8",
   },
   {
@@ -46,7 +46,7 @@ const PT: Record<(typeof PIECES)[number]["id"], { label: string; tense: string; 
   mission: {
     label: "Missão",
     tense: "O que fazemos, hoje",
-    text: "Providenciar a pequenas e médias em\u00adpre\u00adsas de todo o mundo serviços de web de\u00advel\u00adop\u00adment de topo, e\u00adfi\u00adci\u00aden\u00adtes, com\u00adple\u00adtos e livres das bu\u00adro\u00adcra\u00adcias e com\u00adpli\u00adca\u00adções habituais do setor, através das tec\u00adno\u00adlo\u00adgias e do know-how mais van\u00adguar\u00addis\u00adtas disponíveis.",
+    text: "Providenciar a pequenas e médias em\u00adpre\u00adsas de todo o mundo soluções de web de\u00advel\u00adop\u00adment de topo, e\u00adfi\u00adci\u00aden\u00adtes, com\u00adple\u00adtas e livres das bu\u00adro\u00adcra\u00adcias e com\u00adpli\u00adca\u00adções habituais do setor, através das tec\u00adno\u00adlo\u00adgias e do know-how mais van\u00adguar\u00addis\u00adtas disponíveis.",
   },
   vision: {
     label: "Visão",

@@ -77,7 +77,7 @@ export const SERVICES: Service[] = [
     slug: "back-end-features",
     title: "Back-end Features",
     tier: "additional",
-    body: "Forms, newsletter sign-ups, calendar and reservations: what a website does with what its visitors send. We set them up on reliable platforms, in the client’s own name, and look after them every month, so requests, sign-ups and bookings reach the business with no worries about the technical side.",
+    body: "A beautiful website that communicates the brand is only half of what it takes to get the most out of it. Add forms, newsletter sign-ups, calendars, bookings and many other features, and clients start coming to you, without you having to go after them.",
     aura: "92 196 140",
     // Waiting for the studio's three Unsplash links.
     photos: [],
@@ -87,7 +87,7 @@ export const SERVICES: Service[] = [
     title: "SEO & GEO",
     tier: "additional",
     full: "Search & Generative Engine Optimization",
-    body: "SEO puts a website in the top positions of the searches its audience makes: poorly worked, it goes unnoticed among the last pages of results; personalized, it has a much better chance of reaching the first ones. GEO does the same in AI tools, which more and more people turn to for businesses that solve their problems: it raises the chances of a business being recommended.",
+    body: "If you want your website to have regular visitors and reach potential customers, SEO (Search Engine Optimization) is a must. And if you want AI to start recommending your business to the people who use it to find one, GEO (Generative Engine Optimization) is something you can’t miss.",
     aura: "218 158 86",
     photos: [
       photo("1614849963640-9cc74b2a826f"),
@@ -99,7 +99,7 @@ export const SERVICES: Service[] = [
     slug: "photo-shoot",
     title: "Photo Shoot",
     tier: "additional",
-    body: "We provide this service within mainland Portugal, as a solution for businesses that want a highly personalized website but have no photos of their business, their premises or their products and/or services. A website is only personalized when it reflects the essence of the business, and that includes visual elements that portray it.",
+    body: "Trust us: when a business, especially one with a physical space, has no high-quality visual content on its website (photos, videos and the like), it’s better off with no website at all. Available in mainland Portugal.",
     aura: "120 120 120",
     // Waiting for the studio's three Unsplash links.
     photos: [],
@@ -130,15 +130,15 @@ const PT: Record<string, Pick<Service, "title" | "body" | "included">> = {
   },
   "back-end-features": {
     title: "Funcionalidades de Back End",
-    body: "Formulários, inscrições na newsletter, calendário e reservas: o que o website faz com o que os visitantes lhe enviam. Configuramo-los em plataformas fiáveis, em nome do cliente, e mantemo-los todos os meses, para que pedidos, inscrições e marcações cheguem ao negócio sem preocupações com a parte técnica.",
+    body: "Um website bonito, que comunica a marca, é só meio caminho para tirar dele todo o partido. Com formulários, inscrições na newsletter, calendários, reservas e muitas outras funcionalidades, são os clientes que passam a vir ter com o negócio, sem que seja preciso ir atrás deles.",
   },
   seo: {
     title: "SEO e GEO",
-    body: "O SEO coloca um website nas melhores posições das pesquisas do seu público: mal trabalhado, passa despercebido nas últimas páginas; personalizado, tem muito mais hipóteses de chegar às primeiras. O GEO faz o mesmo nas ferramentas de IA, a que cada vez mais pessoas recorrem para encontrar negócios que resolvam os seus problemas: aumenta a probabilidade de um negócio ser recomendado.",
+    body: "Para um website ter visitas regulares e chegar a potenciais clientes, o SEO (Search Engine Optimization) é indispensável. E para a IA começar a sugerir o negócio a quem a usa para procurar negócios, o GEO (Generative Engine Optimization) não pode faltar.",
   },
   "photo-shoot": {
     title: "Sessão Fotográfica",
-    body: "Fornecemos este serviço em Portugal continental, como solução para os negócios que querem um website altamente personalizado, mas que não têm fotografias do seu negócio, do seu estabelecimento ou dos seus produtos e/ou serviços. Um website só é personalizado quando reflete a essência do negócio, o que inclui a presença de elementos visuais que o retratem.",
+    body: "Podemos garantir: se um negócio (sobretudo com espaço físico) não tem conteúdo visual de qualidade no website (fotografias, vídeos, etc.), mais vale não ter website. Disponível em Portugal continental.",
   },
 };
 

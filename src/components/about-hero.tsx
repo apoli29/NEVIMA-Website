@@ -23,19 +23,18 @@ import { useFontsReady } from "./use-seen";
    finishes. It is only measured once the fonts are in, because the lines
    it lights are the lines the browser wrapped.
 
-   The words are a stand-in: the studio has not written its statement
-   yet. They follow the shape of the reference it found (what the
-   business is, the gap, what the gap costs) in the studio's own terms.
+   The words are the studio's own (user, 2026-11-12), written in
+   Portuguese and adapted so they read naturally in English.
    ================================================================== */
 
 const STATEMENT: Copy<string[]> = {
   en: [
-    "Good businesses are rarely short of quality. They are short of a presence that shows it. The clinics, agencies and independent professionals we work with have built something real, yet their website still introduces a smaller version of them.",
-    "Closing that gap is our whole job: two people, the right tools, and nothing standing between your work and the people it is for.",
+    "Many local businesses and small and medium-sized companies can\u2019t grow, even with a product or service of enormous value. The reason? They have no website that shows that value and their essence and reaches the right audience, nor an internal digital infrastructure that makes the business more organized and more efficient.",
+    "Our goal is to close that gap: to make sure small and medium-sized businesses can make the most of the boost digital can bring.",
   ],
   pt: [
-    "Aos bons negócios raramente falta qualidade. Falta-lhes uma presença que a mostre. As clínicas, agências e profissionais independentes com quem trabalhamos construíram algo sólido, mas o website continua a mostrar uma versão menor do que realmente são.",
-    "O nosso trabalho é encurtar essa distância: duas pessoas, as ferramentas certas e nada entre o trabalho de cada negócio e as pessoas a quem se destina.",
+    "Muitos negócios locais e pequenas e médias empresas não conseguem crescer, mesmo possuindo um produto ou serviço de enorme valor. O motivo? Não têm um website que demonstre o seu valor e a sua essência e que alcance o público certo, nem uma infraestrutura digital interna que torne o negócio mais organizado e mais eficiente.",
+    "O nosso objetivo é fechar essa lacuna: garantir que os pequenos e médios negócios possam aproveitar o impulso que o digital pode trazer.",
   ],
 };
 

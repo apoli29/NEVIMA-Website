@@ -1813,52 +1813,52 @@
   }
 
   /* ---- studio -----------------------------------------------------
-     A full screen (user, 2026-10-14): a head row, the statement the
-     whole width of the shell, read in ink, and a foot row with the names
-     and the pillar. Everything that fills it stays once its motion is
-     over. The wrap is the size container the statement is measured
-     against.                                                          */
+     A full screen (user, 2026-10-14). Since 2026-11-12 one sentence
+     alone, centred on the screen in a short justified column, read in
+     ink, on the about page's photograph turned inside out. The wrap is
+     the size container the statement is measured against.            */
   .std-wrap { container-type: inline-size; }
-  /* From lg the statement and the pillar are one group, centred on the
-     page with air on both sides (user, 2026-10-15): the statement 39%
-     of the shell, the pillar 33%, 9% between them, level on their last
-     lines. */
-  .std-lede { display: grid; gap: clamp(2.75rem, 6svh, 4rem); }
+  .std-lede { display: flex; justify-content: center; }
+  /* Short: the whole shell on a phone, two thirds of it on a tablet,
+     44% of it from lg. */
+  .std-copy { flex: 0 0 100cqw; }
+  .std-measure { container-type: inline-size; }
+  @media (min-width: 768px) {
+    .std-copy { flex-basis: 66cqw; }
+  }
   @media (min-width: 1024px) {
-    .std-lede {
-      display: flex;
-      justify-content: center;
-      column-gap: 9cqw;
-      align-items: last baseline;
-    }
-    .std-copy { flex: 0 0 39cqw; }
-    .std-aside { flex: 0 0 33cqw; }
+    .std-copy { flex-basis: 44cqw; }
   }
 
   /* The statement, sized from its own measure, so it breaks in the same
-     places at every width, and justified. */
-  .std-measure { container-type: inline-size; }
-  /* Justified type only sets evenly where the words fall well on each
-     line. The size is tied to the measure, so the lines break in the same
-     places at every width, and the two sizes were picked by measuring the
-     word gaps of every line (the widest about 0.85em): 9cqi on a phone
-     and 9.58cqi on the 39% column from lg, with soft hyphens set in the
-     long words (studio.tsx). Recalculate it if the copy changes. No
+     places at every width, justified, its last line centred under the
+     block. Justified type only sets evenly where the words fall well on
+     each line: the size is tied to the measure and was picked by
+     measuring the word gaps of every line, with soft hyphens set in the
+     long words (studio.tsx). 7.4cqi sets both languages evenly (widest
+     gap about 0.7em; in Portuguese "empresas." alone on the centred last
+     line). Recalculate it if the copy changes. No
      automatic hyphenation: where a browser has it, it would move the
      breaks this was tuned on. */
   .std-statement {
-    font-size: 9cqi;
+    font-size: 7.4cqi;
     line-height: 1.12;
     letter-spacing: -0.022em;
     text-align: justify;
-    text-align-last: left;
+    text-align-last: center;
     hyphens: manual;
   }
-  /* The column from lg: 10.43cqi of it is 48px at 1440 (the user's 10%
-     more), the best-set size near it for this width (widest gap about
-     0.9em, "proposition." alone on the last line). */
-  @media (min-width: 1024px) {
-    .std-statement { font-size: 9.58cqi; }
+
+  /* The ground (studio.tsx, StudioGround): held to the bottom-left, where
+     the fold starts. The grain is dark, thick at the edges and gone from
+     the middle, where the words are. */
+  .std-ground { object-position: 0% 100%; }
+  .std-grain {
+    opacity: 0.4;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.6 -0.55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    -webkit-mask-image: radial-gradient(75% 70% at 50% 50%, transparent 35%, #000 100%);
+    mask-image: radial-gradient(75% 70% at 50% 50%, transparent 35%, #000 100%);
   }
   .std-read { color: var(--color-ink); }
   .std-word {
@@ -1881,39 +1881,9 @@
     line-height: normal;
     pointer-events: none;
   }
-  .std-stroke {
-    background-image: linear-gradient(var(--color-ink), var(--color-ink));
-    background-repeat: no-repeat;
-    background-position: 0 96%;
-    background-size: var(--draw, 100%) 0.06em;
-    -webkit-box-decoration-break: slice;
-    box-decoration-break: slice;
-  }
-  /* The stroked words are the way to How we work: pressed, they go;
-     pointed at, the stroke thickens and the drop under the pointer says
-     where to (studio.tsx, ApproachLink). */
-  .std-approach { color: inherit; text-decoration: none; cursor: pointer; }
-  .std-approach .std-stroke { transition: background-size 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
-  .std-approach:hover .std-stroke,
-  .std-approach:focus-visible .std-stroke { background-size: var(--draw, 100%) 0.12em; }
-  .std-approach:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 4px; }
-  .std-approach-tip {
-    position: fixed;
-    z-index: 60;
-    pointer-events: none;
-    /* Above the pointer, clear of the words it points at. */
-    translate: -50% calc(-100% - 1.4rem);
-    animation: std-tip-in 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  @keyframes std-tip-in {
-    from { opacity: 0; scale: 0.8; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .std-approach-tip { animation: none; }
-  }
 
   /* The two co-founders in a capsule, a line's height, set into the line
-     after "two", in colour: the way to the about page. Every 6s they
+     after "friends", in colour: the way to the about page. Every 6s they
      shake for about three seconds. Pointed at, the capsule opens in the
      line, the two part and "Find out more about us" comes up between
      them; the words around make room for it. Opened from studio.tsx

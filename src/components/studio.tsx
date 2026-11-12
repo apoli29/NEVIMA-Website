@@ -1,30 +1,27 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "motion/react";
 import type { Copy, Lang } from "@/lib/i18n";
 import { useHref, useLang, useT } from "@/lib/use-lang";
 import { ENTER_EASE } from "./enter";
-import { showProcess } from "./process";
-import { Illuminated } from "./services";
 
 /* ==================================================================
    Studio
 
-   A screen of its own (2026-10-14), full at rest, in two halves from lg
-   aligned on their last lines (user, same day):
+   A screen of its own (2026-10-14), full at rest. Since 2026-11-12
+   (user) it holds one sentence alone, centred on the screen in a short
+   justified column, read in ink: it waits in a pale grey and each word
+   turns black as the page brings it up, at the pace of the scroll. After
+   "friends" ("amigos de longa data") the co-founders are set into the
+   line, two round portraits in colour in a capsule: the section's way to
+   the about page. The pillar and the stroke to How we work are gone.
 
-   - on the left, the statement, large and justified, 40% of the page,
-     read in ink: it waits in a pale grey and each word turns black as
-     the page brings it up, at the pace of the scroll. After "two" the
-     co-founders are set into the line, two round portraits in colour in
-     a capsule: the section's way to the about page. Its last words are
-     underlined by a stroke drawn as they are read, and are the way to
-     How we work (user, 2026-10-19: "a completely different approach" as
-     a button to it);
-   - on the right, wider and smaller, the pillar, justified, its answer
-     run through with the black marker.
+   Its ground is the about page's photograph turned inside out (user,
+   same day): mostly white, the soft light fold become a black one that
+   rises from the bottom-left corner on the diagonal and fades as it
+   climbs, every other shade evened out, with a darker grain towards the
+   edges (StudioGround).
 
    The co-founders' full plates are on the about page (cofounders.tsx).
    ================================================================== */
@@ -32,51 +29,29 @@ import { Illuminated } from "./services";
 /* Soft hyphens in the long words: justified in a narrow column, the
    lines can break inside them rather than open gaps around them. */
 const STATEMENT: Copy = {
-  en: "Nevima is a studio of two young, long-time friends who share a fas\u00adci\u00adna\u00adtion with com\u00admu\u00adni\u00adca\u00adtion and web de\u00advel\u00adop\u00adment. We didn\u2019t start out to be just another studio doing more of the same, but to offer a com\u00adplete\u00adly dif\u00adfer\u00adent approach.",
-  pt: "A Nevima é um estúdio de dois jo\u00advens a\u00admi\u00adgos de longa data, que partilham o fas\u00adcí\u00adnio pela co\u00admu\u00adni\u00adca\u00adção e pelo web de\u00advel\u00adop\u00adment. Não nas\u00adce\u00admos para ser só mais um estúdio a fazer mais do mesmo, mas para trazer uma abor\u00adda\u00adgem com\u00adple\u00adta\u00admen\u00adte di\u00adfe\u00adren\u00adte.",
+  en: "We\u2019re a studio of two young, long-time friends who set out to build a business focused on of\u00adfer\u00ading web de\u00advel\u00adop\u00adment so\u00adlu\u00adtions designed for small and medium-sized com\u00adpa\u00adnies.",
+  pt: "Somos um estúdio de dois jo\u00advens a\u00admi\u00adgos de longa data que quiseram criar um negócio focado em o\u00adfe\u00adre\u00adcer so\u00adlu\u00adções de web de\u00advel\u00adop\u00adment pen\u00adsa\u00addas para pequenas e médias empresas.",
 };
 
-/* The pillar, up to and including the colon it turns on. */
-const PILLAR: Copy = {
-  en: "Our pillar is efficiency: we deliver elite results, without long turnaround times. The secret is simple:",
-  pt: "O nosso pilar é a eficiência: entregamos resultados de excelência, sem prazos demorados. O segredo é simples:",
-};
+/** How far below its place the statement starts, in pixels. */
+const ENTER_SHIFT = 28;
 
-/* And what follows it, which is run through with a black marker. */
-// A non-breaking hyphen: "know-how" is never split across two lines. And
-// a non-breaking space after the article, so the marker never starts on a
-// lone "o" at a line's end.
-const PILLAR_MARK: Copy = {
-  en: "the\u00a0know\u2011how we have and using the right tools.",
-  pt: "o\u00a0nosso know\u2011how e o uso das ferramentas certas.",
-};
+/** The ground, at four widths (see StudioGround). */
+const GROUND = [1280, 1600, 1920, 2400].map((w) => ({ w, src: `/studio/ridge-${w}.webp` }));
 
-/** How far out of the shell each half of the statement starts, in pixels. */
-const ENTER_SHIFT = 56;
-
-/* The pillar is lit once the section is in sight. */
-const PILLAR_LIGHT_MS = 500;
-
-/* The capsule's faces are a few dozen pixels across: cut-down copies of the
-   about page's portraits (240px on the short side), not the portraits. */
 const FOUNDERS = [
   { name: "Emanuel Costa", photo: "/cofounders/ec-face.webp", focus: "44% 45%" },
   { name: "António Policarpo", photo: "/cofounders/ap-face.webp", focus: "50% 48%" },
 ] as const;
 
-/* The statement's words, and where it is given its two people and its
-   stroke, in each language. */
+/* The statement's words, and where it is given its two people, in each
+   language: after "friends", and in Portuguese after the whole of
+   "amigos de longa data", so the phrase is never cut in two. */
 function statementIn(lang: Lang) {
   const words = STATEMENT[lang].split(" ");
   return {
     words,
-    portraitsAfter: words.indexOf(lang === "pt" ? "dois" : "two"),
-    /* "a completely different approach.", "uma abordagem completamente
-       diferente." */
-    strokeFrom:
-      lang === "pt"
-        ? words.findIndex((w) => w.startsWith("abor\u00ad")) - 1
-        : words.findIndex((w) => w.startsWith("com\u00adplete")) - 1,
+    portraitsAfter: words.indexOf(lang === "pt" ? "data" : "friends"),
   };
 }
 
@@ -95,8 +70,9 @@ export function Studio({ ready }: { ready: boolean }) {
       // bar hangs over that end. One layer above the services, so the
       // "Learn more" drop's glass and shadow are never cut off by their
       // ground.
-      className="relative z-[11] flex min-h-[100svh] flex-col justify-center bg-paper pt-[calc(var(--section-gap)+2rem)] pb-(--section-gap)"
+      className="relative isolate z-[11] flex min-h-[100svh] flex-col justify-center overflow-hidden bg-paper pt-[calc(var(--section-gap)+2rem)] pb-(--section-gap)"
     >
+      <StudioGround />
       <div className="shell">
         <h2 id="studio-title" className="sr-only">
           {t("About Nevima", "Sobre a Nevima")}
@@ -113,16 +89,17 @@ export function Studio({ ready }: { ready: boolean }) {
 /* ================================================================== */
 /* Statement                                                           */
 /* ================================================================== */
+/* Statement                                                           */
+/* ================================================================== */
 
 function Statement({ ready }: { ready: boolean }) {
   const reduce = useReducedMotion() ?? false;
-  const t = useT();
   const ref = useRef<HTMLDivElement>(null);
   const [seen, setSeen] = useState(false);
 
   // While the opening plays its stage is fixed and takes no room, so this
   // copy sits at the top of the page right behind the curtain: watched from
-  // the start, the light would run where nobody can see it. The watch only
+  // the start, it would come in where nobody can see it. The watch only
   // begins once the page has been handed back.
   useEffect(() => {
     if (!ready || seen) return;
@@ -138,41 +115,22 @@ function Statement({ ready }: { ready: boolean }) {
     return () => watch.disconnect();
   }, [ready, seen]);
 
-  const lit = seen || reduce;
-  // Each half comes in from the edge it is set against and travels inwards,
-  // so the sentence closes on itself. The fade is spent in the first third
-  // and the slide carries on under it; the light follows once both have
-  // arrived.
-  const enter = (from: -1 | 1) => ({
-    initial: false as const,
-    animate: {
-      opacity: lit ? 1 : 0,
-      x: lit || reduce ? 0 : from * ENTER_SHIFT,
-    },
-    transition: {
-      opacity: { duration: 0.42, ease: "easeOut" as const },
-      x: { duration: 0.95, ease: ENTER_EASE },
-    },
-  });
+  const on = seen || reduce;
 
   return (
     <div ref={ref} className="std-lede">
-      {/* The measure the statement is sized from (see .std-statement). */}
-      <motion.div className="std-copy std-measure" {...enter(-1)}>
+      {/* The measure the statement is sized from (see .std-statement). The
+          fade is spent in the first third and the rise carries on under it. */}
+      <motion.div
+        className="std-copy std-measure"
+        initial={false}
+        animate={{ opacity: on ? 1 : 0, y: on ? 0 : ENTER_SHIFT }}
+        transition={{
+          opacity: { duration: 0.42, ease: "easeOut" },
+          y: { duration: 0.95, ease: ENTER_EASE },
+        }}
+      >
         <InkStatement reduce={reduce} />
-      </motion.div>
-
-      {/* The pillar, with everything after the colon run through with a
-          black marker: the answer is the one thing set out of black. */}
-      <motion.div className="std-aside" {...enter(1)}>
-        <LitCopy
-          lit={lit}
-          reduce={reduce}
-          delayMs={PILLAR_LIGHT_MS}
-          text={t(PILLAR)}
-          mark={t(PILLAR_MARK)}
-          className="svc-copy std-ink std-pillar"
-        />
       </motion.div>
     </div>
   );
@@ -184,7 +142,7 @@ function Statement({ ready }: { ready: boolean }) {
 function InkStatement({ reduce }: { reduce: boolean }) {
   const ref = useRef<HTMLParagraphElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 1.05", "end 1"] });
-  const { words: WORDS, portraitsAfter: PORTRAITS_AFTER, strokeFrom: STROKE_FROM } = statementIn(useLang());
+  const { words: WORDS, portraitsAfter: PORTRAITS_AFTER } = statementIn(useLang());
   const n = WORDS.length;
   // Each word takes a little longer than its share, so the ink runs on
   // as a soft front rather than word by word in steps.
@@ -199,20 +157,8 @@ function InkStatement({ reduce }: { reduce: boolean }) {
 
   const out: React.ReactNode[] = [];
   for (let i = 0; i < n; i++) {
-    if (i === STROKE_FROM) {
-      // The last words under one stroke, drawn as they are read.
-      const under: React.ReactNode[] = [];
-      for (let j = i; j < n; j++) under.push(word(j), j < n - 1 ? " " : null);
-      out.push(
-        <ApproachLink key="stroke">
-          <Stroke progress={scrollYProgress} from={at(i + 1)} to={Math.min(1, at(n - 1) + span)} reduce={reduce}>
-            {under}
-          </Stroke>
-        </ApproachLink>,
-      );
-      break;
-    } else if (i === PORTRAITS_AFTER) {
-      // "two" and the two of them are held together, with no space the
+    if (i === PORTRAITS_AFTER) {
+      // The word and the two of them are held together, with no space the
       // justification could stretch between them: opened, the capsule
       // grows on from where it stands and never slides away from the word.
       out.push(
@@ -261,85 +207,6 @@ function InkWord({
   );
 }
 
-function Stroke({
-  progress,
-  from,
-  to,
-  reduce,
-  children,
-}: {
-  progress: MotionValue<number>;
-  from: number;
-  to: number;
-  reduce: boolean;
-  children: React.ReactNode;
-}) {
-  const draw = useTransform(progress, [from, to], ["0%", "100%"]);
-  // Drawn as the span's own background, so it runs on across a line break
-  // like the words it is under.
-  return (
-    <motion.span className="std-stroke" style={reduce ? undefined : ({ "--draw": draw } as never)}>
-      {children}
-    </motion.span>
-  );
-}
-
-/* "A completely different approach" goes to How we work, on this page.
-   Pointed at with a mouse, "Find out about our approach" follows the
-   pointer, a drop like the site's other buttons; nothing is set into the
-   line, so the justified paragraph never moves. Pressed, the page goes
-   to the process; should it not be on the page, the address takes over. */
-function ApproachLink({ children }: { children: React.ReactNode }) {
-  const t = useT();
-  const href = useHref();
-  const [tip, setTip] = useState<{ x: number; y: number } | null>(null);
-  const label = t("Find out about our approach", "Conhecer a nossa abordagem");
-  const follow = (e: React.PointerEvent) => {
-    if (e.pointerType === "mouse") setTip({ x: e.clientX, y: e.clientY });
-  };
-  // A scroll moves the words from under a pointer at rest.
-  useEffect(() => {
-    if (!tip) return;
-    const hide = () => setTip(null);
-    window.addEventListener("scroll", hide, { passive: true });
-    return () => window.removeEventListener("scroll", hide);
-  }, [tip]);
-  return (
-    <>
-      <a
-        href={href("/#process")}
-        className="std-approach"
-        onClick={(e) => {
-          if (showProcess()) {
-            e.preventDefault();
-            setTip(null);
-          }
-        }}
-        onPointerEnter={follow}
-        onPointerMove={follow}
-        onPointerLeave={() => setTip(null)}
-      >
-        {children}
-        <span className="sr-only"> ({label})</span>
-      </a>
-      {tip &&
-        createPortal(
-          <span
-            aria-hidden="true"
-            className="cta-drop std-approach-tip inline-flex text-[0.9375rem] leading-none whitespace-nowrap"
-            style={{ left: tip.x, top: tip.y }}
-          >
-            <span className="btn-neu-face">
-              {label}
-              <span className="ml-2.5 inline-block">&rarr;</span>
-            </span>
-          </span>,
-          document.body,
-        )}
-    </>
-  );
-}
-
 /** How long the paragraph takes to settle into its new setting. */
 const RESET_MS = 560;
 const RESET_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
@@ -348,7 +215,6 @@ const RESET_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
    screen, as it is seen (mid-move included). */
 type Seen = {
   line: DOMRect;
-  pillar: DOMRect | null;
   capsule: DOMRect;
   pieces: DOMRect[];
   /** each piece's opacity, should it be seen halfway through a line change */
@@ -357,7 +223,7 @@ type Seen = {
   face: number;
 };
 
-/* The two of them, set into the line after "two": round portraits in
+/* The two of them, set into the line after "friends": round portraits in
    colour in a capsule, inked in with the words around them. They are
    the section's way to the about page (user, 2026-10-14): every few
    seconds they give a shake, and pointed at (or reached from the
@@ -365,19 +231,16 @@ type Seen = {
    about us" opens out between them and the words make room for it.
 
    Opening reflows the justified paragraph: words change lines, every
-   line's spacing changes, the paragraph gains a line and the pillar,
-   level with its last line, goes down with it. A browser does all that
+   line's spacing changes and the paragraph gains a line. A browser does all that
    from one frame to the next, so it is done here as one move (user,
    2026-10-15: the words jumped to the next line): the paragraph is set
    in its new place at once and everything is carried there from where
    it was seen, every piece of every word on its own, the capsule's
-   black stretching, the far portrait travelling with its end, the
-   paragraph and the pillar sliding with the page around them, and the
-   stroke under the last words drawn again once they have arrived.
-   Closing is the same move back, and either can take over from the
+   black stretching, the far portrait travelling with its end, and the
+   paragraph sliding with the page around it. Closing is the same move back, and either can take over from the
    other halfway.
 
-   The capsule is held to "two" (see InkStatement), so it only grows on
+   The capsule is held to its word (see InkStatement), so it only grows on
    from where it stands. Where its opened width sends the next word down
    a line, it grows on to the end of its own line, so that line stays
    full and the justification has no gap to throw open. It is held open
@@ -423,9 +286,7 @@ function Portraits({
     return {
       a,
       line,
-      pillar: line.closest(".std-lede")?.querySelector<HTMLElement>(".std-aside > *") ?? null,
       pieces: [...line.querySelectorAll<HTMLElement>(".std-piece")],
-      stroke: line.querySelector<HTMLElement>(".std-stroke"),
     };
   };
 
@@ -436,7 +297,6 @@ function Portraits({
     const shift = parseFloat(getComputedStyle(f).translate) || 0;
     return {
       line: p.line.getBoundingClientRect(),
-      pillar: p.pillar?.getBoundingClientRect() ?? null,
       capsule: p.a.getBoundingClientRect(),
       pieces: p.pieces.map((el) => el.getBoundingClientRect()),
       shown: p.pieces.map((el) => Number(getComputedStyle(el).opacity)),
@@ -511,9 +371,8 @@ function Portraits({
         go(el, [{ translate: `${dx}px ${dy}px` }, { translate: "0 0" }]);
     };
 
-    // The paragraph and the pillar, as the page around them moves.
+    // The paragraph, as the page around it moves.
     slide(p.line, before.line, after.line);
-    if (p.pillar && before.pillar && after.pillar) slide(p.pillar, before.pillar, after.pillar);
     // Every piece, from where it was in the paragraph to where it is now,
     // set the way a line of type is: a line pushes its words along, and
     // those that no longer fit go on out past its end, keeping pace with
@@ -659,22 +518,6 @@ function Portraits({
       go(ink.current, [{ width: `${before.ink}px` }, { width: `${after.ink}px` }]);
     if (far.current && before.face !== after.face)
       go(far.current, [{ translate: `${before.face - after.face}px 0` }, { translate: "0 0" }]);
-    // The stroke under the last words is taken off while they move and
-    // drawn in again, left to right, once they are in place.
-    if (p.stroke) {
-      const size = getComputedStyle(p.stroke).backgroundSize;
-      const thin = size.split(" ")[1] ?? "0.06em";
-      moves.current.push(
-        p.stroke.animate(
-          [
-            { backgroundSize: `0% ${thin}`, offset: 0 },
-            { backgroundSize: `0% ${thin}`, offset: 0.62, easing: "cubic-bezier(0.65, 0, 0.35, 1)" },
-            { backgroundSize: size, offset: 1 },
-          ],
-          { duration: RESET_MS + 520 },
-        ),
-      );
-    }
     // A shake under way eased out rather than stopped at its tilt.
     if (open && tilt.current !== "none" && shell.current)
       go(shell.current, [{ transform: tilt.current }, { transform: "none" }]);
@@ -754,41 +597,28 @@ function Portraits({
   );
 }
 
-/* Grey and plain until the copy has been seen. Illuminated reads its lines
-   back from the layout the moment it mounts, so it is only mounted once that
-   layout is the one the reader gets: before the opening hands the page back
-   there is no scrollbar yet, and every measured line would be a little too
-   long for the page that follows. */
-function LitCopy({
-  lit,
-  text,
-  mark,
-  delayMs,
-  reduce,
-  className,
-}: {
-  lit: boolean;
-  text: string;
-  mark?: string;
-  delayMs: number;
-  reduce: boolean;
-  className: string;
-}) {
-  if (!lit)
-    return (
-      <p className={className}>
-        {text}
-        {mark ? " " : null}
-        {mark && <mark>{mark}</mark>}
-      </p>
-    );
+/* The ground: the about page's photograph of soft folds of light, turned
+   inside out and evened (user, 2026-11-12). Baked into the files at four
+   widths, so a phone takes the 1280 or the 1600. Held to the bottom-left,
+   where the fold starts, so it always rises from that corner whatever the
+   screen's shape. Over it, a dark grain that thickens towards the edges
+   and leaves the middle, where the words are, clean. */
+function StudioGround() {
   return (
-    <Illuminated
-      text={text}
-      mark={mark}
-      delayMs={delayMs}
-      reduce={reduce}
-      className={className}
-    />
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={GROUND[3]!.src}
+        srcSet={GROUND.map((g) => `${g.src} ${g.w}w`).join(", ")}
+        sizes="100vw"
+        alt=""
+        aria-hidden="true"
+        draggable={false}
+        loading="lazy"
+        decoding="async"
+        className="std-ground absolute inset-0 -z-20 size-full object-cover select-none"
+      />
+      <span aria-hidden="true" className="std-grain absolute inset-0 -z-10" />
+    </>
   );
 }
