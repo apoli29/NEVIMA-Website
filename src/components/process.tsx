@@ -133,12 +133,12 @@ const PT_STEPS: Record<string, Pick<Step, "name" | "principle" | "text"> & { cta
   contract: {
     name: "O contrato",
     principle: "Tudo acordado por escrito.",
-    text: "Depois da chamada, enviamos a proposta final e o contrato, com todas as condições do trabalho definidas por escrito.",
+    text: "Depois da chamada, enviamos a proposta final e o contrato, com todas as condições do trabalho definidas por escrito. Com a assinatura, é pago um sinal de 25%.",
   },
   materials: {
     name: "Os materiais",
     principle: "O prazo começa com a entrega dos materiais.",
-    text: "Na chamada, indicamos tudo aquilo de que precisamos: as fotografias já existentes do negócio, o logótipo e o símbolo, e o que mais o projeto exigir. O trabalho começa assim que tivermos tudo.",
+    text: "Na chamada, indicamos tudo aquilo de que precisamos: as fotografias já existentes do negócio, o logótipo e o símbolo, e o que mais o projeto exigir. O trabalho começa assim que tivermos tudo e o sinal estiver pago.",
   },
   photo: {
     name: "A sessão fotográfica",
@@ -186,7 +186,7 @@ const PT_STEPS: Record<string, Pick<Step, "name" | "principle" | "text"> & { cta
   "launch-step": {
     name: "Lançamento",
     principle: "Com a aprovação final, fica online.",
-    text: "Colocamos o website online, pronto para os clientes do negócio e para todos os que contam para ele.",
+    text: "Feito o pagamento final, colocamos o website online, pronto para os clientes do negócio e para todos os que contam para ele.",
   },
   "later-changes": {
     name: "Apoio depois do lançamento",
@@ -219,7 +219,7 @@ const PHASES: Phase[] = [
     id: "proposal",
     name: "Proposal and contract",
     intro:
-      "You get an estimate, we present the proposal on a call, and we only start once the contract is signed and your materials are in.",
+      "You get an estimate, we present the proposal on a call, and we only start once the contract is signed, the deposit is paid and your materials are in.",
     steps: [
       {
         id: "estimate",
@@ -240,14 +240,14 @@ const PHASES: Phase[] = [
         id: "contract",
         name: "The contract",
         principle: "Everything agreed in writing.",
-        text: "After the call, we send over the final proposal and the contract, with every term of the work set out in writing.",
+        text: "After the call, we send over the final proposal and the contract, with every term of the work set out in writing. When you sign, you pay a 25% deposit.",
         who: "You and us",
       },
       {
         id: "materials",
         name: "Your materials",
         principle: "The clock starts with you.",
-        text: "On the call, we go through everything we need from you: photos you already have of your business, your logo and symbol, and anything else the project calls for. Work begins the moment we have everything.",
+        text: "On the call, we go through everything we need from you: photos you already have of your business, your logo and symbol, and anything else the project calls for. Work begins the moment we have everything and the deposit is paid.",
         who: "You",
       },
     ],
@@ -340,7 +340,7 @@ const PHASES: Phase[] = [
         id: "launch-step",
         name: "Launch",
         principle: "Your say, then it goes live.",
-        text: "We put your website online, ready for your clients and everyone else who matters to your business.",
+        text: "Once the final payment is made, we put your website online, ready for your clients and everyone else who matters to your business.",
         who: "Us",
       },
     ],
