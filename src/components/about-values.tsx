@@ -93,6 +93,23 @@ const PT_VALUES: Record<(typeof VALUES)[number]["id"], { name: string; text: str
   },
 };
 
+/** Where the section's top is on the screen, as a share of its height
+    from the top, when the screen starts turning to water and when it is
+    all water. */
+const IN_FROM = 0.55;
+const IN_TO = 0;
+/** Likewise for the way out, on the questions' heading: where it is when
+    the water starts to calm, and when the screen is white again. Later and
+    longer than a first peek too, as the way in (user, 2026-11-12: not so
+    sudden), and leaving the drops a stretch of scroll on the screen. */
+const OUT_FROM = 0.8;
+const OUT_TO = 0.2;
+/** How much of the screen is water when the drops come in, and when they
+    go on the way out (user, 2026-11-12). */
+const DROPS_AT = 0.5;
+/** The water's own easing (values-water.ts), to read the share it shows. */
+const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
 /** What the callout points at: a drop, or the piece the four made. */
 type Aim = { kind: "drop"; i: number } | { kind: "piece" } | null;
 
@@ -195,8 +212,8 @@ export function AboutValues() {
 
   /* The screen turns from white to water as the values come up, and back
      to white as the questions do (user, 2026-11-12). It follows the
-     scroll: it starts as the section peeks over the foot of the screen
-     and is all water once it has come up a quarter of it; stop and it
+     scroll: it starts once the section's top is a little under halfway up
+     the screen and is all water once it reaches the top; stop and it
      stops halfway, go back and it goes back. Eased in and out at the ends
      (in the water). Only then do the drops come in, on their own clock;
      on the way out, or back, they go first. */
@@ -213,14 +230,26 @@ export function AboutValues() {
     const update = () => {
       queued = 0;
       const vh = window.innerHeight || 1;
-      const span = vh * 0.25;
-      const into = Math.min(Math.max((vh - sec.getBoundingClientRect().top) / span, 0), 1);
+      // In: from the section's top a little under halfway up the screen to
+      // the top of it (user, 2026-11-12: later, and slower, than its first
+      // peek over the foot of the screen).
+      const into = Math.min(
+        Math.max((vh * IN_FROM - sec.getBoundingClientRect().top) / (vh * (IN_FROM - IN_TO)), 0),
+        1,
+      );
       const out = next
-        ? Math.min(Math.max((vh - next.getBoundingClientRect().top) / span, 0), 1)
+        ? Math.min(
+            Math.max((vh * OUT_FROM - next.getBoundingClientRect().top) / (vh * (OUT_FROM - OUT_TO)), 0),
+            1,
+          )
         : 0;
       const c = control.current;
       const water = into * (1 - out);
-      const drops = into >= 1 && out <= 0 ? 1 : 0;
+      // The drops come in once the screen is half water (as the water shows
+      // it, eased) and go once it is back under that on the
+      // way out: waiting for the very end of the way in left them a sliver
+      // of scroll, and they were mostly missed (user, 2026-11-12).
+      const drops = ease(into) >= DROPS_AT && 1 - ease(out) >= DROPS_AT ? 1 : 0;
       if (water === c.water && drops === c.drops) return;
       c.water = water;
       c.drops = drops;
