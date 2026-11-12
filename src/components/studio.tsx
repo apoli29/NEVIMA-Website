@@ -29,8 +29,8 @@ import { ENTER_EASE } from "./enter";
 /* Soft hyphens in the long words: justified in a narrow column, the
    lines can break inside them rather than open gaps around them. */
 const STATEMENT: Copy = {
-  en: "We\u2019re a studio of two young, long-time friends who set out to build a business focused on of\u00adfer\u00ading web de\u00advel\u00adop\u00adment so\u00adlu\u00adtions designed for small and medium-sized com\u00adpa\u00adnies.",
-  pt: "Somos um estúdio de dois jo\u00advens a\u00admi\u00adgos de longa data que quiseram criar um negócio focado em o\u00adfe\u00adre\u00adcer so\u00adlu\u00adções de web de\u00advel\u00adop\u00adment pen\u00adsa\u00addas para pequenas e médias empresas.",
+  en: "We\u2019re a stu\u00addio of two\u00a0young, long-time friends who set out to build a busi\u00adness fo\u00adcused on of\u00adfer\u00ading web de\u00advel\u00adop\u00adment so\u00adlu\u00adtions de\u00adsigned for small and me\u00addi\u00adum-sized companies.",
+  pt: "Somos um es\u00adtú\u00addio de dois jo\u00advens ami\u00adgos de longa data que qui\u00adse\u00adram criar um ne\u00adgó\u00adcio fo\u00adca\u00addo em ofe\u00adre\u00adcer so\u00adlu\u00adções de web de\u00advel\u00adop\u00adment pen\u00adsa\u00addas para pe\u00adque\u00adnas e mé\u00addias em\u00adpre\u00adsas.",
 };
 
 /** How far below its place the statement starts, in pixels. */
@@ -67,10 +67,11 @@ export function Studio({ ready }: { ready: boolean }) {
       // held in the middle of it, with at least a section's room above and
       // below, so it stands well clear of the second screen it is drawn
       // over and of the services under it. A little more room on top: the
-      // bar hangs over that end. One layer above the services, so the
-      // "Learn more" drop's glass and shadow are never cut off by their
-      // ground.
-      className="relative isolate z-[11] flex min-h-[100svh] flex-col justify-center overflow-hidden bg-paper pt-[calc(var(--section-gap)+2rem)] pb-(--section-gap)"
+      // bar hangs over that end. More still at the foot (2026-11-12), so
+      // the sentence sits a little above the middle, clear of the black
+      // stroke rising along the bottom of its ground. One layer above the
+      // services.
+      className="relative isolate z-[11] flex min-h-[100svh] flex-col justify-center overflow-hidden bg-paper pt-[calc(var(--section-gap)+2rem)] pb-[calc(var(--section-gap)+8svh)]"
     >
       <StudioGround />
       <div className="shell">
@@ -193,12 +194,12 @@ function InkWord({
 }) {
   const color = useTransform(progress, [from, from + span], ["rgba(0, 0, 0, 0.14)", "rgba(0, 0, 0, 1)"]);
   // In pieces, one per syllable where the word may break (each keeps its
-  // soft hyphen at its end), so no piece is ever split across two lines
+  // soft hyphen, or its own hyphen, at its end), so no piece is ever split across two lines
   // and each can be moved on its own when the paragraph is set anew (see
   // reset).
   return (
     <motion.span className="std-word" style={reduce ? undefined : { color }}>
-      {children.split(/(?<=\u00ad)/).map((piece, i) => (
+      {children.split(/(?<=[\u00ad-])/).map((piece, i) => (
         <span key={i} className="std-piece">
           {piece}
         </span>
