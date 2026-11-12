@@ -275,5 +275,5 @@ Days, in working days (`PRICING.days`; what the user did not give is mine and pr
   | Saúde, 7 pages, form, SEO & GEO | 9–13 + 2–3 + 3–5 = 14–21 |
   | 14 pages Advanced, one more language, identity, shoot, SEO & GEO | 21–32 + 7 + 4–9 = 32–48 |
 
-- **Open:** the about FAQ says a large web design project "por norma não passa dos 18 a 22 dias úteis", and How we work says "from 4 working days for a one-page site". The second still holds; the first no longer does for the largest websites.
+- ~~Open: the about FAQ's "18 a 22 dias úteis"~~: settled 2026-11-12, the FAQ now points to the estimate's times and keeps only "a landing page from 4 working days", as How we work does.
 
