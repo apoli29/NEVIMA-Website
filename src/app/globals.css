@@ -1819,15 +1819,26 @@
      the size container the statement is measured against.            */
   .std-wrap { container-type: inline-size; }
   .std-lede { display: flex; justify-content: center; }
-  /* Short: the whole shell on a phone, two thirds of it on a tablet,
-     44% of it from lg. */
-  .std-copy { flex: 0 0 100cqw; }
+  /* Short: 89% of the shell on a phone, 59% on a tablet, 39% from lg
+     (user, 2026-11-12: 25% larger type in a narrower column than the
+     first cut's 100/66/44%, sized so the letters are exactly 25% larger
+     at every width). */
+  .std-copy { flex: 0 0 89.4cqw; }
   .std-measure { container-type: inline-size; }
   @media (min-width: 768px) {
-    .std-copy { flex-basis: 66cqw; }
+    .std-copy { flex-basis: 59cqw; }
   }
   @media (min-width: 1024px) {
-    .std-copy { flex-basis: 44cqw; }
+    .std-copy { flex-basis: 39.3cqw; }
+  }
+  /* Portuguese sets best a hair smaller against its column, so its column
+     is a hair wider: the letters are the same size in both languages. */
+  .std-copy:lang(pt) { flex-basis: 89.8cqw; }
+  @media (min-width: 768px) {
+    .std-copy:lang(pt) { flex-basis: 59.3cqw; }
+  }
+  @media (min-width: 1024px) {
+    .std-copy:lang(pt) { flex-basis: 39.5cqw; }
   }
 
   /* The statement, sized from its own measure, so it breaks in the same
@@ -1835,30 +1846,41 @@
      block. Justified type only sets evenly where the words fall well on
      each line: the size is tied to the measure and was picked by
      measuring the word gaps of every line, with soft hyphens set in the
-     long words (studio.tsx). 7.4cqi sets both languages evenly (widest
-     gap about 0.7em; in Portuguese "empresas." alone on the centred last
-     line). Recalculate it if the copy changes. No
+     long words (studio.tsx). At 10.35cqi a line holds three or four
+     words; the best setting near it leaves the widest gap at about 1.3em
+     in English (10.35cqi) and 1em in Portuguese (10.3cqi). Recalculate it if the copy
+     changes. No
      automatic hyphenation: where a browser has it, it would move the
      breaks this was tuned on. */
   .std-statement {
-    font-size: 7.4cqi;
+    font-size: 10.35cqi;
     line-height: 1.12;
     letter-spacing: -0.022em;
     text-align: justify;
     text-align-last: center;
     hyphens: manual;
   }
+  .std-statement:lang(pt) { font-size: 10.3cqi; }
 
   /* The ground (studio.tsx, StudioGround): held to the bottom-left, where
-     the fold starts. The grain is dark, thick at the edges and gone from
-     the middle, where the words are. */
+     the fold starts. The image is pure white wherever it has no tone and
+     carries no grain of its own. The grain is drawn here, as dark specks
+     on nothing (never a grey veil, so the white stays white), through two
+     masks added together: where the image has its tones and its stroke
+     (grain-mask.png, framed exactly like the image), and a ring round the
+     edges. The middle, where the words are, stays clean. */
   .std-ground { object-position: 0% 100%; }
   .std-grain {
-    opacity: 0.4;
-    mix-blend-mode: multiply;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1.6 -0.55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    -webkit-mask-image: radial-gradient(75% 70% at 50% 50%, transparent 35%, #000 100%);
-    mask-image: radial-gradient(75% 70% at 50% 50%, transparent 35%, #000 100%);
+    opacity: var(--std-grain, 0.38);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 9 0 0 0 -5.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    -webkit-mask-image: url("/studio/grain-mask.png"), radial-gradient(80% 75% at 50% 50%, transparent 55%, #000 100%);
+    mask-image: url("/studio/grain-mask.png"), radial-gradient(80% 75% at 50% 50%, transparent 55%, #000 100%);
+    -webkit-mask-size: cover, 100% 100%;
+    mask-size: cover, 100% 100%;
+    -webkit-mask-position: 0% 100%, 0 0;
+    mask-position: 0% 100%, 0 0;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
   }
   .std-read { color: var(--color-ink); }
   .std-word {
