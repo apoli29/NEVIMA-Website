@@ -44,8 +44,9 @@ type Question = {
   flow?: readonly string[];
   /** Points, each with an optional lead in bold. */
   list?: readonly { lead?: string; text: string }[];
-  /** Words after the steps or the points, in the same type. */
-  after?: string;
+  /** Words after the steps or the points, in the same type: a paragraph,
+      or several. */
+  after?: string | readonly string[];
   /** One word of the answer underlined (see Stressed). */
   stress?: string;
   /** Where to go next: a page, a place on the home page, or the
@@ -85,7 +86,7 @@ const QUESTIONS: readonly Question[] = [
   {
     id: "cost",
     q: "How much does a website cost?",
-    a: "It depends on the project: its size, its languages, the number of forms, the additional services chosen and several other factors. Our form calculates an accurate estimate for your project, and we always reply to every form sent within a few hours, to present the exact price on a short call.",
+    a: "It depends on the project: where your business is based, whether it’s a landing page or a website and which pages and sections it has, the design level, the languages, the additional services and the timeline (there’s an urgent option). Our form calculates an accurate estimate for your project, and we always reply to every form sent within a few hours, to present the exact price on a short call.",
     link: { label: "Get your free proposal", proposal: true },
   },
   {
@@ -96,12 +97,12 @@ const QUESTIONS: readonly Question[] = [
   {
     id: "time",
     q: "How long does a website take?",
-    a: "It depends on each project, which is why, once the form is filled in, we always give you a personalized timeline. A large web design project (with every kind of extra included) usually takes no more than 18 to 22 working days. It can take longer with other services included.",
+    a: "It depends on each project. At the end of the form, the estimate shows how long each service takes and how long the whole project takes, in working days, counted from when we have all your materials. A landing page, for example, can be ready in as little as 4 working days.",
   },
   {
     id: "start",
     q: "When does the service start, and when does it end?",
-    a: "We start the moment we have the signed contract and all your materials in hand. The project is complete once you approve the final website in our last call, after which it goes live. Even so, our support doesn\u2019t end there: we stay on hand for whatever you need.",
+    a: "We start the moment we have the signed contract, the 25% deposit and all your materials in hand. The project is complete once you approve the final website in our last call, and it goes live once the final payment is made. Even so, our support doesn\u2019t end there: we stay on hand for whatever you need.",
   },
   {
     id: "logistics",
@@ -109,11 +110,11 @@ const QUESTIONS: readonly Question[] = [
     list: [
       {
         lead: "You:",
-        text: "your materials (the photos you already have of your business, your logo and symbol) and the content of your legal pages, which is your business\u2019s own responsibility.",
+        text: "your materials (the photos you already have of your business, your logo and symbol, and your texts, if you have them), the content of your legal pages, which is your business\u2019s own responsibility, and what is paid directly to third parties: the domain and, when the free plan isn\u2019t enough, the plans of the platforms behind the back-end features.",
       },
       {
         lead: "Us:",
-        text: "we guide you through registering your domain (or connect the one you already have), host your website and put the legal pages on it. If applicable, we also guide you through registering your trademark, which is filed in your business\u2019s own name.",
+        text: "we review your texts or, if you have none, write them, at no extra cost; we guide you through registering your domain (or connect the one you already have), host your website and put the legal pages on it; and we set up the back-end features in your business\u2019s name. If applicable, we also guide you through registering your trademark, which is filed in your business\u2019s own name.",
       },
     ],
   },
@@ -125,7 +126,7 @@ const QUESTIONS: readonly Question[] = [
   {
     id: "monthly",
     q: "Will I pay a monthly fee?",
-    a: "Not for the website itself: hosting is free and basic SEO is already included. Only ongoing work is paid monthly, and only if you choose it: the monthly SEO & GEO service and the upkeep of what your website does behind the scenes (a form, a newsletter, bookings). The platforms those run on are paid to them directly, and cost nothing while their free plan is enough.",
+    a: "Not for the website itself: hosting is free and basic SEO is already included. Only ongoing work is paid monthly: the monthly SEO & GEO service, which is optional, and the upkeep of the back-end features (forms, newsletter, calendar and reservations), when you choose them. The platforms those run on are paid to them directly, and cost nothing while their free plan is enough.",
   },
   {
     id: "domain",
@@ -137,6 +138,7 @@ const QUESTIONS: readonly Question[] = [
     q: "What if I want changes to my website?",
     list: [
       { text: "Your first four small changes, of up to 15 minutes each, are free." },
+      { text: "From the fifth on, or for anything bigger, we send you a quote before we start." },
     ],
     after: "Even so, our process is already designed to avoid them: once part of your website is built, and if you would like it, we book a free call to show you the direction it\u2019s taking, and we adjust whatever your feedback calls for. The result? A website made to your taste, which will hardly need any changes.",
     link: { label: "See it in How we work", href: "/#process-strategy" },
@@ -156,17 +158,27 @@ const QUESTIONS: readonly Question[] = [
     id: "seo-geo",
     q: "What are SEO and GEO?",
     a: "SEO (Search Engine Optimization) is a set of practices that put a website in the best possible positions in the searches made by its target audiences. With poorly worked SEO, a website is lost in the last pages of results; with personalized SEO, it has a much better chance of reaching the first pages.",
-    after: "GEO (Generative Engine Optimization) is a different set of practices with a similar purpose, aimed at Artificial Intelligence instead. More and more of us turn to Artificial Intelligence for suggestions and recommendations, and these practices raise the chances of AI tools recommending a business to their users.",
+    after: [
+      "GEO (Generative Engine Optimization) is a different set of practices with a similar purpose, aimed at Artificial Intelligence instead. More and more of us turn to Artificial Intelligence for suggestions and recommendations, and these practices raise the chances of AI tools recommending a business to their users.",
+      "Every website we build includes basic SEO. Our SEO & GEO service goes further: one-off work, applied before launch, and an optional monthly service that keeps the results going after the first few months.",
+    ],
   },
   {
     id: "extras",
     q: "Do you offer the additional services separately?",
-    a: "As a rule, no: like all our additional services, they are offered together with a website we design. Still, if you have a specific need, get in touch and tell us about it.",
+    a: "As a rule, no: the back-end features, SEO & GEO, the photo shoot and the visual identity are offered together with a website we design. Still, if you have a specific need, get in touch and tell us about it.",
   },
   {
     id: "countries",
     q: "Which countries do you work with?",
-    a: "At the moment, our priorities are Portugal, Spain, Italy and the USA. If your business is in another country and you\u2019re interested in working with us, get in touch.",
+    a: "At the moment, our priorities are Portugal, Spain, Italy and the USA. The photo shoot is only available in mainland Portugal. If your business is in another country and you\u2019re interested in working with us, get in touch.",
+  },
+  {
+    // Their own kind of client in the form since 2026-11-05.
+    id: "nonprofit",
+    q: "Do you work with non-profit associations?",
+    a: "Yes. In the form, choose “A non-profit association” under “Who is the website for?”: the estimate then starts from a list of pages made for associations, such as projects, ways to help, events and activities, and transparency.",
+    link: { label: "Get your free proposal", proposal: true },
   },
   {
     id: "languages",
@@ -208,7 +220,7 @@ const PT_QUESTIONS: Record<string, Words> = {
   },
   cost: {
     q: "Quanto custa um website?",
-    a: "Depende do projeto: do tamanho, dos idiomas, do número de formulários, dos serviços adicionais escolhidos e de vários outros fatores. Temos um formulário que calcula uma estimativa precisa para o projeto do cliente, e respondemos sempre aos formulários submetidos em poucas horas, para apresentar o preço exato numa breve chamada.",
+    a: "Depende do projeto: do país do negócio, de ser uma landing page ou um website e das páginas e secções escolhidas, do nível de design, das línguas, dos serviços adicionais e do prazo (há a opção de prazo urgente). Temos um formulário que calcula uma estimativa precisa para o projeto do cliente, e respondemos sempre aos formulários submetidos em poucas horas, para apresentar o preço exato numa breve chamada.",
     link: "Pedir proposta gratuita",
   },
   reply: {
@@ -217,22 +229,22 @@ const PT_QUESTIONS: Record<string, Words> = {
   },
   time: {
     q: "Quanto tempo demora um website?",
-    a: "Depende de cada projeto, e é por isso que, depois de preenchido o formulário, indicamos sempre um prazo personalizado. Um grande projeto de web design (com todo o tipo de extras incluídos) por norma não passa dos 18 a 22 dias úteis. Pode demorar mais com outros serviços incluídos.",
+    a: "Depende de cada projeto. No fim do formulário, a estimativa indica o prazo de cada serviço e o do projeto completo, em dias úteis, a contar da entrega de todos os materiais. Uma landing page, por exemplo, pode ficar pronta a partir de 4 dias úteis.",
   },
   start: {
     q: "Quando começa o serviço, e quando termina?",
-    a: "Começamos assim que tivermos o contrato assinado e todos os materiais necessários. O projeto fica concluído quando o website final é aprovado na nossa última chamada, sendo posteriormente colocado no ar. Ainda assim, o nosso apoio não acaba aí: continuamos disponíveis para o que for necessário.",
+    a: "Começamos assim que tivermos o contrato assinado, o sinal de 25% pago e todos os materiais necessários. O projeto fica concluído quando o website final é aprovado na nossa última chamada, e é colocado no ar depois do pagamento final. Ainda assim, o nosso apoio não acaba aí: continuamos disponíveis para o que for necessário.",
   },
   logistics: {
     q: "De que é que tenho de tratar a nível logístico, e o que faz a Nevima por mim?",
     list: [
       {
         lead: "Cliente:",
-        text: "os materiais (as fotografias já existentes do negócio, o logótipo e o símbolo) e o conteúdo das páginas legais, que é da responsabilidade do próprio negócio.",
+        text: "os materiais (as fotografias já existentes do negócio, o logótipo e o símbolo, e os textos, se existirem), o conteúdo das páginas legais, que é da responsabilidade do próprio negócio, e o que se paga diretamente a terceiros: o domínio e, quando o plano gratuito não chega, os planos das plataformas das funcionalidades de back end.",
       },
       {
         lead: "Nevima:",
-        text: "acompanhamos o registo do domínio (ou ligamos um já existente), alojamos o website e colocamos nele as páginas legais. Se se aplicar, acompanhamos ainda o cliente no registo da marca, que é feito em nome do próprio negócio.",
+        text: "revemos os textos ou, se não existirem, escrevemo-los, sem custo adicional; acompanhamos o registo do domínio (ou ligamos um já existente), alojamos o website e colocamos nele as páginas legais; e configuramos as funcionalidades de back end em nome do negócio. Se se aplicar, acompanhamos ainda o cliente no registo da marca, que é feito em nome do próprio negócio.",
       },
     ],
   },
@@ -242,7 +254,7 @@ const PT_QUESTIONS: Record<string, Words> = {
   },
   monthly: {
     q: "Vou pagar uma mensalidade?",
-    a: "Pelo website, não: o alojamento é gratuito e o SEO básico já está incluído. Só se paga ao mês o trabalho contínuo, e apenas se for escolhido: o serviço mensal de SEO & GEO e a manutenção do que o website faz por trás (um formulário, uma newsletter, reservas). As plataformas em que isso funciona são pagas diretamente a elas, e não custam nada enquanto o plano gratuito chegar.",
+    a: "Pelo website, não: o alojamento é gratuito e o SEO básico já está incluído. Só se paga ao mês o trabalho contínuo: o serviço mensal de SEO e GEO, que é opcional, e a manutenção das funcionalidades de back end (formulários, newsletter, calendário e reservas), quando estas são escolhidas. As plataformas em que isso funciona são pagas diretamente a elas, e não custam nada enquanto o plano gratuito chegar.",
   },
   domain: {
     q: "Preciso de ter um domínio próprio?",
@@ -252,6 +264,7 @@ const PT_QUESTIONS: Record<string, Words> = {
     q: "E se eu desejar alterações no website?",
     list: [
       { text: "As primeiras quatro alterações pequenas, de até 15 minutos cada, não são cobradas." },
+      { text: "A partir da quinta, ou para algo maior, enviamos um orçamento antes de começar." },
     ],
     after: "No entanto, o nosso processo já foi pensado para as evitar: quando parte do website estiver construída, e se o cliente o pretender, marcamos uma chamada gratuita para mostrar a direção que está a tomar, e ajustamos o que for necessário com base no feedback. O resultado? Um website feito à medida do gosto do cliente, que dificilmente vai precisar de alterações.",
     link: "Ver como funciona em Como trabalhamos",
@@ -268,15 +281,23 @@ const PT_QUESTIONS: Record<string, Words> = {
   "seo-geo": {
     q: "O que são o SEO e o GEO?",
     a: "O SEO (Search Engine Optimization) consiste num conjunto de práticas que colocam um website nas melhores posições possíveis das pesquisas efetuadas pelos públicos-alvo. Com um SEO mal trabalhado, um website fica perdido nas últimas páginas de resultados; com um SEO personalizado, tem muito mais hipóteses de alcançar as primeiras páginas.",
-    after: "O GEO (Generative Engine Optimization) consiste num conjunto de práticas diferentes, com um propósito semelhante, mas direcionado para a Inteligência Artificial. Todos nós usamos cada vez mais a Inteligência Artificial para obter sugestões e recomendações, e estas práticas aumentam a probabilidade de as ferramentas de Inteligência Artificial recomendarem um negócio aos seus utilizadores.",
+    after: [
+      "O GEO (Generative Engine Optimization) consiste num conjunto de práticas diferentes, com um propósito semelhante, mas direcionado para a Inteligência Artificial. Todos nós usamos cada vez mais a Inteligência Artificial para obter sugestões e recomendações, e estas práticas aumentam a probabilidade de as ferramentas de Inteligência Artificial recomendarem um negócio aos seus utilizadores.",
+      "Todos os websites que fazemos incluem SEO básico. O serviço de SEO e GEO vai mais longe: um trabalho pontual, aplicado antes do lançamento, e um serviço mensal opcional, que mantém os resultados depois dos primeiros meses.",
+    ],
   },
   extras: {
     q: "Oferecem os serviços adicionais em separado?",
-    a: "Por norma, não: como todos os nossos serviços adicionais, são oferecidos em conjunto com um website feito por nós. Ainda assim, perante uma necessidade específica, estamos disponíveis para conversar.",
+    a: "Por norma, não: as funcionalidades de back end, o SEO e GEO, a sessão fotográfica e a identidade visual são oferecidos em conjunto com um website feito por nós. Ainda assim, perante uma necessidade específica, estamos disponíveis para conversar.",
   },
   countries: {
     q: "Com que países trabalham?",
-    a: "Neste momento, as nossas prioridades são Portugal, Espanha, Itália e os EUA. Para negócios noutros países com interesse em trabalhar connosco, estamos disponíveis para conversar.",
+    a: "Neste momento, as nossas prioridades são Portugal, Espanha, Itália e os EUA. A sessão fotográfica só está disponível em Portugal continental. Para negócios noutros países com interesse em trabalhar connosco, estamos disponíveis para conversar.",
+  },
+  nonprofit: {
+    q: "Trabalham com associações sem fins lucrativos?",
+    a: "Sim. No formulário, basta escolher “Uma associação sem fins lucrativos” em “O website é para…”: a estimativa parte então de uma lista de páginas pensada para associações, como projetos, formas de ajudar, eventos e atividades, e transparência.",
+    link: "Pedir proposta gratuita",
   },
   languages: {
     q: "Em que línguas pode estar o meu website?",
@@ -469,11 +490,16 @@ function Question({
                     ))}
                   </ul>
                 )}
-                {item.after && (
-                  <p data-lit="true" className={`svc-copy std-ink abt-ragged abt-answer ${item.flow || item.list ? "mt-5" : ""}`}>
-                    {item.after}
-                  </p>
-                )}
+                {item.after &&
+                  (typeof item.after === "string" ? [item.after] : item.after).map((words, i) => (
+                    <p
+                      key={i}
+                      data-lit="true"
+                      className={`svc-copy std-ink abt-ragged abt-answer ${item.flow || item.list || i > 0 ? "mt-5" : ""}`}
+                    >
+                      {words}
+                    </p>
+                  ))}
                 {item.link && (
                   <div className={item.flow || item.list || item.after ? "mt-7" : ""}>
                     {"proposal" in item.link ? (
