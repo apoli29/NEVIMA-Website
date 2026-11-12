@@ -17,11 +17,9 @@ import { ENTER_EASE } from "./enter";
    line, two round portraits in colour in a capsule: the section's way to
    the about page. The pillar and the stroke to How we work are gone.
 
-   Its ground is the about page's photograph turned inside out (user,
-   same day): mostly white, the soft light fold become a black one that
-   rises from the bottom-left corner on the diagonal and fades as it
-   climbs, every other shade evened out, with a darker grain towards the
-   edges (StudioGround).
+   It stands on the page's plain white (user, 2026-11-12: the inverted
+   photograph tried behind it hurt the sentence's legibility and was
+   taken out).
 
    The co-founders' full plates are on the about page (cofounders.tsx).
    ================================================================== */
@@ -36,8 +34,6 @@ const STATEMENT: Copy = {
 /** How far below its place the statement starts, in pixels. */
 const ENTER_SHIFT = 28;
 
-/** The ground, at four widths (see StudioGround). */
-const GROUND = [1280, 1600, 1920, 2400].map((w) => ({ w, src: `/studio/ridge-${w}.webp` }));
 
 const FOUNDERS = [
   { name: "Emanuel Costa", photo: "/cofounders/ec-face.webp", focus: "44% 45%" },
@@ -67,13 +63,9 @@ export function Studio({ ready }: { ready: boolean }) {
       // held in the middle of it, with at least a section's room above and
       // below, so it stands well clear of the second screen it is drawn
       // over and of the services under it. A little more room on top: the
-      // bar hangs over that end. More still at the foot (2026-11-12), so
-      // the sentence sits a little above the middle, clear of the black
-      // stroke rising along the bottom of its ground. One layer above the
-      // services.
-      className="relative isolate z-[11] flex min-h-[100svh] flex-col justify-center overflow-hidden bg-paper pt-[calc(var(--section-gap)+2rem)] pb-[calc(var(--section-gap)+8svh)]"
+      // bar hangs over that end. One layer above the services.
+      className="relative z-[11] flex min-h-[100svh] flex-col justify-center bg-paper pt-[calc(var(--section-gap)+2rem)] pb-(--section-gap)"
     >
-      <StudioGround />
       <div className="shell">
         <h2 id="studio-title" className="sr-only">
           {t("About Nevima", "Sobre a Nevima")}
@@ -595,31 +587,5 @@ function Portraits({
         </span>
       </span>
     </motion.a>
-  );
-}
-
-/* The ground: the about page's photograph of soft folds of light, turned
-   inside out and evened (user, 2026-11-12). Baked into the files at four
-   widths, so a phone takes the 1280 or the 1600. Held to the bottom-left,
-   where the fold starts, so it always rises from that corner whatever the
-   screen's shape. Over it, a dark grain that thickens towards the edges
-   and leaves the middle, where the words are, clean. */
-function StudioGround() {
-  return (
-    <>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={GROUND[3]!.src}
-        srcSet={GROUND.map((g) => `${g.src} ${g.w}w`).join(", ")}
-        sizes="100vw"
-        alt=""
-        aria-hidden="true"
-        draggable={false}
-        loading="lazy"
-        decoding="async"
-        className="std-ground absolute inset-0 -z-20 size-full object-cover select-none"
-      />
-      <span aria-hidden="true" className="std-grain absolute inset-0 -z-10" />
-    </>
   );
 }
