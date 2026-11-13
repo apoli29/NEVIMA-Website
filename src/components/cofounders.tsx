@@ -41,8 +41,12 @@ type Founder = {
   /** Where to find them elsewhere. An empty href is a link still to come:
       the button is shown, at rest (user, 2026-10-14). */
   links: readonly { label: string; href: string }[];
-  /** Where the crop sits across the frame. Emanuel is lit from the side
-      and looking off to the left, so his crop leaves room on that side. */  focus?: string;
+  /** Where the crop sits across the frame, for a photograph wider than
+      the 4:5 box it hangs in. Emanuel's is cut to the box in the file
+      itself (2026-11-12): `sizes` is read off the box's width, so a
+      landscape photograph had the browser fetch a copy sized for the
+      width and then blow it up to fill the height. */
+  focus?: string;
 };
 
 /* Left to right, top to bottom, as they hang. */
@@ -64,7 +68,6 @@ const FOUNDERS: Founder[] = [
       { label: "LinkedIn", href: "" },
       { label: "Portfolio", href: "" },
     ],
-    focus: "44% 50%",
   },
   {
     id: "ap",
