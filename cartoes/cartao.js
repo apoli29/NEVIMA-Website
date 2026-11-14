@@ -34,7 +34,7 @@
 
   /* O "n": caixa justa dentro do ícone de 512. */
   const N = { x0: 138.24, y0: 124.2, w: 235.52, h: 258.48 };
-  const N_H = 3.4; // altura do "n" no verso, em mm
+  const N_H = 4.1; // altura do "n" no verso, em mm (3,4 + 20%, utilizador 2026-11-14)
 
   const logoPaths = () =>
     window.MARCA.logo

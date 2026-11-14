@@ -58,8 +58,8 @@
 
     /* Canto inferior direito: o grão rareia aos poucos à volta do "n",
        para o símbolo se ler limpo (utilizador, 2026-11-14). */
-    const dn = Math.hypot(x - 80.5, y - 48.3);
-    const clareira = 1 - 0.85 * Math.exp(-Math.pow(dn / 13, 2));
+    const dn = Math.hypot(x - 78.1, y - 48);
+    const clareira = 1 - 0.85 * Math.exp(-Math.pow(dn / 15, 2));
 
     const p = (1 - (1 - base) * (1 - corner) * (1 - stripe)) * clareira;
     return Math.min(p, 0.82);
