@@ -22,7 +22,7 @@ Os cartões do António e do Emanuel. A fonte é `cartoes/` (`cartao.js` desenha
   - António Policarpo · Cofundador · antonio@nevima.studio · +351 910 555 780
   - Emanuel Costa · Cofundador · emanuel@nevima.studio · +351 917 861 347
   - Em português, com emails próprios (utilizador). **Os endereços antonio@ e emanuel@ têm de existir antes de se imprimir:** hoje o site só usa ola@nevima.studio.
-- **Símbolo:** o "n" do wordmark, que já é o ícone do site (`src/app/icon.svg`), escolhido pelo utilizador enquanto não há símbolo oficial. Quando o símbolo existir, troca-se em `marca.js` (`n`) e volta-se a gerar.
+- **Símbolo:** o "n" do wordmark, que já é o ícone do site (`src/app/icon.svg`), escolhido pelo utilizador enquanto não há símbolo oficial. Tem 4,1 mm de altura: eram 3,4 mm e o utilizador pediu mais 20% (2026-11-14). A base assenta na mesma linha que "Portugal" e o lado direito fica a 5 mm do bordo. Quando o símbolo existir, troca-se em `marca.js` (`n`) e volta-se a gerar.
 
 ## Para a gráfica
 
