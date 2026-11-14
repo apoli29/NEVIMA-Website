@@ -6,9 +6,19 @@ Os cartões do António e do Emanuel. A fonte é `cartoes/` (`cartao.js` desenha
 
 - **Formato:** 85 × 55 mm, o corrente em Portugal, cantos retos, margens de 5 mm. Os PDFs têm 3 mm de sangria (91 × 61 mm) e não têm marcas de corte.
 - **Papel:** algodão mate, grosso, como o da Antora (imagem 3 do utilizador). Um duplex: papel **preto** na frente colado a papel **branco** no verso, com cerca de 1 mm. A aresta mostra as duas camadas (o mockup desenha-a assim).
-- **Frente (utilizador, 2026-11-14):** fundo totalmente preto, o wordmark **branco**, à esquerda e em baixo, quase de lado a lado (a referência "martillo"), com 75 mm de largura e a 5 mm do bordo esquerdo e da base. O logótipo é **prensado para dentro** do papel (deboss, não emboss; a referência AURORA). O utilizador corrigiu a primeira proposta (cartão branco, deboss com tinta preta): a frente é preta e o logótipo branco.
+- **Frente (utilizador, 2026-11-14):** fundo totalmente preto e o wordmark **branco**, à esquerda e em baixo (a referência "martillo"), a 5 mm do bordo esquerdo e da base. O logótipo é **prensado para dentro** do papel (deboss, não emboss; a referência AURORA). O utilizador corrigiu a primeira proposta (cartão branco, deboss com tinta preta): a frente é preta e o logótipo branco.
+  - **2.ª ronda (utilizador, 2026-11-14):**
+    - O wordmark passou de 75 mm (quase de lado a lado) para **62 mm**, para se ler alinhado à esquerda.
+    - Leva o **™**, em Satoshi 500, a seguir ao "a", com o topo na altura de x. O ™ também vai na chapa.
+    - As letras são **branco puro**: saíram a sombra interior, o brilho e as manchas de tinta. O relevo lê-se só no papel à volta das letras.
+    - Nos mockups, a sombra diagonal da cena passa a ficar só no fundo, para não acinzentar o branco.
 - **Verso (utilizador):** fundo branco com grãos pretos (a referência Duna, invertida). O grão é leve em todo o cartão e mais denso e irregular no canto superior direito, com uma risca curva e subtil nesse canto, desfocada pelo próprio granulado. O desenho do grão é fixo (semente em `cartao.js`): é igual nos dois cartões e sai igual sempre que se gera.
-- **Informações (utilizador: a disposição da Antora):** nome em cima à esquerda; em baixo à esquerda o cargo, o email e o telefone; depois, a cinzento, o site e o país. O "n" fica em baixo à direita. Tudo em Satoshi, em maiúsculas: o nome a 700 e o resto a 500, com 6,6 pt.
+- **Informações (utilizador: a disposição da Antora):**
+  - O "n" fica em baixo à direita. Tudo em Satoshi, em maiúsculas.
+  - Na 2.ª ronda (utilizador, 2026-11-14), o nome e o cargo ficaram maiores e a hierarquia passou a ter três níveis:
+    - **o nome**, em 10,5 pt e peso 700, em cima à esquerda;
+    - **o cargo**, em 7,5 pt e peso 500, logo por baixo;
+    - **os contactos**, em 6,2 pt e peso 500, em baixo à esquerda: o email e o telefone a preto e, depois de um intervalo, o site e o país a cinzento.
   - António Policarpo · Cofundador · antonio@nevima.studio · +351 910 555 780
   - Emanuel Costa · Cofundador · emanuel@nevima.studio · +351 917 861 347
   - Em português, com emails próprios (utilizador). **Os endereços antonio@ e emanuel@ têm de existir antes de se imprimir:** hoje o site só usa ola@nevima.studio.
