@@ -12,7 +12,7 @@ Os cartões do António e do Emanuel. A fonte é `cartoes/` (`cartao.js` desenha
     - Leva o **™**, em Satoshi 500, a seguir ao "a", com o topo na altura de x. O ™ também vai na chapa.
     - As letras são **branco puro**: saíram a sombra interior, o brilho e as manchas de tinta. O relevo lê-se só no papel à volta das letras.
     - Nos mockups, a sombra diagonal da cena passa a ficar só no fundo, para não acinzentar o branco.
-- **Verso (utilizador):** fundo branco com grãos pretos (a referência Duna, invertida). O grão é leve em todo o cartão e mais denso e irregular no canto superior direito, com uma risca curva e subtil nesse canto, desfocada pelo próprio granulado. O desenho do grão é fixo (semente em `cartao.js`): é igual nos dois cartões e sai igual sempre que se gera.
+- **Verso (utilizador):** fundo branco com grãos pretos (a referência Duna, invertida). O grão é leve em todo o cartão e mais denso e irregular no canto superior direito, com uma risca curva e subtil nesse canto, desfocada pelo próprio granulado. À volta do "n", em baixo à direita, o grão rareia aos poucos, até 85% menos junto ao símbolo, para que se leia limpo (utilizador, 2026-11-14). O desenho do grão é fixo (semente em `cartao.js`): é igual nos dois cartões e sai igual sempre que se gera.
 - **Informações (utilizador: a disposição da Antora):**
   - O "n" fica em baixo à direita. Tudo em Satoshi, em maiúsculas.
   - Na 2.ª ronda (utilizador, 2026-11-14), o nome e o cargo ficaram maiores e a hierarquia passou a ter três níveis:
