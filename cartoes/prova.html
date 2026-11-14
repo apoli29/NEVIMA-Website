@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<title>Cartões nevima — prova para a gráfica</title>
+<!-- Abre-se com ?quem=antonio, ?quem=emanuel ou ?quem=chapa; gerar.cjs
+     imprime cada um para PDF. Cada página é o cartão com 3 mm de sangria
+     (91 × 61 mm), sem marcas de corte. -->
+<style>
+  @font-face { font-family: Satoshi; src: url(../fonts/Satoshi/Satoshi-Variable.woff2) format("woff2"); font-weight: 300 900; }
+  @page { size: 91mm 61mm; margin: 0; }
+  html, body { margin: 0; background: #fff; }
+  .pagina { width: 91mm; height: 61mm; overflow: hidden; break-after: page; }
+  .pagina:last-child { break-after: auto; }
+  .pagina svg { display: block; }
+</style>
+</head>
+<body>
+<script src="marca.js"></script>
+<script src="grao.js"></script>
+<script src="cartao.js"></script>
+<script>
+  const quem = new URLSearchParams(location.search).get("quem") || "antonio";
+  const B = 3, DPI = 600;
+  const pag = (svg) => `<div class="pagina">${svg}</div>`;
+  document.body.insertAdjacentHTML("beforeend", quem === "chapa"
+    ? pag(CARTAO.frente({ bleed: B, chapa: true }))
+    : pag(CARTAO.frente({ bleed: B })) + pag(CARTAO.verso(quem, { bleed: B, pxPerMm: DPI / 25.4 })));
+  document.fonts.ready.then(() => { document.body.dataset.pronto = "1"; });
+</script>
+</body>
+</html>
