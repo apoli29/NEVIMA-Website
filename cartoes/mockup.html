@@ -88,14 +88,13 @@
       <div class="luz" style="background:radial-gradient(120% 90% at 85% 5%, rgba(255,255,255,.07), rgba(0,0,0,0) 60%)"></div>
       <div class="luz" style="background:linear-gradient(118deg, rgba(0,0,0,0) 58%, rgba(0,0,0,.42) 74%, rgba(0,0,0,.30) 100%)"></div>`;
   }
-  const sombraPorCima = `<div class="luz" style="background:linear-gradient(118deg, rgba(0,0,0,0) 60%, rgba(0,0,0,.30) 76%, rgba(0,0,0,.22) 100%)"></div>`;
 
   let html = "";
   if (cena === "par") {
     const quem = q.get("quem") || "antonio";
     const w = 620, h = w * 55 / 85, gap = 74;
     const x = (1600 - w) / 2 + 20, y0 = (1100 - (2 * h + gap)) / 2;
-    html = fundo() + cartao("frente", quem, x, y0, w) + cartao("verso", quem, x, y0 + h + gap, w) + sombraPorCima;
+    html = fundo() + cartao("frente", quem, x, y0, w) + cartao("verso", quem, x, y0 + h + gap, w);
   } else if (cena === "todos") {
     const w = 520, h = w * 55 / 85, gx = 90, gy = 80;
     const col = (i) => -150 + i * (w + gx), row = (j) => -70 + j * (h + gy);
@@ -106,13 +105,11 @@
       + cartao("verso", "antonio", col(1), row(1), w)
       + cartao("verso", "emanuel", col(2), row(1), w)
       + cartao("verso", "emanuel", col(0) + 300, row(2), w)
-      + cartao("frente", "emanuel", col(1) + 300, row(2), w)
-      + sombraPorCima;
+      + cartao("frente", "emanuel", col(1) + 300, row(2), w);
   } else {
     const w = 1500;
     html = fundo() + cartao("frente", "antonio", 90, -60, w,
-      "transform:rotate(-4deg);transform-origin:50% 100%")
-      + sombraPorCima;
+      "transform:rotate(-4deg);transform-origin:50% 100%");
   }
   document.body.insertAdjacentHTML("beforeend", `<div class="cena">${html}</div>`);
   document.fonts.ready.then(() => { document.body.dataset.pronto = "1"; });
