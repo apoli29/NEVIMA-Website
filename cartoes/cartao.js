@@ -70,8 +70,8 @@
      dela. São brancas e impressas, sem deboss (o relevo comeria letra tão
      pequena). */
   const NOTAS = [
-    { x: M, linhas: ["Estúdio de web design", "e identidade visual"] },
-    { x: W / 2, linhas: ["nevima.studio", "Portugal"] },
+    { x: M, linhas: ["Soluções de websites", "e design de topo"] }, // utilizador, 2026-11-15
+    { x: W / 2, linhas: ["nevima.studio", "nevima.pt"] },
   ];
   const MONO_CAP = 0.71; // altura das maiúsculas da Geist Mono (medida)
   const notas = (cor) => {
