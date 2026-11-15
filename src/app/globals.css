@@ -3951,14 +3951,16 @@
   /* ---- the page going down, the same on both sides ---------------- */
   /* The stops are written in the page's own pixels; translate is applied
      outside the scale, so each is taken down to the plate by --sbs-k. */
-  /* The last stop is held longest: on our side it is where the steps
+  /* The third stop is held longest: on our side it is where the steps
      walk themselves through (side-by-side.tsx reads this lap's progress,
-     so keep its 53% to 92% hold in step with the marks there). */
+     so keep its 47% to 80% hold in step with the marks there); the
+     fourth, short, is the foot of each page. */
   @keyframes sbs-scroll {
-    0%, 15% { translate: 0 0; }
-    19%, 32% { translate: 0 calc(var(--sbs-stop-1) * var(--sbs-k)); }
-    36%, 49% { translate: 0 calc(var(--sbs-stop-2) * var(--sbs-k)); }
-    53%, 92% { translate: 0 calc(var(--sbs-stop-3) * var(--sbs-k)); }
+    0%, 13% { translate: 0 0; }
+    17%, 28% { translate: 0 calc(var(--sbs-stop-1) * var(--sbs-k)); }
+    32%, 43% { translate: 0 calc(var(--sbs-stop-2) * var(--sbs-k)); }
+    47%, 80% { translate: 0 calc(var(--sbs-stop-3) * var(--sbs-k)); }
+    84%, 94% { translate: 0 calc(var(--sbs-stop-4) * var(--sbs-k)); }
     100% { translate: 0 0; }
   }
   .sbs-run .sbs-mini {
@@ -3968,7 +3970,7 @@
   /* ================= the off-the-shelf template ==================== */
   /* The stops are each side's own, so each page ends on its own
      foot: the moments are shared, the distances are not. */
-  .sbs-t-page { --sbs-stop-1: -347px; --sbs-stop-2: -694px; --sbs-stop-3: -1039px; background: #fff; }
+  .sbs-t-page { --sbs-stop-1: -260px; --sbs-stop-2: -520px; --sbs-stop-3: -780px; --sbs-stop-4: -1039px; background: #fff; }
 
   /* The bar that never gets there: it crawls, stalls, and starts again. */
   .sbs-load {
@@ -4094,6 +4096,7 @@
     --sbs-stop-1: -700px;
     --sbs-stop-2: -1190px;
     --sbs-stop-3: -1670px;
+    --sbs-stop-4: -2100px;
     --p-noite: #111525;
     --p-grafite: #434655;
     --p-nevoa: #a8aabc;
@@ -4276,6 +4279,35 @@
   .sbs-p-step-nav button:disabled { opacity: 0.35; cursor: default; }
   .sbs-p-step-nav svg { width: 12px; height: 12px; }
 
+  /* The foot (Noite, matte, never metallic): one wide, soft glow of
+     Grafite from the top left and a fine grain over it, so it reads as a
+     surface rather than a polish; the logo is not repeated here (user,
+     2026-11-16). */
+  .sbs-p-foot {
+    position: relative;
+    isolation: isolate;
+    padding: 56px 60px 0;
+    color: #fff;
+    background: radial-gradient(140% 110% at 0% 0%, rgb(67 70 85 / 0.32), rgb(67 70 85 / 0) 65%), var(--p-noite);
+  }
+  .sbs-p-foot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.07;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .sbs-p-foot-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; padding-bottom: 40px; border-bottom: 1px solid rgb(255 255 255 / 0.14); }
+  .sbs-p-foot-top h4 { margin: 0; max-width: 15ch; font-family: var(--p-display); font-weight: 400; font-size: 40px; line-height: 1.05; letter-spacing: -0.015em; }
+  .sbs-p-foot-cta { flex: none; padding: 13px 22px; border-radius: 999px; background: #fff; color: var(--p-noite); font-size: 13px; font-weight: 500; }
+  .sbs-p-foot-cols { display: grid; grid-template-columns: 1.1fr 1fr 1fr 1.4fr; gap: 24px; padding: 36px 0 40px; }
+  .sbs-p-foot-cols b { display: block; margin-bottom: 14px; font-family: var(--p-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--p-nevoa); }
+  .sbs-p-foot-cols span { display: block; font-size: 14px; line-height: 1.9; color: rgb(255 255 255 / 0.86); }
+  .sbs-p-foot-cols small { display: block; font-size: 13px; line-height: 1.6; color: rgb(255 255 255 / 0.74); }
+  .sbs-p-foot-legal { display: flex; justify-content: space-between; gap: 16px; padding: 18px 0 24px; border-top: 1px solid rgb(255 255 255 / 0.14); font-size: 12px; color: rgb(255 255 255 / 0.74); }
+  .sbs-p-foot-legal > span > span + span { margin-left: 18px; }
+
   .sbs-note { margin-top: clamp(1.5rem, 3vw, 2.25rem); color: rgb(255 255 255 / 0.62); text-transform: none; letter-spacing: 0.02em; }
 
   /* Held still: both pages as they end up, the template's mess included. */
@@ -4320,7 +4352,7 @@
     .sbs-mini { width: 620px; }
     .sbs-screen { aspect-ratio: 3 / 4; }
 
-    .sbs-t-page { --sbs-stop-1: -420px; --sbs-stop-2: -845px; --sbs-stop-3: -1267px; }
+    .sbs-t-page { --sbs-stop-1: -317px; --sbs-stop-2: -634px; --sbs-stop-3: -951px; --sbs-stop-4: -1267px; }
     .sbs-t-top { gap: 10px; padding: 10px 18px; font-size: 11px; }
     .sbs-t-nav { gap: 9px; }
     .sbs-t-copy { padding: 20px 18px 4px; }
@@ -4343,6 +4375,10 @@
     .sbs-p-sheet-copy p { max-width: 46ch; }
     .sbs-p-how { grid-template-columns: 1fr; gap: 28px; padding: 52px 36px 52px; }
     .sbs-p-how p { max-width: 46ch; }
+    .sbs-p-foot { padding: 48px 36px 0; }
+    .sbs-p-foot-top { flex-direction: column; align-items: flex-start; gap: 22px; }
+    .sbs-p-foot-cols { grid-template-columns: 1fr 1fr; row-gap: 28px; }
+    .sbs-p-foot-legal { flex-direction: column; gap: 8px; }
   }
 }
 
