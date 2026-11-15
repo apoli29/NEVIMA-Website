@@ -110,7 +110,7 @@
     const img = graoURL(o.pxPerMm || 12, b, o.seed || 11, o.papel);
     /* Três níveis (utilizador, 2026-11-14: o nome e o cargo maiores):
        o nome, o cargo logo por baixo, e os contactos, mais pequenos, em baixo. */
-    const CARGO = 7.5 * PT, CORPO = 6.2 * PT;
+    const CORPO = 6.2 * PT;
     const CAP = 0.7; // altura das maiúsculas da Satoshi, em fração do corpo
     const t = (y, s, corpo, cor, peso, ls) =>
       `<text x="${M}" y="${y}" font-size="${corpo}" fill="${cor}" font-weight="${peso}" letter-spacing="${ls}">${s.toUpperCase()}</text>`;
@@ -120,9 +120,17 @@
     const n = Object.assign({ familia: "Satoshi, sans-serif", pt: 10.5, peso: 700, estilo: "normal", maiusculas: true, ls: 0.02, cap: CAP }, o.nome);
     const nomeCorpo = n.pt * PT;
     const nomeY = M + nomeCorpo * n.cap;
-    const cargoY = nomeY + CARGO * 1.75;
     const nomeTexto = n.maiusculas ? p.nome.toUpperCase() : p.nome;
-    const nomeSVG = `<text x="${M - (n.recuo || 0)}" y="${nomeY}" font-family="${n.familia}" font-size="${nomeCorpo}" font-weight="${n.peso}" font-style="${n.estilo}" letter-spacing="${n.ls}" fill="#000"${n.extra ? " " + n.extra : ""}>${nomeTexto}</text>`;
+    /* Com n.pesos = [primeiro, apelido], o primeiro nome e o apelido levam
+       pesos diferentes, como o site os escreve na página About. */
+    const partes = nomeTexto.split(" ");
+    const nomeConteudo = n.pesos
+      ? `<tspan font-weight="${n.pesos[0]}">${partes.slice(0, -1).join(" ")} </tspan><tspan font-weight="${n.pesos[1]}">${partes[partes.length - 1]}</tspan>`
+      : nomeTexto;
+    const nomeSVG = `<text x="${M - (n.recuo || 0)}" y="${nomeY}" font-family="${n.familia}" font-size="${nomeCorpo}" font-weight="${n.peso}" font-style="${n.estilo}" letter-spacing="${n.ls}" fill="#000"${n.extra ? " " + n.extra : ""}>${nomeConteudo}</text>`;
+    /* O cargo pode também mudar de letra (o.cargo), por omissão a Satoshi. */
+    const c = Object.assign({ familia: "Satoshi, sans-serif", pt: 7.5, peso: 500, ls: 0.06, gap: 1.75 }, o.cargo);
+    const cargoSVG = `<text x="${M}" y="${nomeY + c.pt * PT * c.gap + (n.depois || 0)}" font-family="${c.familia}" font-size="${c.pt * PT}" font-weight="${c.peso}" letter-spacing="${c.ls}" fill="#000">${p.cargo.toUpperCase()}</text>`;
     // Em baixo, a última linha assenta a 5 mm do corte.
     const base = H - M;
     const lh = CORPO * 1.45;
@@ -133,7 +141,7 @@
       ["nevima.studio", "#6f6f6f", base - lh],
       ["Portugal", "#6f6f6f", base],
     ].map((l) => t(l[2], l[0], CORPO, l[1], 500, 0.05)).join("");
-    const texto = nomeSVG + t(cargoY, p.cargo, CARGO, "#000", 500, 0.06) + contactos;
+    const texto = nomeSVG + cargoSVG + contactos;
     const nS = N_H / N.h;
     const nT = `translate(${W - M - N.w * nS} ${base - N_H}) scale(${nS}) translate(${-N.x0} ${-N.y0})`;
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-b} ${-b} ${W + 2 * b} ${H + 2 * b}" width="100%" height="100%" preserveAspectRatio="none">
