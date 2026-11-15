@@ -51,7 +51,7 @@
      da frente, com as duas hastes da ponta em ângulo reto (uma horizontal e
      outra vertical). A aresta de fora da ponta assenta nas margens de 5 mm.
      É branca e prensada como o logótipo, e vai também na chapa. */
-  const SETA = { lado: 6.5, haste: 3, traco: 0.8 };
+  const SETA = { lado: 4.2, haste: 3.8, traco: 0.8 };
   const seta = (cor) => {
     const h = SETA.traco / 2;
     const x = W - M - h, y = M + h; // a ponta, ao centro do traço
