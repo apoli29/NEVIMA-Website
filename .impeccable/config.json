@@ -41,6 +41,12 @@
         "value": "instrument sans",
         "createdAt": "2026-10-15T17:19:22.200Z",
         "reason": "Instrument Sans is the site's reading face (src/app/layout.tsx); the contract reuses the site's design system at the user's request (2026-10-15)"
+      },
+      {
+        "rule": "overused-font",
+        "value": "plus jakarta sans",
+        "createdAt": "2026-11-15T19:42:00.087Z",
+        "reason": "Pilar Seguros brand guide (pilar-guia-de-marca.html) sets Plus Jakarta Sans as the brand typeface; the user asked for type matching the identity"
       }
     ]
   }

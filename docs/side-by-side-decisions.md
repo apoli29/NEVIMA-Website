@@ -70,17 +70,29 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   words, the full-width band with a small signature, a three-line sans
   title and a round arrow, the manifesto under a small mark. The
   reference's colours are not taken; only Pilar's four are used.
-- 2026-11-15 (user, second round): sections 3 and 4 follow better, more
-  advanced references, also found through Inspo. Section 3 (claims)
-  follows Area17: a statement on white ("Quando há um sinistro, quem liga
-  à seguradora somos nós...") and then the rain across the width with
-  the four steps of a claim stacked on it, the first lit and the rest
-  held back. Section 4 follows the AiiD 2026 case studies: half and half,
-  the Pilar symbol drawn in pixels on its own 100-unit grid (the cut and
-  the core stay empty, as the guide asks) beside a white column with the
-  title, the signature and a detail of the pillar; then a summary row
-  under a hairline with "Falar com quem compara." and the CTA. The hero
-  and the index keep the Wealthsimple layout.
+- 2026-11-15 (user, third round): sections 3 and 4 had repeated the
+  hero's promise in other words, so each now has a job of its own. The
+  hero says what Pilar is and the index what it insures; section 3 shows
+  what the client actually gets, and section 4 how it works and what it
+  costs (the usual objection to a broker).
+  - Section 3, after Wise (its product working beside a heavy capitalised
+    title): "Três propostas. Uma folha. Uma recomendação." beside a table
+    of three quotes for a home policy, with "A escolha da Pilar" lit in
+    Noite: the dearest of the three, and the reason under the price (the
+    only one that covers earthquakes). Insurers are A, B, C and the
+    prices are invented; no real insurer is named. The page's own note
+    already says everything is invented, so no note inside the site.
+  - Section 4, after Arweave (a wide-spaced title, plain text, numbered
+    tabs with only the first lit): "Quatro passos. Nenhum custo para o
+    cliente.", that Pilar is paid by the insurer the client chooses, and
+    the four steps (conversation, table, signing, every year: a review
+    before each renewal and, in a claim, Pilar makes the call).
+  - Gone: the rain photograph, the pixel symbol and the pillar detail
+    (Area17 and AiiD rounds). Only the hero photograph remains.
+- The loop's stops on our side are read off the page: each section
+  carries `data-stop`, and `useFit` in `side-by-side.tsx` sets
+  `--sbs-stop-1..3` from their tops (never past the foot), because the
+  two languages now differ in height. The CSS values are fallbacks.
 - Type, chosen from Pilar's identity and not from any reference (user,
   2026-11-15, option A of three): Funnel Display for every display line
   (near-square counters and straight-cut terminals, the symbol's flat
@@ -89,18 +101,14 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   `side-by-side.tsx` only. Newsreader is gone.
 - The loop now has four stops (one per section), on a 15s loop; the
   template side moves in three steps of its own to the same moments.
-- Photographs, both from Unsplash under its free licence (not Unsplash+),
+- Photograph, from Unsplash under its free licence (not Unsplash+),
   turned into Pilar's palette: the pillar by Alejandro Barba
   (unsplash.com/photos/elvAJVysX8w), its sky extended upward so the line
-  sits in it (section 4's detail is a crop of the same photograph); the rain on glass by Rama Krushna Behera
-  (unsplash.com/photos/vy5aeGxRhok). In `public/side-by-side/`.
+  sits in it. In `public/side-by-side/`. (The rain on glass by Rama
+  Krushna Behera was used in earlier rounds and removed.)
 - The template side is the same broker as a template would make it:
   "PILAR SEGUROS" in capitals, a seven-item menu with a simulator, three
   identical insurance cards and the stock umbrella.
-- The section heights are held the same in both languages (the long
-  display lines are split by hand into two), so one pair of stops serves
-  both; after a change to our side's copy, measure again and reset
-  `--sbs-stop-1` to `--sbs-stop-3` on `.sbs-p-page` (desktop and narrow).
 - Indexed (`index: true` in `SEO_PAGES`), unlike the about page and the
   portfolio, which are still moulds.
 - On the bar, as its fourth link (user, 2026-11-11: "mete na navbar o

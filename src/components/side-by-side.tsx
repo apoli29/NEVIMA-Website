@@ -69,15 +69,39 @@ function useFit() {
       const page = el.querySelector<HTMLElement>(".sbs-mini");
       const w = el.clientWidth;
       const own = page?.offsetWidth;
-      if (w && own) el.style.setProperty("--sbs-k", String(w / own));
+      if (!page || !w || !own) return;
+      const k = w / own;
+      el.style.setProperty("--sbs-k", String(k));
+      // A page that marks its sections with data-stop has its stops read
+      // off itself (each section's top, never past the page's foot), so
+      // a change of copy or of language cannot leave a stop mid-section.
+      // A page without marks keeps the stops written in globals.css.
+      const marks = page.querySelectorAll<HTMLElement>("[data-stop]");
+      const view = el.clientHeight / k;
+      const last = page.offsetHeight - view;
+      marks.forEach((mark, i) => {
+        page.style.setProperty(`--sbs-stop-${i + 1}`, `${-Math.round(Math.min(mark.offsetTop, last))}px`);
+      });
     };
-    fit();
-    const size = new ResizeObserver(fit);
+    // Measured once more on the next frame, so a page that changes its
+    // own width at a breakpoint is read after it has been laid out again.
+    let frame = 0;
+    const later = () => {
+      fit();
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(fit);
+    };
+    later();
+    const size = new ResizeObserver(later);
     size.observe(el);
-    window.addEventListener("resize", fit);
+    const page = el.querySelector<HTMLElement>(".sbs-mini");
+    if (page) size.observe(page);
+    document.fonts?.ready.then(later);
+    window.addEventListener("resize", later);
     return () => {
+      cancelAnimationFrame(frame);
       size.disconnect();
-      window.removeEventListener("resize", fit);
+      window.removeEventListener("resize", later);
     };
   }, []);
 
@@ -285,51 +309,16 @@ function PilarLogo({ t, className }: { t: ReturnType<typeof useT>; className?: s
   );
 }
 
-/** The symbol again, drawn on its own construction grid: the guide sets
-    it on 100 units, and here every 5 units is one cell, lit where the
-    symbol is and marked with a small cross where it is not. The cut and
-    the core stay empty, as the guide asks. Worked out once, at load. */
-const PIXEL_CELLS = (() => {
-  const inside = (x: number, y: number) => {
-    if (x >= 0 && x <= 30 && y >= 0 && y <= 100) return true;
-    if (x < 38 || x > 100 || y < 0 || y > 66) return false;
-    if (x >= 59 && x <= 79 && y >= 23 && y <= 43) return false;
-    if (x > 76 && y < 24 && Math.hypot(x - 76, y - 24) > 24) return false;
-    if (x > 76 && y > 42 && Math.hypot(x - 76, y - 42) > 24) return false;
-    return true;
-  };
-  const on: string[] = [];
-  const off: string[] = [];
-  const n = 30;
-  for (let i = 0; i < n; i++) {
-    for (let j = 0; j < n; j++) {
-      const x = i * 10;
-      const y = j * 10;
-      if (inside(-25 + (i + 0.5) * 5, -25 + (j + 0.5) * 5)) on.push(`M${x + 1} ${y + 1}h8v8h-8Z`);
-      else off.push(`M${x + 3} ${y + 3}l4 4M${x + 7} ${y + 3}l-4 4`);
-    }
-  }
-  return { on: on.join(""), off: off.join("") };
-})();
-
-function PilarPixels() {
-  return (
-    <svg viewBox="0 0 300 300" preserveAspectRatio="xMidYMid slice" className="sbs-p-pixels" aria-hidden="true">
-      <path d={PIXEL_CELLS.off} stroke="#434655" strokeWidth="1" fill="none" />
-      <path d={PIXEL_CELLS.on} fill="#a8aabc" />
-    </svg>
-  );
-}
-
 /* Our side, in Pilar's own colours and type (Funnel Display for the
    display lines, Plus Jakarta Sans, the brand's, for the rest, IBM Plex
-   Mono for the small labels). The hero and the column of very large
-   words follow Wealthsimple's home page; the claims section follows
-   Area17's (a statement on white, then a photograph across the width
-   with a stacked list on it, the first line lit); the manifesto and the
-   close follow the AiiD 2026 case studies (a half-and-half split with a
-   pixel figure on the left, then a summary row under a hairline). All
-   three references were found through Inspo. */
+   Mono for the small labels). Each section has its own job: the hero
+   says what Pilar is and the index what it insures (both after
+   Wealthsimple's home page); the third shows what the client actually
+   gets, a table of three quotes with Pilar's pick and why (after Wise,
+   which shows its product working beside the title); the fourth says
+   how it works and what it costs (after Arweave: a wide-spaced title,
+   plain text and numbered tabs, only the first lit). All references
+   were found through Inspo. */
 function Ours({ t }: { t: ReturnType<typeof useT> }) {
   const lines = [
     t("Home", "Casa"),
@@ -339,10 +328,22 @@ function Ours({ t }: { t: ReturnType<typeof useT> }) {
     t("Business", "Empresas"),
   ];
   const steps = [
-    t("Reporting", "Participação"),
-    t("Assessment", "Peritagem"),
-    t("Repair", "Reparação"),
-    t("Payout", "Indemnização"),
+    [
+      t("Conversation.", "Conversa."),
+      t("Twenty minutes, by phone or at the office, about what needs protecting.", "Vinte minutos, por telefone ou no escritório, sobre o que há para proteger."),
+    ],
+    [
+      t("Table.", "Quadro."),
+      t("Within two working days, the quotes side by side and the recommendation.", "Em dois dias úteis, as propostas lado a lado e a recomendação."),
+    ],
+    [
+      t("Signing.", "Assinatura."),
+      t("Pilar handles the paperwork with the insurer you chose.", "A Pilar trata da papelada com a seguradora escolhida."),
+    ],
+    [
+      t("Every year.", "Todos os anos."),
+      t("A review before each renewal; when there is a claim, Pilar makes the call.", "Revisão antes de cada renovação; num sinistro, quem liga é a Pilar."),
+    ],
   ];
 
   return (
@@ -385,69 +386,89 @@ function Ours({ t }: { t: ReturnType<typeof useT> }) {
         </div>
       </div>
 
-      <div className="sbs-p-index">
+      <div className="sbs-p-index" data-stop>
         {lines.map((line) => (
           <span key={line}>{line}</span>
         ))}
       </div>
 
-      <div className="sbs-p-claims">
-        <p className="sbs-p-say">
-          {t(
-            "When there is a claim, we are the ones who call the insurer. Nobody is left alone on the phone.",
-            "Quando há um sinistro, quem liga à seguradora somos nós. Ninguém fica sozinho ao telefone.",
-          )}
-        </p>
-        <div className="sbs-p-band">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/side-by-side/pilar-rain.webp" alt="" draggable={false} />
-          <span className="sbs-p-sign">
-            <PilarSymbol />
-            <b>Pilar</b> {t("Claims", "Sinistros")}
-          </span>
-          <div className="sbs-p-steps">
-            {steps.map((step) => (
-              <span key={step}>{step}</span>
-            ))}
+      <div className="sbs-p-sheet" data-stop>
+        <div className="sbs-p-sheet-copy">
+          <h4>
+            {t("Three quotes. One page. One recommendation.", "Três propostas. Uma folha. Uma recomendação.")}
+          </h4>
+          <p>
+            {t(
+              "For each policy, Pilar asks several insurers for quotes and sends back one table: what each one covers, what it leaves out and what it costs a year. The cheapest is not always the right choice, and the table says why.",
+              "Para cada seguro, a Pilar pede propostas a várias seguradoras e devolve um quadro: o que cada uma cobre, o que deixa de fora e quanto custa por ano. A mais barata nem sempre é a escolha certa, e o quadro diz porquê.",
+            )}
+          </p>
+        </div>
+
+        <div className="sbs-p-card">
+          <div className="sbs-p-card-top">
+            <span>{t("Home insurance · 3-bed flat, Lisbon", "Seguro Casa · T3, Lisboa")}</span>
+            <span className="sbs-p-chip">{t("Valid 30 days", "Válido 30 dias")}</span>
           </div>
+          <div className="sbs-p-quote">
+            <span>{t("Insurer A", "Seguradora A")}</span>
+            <b>{t("€286.40", "286,40 €")}</b>
+          </div>
+          <div className="sbs-p-quote">
+            <span>{t("Insurer C", "Seguradora C")}</span>
+            <b>{t("€259.00", "259,00 €")}</b>
+          </div>
+          <div className="sbs-p-pick">
+            <span className="sbs-p-label">{t("Pilar’s pick", "A escolha da Pilar")}</span>
+            <div>
+              <span>{t("Insurer B", "Seguradora B")}</span>
+              <b>{t("€312.90", "312,90 €")}</b>
+            </div>
+            <small>
+              {t(
+                "€53.90 a year more than C, and the only one of the three that covers earthquakes.",
+                "Mais 53,90 € por ano do que a C, e a única das três que cobre fenómenos sísmicos.",
+              )}
+            </small>
+          </div>
+          <div className="sbs-p-note">
+            <i>!</i>
+            <span>{t("Excess: €150 with B, €250 with A, €500 with C.", "Franquia: 150 € na B, 250 € na A, 500 € na C.")}</span>
+          </div>
+          <div className="sbs-p-note">
+            <i>i</i>
+            <span>
+              {t(
+                "Water damage: all three cover it; only B pays to find the leak.",
+                "Danos por água: as três cobrem; só a B inclui a pesquisa da avaria.",
+              )}
+            </span>
+          </div>
+          <span className="sbs-p-wide">{t("Get my table", "Pedir o meu quadro")}</span>
         </div>
       </div>
 
-      <div className="sbs-p-manifest">
-        <div className="sbs-p-split">
-          <div className="sbs-p-pix">
-            <PilarPixels />
-          </div>
-          <div className="sbs-p-right">
-            <div className="sbs-p-head">
-              <div>
-                <span className="sbs-p-label">{t("Manifesto", "Manifesto")}</span>
-                <h4>
-                  <span>{t("One broker.", "Um mediador.")}</span> <span>{t("Every insurer.", "Todas as seguradoras.")}</span>
-                </h4>
-              </div>
-              <PilarLogo t={t} className="sbs-p-small" />
-            </div>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/side-by-side/pilar-detail.webp" alt="" draggable={false} className="sbs-p-detail" />
-          </div>
-        </div>
-
-        <div className="sbs-p-sum">
-          <div>
-            <span className="sbs-p-label">{t("Talk to us", "Falar connosco")}</span>
-            <h5>{t("Talk to someone who compares.", "Falar com quem compara.")}</h5>
-          </div>
-          <div>
-            <p>
-              {t(
-                "Pilar works for no insurer. It stands in the space between you and all of them: it compares, explains the small print and, when there is a claim, sees it through from start to finish.",
-                "A Pilar não trabalha para nenhuma seguradora. Fica no espaço entre o cliente e todas elas: compara, explica as letras pequenas e, quando há um sinistro, trata dele do princípio ao fim.",
-              )}
-            </p>
-            <span className="sbs-p-go">{t("Get a quote", "Pedir simulação")} →</span>
-          </div>
-        </div>
+      <div className="sbs-p-how" data-stop>
+        <h4>
+          <span>{t("Four steps.", "Quatro passos.")}</span>{" "}
+          <span>{t("No cost to you.", "Nenhum custo para o cliente.")}</span>
+        </h4>
+        <p>
+          {t(
+            "Pilar is paid by the insurer you choose. It charges you nothing: not for the conversation, not for the table, not for the years after.",
+            "A Pilar é paga pela seguradora que o cliente escolher. Ao cliente não cobra nada, nem pela conversa, nem pelo quadro, nem pelos anos seguintes.",
+          )}
+        </p>
+        <span className="sbs-p-go">{t("Book the conversation", "Marcar a conversa")} →</span>
+        <ol className="sbs-p-tabs">
+          {steps.map(([name, note], i) => (
+            <li key={name} data-on={i === 0 ? "" : undefined}>
+              <span>0{i + 1}</span>
+              <b>{name}</b>
+              <small>{note}</small>
+            </li>
+          ))}
+        </ol>
       </div>
     </div>
   );
@@ -520,8 +541,8 @@ export function SideBySide() {
                 label="nevima"
                 address={t("pilarinsurance.example", "pilarseguros.example")}
                 says={t(
-                  "The same insurance broker as we would build it: one line over a photograph of a pillar says what the broker does, its five kinds of insurance in very large type, the four steps of a claim it handles on the client's behalf, and a short manifesto beside its symbol drawn on its own grid.",
-                  "A mesma mediadora de seguros como a faríamos: uma linha sobre a fotografia de um pilar diz o que a mediadora faz, os cinco tipos de seguro em letra muito grande, as quatro etapas de um sinistro que trata pelo cliente, e um manifesto curto ao lado do símbolo desenhado sobre a sua grelha.",
+                  "The same insurance broker as we would build it: one line over a photograph of a pillar says what the broker does, its five kinds of insurance in very large type, a table of three quotes with Pilar's pick and the reason for it, and the four steps of working with it, at no cost to the client.",
+                  "A mesma mediadora de seguros como a faríamos: uma linha sobre a fotografia de um pilar diz o que a mediadora faz, os cinco tipos de seguro em letra muito grande, um quadro de três propostas com a escolha da Pilar e a razão, e os quatro passos para trabalhar com ela, sem custo para o cliente.",
                 )}
               >
                 <Ours t={t} />
