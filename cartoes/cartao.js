@@ -47,6 +47,21 @@
   const tm = () =>
     `<text x="${TM.x}" y="${TM.base}" font-family="Satoshi, sans-serif" font-weight="500" font-size="${TM.size}" letter-spacing="2">TM</text>`;
 
+  /* A seta (utilizador, 2026-11-15): diagonal, no canto superior direito
+     da frente, com as duas hastes da ponta em ângulo reto (uma horizontal e
+     outra vertical). A aresta de fora da ponta assenta nas margens de 5 mm.
+     É branca e prensada como o logótipo, e vai também na chapa. */
+  const SETA = { lado: 6.5, haste: 3, traco: 0.8 };
+  const seta = (cor) => {
+    const h = SETA.traco / 2;
+    const x = W - M - h, y = M + h; // a ponta, ao centro do traço
+    const x0 = x - SETA.lado + h, y0 = y + SETA.lado - h;
+    return `<g fill="none" stroke="${cor}" stroke-width="${SETA.traco}" stroke-linejoin="miter" stroke-linecap="butt">
+      <path d="M ${x0} ${y0} L ${x - 0.15} ${y + 0.15}"/>
+      <path d="M ${x - SETA.haste} ${y} L ${x} ${y} L ${x} ${y + SETA.haste}"/>
+    </g>`;
+  };
+
   /* O deboss. A face das letras é branco puro (utilizador, 2026-11-14) e o
      relevo tem de se ver (utilizador, 2026-11-15). A luz vem de cima e da
      direita, como na fotografia da Antora:
@@ -104,7 +119,7 @@
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-b} ${-b} ${W + 2 * b} ${H + 2 * b}" width="100%" height="100%" preserveAspectRatio="none">
       ${o.relevo ? `<defs>${DEBOSS_FILTER}</defs>` : ""}
       <rect x="${-b}" y="${-b}" width="${W + 2 * b}" height="${H + 2 * b}" fill="${fundo}"/>
-      <g ${filtro}><g transform="${LOGO_T}" fill="${tinta}">${logoPaths()}${tm()}</g></g>
+      <g ${filtro}><g transform="${LOGO_T}" fill="${tinta}">${logoPaths()}${tm()}</g>${seta(tinta)}</g>
     </svg>`;
   }
 
