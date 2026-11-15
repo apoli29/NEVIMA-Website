@@ -8,6 +8,7 @@
      (91 × 61 mm), sem marcas de corte. -->
 <style>
   @font-face { font-family: Satoshi; src: url(../fonts/Satoshi/Satoshi-Variable.woff2) format("woff2"); font-weight: 300 900; }
+  @font-face { font-family: "Geist Mono"; src: url(../fonts/GeistMono/GeistMono-Medium-latin.woff2) format("woff2"); font-weight: 500; }
   @page { size: 91mm 61mm; margin: 0; }
   html, body { margin: 0; background: #fff; }
   .pagina { width: 91mm; height: 61mm; overflow: hidden; break-after: page; }
@@ -26,7 +27,7 @@
   document.body.insertAdjacentHTML("beforeend", quem === "chapa"
     ? pag(CARTAO.frente({ bleed: B, chapa: true }))
     : pag(CARTAO.frente({ bleed: B })) + pag(CARTAO.verso(quem, { bleed: B, pxPerMm: DPI / 25.4 })));
-  document.fonts.ready.then(() => { document.body.dataset.pronto = "1"; });
+  Promise.all([document.fonts.load("500 10px 'Geist Mono'"), document.fonts.load("300 10px Satoshi"), document.fonts.load("500 10px Satoshi")]).then(() => document.fonts.ready).then(() => { document.body.dataset.pronto = "1"; });
 </script>
 </body>
 </html>
