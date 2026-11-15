@@ -4083,11 +4083,14 @@
      on white (2.3:1, the brand guide's rule). The type is chosen from the
      identity: Funnel Display for display lines, Plus Jakarta Sans (the
      brand's) for the rest, IBM Plex Mono for small labels. Each section
-     follows one reference closely, noted where it begins. */
+     has a job of its own and follows one reference closely, noted where
+     it begins. */
   .sbs-p-page {
+    /* Fallbacks only: side-by-side.tsx reads the real stops off the page
+       (its sections carry data-stop), in either language and layout. */
     --sbs-stop-1: -700px;
     --sbs-stop-2: -1190px;
-    --sbs-stop-3: -1862px;
+    --sbs-stop-3: -1670px;
     --p-noite: #111525;
     --p-grafite: #434655;
     --p-nevoa: #a8aabc;
@@ -4159,36 +4162,42 @@
   .sbs-p-index { display: flex; flex-direction: column; align-items: center; padding: 52px 0 60px; }
   .sbs-p-index span { font-family: var(--p-display); font-size: 70px; line-height: 1.08; letter-spacing: -0.025em; color: var(--p-noite); }
 
-  /* 3 · Claims (after Area17): a statement on white, then a photograph
-     across the width with a stacked list on it, the first line lit and
-     the rest held back. */
-  .sbs-p-say { margin: 0; padding: 56px 60px 48px; max-width: 27ch; box-sizing: content-box; font-family: var(--p-display); font-size: 38px; line-height: 1.12; letter-spacing: -0.02em; }
-  .sbs-p-band { position: relative; height: 440px; overflow: hidden; background: var(--p-noite); color: #fff; }
-  .sbs-p-band img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-  .sbs-p-sign { position: absolute; left: 60px; top: 36px; display: inline-flex; align-items: center; gap: 6px; font-size: 14px; }
-  .sbs-p-sign svg { width: 13px; height: 13px; }
-  .sbs-p-sign b { font-weight: 600; letter-spacing: -0.015em; }
-  .sbs-p-steps { position: absolute; left: 60px; bottom: 44px; }
-  .sbs-p-steps span { display: block; font-family: var(--p-display); font-size: 40px; line-height: 1.08; letter-spacing: -0.02em; color: rgb(255 255 255 / 0.38); }
-  .sbs-p-steps span:first-child { color: #fff; }
+  /* 3 · What the client gets (after Wise, which sets its product working
+     beside a heavy capitalised title): the table of three quotes, with
+     Pilar's pick lit in Noite and the reason for it under the price. */
+  .sbs-p-sheet { display: grid; grid-template-columns: minmax(0, 1fr) 372px; gap: 36px; align-items: start; padding: 64px 60px 60px; }
+  .sbs-p-sheet-copy h4 { margin: 0 0 18px; font-family: var(--p-display); font-weight: 800; font-size: 40px; line-height: 0.98; letter-spacing: -0.02em; text-transform: uppercase; }
+  .sbs-p-sheet-copy p { margin: 0; max-width: 36ch; font-size: 15px; line-height: 1.55; }
+  .sbs-p-card { border: 1px solid #d9dae2; border-radius: 14px; padding: 18px; }
+  .sbs-p-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; font-weight: 600; }
+  .sbs-p-chip { flex: none; padding: 6px 11px; border: 1px solid #d9dae2; border-radius: 999px; font-family: var(--p-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--p-grafite); }
+  .sbs-p-quote { display: flex; align-items: baseline; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #ececf1; font-size: 14px; }
+  .sbs-p-quote b, .sbs-p-pick b { font-family: var(--p-display); letter-spacing: -0.01em; }
+  .sbs-p-quote b { font-weight: 500; font-size: 22px; }
+  .sbs-p-pick { margin: 12px -6px 4px; padding: 14px 14px; border-radius: 10px; background: var(--p-noite); color: #fff; }
+  .sbs-p-pick .sbs-p-label { color: var(--p-nevoa); }
+  .sbs-p-pick > div { display: flex; align-items: baseline; justify-content: space-between; margin-top: 6px; font-size: 14px; }
+  .sbs-p-pick b { font-weight: 700; font-size: 34px; letter-spacing: -0.02em; }
+  .sbs-p-pick small { display: block; margin-top: 6px; font-size: 12.5px; line-height: 1.45; color: #dcdde5; }
+  .sbs-p-note { display: flex; gap: 10px; padding: 11px 0; border-bottom: 1px solid #ececf1; font-size: 13px; line-height: 1.4; }
+  .sbs-p-note i { flex: none; display: grid; place-items: center; width: 18px; height: 18px; border: 1px solid var(--p-noite); border-radius: 50%; font-size: 11px; font-weight: 600; font-style: normal; }
+  .sbs-p-wide { display: block; margin-top: 14px; padding: 13px; border-radius: 999px; background: var(--p-noite); color: #fff; text-align: center; font-size: 13px; font-weight: 500; }
 
-  /* 4 · Manifesto and close (after the AiiD 2026 case studies): half and
-     half, the symbol in pixels on its own grid against a white column
-     with the title, the signature and a detail of the pillar; then a
-     summary row under a hairline. */
-  .sbs-p-split { display: grid; grid-template-columns: 1fr 1fr; height: 470px; }
-  .sbs-p-pix { position: relative; overflow: hidden; background: var(--p-noite); }
-  .sbs-p-pixels { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-  .sbs-p-right { display: flex; flex-direction: column; min-width: 0; }
-  .sbs-p-head { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 12px; padding: 34px 24px 22px; }
-  .sbs-p-head h4 { margin: 10px 0 0; font-family: var(--p-display); font-weight: 500; font-size: 38px; line-height: 1.04; letter-spacing: -0.02em; }
-  .sbs-p-head h4 span { display: block; }
-  .sbs-p-small { font-size: 15px; }
-  .sbs-p-detail { flex: 1; min-height: 0; width: 100%; object-fit: cover; display: block; }
-  .sbs-p-sum { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 0 24px; padding: 20px 0 52px; border-top: 1px solid #d9dae2; }
-  .sbs-p-sum h5 { margin: 14px 0 0; font-family: var(--p-display); font-weight: 400; font-size: 34px; line-height: 1.05; letter-spacing: -0.02em; }
-  .sbs-p-sum p { margin: 14px 0 0; font-size: 15px; line-height: 1.55; }
-  .sbs-p-go { display: inline-block; margin-top: 18px; padding-bottom: 3px; border-bottom: 1px solid var(--p-noite); font-size: 14px; font-weight: 500; }
+  /* 4 · How it works and what it costs (after Arweave): a wide-spaced
+     title, plain text, and numbered tabs along the foot, only the first
+     lit. */
+  .sbs-p-how { padding: 64px 60px 56px; border-top: 1px solid #ececf1; }
+  .sbs-p-how h4 { margin: 0; font-family: var(--p-display); font-weight: 400; font-size: 50px; line-height: 1.04; letter-spacing: -0.01em; word-spacing: 0.16em; }
+  .sbs-p-how h4 span { display: block; }
+  .sbs-p-how p { margin: 24px 0 0; max-width: 52ch; font-size: 15.5px; line-height: 1.6; }
+  .sbs-p-go { display: inline-block; margin-top: 16px; padding-bottom: 3px; border-bottom: 1px solid var(--p-noite); font-size: 14px; font-weight: 500; }
+  .sbs-p-tabs { display: grid; grid-template-columns: repeat(4, 1fr); margin: 48px 0 0; padding: 0; list-style: none; }
+  .sbs-p-tabs li { padding: 0 16px 18px 0; border-bottom: 2px solid #e3e4ea; }
+  .sbs-p-tabs li[data-on] { border-bottom-color: var(--p-noite); }
+  .sbs-p-tabs span { font-family: var(--p-mono); font-size: 11px; color: var(--p-grafite); }
+  .sbs-p-tabs b { display: block; margin-top: 6px; font-family: var(--p-display); font-weight: 500; font-size: 21px; color: var(--p-grafite); }
+  .sbs-p-tabs small { display: block; margin-top: 8px; font-size: 13px; line-height: 1.45; color: var(--p-grafite); }
+  .sbs-p-tabs li[data-on] b, .sbs-p-tabs li[data-on] small { color: var(--p-noite); }
 
   .sbs-note { margin-top: clamp(1.5rem, 3vw, 2.25rem); color: rgb(255 255 255 / 0.62); text-transform: none; letter-spacing: 0.02em; }
 
@@ -4244,21 +4253,19 @@
     .sbs-t-contact { grid-template-columns: 1fr; }
     .sbs-t-foot { padding: 16px 18px 40px; }
 
-    .sbs-p-page { --sbs-stop-1: -826px; --sbs-stop-2: -1196px; --sbs-stop-3: -1885px; }
+    .sbs-p-page { --sbs-stop-1: -826px; --sbs-stop-2: -1262px; --sbs-stop-3: -1900px; }
     .sbs-p-hero { height: 826px; }
     .sbs-p-tools .sbs-p-pill:not(.sbs-p-solid) { display: none; }
     .sbs-p-lead { top: 190px; padding: 0 34px; }
     .sbs-p-lead h3 { font-size: 44px; }
     .sbs-p-lead h3 span { display: inline; }
     .sbs-p-index span { font-size: 60px; }
-    .sbs-p-say { padding: 64px 36px 56px; max-width: 24ch; font-size: 36px; }
-    .sbs-p-band { height: 480px; }
-    .sbs-p-sign, .sbs-p-steps { left: 36px; }
-    .sbs-p-split { height: 420px; }
-    .sbs-p-head { grid-template-columns: 1fr; padding: 28px 20px 18px; }
-    .sbs-p-head h4 { font-size: 30px; }
-    .sbs-p-head .sbs-p-small { display: none; }
-    .sbs-p-sum { grid-template-columns: 1fr; gap: 0; margin: 0 36px; padding-bottom: 56px; }
+    .sbs-p-sheet { grid-template-columns: 1fr; gap: 24px; padding: 48px 36px 44px; }
+    .sbs-p-sheet-copy h4 { font-size: 40px; }
+    .sbs-p-sheet-copy p { max-width: 46ch; }
+    .sbs-p-how { padding: 56px 36px 52px; }
+    .sbs-p-how h4 { font-size: 44px; }
+    .sbs-p-tabs { grid-template-columns: 1fr 1fr; row-gap: 22px; }
   }
 }
 
