@@ -393,9 +393,9 @@ function PilarSteps({ t, steps }: { t: ReturnType<typeof useT>; steps: string[][
   const last = steps.length - 1;
 
   useEffect(() => {
-    // Where the loop is, as a fraction of a lap: the last stop (this
-    // section) is held from 53% to 92% (globals.css, sbs-scroll).
-    const marks = [0.62, 0.71, 0.8];
+    // Where the loop is, as a fraction of a lap: this section's stop is
+    // held from 47% to 80% (globals.css, sbs-scroll).
+    const marks = [0.55, 0.63, 0.71];
     const id = window.setInterval(() => {
       const page = box.current?.closest<HTMLElement>(".sbs-mini");
       const lap = page
@@ -403,7 +403,7 @@ function PilarSteps({ t, steps }: { t: ReturnType<typeof useT>; steps: string[][
         .find((a) => (a as CSSAnimation).animationName === "sbs-scroll");
       const p = lap?.effect?.getComputedTiming().progress;
       if (p == null) return;
-      if (p < 0.5) {
+      if (p < 0.45) {
         held.current = false;
         setAt(0);
         return;
@@ -637,6 +637,47 @@ function Ours({ t }: { t: ReturnType<typeof useT> }) {
         </div>
         <PilarSteps t={t} steps={steps} />
       </div>
+
+      {/* The foot: Noite with one matte glow of Grafite, the signature line
+          and the way in, then the links, then the legal row (a Portuguese
+          business shows its complaints book). */}
+      <div className="sbs-p-foot" data-stop>
+        <div className="sbs-p-foot-top">
+          <h4>{t("One broker. Every insurer.", "Um mediador. Todas as seguradoras.")}</h4>
+          <span className="sbs-p-foot-cta">{t("Get a quote", "Pedir simulação")}</span>
+        </div>
+        <div className="sbs-p-foot-cols">
+          <div>
+            <b>{t("Insurance", "Seguros")}</b>
+            {lines.map((line) => (
+              <span key={line}>{line}</span>
+            ))}
+          </div>
+          <div>
+            <b>Pilar</b>
+            <span>{t("How it works", "Como funciona")}</span>
+            <span>{t("Claims", "Sinistros")}</span>
+            <span>{t("Client area", "Área de cliente")}</span>
+          </div>
+          <div>
+            <b>{t("Office", "Escritório")}</b>
+            <span>{t("Lisbon", "Lisboa")}</span>
+            <small>{t("Monday to Friday, 9am to 6pm", "Segunda a sexta, 9h–18h")}</small>
+          </div>
+          <div>
+            <b>{t("Contact", "Contacto")}</b>
+            <span>{t("hello@pilarinsurance.example", "ola@pilarseguros.example")}</span>
+            <small>{t("A reply the same working day.", "Resposta no mesmo dia útil.")}</small>
+          </div>
+        </div>
+        <div className="sbs-p-foot-legal">
+          <span>© 2026 {t("Pilar Insurance · Insurance brokerage", "Pilar Seguros · Mediação de seguros")}</span>
+          <span>
+            <span>{t("Privacy", "Privacidade")}</span>
+            <span>{t("Complaints book", "Livro de Reclamações")}</span>
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -708,8 +749,8 @@ export function SideBySide() {
                 label="nevima"
                 address={t("pilarinsurance.example", "pilarseguros.example")}
                 says={t(
-                  "The same insurance broker as we would build it: one line over a photograph of a pillar says what the broker does, with a few of its clients' reviews across the foot, its five kinds of insurance in very large type, a table of three quotes with Pilar's pick and the reason for it, and the four steps of working with it, walked through one at a time, at no cost to the client.",
-                  "A mesma mediadora de seguros como a faríamos: uma linha sobre a fotografia de um pilar diz o que a mediadora faz, com algumas opiniões de clientes ao fundo, os cinco tipos de seguro em letra muito grande, um quadro de três propostas com a escolha da Pilar e a razão, e os quatro passos para trabalhar com ela, mostrados um a um, sem custo para o cliente.",
+                  "The same insurance broker as we would build it: one line over a photograph of a pillar says what the broker does, with a few of its clients' reviews across the foot, its five kinds of insurance in very large type, a table of three quotes with Pilar's pick and the reason for it, and the four steps of working with it, walked through one at a time, at no cost to the client, above a dark footer.",
+                  "A mesma mediadora de seguros como a faríamos: uma linha sobre a fotografia de um pilar diz o que a mediadora faz, com algumas opiniões de clientes ao fundo, os cinco tipos de seguro em letra muito grande, um quadro de três propostas com a escolha da Pilar e a razão, e os quatro passos para trabalhar com ela, mostrados um a um, sem custo para o cliente, sobre um rodapé escuro.",
                 )}
               >
                 <Ours t={t} />

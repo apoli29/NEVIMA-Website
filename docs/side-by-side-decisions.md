@@ -107,12 +107,22 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
     Web Animations API; a click takes over until the page goes back to
     the top (user's choice). Its buttons are out of the tab order, the
     plate being hidden from assistive technology.
-  - The loop is 18s and its last stop is held longest (53% to 92%), so the
-    steps have time to be read; the marks in `PilarSteps` (62%, 71%, 80%)
-    must stay inside that hold.
+  - The loop is 18s and the stepper's stop is held longest, so the steps
+    have time to be read; the marks in `PilarSteps` must stay inside that
+    hold (see the footer entry below for the current values).
+- 2026-11-16 (user): Pilar gets a footer, on Noite with a slight
+  gradient. A first preview had the uppercase PILAR logotype across the
+  foot and two glows; the user asked for no logo and a matter, less
+  metallic gradient. It is now one wide, soft Grafite glow from the top
+  left with a fine grain over it. On it: "Um mediador. Todas as
+  seguradoras." (the old manifesto line, as a signature) with "Pedir
+  simulação", the links (insurance, Pilar, office, contact), and a legal
+  row with the complaints book. The loop has a fourth, short stop for
+  each page's foot (84% to 94%); the stepper's hold is now 47% to 80%,
+  marks 55%, 63%, 71%; the template moves in four steps of its own.
 - The loop's stops on our side are read off the page: each section
   carries `data-stop`, and `useFit` in `side-by-side.tsx` sets
-  `--sbs-stop-1..3` from their tops (never past the foot), because the
+  `--sbs-stop-1..4` from their tops (never past the foot), because the
   two languages now differ in height. The CSS values are fallbacks.
 - Type, chosen from Pilar's identity and not from any reference (user,
   2026-11-15, option A of three): Funnel Display for every display line
