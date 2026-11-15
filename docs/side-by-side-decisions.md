@@ -116,6 +116,72 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   settled (user, 2026-10-11). White mono on the section's black, a
   hairline under it and an arrow that moves on hover.
 
+## The service, under the comparison (2026-11-15)
+
+- The user asked for three more sections under the two websites: what the
+  service includes, the two design levels, and personalization ("Procura
+  referências para cada secção e faz depois": the choices were delegated,
+  and the recommended options below were taken). Built in
+  `src/components/sbs-service.tsx`, styled under `.sbi-*`, `.sbl-*`,
+  `.sbp-*` and `.sbx-*` at the foot of `globals.css`. Order on the page:
+  the comparison (black), Included (white), Two levels (black),
+  Personalization (white), then `WorkTogether` (black).
+- References, all through Inspo (the Awwwards MCP's element corpus was
+  empty): Linear's features page for Included, Lisovskiy's studio site
+  for the scrambling letters, Typeform's home page for the prompt over a
+  mosaic glow. Their colours are not taken; only the site's black and
+  white, Satoshi and Geist Mono.
+- Included: "What many charge extra for / is included here." / "O que
+  muitos cobram à parte, / aqui está incluído." Ten things, each a raised
+  square piece with a pixel pictogram in the middle of a wider field
+  whose outer ring fades into the page (Linear's). The lit piece is
+  black, lifted, crossed once by a sheen; its explanation stands beside
+  the field, the name scrambling into place. It moves on by itself every
+  5.2s while it is on screen and the pointer is not on it, and stops for
+  good once a piece is chosen. A tablist: arrows, Home and End move
+  between pieces.
+- Every line in Included is already said elsewhere on the site (the
+  about page's questions, the home page's comparison, the form):
+  hosting, help with the domain, the free calls, basic SEO, the texts,
+  the legal pages, the trademark, direct contact, support after launch,
+  the free proposal. Nothing new is promised. Where the site already
+  makes the claim about others, it is set under the explanation as
+  "Elsewhere:" / "Noutros casos:" (hosting, SEO, direct contact); the
+  domain carries what is paid directly instead.
+- Two levels (the user had it on stand-by; built as recommended, as a
+  visual comparison): "Two levels, / the same care." / "Dois níveis, / o
+  mesmo cuidado." One plate with the same Pilar hero at both levels and a
+  switch. Essential+ is a clean split that comes in once and holds still;
+  Advanced puts the photograph across the page moving slowly, reveals
+  the line line by line, builds the symbol piece by piece and lets a light
+  follow the pointer. Each level's note is the form's own (questions.ts),
+  with a line saying what the demo does. The plate alternates every 7s
+  until the switch is touched. On a phone the plate stands between the
+  words and the switch.
+- Personalization: "This service is built, above all, / around
+  personalization." / "Este serviço tem foco máximo / na
+  personalização." A map of a website built from the form's own pages
+  (plus Contact), chips to add and remove them, and a switch Website /
+  Landing page: at the switch the branches fold into one page, joined
+  edge to edge, and their addresses turn into anchors (/servicos becomes
+  #servicos). A large line says how many pages it is ("Quatro
+  páginas." … "Uma só página, com tudo."). On its own it shows a small
+  website, a larger one, and the larger one folded, until the visitor
+  takes over.
+- The subsection: a client's doubts typed and cleared in a prompt over a
+  mosaic glow, in the client's own voice (as the about page's questions
+  are), then the answer and the proposal button. The user's "Não sabe o
+  que escolher? Não se preocupe. Quando tivermos uma reunião, ajudamos a
+  escolher." is recast so the reader is not addressed, after the form's
+  own "Sem saber o que escolher? Não há problema": "Sem saber o que
+  escolher? Não há problema. / Na reunião que marcamos, ajudamos a
+  escolher."
+- Every loop here holds still for anyone who asks for less motion, and
+  the CSS loops (the slow photograph, the glow, the caret) are held off
+  the screen through `offscreen-pause.tsx`.
+
 ## Open
 
 - Nothing open from the clinic version; Pilar settles both questions.
+- Two levels: whether to keep the visual comparison (it was on stand-by)
+  or keep only the words.
