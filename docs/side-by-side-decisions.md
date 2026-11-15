@@ -157,7 +157,8 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   follow the pointer. Each level's note is the form's own (questions.ts),
   with a line saying what the demo does. The plate alternates every 7s
   until the switch is touched. On a phone the plate stands between the
-  words and the switch.
+  words and the switch. The visual comparison stays (user, 2026-11-15:
+  "Fica assim").
 - Personalization: "This service is built, above all, / around
   personalization." / "Este serviço tem foco máximo / na
   personalização." A map of a website built from the form's own pages
@@ -183,5 +184,3 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
 ## Open
 
 - Nothing open from the clinic version; Pilar settles both questions.
-- Two levels: whether to keep the visual comparison (it was on stand-by)
-  or keep only the words.
