@@ -309,15 +309,186 @@ function PilarLogo({ t, className }: { t: ReturnType<typeof useT>; className?: s
   );
 }
 
+/** The reviews across the foot of the hero: one short, transparent strip
+    the whole width of the page, sliding very slowly (a lap a minute) and
+    held while the pointer is on it. The clients are invented, as Pilar
+    is, so they are given initials, a town and a kind of policy, never a
+    face. */
+function PilarReviews({ t }: { t: ReturnType<typeof useT> }) {
+  const reviews = [
+    [
+      t("They called the insurer for me the day the flat flooded. All I did was send the photos.", "Ligaram à seguradora por mim no dia da inundação. Só tive de enviar as fotografias."),
+      "Marta S.",
+      t("Lisbon", "Lisboa"),
+      t("Home", "Casa"),
+    ],
+    [
+      t("I was paying €180 a year more for the same cover. The table showed it on one page.", "Pagava mais 180 € por ano pelo mesmo seguro. O quadro mostrou-o numa folha."),
+      "Rui C.",
+      "Almada",
+      t("Car", "Automóvel"),
+    ],
+    [
+      t("They explained the excess before I signed, not after the claim.", "Explicaram-me a franquia antes de assinar, e não depois do sinistro."),
+      "Inês M.",
+      "Oeiras",
+      t("Health", "Saúde"),
+    ],
+    [
+      t("The company’s fleet and liability cover in one place, with one person.", "A frota e a responsabilidade civil da empresa num só sítio, com uma só pessoa."),
+      "Paulo F.",
+      "Setúbal",
+      t("Business", "Empresas"),
+    ],
+    [
+      t("At renewal they called me before I had remembered it.", "Na renovação ligaram-me antes de eu me lembrar dela."),
+      "Sofia A.",
+      "Sintra",
+      t("Life", "Vida"),
+    ],
+    [
+      t("Twenty minutes of conversation and, two days later, three quotes side by side.", "Vinte minutos de conversa e, dois dias depois, três propostas lado a lado."),
+      "Tiago R.",
+      "Cascais",
+      t("Home", "Casa"),
+    ],
+  ];
+
+  return (
+    <div className="sbs-p-reviews">
+      {/* Twice over, so the lap closes without a seam. */}
+      <div className="sbs-p-track">
+        {[...reviews, ...reviews].map(([quote, name, town, kind], i) => (
+          <figure key={i} className="sbs-p-rev">
+            <blockquote>“{quote}”</blockquote>
+            <figcaption>
+              <span className="sbs-p-who">
+                <i>{name.split(" ").map((w) => w[0]).join("")}</i>
+                <span>
+                  <b>{name}</b>
+                  <small>{town}</small>
+                </span>
+              </span>
+              <span className="sbs-p-kind">{kind}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** The four steps as a stepper: a header with the count, a bar whose
+    dark segment sits on the current step with the steps done behind it
+    in Névoa, the step names, the step itself, and Back / Continue.
+    Inside the plate nobody may be touching it, so while the page holds
+    on this section it walks itself from the first step to the last, read
+    off the loop's own clock; a click takes over until the page goes back
+    to the top. The plate is hidden from assistive technology, so its
+    buttons are kept out of the tab order. */
+function PilarSteps({ t, steps }: { t: ReturnType<typeof useT>; steps: string[][] }) {
+  const [at, setAt] = useState(0);
+  const held = useRef(false);
+  const box = useRef<HTMLDivElement>(null);
+  const last = steps.length - 1;
+
+  useEffect(() => {
+    // Where the loop is, as a fraction of a lap: the last stop (this
+    // section) is held from 53% to 92% (globals.css, sbs-scroll).
+    const marks = [0.62, 0.71, 0.8];
+    const id = window.setInterval(() => {
+      const page = box.current?.closest<HTMLElement>(".sbs-mini");
+      const lap = page
+        ?.getAnimations()
+        .find((a) => (a as CSSAnimation).animationName === "sbs-scroll");
+      const p = lap?.effect?.getComputedTiming().progress;
+      if (p == null) return;
+      if (p < 0.5) {
+        held.current = false;
+        setAt(0);
+        return;
+      }
+      if (held.current) return;
+      setAt(marks.filter((m) => p >= m).length);
+    }, 150);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const go = (i: number) => {
+    held.current = true;
+    setAt(Math.max(0, Math.min(last, i)));
+  };
+
+  return (
+    <div ref={box} className="sbs-p-stepper">
+      <div className="sbs-p-step-top">
+        <b>{t("How it works", "Como funciona")}</b>
+        <span>{t(`Step ${at + 1} of ${steps.length}`, `Passo ${at + 1} de ${steps.length}`)}</span>
+      </div>
+
+      <div className="sbs-p-bar2">
+        <span className="sbs-p-done" style={{ width: `${(at * 100) / steps.length}%` }} />
+        <span
+          className="sbs-p-now"
+          style={{ width: `${100 / steps.length}%`, transform: `translateX(${at * 100}%)` }}
+        />
+      </div>
+
+      <div className="sbs-p-names">
+        {steps.map(([name], i) => (
+          <button
+            key={name}
+            type="button"
+            tabIndex={-1}
+            onClick={() => go(i)}
+            aria-current={i === at ? "step" : undefined}
+            data-past={i < at ? "" : undefined}
+          >
+            {i < at && (
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M2 6.5 5 9.5 10 3" />
+              </svg>
+            )}
+            {name}
+          </button>
+        ))}
+      </div>
+
+      <div className="sbs-p-step-body">
+        <div key={at}>
+          <h5>{steps[at][0]}</h5>
+          <p>{steps[at][1]}</p>
+        </div>
+      </div>
+
+      <div className="sbs-p-step-nav">
+        <button type="button" tabIndex={-1} onClick={() => go(at - 1)} disabled={at === 0}>
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <path d="M7.5 2.5 4 6l3.5 3.5" />
+          </svg>
+          {t("Back", "Voltar")}
+        </button>
+        <button type="button" tabIndex={-1} onClick={() => go(at + 1)} disabled={at === last} data-solid="">
+          {t("Continue", "Continuar")}
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <path d="M4.5 2.5 8 6 4.5 9.5" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /* Our side, in Pilar's own colours and type (Funnel Display for the
    display lines, Plus Jakarta Sans, the brand's, for the rest, IBM Plex
    Mono for the small labels). Each section has its own job: the hero
-   says what Pilar is and the index what it insures (both after
-   Wealthsimple's home page); the third shows what the client actually
+   says what Pilar is, with its clients' reviews sliding slowly across
+   its foot, and the index what it insures (both after Wealthsimple's
+   home page); the third shows what the client actually
    gets, a table of three quotes with Pilar's pick and why (after Wise,
    which shows its product working beside the title); the fourth says
-   how it works and what it costs (after Arweave: a wide-spaced title,
-   plain text and numbered tabs, only the first lit). All references
+   how it works and what it costs (a wide-spaced title after Arweave,
+   beside the four steps as a stepper the user brought, rebuilt here). All references
    were found through Inspo. */
 function Ours({ t }: { t: ReturnType<typeof useT> }) {
   const lines = [
@@ -329,19 +500,19 @@ function Ours({ t }: { t: ReturnType<typeof useT> }) {
   ];
   const steps = [
     [
-      t("Conversation.", "Conversa."),
+      t("Conversation", "Conversa"),
       t("Twenty minutes, by phone or at the office, about what needs protecting.", "Vinte minutos, por telefone ou no escritório, sobre o que há para proteger."),
     ],
     [
-      t("Table.", "Quadro."),
+      t("Table", "Quadro"),
       t("Within two working days, the quotes side by side and the recommendation.", "Em dois dias úteis, as propostas lado a lado e a recomendação."),
     ],
     [
-      t("Signing.", "Assinatura."),
+      t("Signing", "Assinatura"),
       t("Pilar handles the paperwork with the insurer you chose.", "A Pilar trata da papelada com a seguradora escolhida."),
     ],
     [
-      t("Every year.", "Todos os anos."),
+      t("Every year", "Todos os anos"),
       t("A review before each renewal; when there is a claim, Pilar makes the call.", "Revisão antes de cada renovação; num sinistro, quem liga é a Pilar."),
     ],
   ];
@@ -384,6 +555,8 @@ function Ours({ t }: { t: ReturnType<typeof useT> }) {
           </p>
           <span className="sbs-p-pill sbs-p-ghost">{t("Get a quote", "Pedir simulação")}</span>
         </div>
+
+        <PilarReviews t={t} />
       </div>
 
       <div className="sbs-p-index" data-stop>
@@ -449,26 +622,20 @@ function Ours({ t }: { t: ReturnType<typeof useT> }) {
       </div>
 
       <div className="sbs-p-how" data-stop>
-        <h4>
-          <span>{t("Four steps.", "Quatro passos.")}</span>{" "}
-          <span>{t("No cost to you.", "Nenhum custo para o cliente.")}</span>
-        </h4>
-        <p>
-          {t(
-            "Pilar is paid by the insurer you choose. It charges you nothing: not for the conversation, not for the table, not for the years after.",
-            "A Pilar é paga pela seguradora que o cliente escolher. Ao cliente não cobra nada, nem pela conversa, nem pelo quadro, nem pelos anos seguintes.",
-          )}
-        </p>
-        <span className="sbs-p-go">{t("Book the conversation", "Marcar a conversa")} →</span>
-        <ol className="sbs-p-tabs">
-          {steps.map(([name, note], i) => (
-            <li key={name} data-on={i === 0 ? "" : undefined}>
-              <span>0{i + 1}</span>
-              <b>{name}</b>
-              <small>{note}</small>
-            </li>
-          ))}
-        </ol>
+        <div>
+          <h4>
+            <span>{t("Four steps.", "Quatro passos.")}</span>{" "}
+            <span>{t("No cost to you.", "Nenhum custo para o cliente.")}</span>
+          </h4>
+          <p>
+            {t(
+              "Pilar is paid by the insurer you choose. It charges you nothing: not for the conversation, not for the table, not for the years after.",
+              "A Pilar é paga pela seguradora que o cliente escolher. Ao cliente não cobra nada, nem pela conversa, nem pelo quadro, nem pelos anos seguintes.",
+            )}
+          </p>
+          <span className="sbs-p-go">{t("Book the conversation", "Marcar a conversa")} →</span>
+        </div>
+        <PilarSteps t={t} steps={steps} />
       </div>
     </div>
   );
@@ -541,8 +708,8 @@ export function SideBySide() {
                 label="nevima"
                 address={t("pilarinsurance.example", "pilarseguros.example")}
                 says={t(
-                  "The same insurance broker as we would build it: one line over a photograph of a pillar says what the broker does, its five kinds of insurance in very large type, a table of three quotes with Pilar's pick and the reason for it, and the four steps of working with it, at no cost to the client.",
-                  "A mesma mediadora de seguros como a faríamos: uma linha sobre a fotografia de um pilar diz o que a mediadora faz, os cinco tipos de seguro em letra muito grande, um quadro de três propostas com a escolha da Pilar e a razão, e os quatro passos para trabalhar com ela, sem custo para o cliente.",
+                  "The same insurance broker as we would build it: one line over a photograph of a pillar says what the broker does, with a few of its clients' reviews across the foot, its five kinds of insurance in very large type, a table of three quotes with Pilar's pick and the reason for it, and the four steps of working with it, walked through one at a time, at no cost to the client.",
+                  "A mesma mediadora de seguros como a faríamos: uma linha sobre a fotografia de um pilar diz o que a mediadora faz, com algumas opiniões de clientes ao fundo, os cinco tipos de seguro em letra muito grande, um quadro de três propostas com a escolha da Pilar e a razão, e os quatro passos para trabalhar com ela, mostrados um a um, sem custo para o cliente.",
                 )}
               >
                 <Ours t={t} />

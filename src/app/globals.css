@@ -3889,7 +3889,7 @@
    Each page is laid out at 1200px and scaled by --sbs-k, written on the
    plate by a ResizeObserver, so the type inside is real type.          */
 @layer components {
-  .sbs-stage { --sbs-loop: 15s; }
+  .sbs-stage { --sbs-loop: 18s; }
   .sbs-ground {
     position: absolute;
     inset: 0;
@@ -3951,11 +3951,14 @@
   /* ---- the page going down, the same on both sides ---------------- */
   /* The stops are written in the page's own pixels; translate is applied
      outside the scale, so each is taken down to the plate by --sbs-k. */
+  /* The last stop is held longest: on our side it is where the steps
+     walk themselves through (side-by-side.tsx reads this lap's progress,
+     so keep its 53% to 92% hold in step with the marks there). */
   @keyframes sbs-scroll {
-    0%, 18% { translate: 0 0; }
-    23%, 40% { translate: 0 calc(var(--sbs-stop-1) * var(--sbs-k)); }
-    45%, 62% { translate: 0 calc(var(--sbs-stop-2) * var(--sbs-k)); }
-    67%, 90% { translate: 0 calc(var(--sbs-stop-3) * var(--sbs-k)); }
+    0%, 15% { translate: 0 0; }
+    19%, 32% { translate: 0 calc(var(--sbs-stop-1) * var(--sbs-k)); }
+    36%, 49% { translate: 0 calc(var(--sbs-stop-2) * var(--sbs-k)); }
+    53%, 92% { translate: 0 calc(var(--sbs-stop-3) * var(--sbs-k)); }
     100% { translate: 0 0; }
   }
   .sbs-run .sbs-mini {
@@ -4145,7 +4148,7 @@
     white-space: nowrap;
   }
   .sbs-p-solid { background: var(--p-noite); color: #fff; }
-  .sbs-p-lead { position: absolute; left: 0; right: 0; top: 172px; padding: 0 60px; text-align: center; }
+  .sbs-p-lead { position: absolute; left: 0; right: 0; top: 140px; padding: 0 60px; text-align: center; }
   .sbs-p-lead h3 {
     margin: 0 auto;
     font-family: var(--p-display);
@@ -4183,21 +4186,95 @@
   .sbs-p-note i { flex: none; display: grid; place-items: center; width: 18px; height: 18px; border: 1px solid var(--p-noite); border-radius: 50%; font-size: 11px; font-weight: 600; font-style: normal; }
   .sbs-p-wide { display: block; margin-top: 14px; padding: 13px; border-radius: 999px; background: var(--p-noite); color: #fff; text-align: center; font-size: 13px; font-weight: 500; }
 
-  /* 4 · How it works and what it costs (after Arweave): a wide-spaced
-     title, plain text, and numbered tabs along the foot, only the first
-     lit. */
-  .sbs-p-how { padding: 64px 60px 56px; border-top: 1px solid #ececf1; }
-  .sbs-p-how h4 { margin: 0; font-family: var(--p-display); font-weight: 400; font-size: 50px; line-height: 1.04; letter-spacing: -0.01em; word-spacing: 0.16em; }
+  /* The reviews (section 1): a short strip the whole width of the hero,
+     transparent over the photograph, sliding a lap a minute and held
+     under the pointer. Its edges fade so cards neither pop in nor out. */
+  .sbs-p-reviews {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 22px;
+    overflow: hidden;
+    mask-image: linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%);
+  }
+  .sbs-p-track { display: flex; gap: 14px; width: max-content; }
+  .sbs-run .sbs-p-track { animation: sbs-p-slide 60s linear infinite; }
+  .sbs-p-reviews:hover .sbs-p-track { animation-play-state: paused; }
+  @keyframes sbs-p-slide { to { translate: calc(-50% - 7px) 0; } }
+  .sbs-p-rev {
+    flex: none;
+    width: 330px;
+    margin: 0;
+    border: 1px solid rgb(17 21 37 / 0.22);
+    border-radius: 10px;
+    background: rgb(255 255 255 / 0.3);
+    backdrop-filter: blur(6px);
+  }
+  .sbs-p-rev blockquote { margin: 0; padding: 14px 16px 12px; font-family: var(--p-display); font-size: 16px; line-height: 1.3; letter-spacing: -0.01em; }
+  .sbs-p-rev figcaption { display: flex; align-items: stretch; border-top: 1px solid rgb(17 21 37 / 0.18); }
+  .sbs-p-who { display: flex; flex: 1; align-items: center; gap: 9px; padding: 9px 14px; }
+  .sbs-p-who i { display: grid; place-items: center; width: 28px; height: 28px; flex: none; border-radius: 50%; background: var(--p-noite); color: #fff; font-size: 11px; font-weight: 600; font-style: normal; }
+  .sbs-p-who b { display: block; font-size: 13px; font-weight: 600; line-height: 1.15; }
+  .sbs-p-who small { display: block; font-size: 11.5px; color: var(--p-grafite); }
+  .sbs-p-kind { display: flex; align-items: center; padding: 9px 14px; border-left: 1px solid rgb(17 21 37 / 0.18); font-family: var(--p-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--p-grafite); }
+
+  /* Section 4: the title and the cost beside the four steps as a
+     stepper (the user's component, rebuilt in Pilar's colours). */
+  .sbs-p-how { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; align-items: start; padding: 64px 60px 64px; border-top: 1px solid #ececf1; }
+  .sbs-p-how h4 { margin: 0; font-family: var(--p-display); font-weight: 400; font-size: 42px; line-height: 1.04; letter-spacing: -0.01em; word-spacing: 0.14em; }
   .sbs-p-how h4 span { display: block; }
-  .sbs-p-how p { margin: 24px 0 0; max-width: 52ch; font-size: 15.5px; line-height: 1.6; }
+  .sbs-p-how p { margin: 20px 0 0; max-width: 34ch; font-size: 15px; line-height: 1.6; }
   .sbs-p-go { display: inline-block; margin-top: 16px; padding-bottom: 3px; border-bottom: 1px solid var(--p-noite); font-size: 14px; font-weight: 500; }
-  .sbs-p-tabs { display: grid; grid-template-columns: repeat(4, 1fr); margin: 48px 0 0; padding: 0; list-style: none; }
-  .sbs-p-tabs li { padding: 0 16px 18px 0; border-bottom: 2px solid #e3e4ea; }
-  .sbs-p-tabs li[data-on] { border-bottom-color: var(--p-noite); }
-  .sbs-p-tabs span { font-family: var(--p-mono); font-size: 11px; color: var(--p-grafite); }
-  .sbs-p-tabs b { display: block; margin-top: 6px; font-family: var(--p-display); font-weight: 500; font-size: 21px; color: var(--p-grafite); }
-  .sbs-p-tabs small { display: block; margin-top: 8px; font-size: 13px; line-height: 1.45; color: var(--p-grafite); }
-  .sbs-p-tabs li[data-on] b, .sbs-p-tabs li[data-on] small { color: var(--p-noite); }
+  .sbs-p-stepper { display: flex; flex-direction: column; gap: 22px; padding: 26px; border: 1px solid #d9dae2; border-radius: 14px; }
+  .sbs-p-step-top { display: flex; align-items: baseline; justify-content: space-between; }
+  .sbs-p-step-top b { font-size: 14px; font-weight: 600; }
+  .sbs-p-step-top span { font-size: 12px; color: var(--p-grafite); }
+  .sbs-p-bar2 { position: relative; height: 6px; border-radius: 999px; background: #ececf1; }
+  .sbs-p-done, .sbs-p-now { position: absolute; top: 0; bottom: 0; left: 0; border-radius: 999px; }
+  .sbs-p-done { background: var(--p-nevoa); transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+  .sbs-p-now { background: var(--p-noite); transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+  .sbs-p-names { display: flex; }
+  .sbs-p-names button {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--p-grafite);
+    cursor: pointer;
+  }
+  .sbs-p-names button[data-past] { color: var(--p-noite); }
+  .sbs-p-names button[aria-current] { color: var(--p-noite); font-weight: 600; }
+  .sbs-p-names svg { width: 10px; height: 10px; }
+  .sbs-p-step-body { display: grid; place-items: center; min-height: 96px; padding-bottom: 20px; border-bottom: 1px solid #ececf1; text-align: center; }
+  .sbs-p-step-body > div { animation: sbs-p-in 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+  @keyframes sbs-p-in { from { opacity: 0; translate: 0 6px; } }
+  .sbs-p-step-body h5 { margin: 0; font-family: var(--p-display); font-weight: 500; font-size: 22px; }
+  .sbs-p-step-body p { margin: 8px auto 0; max-width: 36ch; font-size: 14px; line-height: 1.5; color: var(--p-grafite); }
+  .sbs-p-step-nav { display: flex; justify-content: space-between; }
+  .sbs-p-step-nav button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--p-noite);
+    cursor: pointer;
+  }
+  .sbs-p-step-nav button[data-solid] { background: var(--p-noite); color: #fff; }
+  .sbs-p-step-nav button:disabled { opacity: 0.35; cursor: default; }
+  .sbs-p-step-nav svg { width: 12px; height: 12px; }
 
   .sbs-note { margin-top: clamp(1.5rem, 3vw, 2.25rem); color: rgb(255 255 255 / 0.62); text-transform: none; letter-spacing: 0.02em; }
 
@@ -4208,7 +4285,8 @@
     .sbs-run .sbs-t-top,
     .sbs-run .sbs-t-banner,
     .sbs-run .sbs-t-dots i,
-    .sbs-run .sbs-cookie { animation: none; }
+    .sbs-run .sbs-cookie,
+    .sbs-run .sbs-p-track { animation: none; }
   }
 }
 
@@ -4256,16 +4334,15 @@
     .sbs-p-page { --sbs-stop-1: -826px; --sbs-stop-2: -1262px; --sbs-stop-3: -1900px; }
     .sbs-p-hero { height: 826px; }
     .sbs-p-tools .sbs-p-pill:not(.sbs-p-solid) { display: none; }
-    .sbs-p-lead { top: 190px; padding: 0 34px; }
+    .sbs-p-lead { top: 150px; padding: 0 34px; }
     .sbs-p-lead h3 { font-size: 44px; }
     .sbs-p-lead h3 span { display: inline; }
     .sbs-p-index span { font-size: 60px; }
     .sbs-p-sheet { grid-template-columns: 1fr; gap: 24px; padding: 48px 36px 44px; }
     .sbs-p-sheet-copy h4 { font-size: 40px; }
     .sbs-p-sheet-copy p { max-width: 46ch; }
-    .sbs-p-how { padding: 56px 36px 52px; }
-    .sbs-p-how h4 { font-size: 44px; }
-    .sbs-p-tabs { grid-template-columns: 1fr 1fr; row-gap: 22px; }
+    .sbs-p-how { grid-template-columns: 1fr; gap: 28px; padding: 52px 36px 52px; }
+    .sbs-p-how p { max-width: 46ch; }
   }
 }
 
