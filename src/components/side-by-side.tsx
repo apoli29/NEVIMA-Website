@@ -9,13 +9,20 @@ import { ProposalHost } from "./proposal-host";
 import { WorkTogether } from "./work-together";
 import { useSeen } from "./use-seen";
 import { useT } from "@/lib/use-lang";
+import { Newsreader, Plus_Jakarta_Sans } from "next/font/google";
+
+/* Pilar's own type, loaded for this page only: Plus Jakarta Sans is the
+   brand's (its guide and signature), Newsreader is the free serif
+   nearest the reference's display face. */
+const pilarSerif = Newsreader({ subsets: ["latin"], variable: "--f-pilar-serif", display: "swap" });
+const pilarSans = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--f-pilar-sans", display: "swap" });
 
 /* ==================================================================
    Side by side
 
    The same business, built twice. The comparison on the home page says
    the difference in words; this page shows it. Two websites for one
-   invented clinic stand on the same black surface: one put together
+   invented insurance broker stand on the same black surface: one put together
    from an off-the-shelf template, one of ours. They start in the same
    frame and go down the page at the same moments, so the only thing
    that differs is what each of them does with that time.
@@ -39,7 +46,7 @@ import { useT } from "@/lib/use-lang";
    it was bought from. The right side arrives once, in one move, and
    then holds still.
 
-   The clinic is invented and both pages are demonstrations: it says so
+   The broker is invented and both pages are demonstrations: it says so
    under them, because this page is an argument about honesty.
    ================================================================== */
 
@@ -123,16 +130,16 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
   const menu = [
     t("Home", "Início"),
     t("About Us", "Sobre Nós"),
-    t("Services", "Serviços"),
-    t("Our Team", "A Equipa"),
+    t("Insurance", "Seguros"),
+    t("Simulator", "Simulador"),
     t("Blog", "Blog"),
     t("FAQ", "FAQ"),
     t("Contact", "Contactos"),
   ];
   const cards = [
-    t("Our Services", "Os Nossos Serviços"),
-    t("Why Choose Us", "Porquê Escolher-nos"),
-    t("Book Online", "Marcação Online"),
+    t("Car Insurance", "Seguro Automóvel"),
+    t("Home Insurance", "Seguro Casa"),
+    t("Health Insurance", "Seguro Saúde"),
   ];
 
   return (
@@ -142,7 +149,7 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
 
       <div className="sbs-mini sbs-t-page">
         <div className="sbs-t-top">
-          <span className="sbs-t-brand">VERDELA CLINIC</span>
+          <span className="sbs-t-brand">{t("PILAR INSURANCE", "PILAR SEGUROS")}</span>
           <nav className="sbs-t-nav">
             {menu.map((item) => (
               <span key={item}>{item}</span>
@@ -154,10 +161,11 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
         {/* The banner that lands late. Everything under it is shoved down
             the moment it does, which is the whole point of it. */}
         <div className="sbs-t-banner">
+          {/* The umbrella every insurance template ships with. */}
           <svg viewBox="0 0 190 120" className="sbs-t-stock" fill="none" stroke="currentColor" strokeWidth="5">
-            <path d="M20 72c18-18 34-6 44 2l20 16c8 6 18 4 24-4" />
-            <path d="M170 68c-16-16-32-8-44 0l-18 12c-8 6-18 6-26 0" />
-            <circle cx="95" cy="36" r="16" />
+            <path d="M35 64a60 52 0 0 1 120 0c-10-8-20-8-30 0-10-8-20-8-30 0-10-8-20-8-30 0-10-8-20-8-30 0Z" />
+            <path d="M95 64v34c0 10 14 10 14 0" />
+            <path d="M95 12v-4" />
           </svg>
           <span className="sbs-t-dots">
             <i className="on" />
@@ -224,7 +232,7 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
         </div>
 
         <div className="sbs-t-foot">
-          <span>© 2026 Verdela Clinic. {t("All Rights Reserved.", "Todos os Direitos Reservados.")}</span>
+          <span>© 2026 {t("Pilar Insurance", "Pilar Seguros")}. {t("All Rights Reserved.", "Todos os Direitos Reservados.")}</span>
           <span className="sbs-t-badge">Powered by ThemeMarket</span>
         </div>
       </div>
@@ -246,85 +254,133 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
 
 /* ---- the website we would have made ------------------------------ */
 
+/** Pilar's symbol, from its brand guide: the stem, the cut of 8 units
+    that is the broker's place between client and insurer, and the empty
+    core, which never takes a colour. */
+function PilarSymbol({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 100 100" className={className} fill="currentColor" aria-hidden="true">
+      <rect width="30" height="100" rx="8" />
+      <path
+        fillRule="evenodd"
+        d="M44 0H76A24 24 0 0 1 100 24V42A24 24 0 0 1 76 66H44A6 6 0 0 1 38 60V6A6 6 0 0 1 44 0Z M59 23H79V43H59Z"
+      />
+    </svg>
+  );
+}
+
+/** The horizontal signature: the name is never translated, only the
+    descriptor is ("Pilar Seguros" on the Portuguese page, "Pilar
+    Insurance" on the English one), set as the guide sets it. */
+function PilarLogo({ t, className }: { t: ReturnType<typeof useT>; className?: string }) {
+  return (
+    <span className={`sbs-p-logo ${className ?? ""}`}>
+      <PilarSymbol />
+      <span>{t("Pilar Insurance", "Pilar Seguros")}</span>
+    </span>
+  );
+}
+
+/* Taken, layout and type, from one reference (Wealthsimple's home page,
+   found through Inspo), in Pilar's own colours: a hero across the whole
+   width with one centred line and one outlined button, the products as
+   a column of very large words, a product band across the whole width
+   with a small signature, a three-line title and a round arrow, and a
+   manifesto on white under a small mark. */
 function Ours({ t }: { t: ReturnType<typeof useT> }) {
-  const treatments = [
-    [t("Consultation", "Consulta"), t("45 minutes. The skin read before anything is proposed.", "45 minutos. A pele lida antes de se propor seja o que for.")],
-    [t("Deep cleanse", "Limpeza profunda"), t("Once a season, and no sooner.", "Uma vez por estação, e não antes.")],
-    [t("Peeling", "Peeling"), t("Three strengths. The gentlest that works.", "Três intensidades. A mais suave que resulte.")],
-    [t("Follow-up", "Acompanhamento"), t("Six weeks later, included.", "Seis semanas depois, incluído.")],
+  const lines = [
+    t("Home", "Casa"),
+    t("Car", "Automóvel"),
+    t("Health", "Saúde"),
+    t("Life", "Vida"),
+    t("Business", "Empresas"),
   ];
 
   return (
-    <div className="sbs-mini sbs-n-page">
-      <div className="sbs-n-top">
-        <span className="sbs-n-brand">verdela</span>
-        <nav className="sbs-n-nav">
-          <span>{t("Treatments", "Tratamentos")}</span>
-          <span>{t("The clinic", "A clínica")}</span>
-          <span>{t("Book", "Marcações")}</span>
-        </nav>
-      </div>
+    <div className={`sbs-mini sbs-p-page ${pilarSerif.variable} ${pilarSans.variable}`}>
+      <div className="sbs-p-hero">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/side-by-side/pilar-hero.webp" alt="" draggable={false} className="sbs-p-sky" />
 
-      <div className="sbs-n-hero">
-        <div>
+        <div className="sbs-p-bar">
+          <PilarLogo t={t} />
+          <span className="sbs-p-tools">
+            <i className="sbs-p-round">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <circle cx="7" cy="7" r="4.5" />
+                <path d="M10.4 10.4 14 14" />
+              </svg>
+            </i>
+            <span className="sbs-p-pill">{t("Client area", "Área de cliente")}</span>
+            <span className="sbs-p-pill sbs-p-solid">{t("Get a quote", "Pedir simulação")}</span>
+            <i className="sbs-p-round">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M3 6h10M3 10h10" />
+              </svg>
+            </i>
+          </span>
+        </div>
+
+        <div className="sbs-p-lead">
           <h3>
-            <span>{t("Skin read", "Pele tratada")}</span>
-            <strong>{t("before it is treated.", "com tempo a sério.")}</strong>
+            <span>{t("Insurance chosen by someone", "Seguros escolhidos por")}</span>{" "}
+            <span>{t("who doesn’t sell it.", "quem não os vende.")}</span>
           </h3>
           <p>
             {t(
-              "A small clinic in Porto. One room, two hands, and the time each face needs.",
-              "Uma clínica pequena no Porto. Uma sala, duas mãos, e o tempo que cada rosto precisa.",
+              "Insurance brokerage. We compare the insurers; you decide with everything in front of you.",
+              "Mediação de seguros. Comparamos as seguradoras; o cliente decide com tudo à frente.",
             )}
           </p>
-          <span className="sbs-n-act">{t("Book a consultation", "Marcar consulta")}</span>
+          <span className="sbs-p-pill sbs-p-ghost">{t("Get a quote", "Pedir simulação")}</span>
         </div>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/contact/water-1280.webp" alt="" draggable={false} className="sbs-n-shot" />
       </div>
 
-      <div className="sbs-n-rule" />
+      <div className="sbs-p-index">
+        {lines.map((line) => (
+          <span key={line}>{line}</span>
+        ))}
+      </div>
 
-      <div className="sbs-n-next">
-        <span className="sbs-n-lab">{t("What is done here", "O que se faz aqui")}</span>
+      <div className="sbs-p-band">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/side-by-side/pilar-rain.webp" alt="" draggable={false} />
         <div>
+          <span className="sbs-p-sign">
+            <PilarSymbol />
+            <b>Pilar</b> {t("Claims", "Sinistros")}
+          </span>
           <h4>
             {t(
-              "Four treatments, done properly, instead of twenty on a list.",
-              "Quatro tratamentos, bem feitos, em vez de vinte numa lista.",
+              "When it happens, we’re the ones who make the call.",
+              "Quando acontece, quem liga somos nós.",
             )}
           </h4>
-          <dl className="sbs-n-list">
-            {treatments.map(([name, note]) => (
-              <div key={name}>
-                <dt>{name}</dt>
-                <dd>{note}</dd>
-              </div>
-            ))}
-          </dl>
+          <i className="sbs-p-round sbs-p-arrow">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M3 8h10M9 4l4 4-4 4" />
+            </svg>
+          </i>
         </div>
       </div>
 
-      <div className="sbs-n-room">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/about/folds-1280.webp" alt="" draggable={false} />
+      <div className="sbs-p-manifest">
+        <PilarSymbol className="sbs-p-mark" />
+        <h4>
+          <span>{t("One broker.", "Um mediador.")}</span> <span>{t("Every insurer.", "Todas as seguradoras.")}</span>
+        </h4>
         <p>
           {t(
-            "One room, on the first floor, with the window open.",
-            "Uma sala, no primeiro andar, com a janela aberta.",
+            "Pilar works for no insurer. It stands in the space between you and all of them: it compares, explains the small print and, when there is a claim, sees it through from start to finish.",
+            "A Pilar não trabalha para nenhuma seguradora. Fica no espaço entre o cliente e todas elas: compara, explica as letras pequenas e, quando há um sinistro, trata dele do princípio ao fim.",
           )}
         </p>
+        <small>{t("Pilar Insurance · Insurance brokerage · Lisbon", "Pilar Seguros · Mediação de seguros · Lisboa")}</small>
       </div>
 
-      <div className="sbs-n-rule" />
-
-      <div className="sbs-n-end">
-        <span className="sbs-n-lab">{t("Where", "Onde")}</span>
-        <div>
-          <p>Rua da Alegria 112, Porto</p>
-          <p className="sbs-n-quiet">{t("Tuesday to Saturday, 10h–19h", "De terça a sábado, 10h–19h")}</p>
-        </div>
-        <span className="sbs-n-act">{t("Book a consultation", "Marcar consulta")}</span>
+      <div className="sbs-p-close">
+        <h4>{t("Talk to someone who compares.", "Falar com quem compara.")}</h4>
+        <span className="sbs-p-pill sbs-p-ghost">{t("Get a quote", "Pedir simulação")}</span>
       </div>
     </div>
   );
@@ -373,7 +429,7 @@ export function SideBySide() {
           className="sbs-stage relative isolate pt-[clamp(3rem,6vw,5rem)] pb-(--section-gap) text-paper"
         >
           <h2 id="side-by-side-title" className="sr-only">
-            {t("The same clinic, as two websites", "A mesma clínica, em dois websites")}
+            {t("The same insurance broker, as two websites", "A mesma mediadora de seguros, em dois websites")}
           </h2>
           <div aria-hidden="true" className="sbs-ground" />
 
@@ -383,7 +439,7 @@ export function SideBySide() {
                 quiet
                 running={running}
                 label={t("Off-the-shelf template", "Modelo pré-feito")}
-                address="verdela-clinic.example/home"
+                address={t("pilar-insurance.example/home", "pilar-seguros.example/inicio")}
                 says={t(
                   "A website from an off-the-shelf template: a loading bar still running, a seven-item menu, a banner image that lands late and pushes the page down, stock photography, a carousel, three identical cards and a cookie wall over the foot of it.",
                   "Um website feito a partir de um modelo pré-feito: uma barra de carregamento ainda a correr, um menu de sete itens, uma imagem de banner que chega tarde e empurra a página para baixo, fotografia de stock, um carrossel, três cartões iguais e uma parede de cookies por cima do fundo.",
@@ -395,10 +451,10 @@ export function SideBySide() {
               <Plate
                 running={running}
                 label="nevima"
-                address="verdela.example"
+                address={t("pilarinsurance.example", "pilarseguros.example")}
                 says={t(
-                  "The same clinic as we would build it: the page arrives in one move, one line of type says what the clinic is, one photograph, four treatments written out, and the address.",
-                  "A mesma clínica como a faríamos: a página chega num só movimento, uma linha de texto diz o que a clínica é, uma fotografia, quatro tratamentos escritos por extenso, e a morada.",
+                  "The same insurance broker as we would build it: one line over a photograph of a pillar says what the broker does, its five kinds of insurance in very large type, a band on how it handles claims, and a short manifesto.",
+                  "A mesma mediadora de seguros como a faríamos: uma linha sobre a fotografia de um pilar diz o que a mediadora faz, os cinco tipos de seguro em letra muito grande, uma faixa sobre como trata dos sinistros, e um manifesto curto.",
                 )}
               >
                 <Ours t={t} />
@@ -407,8 +463,8 @@ export function SideBySide() {
 
             <p className="sbs-note mono-label">
               {t(
-                "Both pages are demonstrations built for this page, and the clinic is invented.",
-                "Ambas as páginas são demonstrações feitas para esta página, e a clínica é inventada.",
+                "Both pages are demonstrations built for this page, and the insurance broker is invented.",
+                "Ambas as páginas são demonstrações feitas para esta página, e a mediadora de seguros é inventada.",
               )}
             </p>
           </div>

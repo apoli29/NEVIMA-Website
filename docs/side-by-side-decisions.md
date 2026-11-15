@@ -10,7 +10,7 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   another agency would have made it and one as we make it, two or three
   sections each. The comparison on the home page (`comparison.tsx`) says
   the difference in words; this page shows it.
-- The two pages are the same invented clinic. They start in the same
+- The two pages are the same invented business. They start in the same
   frame and go down the page at the same moments, so the only thing that
   differs is what each does with that time: the template never finishes
   arriving, ours arrives once and holds still.
@@ -52,9 +52,39 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   would be invented, and the page is an argument about honesty. A line
   under the pair says both pages are demonstrations and the clinic is
   invented.
-- The clinic is "Verdela", invented, in Porto. Its photographs are the
-  studio's own (`/contact/water-1280.webp`, `/about/folds-1280.webp`), so
-  nothing was downloaded for a demonstration.
+- 2026-11-15 (user): the business is "Pilar Seguros", an invented
+  insurance broker with its own brand guide (symbol, signatures, palette
+  Noite #111525, Grafite #434655, Névoa #A8AABC, Branco). It replaces the
+  clinic Verdela on both sides. The English page carries the "Pilar
+  Insurance" signature and the Portuguese page "Pilar Seguros": the name
+  is never translated, only the descriptor.
+- Our side has four sections, chosen for the business: the hero (one
+  line on what a broker is, over a pillar), the five kinds of insurance
+  as very large words, a band on claims (the moment a broker earns its
+  keep), and a manifesto with a closing line.
+- Its layout and type follow one reference closely, at the user's
+  request ("99,9%" except colours): Wealthsimple's home page, found
+  through Inspo as the nearest top-level site in finance. Taken from it:
+  the inset white bar with round icons and pill buttons, the centred
+  serif line with one outlined button, the column of very large serif
+  words, the full-width band with a small signature, a three-line sans
+  title and a round arrow, the manifesto under a small mark. The
+  reference's colours are not taken; only Pilar's four are used.
+- Type: Plus Jakarta Sans (the brand's) for everything but the display
+  lines, which are in Newsreader, the free serif nearest the reference's
+  Tiempos (user, 2026-11-15). Both loaded in `side-by-side.tsx` only.
+- Photographs, both from Unsplash under its free licence (not Unsplash+),
+  turned into Pilar's palette: the pillar by Alejandro Barba
+  (unsplash.com/photos/elvAJVysX8w), its sky extended upward so the line
+  sits in it; the rain on glass by Rama Krushna Behera
+  (unsplash.com/photos/vy5aeGxRhok). In `public/side-by-side/`.
+- The template side is the same broker as a template would make it:
+  "PILAR SEGUROS" in capitals, a seven-item menu with a simulator, three
+  identical insurance cards and the stock umbrella.
+- The section heights are held the same in both languages (the long
+  display lines are split by hand into two), so one pair of stops serves
+  both; after a change to our side's copy, measure again and reset
+  `--sbs-stop-1` / `--sbs-stop-2` on `.sbs-p-page` (desktop and narrow).
 - Indexed (`index: true` in `SEO_PAGES`), unlike the about page and the
   portfolio, which are still moulds.
 - On the bar, as its fourth link (user, 2026-11-11: "mete na navbar o
@@ -72,6 +102,4 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
 
 ## Open
 
-- Whether the clinic keeps the name Verdela.
-- Whether the demonstration should have a photograph of its own rather
-  than borrowing the studio's.
+- Nothing open from the clinic version; Pilar settles both questions.
