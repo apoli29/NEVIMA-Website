@@ -22,7 +22,7 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   `--sbs-k`, which a ResizeObserver writes on the plate. The type inside
   is type. Two videos would weigh more than the whole home page, would
   band on the black, and would say the opposite of what the page claims.
-- One loop, `--sbs-loop: 15s` (12s until the four-stop Pilar page), in CSS keyframes. Both sides are given
+- One loop, `--sbs-loop: 18s` (12s, then 15s, before the Pilar stepper), in CSS keyframes. Both sides are given
   `.sbs-run` in the same render, so the two loops begin in the same frame
   and never drift apart. Held while off the screen through
   `offscreen-pause.tsx`; not given at all to anyone who has asked for
@@ -89,6 +89,27 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
     before each renewal and, in a claim, Pilar makes the call).
   - Gone: the rain photograph, the pixel symbol and the pillar detail
     (Area17 and AiiD rounds). Only the hero photograph remains.
+- 2026-11-16 (user, fourth round): two components the user brought,
+  rebuilt in the page's own code and Pilar's colours rather than
+  installed (the site has no shadcn, Radix or lucide, and the plate is a
+  scaled demonstration page with its own type):
+  - Section 1 gains a review strip across the foot of the hero, the whole
+    width, short and transparent over the photograph (from a sliding
+    testimonial component). It slides a lap a minute and holds under the
+    pointer (user's choice, so it reads apart from the template's
+    carousel). Six invented clients, as Pilar is: initials, town and kind
+    of policy, never a face (user's choice).
+  - Section 4 keeps its title and cost, and the four steps become a
+    stepper (from a "stepper-04" component): count, a bar with the
+    current step in Noite and the steps done in Névoa, the step names,
+    the step itself, Back / Continue. While the plate holds on it, it
+    walks itself from 1 to 4, read off the loop's progress through the
+    Web Animations API; a click takes over until the page goes back to
+    the top (user's choice). Its buttons are out of the tab order, the
+    plate being hidden from assistive technology.
+  - The loop is 18s and its last stop is held longest (53% to 92%), so the
+    steps have time to be read; the marks in `PilarSteps` (62%, 71%, 80%)
+    must stay inside that hold.
 - The loop's stops on our side are read off the page: each section
   carries `data-stop`, and `useFit` in `side-by-side.tsx` sets
   `--sbs-stop-1..3` from their tops (never past the foot), because the
