@@ -220,6 +220,68 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   the CSS loops (the slow photograph, the glow, the caret) are held off
   the screen through `offscreen-pause.tsx`.
 
+## The service, second pass (2026-11-15, user)
+
+- The user found the first pass too round for the site ("muitos botões e
+  elementos demasiado arredondados ... incoerente com a nossa identidade
+  visual"). The site's rule, from the homepage and portfolio decisions:
+  rectangles are square (the bar stopped being a pill), cells are ruled
+  by hairlines with mono numbers, the look is a gallery's (prints on
+  mats, wall labels, a hang); the only round shapes are the drops (the
+  CTAs, the values). So everything in these three sections is square
+  now: the switch is set as the bar's links are (hairline cells, mono
+  numbers, a block of ink sliding under the chosen one), the plate, the
+  card, the prompt and its key (the bar's white key with the arrow).
+  Only Pilar's own pages inside the plate keep their round buttons,
+  being another brand's. The drop CTA stays a drop.
+- The code is now one file per section: `sbs-included.tsx`,
+  `sbs-service.tsx` (two levels; it re-exports the other two),
+  `sbs-personal.tsx`, and `sbs-shared.tsx` for what they share.
+- Included, "less technology, more gallery curation, both at once": a
+  gallery wall of ten small works, each a print in a thin frame on a
+  white mat, the pictogram proofed on its construction grid (used cells
+  filled, the rest marked with a point). One light, a beam from the top
+  of the wall and a pool on it, moves from work to work in a single
+  move; the lit work's frame turns ink and it hangs a little further
+  out. Beside it, the wall label: a rule, "N.º" with a counter that turns
+  over, the name scrambling into place, the text, and the "Elsewhere"
+  line set as a provenance note under a hairline. The time, which the
+  user found too plain, follows Pace Gallery (Inspo): ten hairlines, one
+  per work, the passed ones in ink, the current one filling; Previous,
+  Pause and Next as square keys that fill with ink from the left, as the
+  bar's button does. Manual choices no longer stop the wall for good;
+  Pause does, and the wall holds while it is pointed at or focused. Less
+  motion: it starts paused. References: Pace Gallery and Terakawa Photo
+  Office (Awwwards nominee) for the gallery's manners; Linear kept only
+  for the scramble. A line beside the title: "Dez coisas que fazem parte
+  do serviço de web design."
+- Personalization, "a card that is animated, not interactive", holding
+  the choice of website or landing page, the pages, and the skeleton
+  forming; "an inversion instead of a loop": one card plays it all on
+  one CSS clock of 12 s. The pages are ticked one by one (Home, Services,
+  Team, Gallery, Contact; Prices, Testimonials and FAQ stay unticked, so
+  a choice is seen), each adding a sheet to the skeleton and the count
+  under the list ("Uma página." … "Cinco páginas."); then the switch
+  moves to Landing page and the sheets draw together into one long page,
+  framed, their addresses turned into anchors ("Uma só página, com
+  tudo."). At the end a white sheet set to invert (mix-blend difference)
+  wipes across the card, as the bar's button fills, and the same clock
+  runs backwards in negative, taking the website apart; at its start
+  the sheet wipes off and it runs forwards again. Every part is a CSS
+  animation of the same length run back and forth (the inverting sheet
+  one of twice that length), so nothing can drift; the keyframes are
+  written once in `sbs-personal.tsx`. Under the card, the three steps it
+  plays, numbered between rules after Terakawa, each lit while it
+  happens. The title stands with the user's sentence set against it on
+  the right. Less motion: the card shows where it ends.
+- The subsection's background, "a similar vibe, more cohesive with the
+  site": the mosaic glow became a field of small square points on a
+  fine grid, each as bright and as large as the light on it; one light
+  rests behind the prompt and two drift, never in step. After FURO's
+  dot-matrix lettering and the speaker grille in Drams (Inspo), in the
+  site's own pixels. A black veil sits behind the answer so the points
+  never cross the words. Drawn at 30 frames a second, only while seen.
+
 ## Open
 
 - Nothing open from the clinic version; Pilar settles both questions.
