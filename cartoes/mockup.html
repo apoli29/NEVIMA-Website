@@ -9,6 +9,7 @@
      gerar.cjs fotografa cada cena a 1600 × 1100 (×2). -->
 <style>
   @font-face { font-family: Satoshi; src: url(../fonts/Satoshi/Satoshi-Variable.woff2) format("woff2"); font-weight: 300 900; }
+  @font-face { font-family: "Geist Mono"; src: url(../fonts/GeistMono/GeistMono-Medium-latin.woff2) format("woff2"); font-weight: 500; }
   html, body { margin: 0; background: #262626; }
   .cena { position: relative; width: 1600px; height: 1100px; overflow: hidden; background: #2a2a2a; }
   .cena > .luz { position: absolute; inset: 0; pointer-events: none; }
@@ -112,7 +113,7 @@
       "transform:rotate(-4deg);transform-origin:50% 100%");
   }
   document.body.insertAdjacentHTML("beforeend", `<div class="cena">${html}</div>`);
-  document.fonts.ready.then(() => { document.body.dataset.pronto = "1"; });
+  Promise.all([document.fonts.load("500 10px 'Geist Mono'"), document.fonts.load("300 10px Satoshi"), document.fonts.load("500 10px Satoshi")]).then(() => document.fonts.ready).then(() => { document.body.dataset.pronto = "1"; });
 </script>
 </body>
 </html>

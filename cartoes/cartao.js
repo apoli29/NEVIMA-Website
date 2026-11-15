@@ -111,13 +111,16 @@
     /* Três níveis (utilizador, 2026-11-14: o nome e o cargo maiores):
        o nome, o cargo logo por baixo, e os contactos, mais pequenos, em baixo. */
     const CORPO = 6.2 * PT;
-    const CAP = 0.7; // altura das maiúsculas da Satoshi, em fração do corpo
+    const CAP = 0.73; // altura das maiúsculas da Satoshi, em fração do corpo (medida)
     const t = (y, s, corpo, cor, peso, ls) =>
       `<text x="${M}" y="${y}" font-size="${corpo}" fill="${cor}" font-weight="${peso}" letter-spacing="${ls}">${s.toUpperCase()}</text>`;
     /* O nome pode ter outra letra (o.nome, para estudos): família, corpo em
        pt, peso, estilo, maiúsculas ou não, espaçamento e altura das
        maiúsculas em fração do corpo. Por omissão, a Satoshi a 700. */
-    const n = Object.assign({ familia: "Satoshi, sans-serif", pt: 10.5, peso: 700, estilo: "normal", maiusculas: true, ls: 0.02, cap: CAP }, o.nome);
+    /* Escolha do utilizador (2026-11-15, a opção C do estudo): o nome como o
+       site o escreve na página About, em Satoshi, primeiro nome Light e
+       apelido Medium, 15 pt, espaçamento -0,035 em. */
+    const n = Object.assign({ familia: "Satoshi, sans-serif", pt: 15, peso: 500, pesos: [300, 500], estilo: "normal", maiusculas: false, ls: -0.035 * 15 * PT, cap: CAP, depois: 0.5 }, o.nome);
     const nomeCorpo = n.pt * PT;
     const nomeY = M + nomeCorpo * n.cap;
     const nomeTexto = n.maiusculas ? p.nome.toUpperCase() : p.nome;
@@ -128,8 +131,9 @@
       ? `<tspan font-weight="${n.pesos[0]}">${partes.slice(0, -1).join(" ")} </tspan><tspan font-weight="${n.pesos[1]}">${partes[partes.length - 1]}</tspan>`
       : nomeTexto;
     const nomeSVG = `<text x="${M - (n.recuo || 0)}" y="${nomeY}" font-family="${n.familia}" font-size="${nomeCorpo}" font-weight="${n.peso}" font-style="${n.estilo}" letter-spacing="${n.ls}" fill="#000"${n.extra ? " " + n.extra : ""}>${nomeConteudo}</text>`;
-    /* O cargo pode também mudar de letra (o.cargo), por omissão a Satoshi. */
-    const c = Object.assign({ familia: "Satoshi, sans-serif", pt: 7.5, peso: 500, ls: 0.06, gap: 1.75 }, o.cargo);
+    /* O cargo como os rótulos do site (.mono-label): Geist Mono, maiúsculas,
+       espaçamento 0,06 em (utilizador, 2026-11-15, opção C). */
+    const c = Object.assign({ familia: "'Geist Mono', monospace", pt: 6.8, peso: 500, ls: 0.06 * 6.8 * PT, gap: 1.75 }, o.cargo);
     const cargoSVG = `<text x="${M}" y="${nomeY + c.pt * PT * c.gap + (n.depois || 0)}" font-family="${c.familia}" font-size="${c.pt * PT}" font-weight="${c.peso}" letter-spacing="${c.ls}" fill="#000">${p.cargo.toUpperCase()}</text>`;
     // Em baixo, a última linha assenta a 5 mm do corte.
     const base = H - M;

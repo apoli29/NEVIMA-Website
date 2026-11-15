@@ -14,11 +14,17 @@ Os cartões do António e do Emanuel. A fonte é `cartoes/` (`cartao.js` desenha
     - Nos mockups, a sombra diagonal da cena passa a ficar só no fundo, para não acinzentar o branco.
 - **Verso (utilizador):** fundo branco com grãos pretos (a referência Duna, invertida). O grão é leve em todo o cartão e mais denso e irregular no canto superior direito, com uma risca curva e subtil nesse canto, desfocada pelo próprio granulado. À volta do "n", em baixo à direita, o grão rareia aos poucos, até 85% menos junto ao símbolo, para que se leia limpo (utilizador, 2026-11-14). O desenho do grão é fixo (semente em `cartao.js`): é igual nos dois cartões e sai igual sempre que se gera.
 - **Informações (utilizador: a disposição da Antora):**
-  - O "n" fica em baixo à direita. Tudo em Satoshi, em maiúsculas.
+  - O "n" fica em baixo à direita. Só se usam as letras do site.
   - Na 2.ª ronda (utilizador, 2026-11-14), o nome e o cargo ficaram maiores e a hierarquia passou a ter três níveis:
-    - **o nome**, em 10,5 pt e peso 700, em cima à esquerda;
-    - **o cargo**, em 7,5 pt e peso 500, logo por baixo;
+    - **o nome**, em cima à esquerda (na 2.ª ronda, Satoshi 700 em maiúsculas, a 10,5 pt);
+    - **o cargo**, logo por baixo (na 2.ª ronda, Satoshi 500 a 7,5 pt);
     - **os contactos**, em 6,2 pt e peso 500, em baixo à esquerda: o email e o telefone a preto e, depois de um intervalo, o site e o país a cinzento.
+  - **3.ª ronda (utilizador, 2026-11-15):** o estudo da letra do nome ficou dentro das letras do site, a variar o estilo, porque o utilizador não queria uma letra nova. Foi escolhida a opção C:
+    - **o nome** fica como o site o escreve na página About: Satoshi em minúsculas, o primeiro nome em Light (300) e o apelido em Medium (500), a 15 pt, com espaçamento −0,035 em;
+    - **o cargo** fica como os rótulos do site (`.mono-label`): Geist Mono 500, em maiúsculas, a 6,8 pt, com espaçamento 0,06 em;
+    - **os contactos** não mudam (Satoshi 500 em maiúsculas, a 6,2 pt).
+  - A Geist Mono está em `fonts/GeistMono/` (latin, 500, licença OFL), porque o site a carrega do Google e os cartões precisam do ficheiro local.
+  - Ficaram de fora três letras novas (Instrument Serif, Archivo Expanded e Cormorant Garamond) e outros estilos do site: a Satoshi toda em Light ou toda em Medium, e a Instrument Sans em itálico.
   - António Policarpo · Cofundador · antonio@nevima.studio · +351 910 555 780
   - Emanuel Costa · Cofundador · emanuel@nevima.studio · +351 917 861 347
   - Em português, com emails próprios (utilizador). **Os endereços antonio@ e emanuel@ têm de existir antes de se imprimir:** hoje o site só usa ola@nevima.studio.
