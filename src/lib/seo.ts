@@ -98,8 +98,8 @@ export const SEO_PAGES: SeoPage[] = [
       pt: "Lado a lado",
     },
     description: {
-      en: "The same clinic as two websites, running side by side: one put together from an off-the-shelf template, one of ours.",
-      pt: "A mesma clínica em dois websites, lado a lado: um montado a partir de um modelo pré-feito, outro nosso.",
+      en: "The same insurance broker as two websites, running side by side: one put together from an off-the-shelf template, one of ours.",
+      pt: "A mesma mediadora de seguros em dois websites, lado a lado: um montado a partir de um modelo pré-feito, outro nosso.",
     },
     share: {
       title: { en: "The same business, built twice", pt: "A mesma empresa, construída duas vezes" },

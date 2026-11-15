@@ -4077,31 +4077,109 @@
   .sbs-cookie-no { flex: none; text-decoration: underline; opacity: 0.85; }
 
   /* ========================= ours ================================== */
-  .sbs-n-page { --sbs-stop-1: -644px; --sbs-stop-2: -1005px; background: #fff; }
-  /* It arrives once, in one move, and then holds still: the whole of it
-     at once, where the other side's parts come in one at a time. */
+  /* Pilar Seguros, an invented insurance broker. Layout and type follow
+     one reference (Wealthsimple's home page) closely; the colours are
+     Pilar's own four and nothing else: Noite, Grafite, Névoa, Branco.
+     Névoa is never type on white (2.3:1, the brand guide's rule). */
+  .sbs-p-page {
+    --sbs-stop-1: -985px;
+    --sbs-stop-2: -1732px;
+    --p-noite: #111525;
+    --p-grafite: #434655;
+    --p-nevoa: #a8aabc;
+    --p-serif: var(--f-pilar-serif), Georgia, serif;
+    background: #fff;
+    color: var(--p-noite);
+    font-family: var(--f-pilar-sans), ui-sans-serif, system-ui, sans-serif;
+  }
 
+  .sbs-p-logo { display: inline-flex; align-items: center; gap: 0.3em; font-size: 21px; line-height: 1; }
+  .sbs-p-logo svg { width: 0.86em; height: 0.86em; flex: none; }
+  .sbs-p-logo span { font-weight: 600; letter-spacing: -0.015em; }
 
-  .sbs-n-top { display: flex; align-items: center; padding: 26px 44px; }
-  .sbs-n-brand { font-family: var(--font-title); font-weight: 500; font-size: 21px; letter-spacing: -0.01em; }
-  .sbs-n-nav { display: flex; gap: 28px; margin-left: auto; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-ash); }
-  .sbs-n-hero { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 44px; align-items: center; padding: 44px 44px 60px; }
-  .sbs-n-hero h3 { margin: 0; font-family: var(--font-title); font-size: 54px; line-height: 1.04; letter-spacing: -0.03em; }
-  .sbs-n-hero h3 span { display: block; font-weight: 300; }
-  .sbs-n-hero h3 strong { display: block; font-weight: 500; }
-  .sbs-n-hero p { margin: 24px 0 0; max-width: 34ch; font-size: 16px; line-height: 1.6; color: var(--color-ash); }
-  .sbs-n-act { display: inline-block; margin-top: 30px; background: var(--color-ink); color: var(--color-paper); font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; padding: 14px 22px; }
-  .sbs-n-shot { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; }
-  .sbs-n-rule { height: 1px; margin: 0 44px; background: var(--color-hair); }
-  .sbs-n-next, .sbs-n-end { display: grid; grid-template-columns: 0.55fr 1.45fr; gap: 44px; padding: 40px 44px 48px; }
-  .sbs-n-lab { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-ash-2); }
-  .sbs-n-next h4 { margin: 0 0 30px; max-width: 24ch; font-family: var(--font-title); font-weight: 300; font-size: 32px; line-height: 1.14; letter-spacing: -0.02em; }
-  .sbs-n-list > div { display: grid; grid-template-columns: 0.42fr 1fr; gap: 24px; padding: 15px 0; border-top: 1px solid var(--color-hair); }
-  .sbs-n-list dt { font-size: 15px; }
-  .sbs-n-list dd { margin: 0; font-size: 15px; color: var(--color-ash); }
-  .sbs-n-end { align-items: start; }
-  .sbs-n-end p { margin: 0; font-size: 17px; }
-  .sbs-n-quiet { margin-top: 6px; color: var(--color-ash-2); }
+  /* The hero: the photograph across the whole first screen, its sky
+     continued upward in Névoa so the line sits in it, over the pillar. */
+  .sbs-p-hero { position: relative; height: 700px; overflow: hidden; background: var(--p-nevoa); }
+  .sbs-p-sky { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 49%; display: block; }
+  .sbs-p-bar {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    display: flex;
+    align-items: center;
+    padding: 9px 9px 9px 18px;
+    border-radius: 9px;
+    background: rgb(255 255 255 / 0.9);
+  }
+  .sbs-p-tools { display: flex; align-items: center; gap: 7px; margin-left: auto; }
+  .sbs-p-round {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--p-noite);
+    border-radius: 50%;
+    color: var(--p-noite);
+  }
+  .sbs-p-round svg { width: 14px; height: 14px; }
+  .sbs-p-pill {
+    display: inline-block;
+    padding: 8px 15px;
+    border: 1px solid var(--p-noite);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--p-noite);
+    white-space: nowrap;
+  }
+  .sbs-p-solid { background: var(--p-noite); color: #fff; }
+  .sbs-p-lead { position: absolute; left: 0; right: 0; top: 168px; padding: 0 60px; text-align: center; }
+  .sbs-p-lead h3 {
+    margin: 0 auto;
+    font-family: var(--p-serif);
+    font-weight: 400;
+    font-size: 56px;
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+  }
+  .sbs-p-lead h3 span { display: block; }
+  .sbs-p-lead p { margin: 16px auto 0; max-width: 44ch; font-size: 15px; line-height: 1.5; }
+  .sbs-p-ghost { margin-top: 22px; padding: 12px 22px; font-size: 13px; background: transparent; }
+
+  /* The products as a column of very large words, nothing else. */
+  .sbs-p-index { display: flex; flex-direction: column; align-items: center; padding: 52px 0 60px; }
+  .sbs-p-index span { font-family: var(--p-serif); font-size: 74px; line-height: 1.06; letter-spacing: -0.02em; color: var(--p-noite); }
+
+  /* A product band across the whole width: the signature, three lines,
+     a round arrow, on the photograph. */
+  .sbs-p-band { position: relative; height: 520px; overflow: hidden; background: var(--p-noite); color: #fff; }
+  .sbs-p-band img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .sbs-p-band > div { position: absolute; left: 60px; top: 50%; translate: 0 -50%; max-width: 360px; }
+  .sbs-p-sign { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; }
+  .sbs-p-sign svg { width: 14px; height: 14px; }
+  .sbs-p-sign b { font-weight: 600; letter-spacing: -0.015em; }
+  .sbs-p-band h4 { margin: 14px 0 22px; font-size: 38px; font-weight: 500; line-height: 1.12; letter-spacing: -0.015em; }
+  .sbs-p-arrow { width: 40px; height: 40px; border-color: rgb(255 255 255 / 0.85); color: #fff; }
+  .sbs-p-arrow svg { width: 16px; height: 16px; }
+
+  /* The manifesto, on white, under a small mark. */
+  .sbs-p-manifest { padding: 64px 60px 40px; }
+  .sbs-p-mark { width: 54px; height: 54px; color: var(--p-noite); }
+  .sbs-p-manifest h4 {
+    margin: 26px 0 20px;
+    font-family: var(--p-serif);
+    font-weight: 400;
+    font-size: 60px;
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+  }
+  .sbs-p-manifest h4 span { display: block; }
+  .sbs-p-manifest p { margin: 0; max-width: 46ch; font-size: 18px; line-height: 1.5; }
+  .sbs-p-manifest small { display: block; margin-top: 20px; font-size: 11px; color: var(--p-grafite); }
+  .sbs-p-close { display: flex; flex-direction: column; align-items: center; padding: 28px 60px 64px; text-align: center; }
+  .sbs-p-close h4 { margin: 0; max-width: 14ch; font-family: var(--p-serif); font-weight: 400; font-size: 50px; line-height: 1.05; letter-spacing: -0.02em; }
 
   .sbs-note { margin-top: clamp(1.5rem, 3vw, 2.25rem); color: rgb(255 255 255 / 0.62); text-transform: none; letter-spacing: 0.02em; }
 
@@ -4135,10 +4213,6 @@
   .sbs-t-contact p { margin: 0 0 16px; font-size: 13px; line-height: 1.5; color: #6b6b6b; }
   .sbs-t-map { display: block; height: 170px; background: repeating-linear-gradient(45deg, #e6e8ea 0 12px, #dcdee1 12px 24px); }
 
-  /* Ours: the room itself, once, across the page. */
-  .sbs-n-room { padding: 8px 44px 48px; }
-  .sbs-n-room img { width: 100%; height: 300px; object-fit: cover; display: block; }
-  .sbs-n-room p { margin: 18px 0 0; font-size: 16px; color: var(--color-ash); }
 }
 
 /* On a phone the two plates stand one over the other, and a desktop page
@@ -4161,14 +4235,20 @@
     .sbs-t-contact { grid-template-columns: 1fr; }
     .sbs-t-foot { padding: 16px 18px 40px; }
 
-    .sbs-n-page { --sbs-stop-1: -610px; --sbs-stop-2: -1022px; }
-    .sbs-n-top { padding: 22px 30px; }
-    .sbs-n-hero { grid-template-columns: 1fr; gap: 30px; padding: 32px 30px 44px; }
-    .sbs-n-hero h3 { font-size: 44px; }
-    .sbs-n-shot { aspect-ratio: 16 / 10; }
-    .sbs-n-rule { margin: 0 30px; }
-    .sbs-n-next, .sbs-n-end { grid-template-columns: 1fr; gap: 18px; padding: 32px 30px 36px; }
-    .sbs-n-room { padding: 8px 30px 36px; }
+    .sbs-p-page { --sbs-stop-1: -1010px; --sbs-stop-2: -1780px; }
+    .sbs-p-hero { height: 826px; }
+    .sbs-p-tools .sbs-p-pill:not(.sbs-p-solid) { display: none; }
+    .sbs-p-lead { top: 190px; padding: 0 34px; }
+    .sbs-p-lead h3 { font-size: 46px; }
+    .sbs-p-lead h3 span { display: inline; }
+    .sbs-p-index span { font-size: 66px; }
+    .sbs-p-band { height: 560px; }
+    .sbs-p-band > div { left: 36px; right: 36px; }
+    .sbs-p-band h4 { font-size: 36px; }
+    .sbs-p-manifest { padding: 80px 36px 48px; }
+    .sbs-p-manifest h4 { font-size: 56px; }
+    .sbs-p-close { padding: 32px 36px 96px; }
+    .sbs-p-close h4 { font-size: 50px; }
   }
 }
 
