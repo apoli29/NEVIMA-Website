@@ -110,12 +110,19 @@
     const img = graoURL(o.pxPerMm || 12, b, o.seed || 11, o.papel);
     /* Três níveis (utilizador, 2026-11-14: o nome e o cargo maiores):
        o nome, o cargo logo por baixo, e os contactos, mais pequenos, em baixo. */
-    const NOME = 10.5 * PT, CARGO = 7.5 * PT, CORPO = 6.2 * PT;
+    const CARGO = 7.5 * PT, CORPO = 6.2 * PT;
     const CAP = 0.7; // altura das maiúsculas da Satoshi, em fração do corpo
     const t = (y, s, corpo, cor, peso, ls) =>
       `<text x="${M}" y="${y}" font-size="${corpo}" fill="${cor}" font-weight="${peso}" letter-spacing="${ls}">${s.toUpperCase()}</text>`;
-    const nomeY = M + NOME * CAP;
+    /* O nome pode ter outra letra (o.nome, para estudos): família, corpo em
+       pt, peso, estilo, maiúsculas ou não, espaçamento e altura das
+       maiúsculas em fração do corpo. Por omissão, a Satoshi a 700. */
+    const n = Object.assign({ familia: "Satoshi, sans-serif", pt: 10.5, peso: 700, estilo: "normal", maiusculas: true, ls: 0.02, cap: CAP }, o.nome);
+    const nomeCorpo = n.pt * PT;
+    const nomeY = M + nomeCorpo * n.cap;
     const cargoY = nomeY + CARGO * 1.75;
+    const nomeTexto = n.maiusculas ? p.nome.toUpperCase() : p.nome;
+    const nomeSVG = `<text x="${M - (n.recuo || 0)}" y="${nomeY}" font-family="${n.familia}" font-size="${nomeCorpo}" font-weight="${n.peso}" font-style="${n.estilo}" letter-spacing="${n.ls}" fill="#000"${n.extra ? " " + n.extra : ""}>${nomeTexto}</text>`;
     // Em baixo, a última linha assenta a 5 mm do corte.
     const base = H - M;
     const lh = CORPO * 1.45;
@@ -126,7 +133,7 @@
       ["nevima.studio", "#6f6f6f", base - lh],
       ["Portugal", "#6f6f6f", base],
     ].map((l) => t(l[2], l[0], CORPO, l[1], 500, 0.05)).join("");
-    const texto = t(nomeY, p.nome, NOME, "#000", 700, 0.02) + t(cargoY, p.cargo, CARGO, "#000", 500, 0.06) + contactos;
+    const texto = nomeSVG + t(cargoY, p.cargo, CARGO, "#000", 500, 0.06) + contactos;
     const nS = N_H / N.h;
     const nT = `translate(${W - M - N.w * nS} ${base - N_H}) scale(${nS}) translate(${-N.x0} ${-N.y0})`;
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-b} ${-b} ${W + 2 * b} ${H + 2 * b}" width="100%" height="100%" preserveAspectRatio="none">
