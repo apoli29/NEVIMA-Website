@@ -3889,7 +3889,7 @@
    Each page is laid out at 1200px and scaled by --sbs-k, written on the
    plate by a ResizeObserver, so the type inside is real type.          */
 @layer components {
-  .sbs-stage { --sbs-loop: 12s; }
+  .sbs-stage { --sbs-loop: 15s; }
   .sbs-ground {
     position: absolute;
     inset: 0;
@@ -3952,9 +3952,10 @@
   /* The stops are written in the page's own pixels; translate is applied
      outside the scale, so each is taken down to the plate by --sbs-k. */
   @keyframes sbs-scroll {
-    0%, 26% { translate: 0 0; }
-    32%, 58% { translate: 0 calc(var(--sbs-stop-1) * var(--sbs-k)); }
-    64%, 90% { translate: 0 calc(var(--sbs-stop-2) * var(--sbs-k)); }
+    0%, 18% { translate: 0 0; }
+    23%, 40% { translate: 0 calc(var(--sbs-stop-1) * var(--sbs-k)); }
+    45%, 62% { translate: 0 calc(var(--sbs-stop-2) * var(--sbs-k)); }
+    67%, 90% { translate: 0 calc(var(--sbs-stop-3) * var(--sbs-k)); }
     100% { translate: 0 0; }
   }
   .sbs-run .sbs-mini {
@@ -3962,9 +3963,9 @@
   }
 
   /* ================= the off-the-shelf template ==================== */
-  /* The two stops are each side's own, so each page ends on its own
+  /* The stops are each side's own, so each page ends on its own
      foot: the moments are shared, the distances are not. */
-  .sbs-t-page { --sbs-stop-1: -556px; --sbs-stop-2: -1039px; background: #fff; }
+  .sbs-t-page { --sbs-stop-1: -347px; --sbs-stop-2: -694px; --sbs-stop-3: -1039px; background: #fff; }
 
   /* The bar that never gets there: it crawls, stalls, and starts again. */
   .sbs-load {
@@ -4077,17 +4078,21 @@
   .sbs-cookie-no { flex: none; text-decoration: underline; opacity: 0.85; }
 
   /* ========================= ours ================================== */
-  /* Pilar Seguros, an invented insurance broker. Layout and type follow
-     one reference (Wealthsimple's home page) closely; the colours are
-     Pilar's own four and nothing else: Noite, Grafite, Névoa, Branco.
-     Névoa is never type on white (2.3:1, the brand guide's rule). */
+  /* Pilar Seguros, an invented insurance broker, in its own four colours
+     and nothing else: Noite, Grafite, Névoa, Branco. Névoa is never type
+     on white (2.3:1, the brand guide's rule). The type is chosen from the
+     identity: Funnel Display for display lines, Plus Jakarta Sans (the
+     brand's) for the rest, IBM Plex Mono for small labels. Each section
+     follows one reference closely, noted where it begins. */
   .sbs-p-page {
-    --sbs-stop-1: -985px;
-    --sbs-stop-2: -1732px;
+    --sbs-stop-1: -700px;
+    --sbs-stop-2: -1190px;
+    --sbs-stop-3: -1862px;
     --p-noite: #111525;
     --p-grafite: #434655;
     --p-nevoa: #a8aabc;
-    --p-serif: var(--f-pilar-serif), Georgia, serif;
+    --p-display: var(--f-pilar-display), ui-sans-serif, system-ui, sans-serif;
+    --p-mono: var(--f-pilar-mono), ui-monospace, monospace;
     background: #fff;
     color: var(--p-noite);
     font-family: var(--f-pilar-sans), ui-sans-serif, system-ui, sans-serif;
@@ -4096,9 +4101,11 @@
   .sbs-p-logo { display: inline-flex; align-items: center; gap: 0.3em; font-size: 21px; line-height: 1; }
   .sbs-p-logo svg { width: 0.86em; height: 0.86em; flex: none; }
   .sbs-p-logo span { font-weight: 600; letter-spacing: -0.015em; }
+  .sbs-p-label { display: block; font-family: var(--p-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--p-grafite); }
 
-  /* The hero: the photograph across the whole first screen, its sky
-     continued upward in Névoa so the line sits in it, over the pillar. */
+  /* 1 · The hero (after Wealthsimple): the photograph across the whole
+     first screen, its sky continued upward in Névoa so the line sits in
+     it, over the pillar. */
   .sbs-p-hero { position: relative; height: 700px; overflow: hidden; background: var(--p-nevoa); }
   .sbs-p-sky { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 49%; display: block; }
   .sbs-p-bar {
@@ -4135,51 +4142,53 @@
     white-space: nowrap;
   }
   .sbs-p-solid { background: var(--p-noite); color: #fff; }
-  .sbs-p-lead { position: absolute; left: 0; right: 0; top: 168px; padding: 0 60px; text-align: center; }
+  .sbs-p-lead { position: absolute; left: 0; right: 0; top: 172px; padding: 0 60px; text-align: center; }
   .sbs-p-lead h3 {
     margin: 0 auto;
-    font-family: var(--p-serif);
+    font-family: var(--p-display);
     font-weight: 400;
-    font-size: 56px;
+    font-size: 52px;
     line-height: 1.04;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
   }
   .sbs-p-lead h3 span { display: block; }
   .sbs-p-lead p { margin: 16px auto 0; max-width: 44ch; font-size: 15px; line-height: 1.5; }
   .sbs-p-ghost { margin-top: 22px; padding: 12px 22px; font-size: 13px; background: transparent; }
 
-  /* The products as a column of very large words, nothing else. */
+  /* 2 · The products as a column of very large words (after Wealthsimple). */
   .sbs-p-index { display: flex; flex-direction: column; align-items: center; padding: 52px 0 60px; }
-  .sbs-p-index span { font-family: var(--p-serif); font-size: 74px; line-height: 1.06; letter-spacing: -0.02em; color: var(--p-noite); }
+  .sbs-p-index span { font-family: var(--p-display); font-size: 70px; line-height: 1.08; letter-spacing: -0.025em; color: var(--p-noite); }
 
-  /* A product band across the whole width: the signature, three lines,
-     a round arrow, on the photograph. */
-  .sbs-p-band { position: relative; height: 520px; overflow: hidden; background: var(--p-noite); color: #fff; }
+  /* 3 · Claims (after Area17): a statement on white, then a photograph
+     across the width with a stacked list on it, the first line lit and
+     the rest held back. */
+  .sbs-p-say { margin: 0; padding: 56px 60px 48px; max-width: 27ch; box-sizing: content-box; font-family: var(--p-display); font-size: 38px; line-height: 1.12; letter-spacing: -0.02em; }
+  .sbs-p-band { position: relative; height: 440px; overflow: hidden; background: var(--p-noite); color: #fff; }
   .sbs-p-band img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-  .sbs-p-band > div { position: absolute; left: 60px; top: 50%; translate: 0 -50%; max-width: 360px; }
-  .sbs-p-sign { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; }
-  .sbs-p-sign svg { width: 14px; height: 14px; }
+  .sbs-p-sign { position: absolute; left: 60px; top: 36px; display: inline-flex; align-items: center; gap: 6px; font-size: 14px; }
+  .sbs-p-sign svg { width: 13px; height: 13px; }
   .sbs-p-sign b { font-weight: 600; letter-spacing: -0.015em; }
-  .sbs-p-band h4 { margin: 14px 0 22px; font-size: 38px; font-weight: 500; line-height: 1.12; letter-spacing: -0.015em; }
-  .sbs-p-arrow { width: 40px; height: 40px; border-color: rgb(255 255 255 / 0.85); color: #fff; }
-  .sbs-p-arrow svg { width: 16px; height: 16px; }
+  .sbs-p-steps { position: absolute; left: 60px; bottom: 44px; }
+  .sbs-p-steps span { display: block; font-family: var(--p-display); font-size: 40px; line-height: 1.08; letter-spacing: -0.02em; color: rgb(255 255 255 / 0.38); }
+  .sbs-p-steps span:first-child { color: #fff; }
 
-  /* The manifesto, on white, under a small mark. */
-  .sbs-p-manifest { padding: 64px 60px 40px; }
-  .sbs-p-mark { width: 54px; height: 54px; color: var(--p-noite); }
-  .sbs-p-manifest h4 {
-    margin: 26px 0 20px;
-    font-family: var(--p-serif);
-    font-weight: 400;
-    font-size: 60px;
-    line-height: 1.04;
-    letter-spacing: -0.02em;
-  }
-  .sbs-p-manifest h4 span { display: block; }
-  .sbs-p-manifest p { margin: 0; max-width: 46ch; font-size: 18px; line-height: 1.5; }
-  .sbs-p-manifest small { display: block; margin-top: 20px; font-size: 11px; color: var(--p-grafite); }
-  .sbs-p-close { display: flex; flex-direction: column; align-items: center; padding: 28px 60px 64px; text-align: center; }
-  .sbs-p-close h4 { margin: 0; max-width: 14ch; font-family: var(--p-serif); font-weight: 400; font-size: 50px; line-height: 1.05; letter-spacing: -0.02em; }
+  /* 4 · Manifesto and close (after the AiiD 2026 case studies): half and
+     half, the symbol in pixels on its own grid against a white column
+     with the title, the signature and a detail of the pillar; then a
+     summary row under a hairline. */
+  .sbs-p-split { display: grid; grid-template-columns: 1fr 1fr; height: 470px; }
+  .sbs-p-pix { position: relative; overflow: hidden; background: var(--p-noite); }
+  .sbs-p-pixels { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .sbs-p-right { display: flex; flex-direction: column; min-width: 0; }
+  .sbs-p-head { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 12px; padding: 34px 24px 22px; }
+  .sbs-p-head h4 { margin: 10px 0 0; font-family: var(--p-display); font-weight: 500; font-size: 38px; line-height: 1.04; letter-spacing: -0.02em; }
+  .sbs-p-head h4 span { display: block; }
+  .sbs-p-small { font-size: 15px; }
+  .sbs-p-detail { flex: 1; min-height: 0; width: 100%; object-fit: cover; display: block; }
+  .sbs-p-sum { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 0 24px; padding: 20px 0 52px; border-top: 1px solid #d9dae2; }
+  .sbs-p-sum h5 { margin: 14px 0 0; font-family: var(--p-display); font-weight: 400; font-size: 34px; line-height: 1.05; letter-spacing: -0.02em; }
+  .sbs-p-sum p { margin: 14px 0 0; font-size: 15px; line-height: 1.55; }
+  .sbs-p-go { display: inline-block; margin-top: 18px; padding-bottom: 3px; border-bottom: 1px solid var(--p-noite); font-size: 14px; font-weight: 500; }
 
   .sbs-note { margin-top: clamp(1.5rem, 3vw, 2.25rem); color: rgb(255 255 255 / 0.62); text-transform: none; letter-spacing: 0.02em; }
 
@@ -4224,7 +4233,7 @@
     .sbs-mini { width: 620px; }
     .sbs-screen { aspect-ratio: 3 / 4; }
 
-    .sbs-t-page { --sbs-stop-1: -640px; --sbs-stop-2: -1267px; }
+    .sbs-t-page { --sbs-stop-1: -420px; --sbs-stop-2: -845px; --sbs-stop-3: -1267px; }
     .sbs-t-top { gap: 10px; padding: 10px 18px; font-size: 11px; }
     .sbs-t-nav { gap: 9px; }
     .sbs-t-copy { padding: 20px 18px 4px; }
@@ -4235,20 +4244,21 @@
     .sbs-t-contact { grid-template-columns: 1fr; }
     .sbs-t-foot { padding: 16px 18px 40px; }
 
-    .sbs-p-page { --sbs-stop-1: -1010px; --sbs-stop-2: -1780px; }
+    .sbs-p-page { --sbs-stop-1: -826px; --sbs-stop-2: -1196px; --sbs-stop-3: -1885px; }
     .sbs-p-hero { height: 826px; }
     .sbs-p-tools .sbs-p-pill:not(.sbs-p-solid) { display: none; }
     .sbs-p-lead { top: 190px; padding: 0 34px; }
-    .sbs-p-lead h3 { font-size: 46px; }
+    .sbs-p-lead h3 { font-size: 44px; }
     .sbs-p-lead h3 span { display: inline; }
-    .sbs-p-index span { font-size: 66px; }
-    .sbs-p-band { height: 560px; }
-    .sbs-p-band > div { left: 36px; right: 36px; }
-    .sbs-p-band h4 { font-size: 36px; }
-    .sbs-p-manifest { padding: 80px 36px 48px; }
-    .sbs-p-manifest h4 { font-size: 56px; }
-    .sbs-p-close { padding: 32px 36px 96px; }
-    .sbs-p-close h4 { font-size: 50px; }
+    .sbs-p-index span { font-size: 60px; }
+    .sbs-p-say { padding: 64px 36px 56px; max-width: 24ch; font-size: 36px; }
+    .sbs-p-band { height: 480px; }
+    .sbs-p-sign, .sbs-p-steps { left: 36px; }
+    .sbs-p-split { height: 420px; }
+    .sbs-p-head { grid-template-columns: 1fr; padding: 28px 20px 18px; }
+    .sbs-p-head h4 { font-size: 30px; }
+    .sbs-p-head .sbs-p-small { display: none; }
+    .sbs-p-sum { grid-template-columns: 1fr; gap: 0; margin: 0 36px; padding-bottom: 56px; }
   }
 }
 

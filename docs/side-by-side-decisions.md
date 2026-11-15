@@ -22,7 +22,7 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   `--sbs-k`, which a ResizeObserver writes on the plate. The type inside
   is type. Two videos would weigh more than the whole home page, would
   band on the black, and would say the opposite of what the page claims.
-- One loop, `--sbs-loop: 12s`, in CSS keyframes. Both sides are given
+- One loop, `--sbs-loop: 15s` (12s until the four-stop Pilar page), in CSS keyframes. Both sides are given
   `.sbs-run` in the same render, so the two loops begin in the same frame
   and never drift apart. Held while off the screen through
   `offscreen-pause.tsx`; not given at all to anyone who has asked for
@@ -70,13 +70,29 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   words, the full-width band with a small signature, a three-line sans
   title and a round arrow, the manifesto under a small mark. The
   reference's colours are not taken; only Pilar's four are used.
-- Type: Plus Jakarta Sans (the brand's) for everything but the display
-  lines, which are in Newsreader, the free serif nearest the reference's
-  Tiempos (user, 2026-11-15). Both loaded in `side-by-side.tsx` only.
+- 2026-11-15 (user, second round): sections 3 and 4 follow better, more
+  advanced references, also found through Inspo. Section 3 (claims)
+  follows Area17: a statement on white ("Quando há um sinistro, quem liga
+  à seguradora somos nós...") and then the rain across the width with
+  the four steps of a claim stacked on it, the first lit and the rest
+  held back. Section 4 follows the AiiD 2026 case studies: half and half,
+  the Pilar symbol drawn in pixels on its own 100-unit grid (the cut and
+  the core stay empty, as the guide asks) beside a white column with the
+  title, the signature and a detail of the pillar; then a summary row
+  under a hairline with "Falar com quem compara." and the CTA. The hero
+  and the index keep the Wealthsimple layout.
+- Type, chosen from Pilar's identity and not from any reference (user,
+  2026-11-15, option A of three): Funnel Display for every display line
+  (near-square counters and straight-cut terminals, the symbol's flat
+  geometry), Plus Jakarta Sans (the brand's) for the rest, IBM Plex Mono
+  for the small labels (not Geist Mono, which is nevima's own). Loaded in
+  `side-by-side.tsx` only. Newsreader is gone.
+- The loop now has four stops (one per section), on a 15s loop; the
+  template side moves in three steps of its own to the same moments.
 - Photographs, both from Unsplash under its free licence (not Unsplash+),
   turned into Pilar's palette: the pillar by Alejandro Barba
   (unsplash.com/photos/elvAJVysX8w), its sky extended upward so the line
-  sits in it; the rain on glass by Rama Krushna Behera
+  sits in it (section 4's detail is a crop of the same photograph); the rain on glass by Rama Krushna Behera
   (unsplash.com/photos/vy5aeGxRhok). In `public/side-by-side/`.
 - The template side is the same broker as a template would make it:
   "PILAR SEGUROS" in capitals, a seven-item menu with a simulator, three
@@ -84,7 +100,7 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
 - The section heights are held the same in both languages (the long
   display lines are split by hand into two), so one pair of stops serves
   both; after a change to our side's copy, measure again and reset
-  `--sbs-stop-1` / `--sbs-stop-2` on `.sbs-p-page` (desktop and narrow).
+  `--sbs-stop-1` to `--sbs-stop-3` on `.sbs-p-page` (desktop and narrow).
 - Indexed (`index: true` in `SEO_PAGES`), unlike the about page and the
   portfolio, which are still moulds.
 - On the bar, as its fourth link (user, 2026-11-11: "mete na navbar o

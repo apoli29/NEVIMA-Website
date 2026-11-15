@@ -9,13 +9,16 @@ import { ProposalHost } from "./proposal-host";
 import { WorkTogether } from "./work-together";
 import { useSeen } from "./use-seen";
 import { useT } from "@/lib/use-lang";
-import { Newsreader, Plus_Jakarta_Sans } from "next/font/google";
+import { Funnel_Display, IBM_Plex_Mono, Plus_Jakarta_Sans } from "next/font/google";
 
-/* Pilar's own type, loaded for this page only: Plus Jakarta Sans is the
-   brand's (its guide and signature), Newsreader is the free serif
-   nearest the reference's display face. */
-const pilarSerif = Newsreader({ subsets: ["latin"], variable: "--f-pilar-serif", display: "swap" });
+/* Pilar's own type, loaded for this page only and chosen from its
+   identity, not from any reference: Plus Jakarta Sans is the brand's
+   (its guide and signature); Funnel Display, for the display lines, has
+   the symbol's flat geometry (near-square counters, terminals cut
+   straight); IBM Plex Mono sets the small labels. */
+const pilarDisplay = Funnel_Display({ subsets: ["latin"], variable: "--f-pilar-display", display: "swap" });
 const pilarSans = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--f-pilar-sans", display: "swap" });
+const pilarMono = IBM_Plex_Mono({ subsets: ["latin"], weight: "500", variable: "--f-pilar-mono", display: "swap" });
 
 /* ==================================================================
    Side by side
@@ -281,12 +284,51 @@ function PilarLogo({ t, className }: { t: ReturnType<typeof useT>; className?: s
   );
 }
 
-/* Taken, layout and type, from one reference (Wealthsimple's home page,
-   found through Inspo), in Pilar's own colours: a hero across the whole
-   width with one centred line and one outlined button, the products as
-   a column of very large words, a product band across the whole width
-   with a small signature, a three-line title and a round arrow, and a
-   manifesto on white under a small mark. */
+/** The symbol again, drawn on its own construction grid: the guide sets
+    it on 100 units, and here every 5 units is one cell, lit where the
+    symbol is and marked with a small cross where it is not. The cut and
+    the core stay empty, as the guide asks. Worked out once, at load. */
+const PIXEL_CELLS = (() => {
+  const inside = (x: number, y: number) => {
+    if (x >= 0 && x <= 30 && y >= 0 && y <= 100) return true;
+    if (x < 38 || x > 100 || y < 0 || y > 66) return false;
+    if (x >= 59 && x <= 79 && y >= 23 && y <= 43) return false;
+    if (x > 76 && y < 24 && Math.hypot(x - 76, y - 24) > 24) return false;
+    if (x > 76 && y > 42 && Math.hypot(x - 76, y - 42) > 24) return false;
+    return true;
+  };
+  const on: string[] = [];
+  const off: string[] = [];
+  const n = 30;
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      const x = i * 10;
+      const y = j * 10;
+      if (inside(-25 + (i + 0.5) * 5, -25 + (j + 0.5) * 5)) on.push(`M${x + 1} ${y + 1}h8v8h-8Z`);
+      else off.push(`M${x + 3} ${y + 3}l4 4M${x + 7} ${y + 3}l-4 4`);
+    }
+  }
+  return { on: on.join(""), off: off.join("") };
+})();
+
+function PilarPixels() {
+  return (
+    <svg viewBox="0 0 300 300" preserveAspectRatio="xMidYMid slice" className="sbs-p-pixels" aria-hidden="true">
+      <path d={PIXEL_CELLS.off} stroke="#434655" strokeWidth="1" fill="none" />
+      <path d={PIXEL_CELLS.on} fill="#a8aabc" />
+    </svg>
+  );
+}
+
+/* Our side, in Pilar's own colours and type (Funnel Display for the
+   display lines, Plus Jakarta Sans, the brand's, for the rest, IBM Plex
+   Mono for the small labels). The hero and the column of very large
+   words follow Wealthsimple's home page; the claims section follows
+   Area17's (a statement on white, then a photograph across the width
+   with a stacked list on it, the first line lit); the manifesto and the
+   close follow the AiiD 2026 case studies (a half-and-half split with a
+   pixel figure on the left, then a summary row under a hairline). All
+   three references were found through Inspo. */
 function Ours({ t }: { t: ReturnType<typeof useT> }) {
   const lines = [
     t("Home", "Casa"),
@@ -295,9 +337,15 @@ function Ours({ t }: { t: ReturnType<typeof useT> }) {
     t("Life", "Vida"),
     t("Business", "Empresas"),
   ];
+  const steps = [
+    t("Reporting", "Participação"),
+    t("Assessment", "Peritagem"),
+    t("Repair", "Reparação"),
+    t("Payout", "Indemnização"),
+  ];
 
   return (
-    <div className={`sbs-mini sbs-p-page ${pilarSerif.variable} ${pilarSans.variable}`}>
+    <div className={`sbs-mini sbs-p-page ${pilarDisplay.variable} ${pilarSans.variable} ${pilarMono.variable}`}>
       <div className="sbs-p-hero">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/side-by-side/pilar-hero.webp" alt="" draggable={false} className="sbs-p-sky" />
@@ -342,45 +390,63 @@ function Ours({ t }: { t: ReturnType<typeof useT> }) {
         ))}
       </div>
 
-      <div className="sbs-p-band">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/side-by-side/pilar-rain.webp" alt="" draggable={false} />
-        <div>
+      <div className="sbs-p-claims">
+        <p className="sbs-p-say">
+          {t(
+            "When there is a claim, we are the ones who call the insurer. Nobody is left alone on the phone.",
+            "Quando há um sinistro, quem liga à seguradora somos nós. Ninguém fica sozinho ao telefone.",
+          )}
+        </p>
+        <div className="sbs-p-band">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/side-by-side/pilar-rain.webp" alt="" draggable={false} />
           <span className="sbs-p-sign">
             <PilarSymbol />
             <b>Pilar</b> {t("Claims", "Sinistros")}
           </span>
-          <h4>
-            {t(
-              "When it happens, we’re the ones who make the call.",
-              "Quando acontece, quem liga somos nós.",
-            )}
-          </h4>
-          <i className="sbs-p-round sbs-p-arrow">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M3 8h10M9 4l4 4-4 4" />
-            </svg>
-          </i>
+          <div className="sbs-p-steps">
+            {steps.map((step) => (
+              <span key={step}>{step}</span>
+            ))}
+          </div>
         </div>
       </div>
 
       <div className="sbs-p-manifest">
-        <PilarSymbol className="sbs-p-mark" />
-        <h4>
-          <span>{t("One broker.", "Um mediador.")}</span> <span>{t("Every insurer.", "Todas as seguradoras.")}</span>
-        </h4>
-        <p>
-          {t(
-            "Pilar works for no insurer. It stands in the space between you and all of them: it compares, explains the small print and, when there is a claim, sees it through from start to finish.",
-            "A Pilar não trabalha para nenhuma seguradora. Fica no espaço entre o cliente e todas elas: compara, explica as letras pequenas e, quando há um sinistro, trata dele do princípio ao fim.",
-          )}
-        </p>
-        <small>{t("Pilar Insurance · Insurance brokerage · Lisbon", "Pilar Seguros · Mediação de seguros · Lisboa")}</small>
-      </div>
+        <div className="sbs-p-split">
+          <div className="sbs-p-pix">
+            <PilarPixels />
+          </div>
+          <div className="sbs-p-right">
+            <div className="sbs-p-head">
+              <div>
+                <span className="sbs-p-label">{t("Manifesto", "Manifesto")}</span>
+                <h4>
+                  <span>{t("One broker.", "Um mediador.")}</span> <span>{t("Every insurer.", "Todas as seguradoras.")}</span>
+                </h4>
+              </div>
+              <PilarLogo t={t} className="sbs-p-small" />
+            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/side-by-side/pilar-detail.webp" alt="" draggable={false} className="sbs-p-detail" />
+          </div>
+        </div>
 
-      <div className="sbs-p-close">
-        <h4>{t("Talk to someone who compares.", "Falar com quem compara.")}</h4>
-        <span className="sbs-p-pill sbs-p-ghost">{t("Get a quote", "Pedir simulação")}</span>
+        <div className="sbs-p-sum">
+          <div>
+            <span className="sbs-p-label">{t("Talk to us", "Falar connosco")}</span>
+            <h5>{t("Talk to someone who compares.", "Falar com quem compara.")}</h5>
+          </div>
+          <div>
+            <p>
+              {t(
+                "Pilar works for no insurer. It stands in the space between you and all of them: it compares, explains the small print and, when there is a claim, sees it through from start to finish.",
+                "A Pilar não trabalha para nenhuma seguradora. Fica no espaço entre o cliente e todas elas: compara, explica as letras pequenas e, quando há um sinistro, trata dele do princípio ao fim.",
+              )}
+            </p>
+            <span className="sbs-p-go">{t("Get a quote", "Pedir simulação")} →</span>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -453,8 +519,8 @@ export function SideBySide() {
                 label="nevima"
                 address={t("pilarinsurance.example", "pilarseguros.example")}
                 says={t(
-                  "The same insurance broker as we would build it: one line over a photograph of a pillar says what the broker does, its five kinds of insurance in very large type, a band on how it handles claims, and a short manifesto.",
-                  "A mesma mediadora de seguros como a faríamos: uma linha sobre a fotografia de um pilar diz o que a mediadora faz, os cinco tipos de seguro em letra muito grande, uma faixa sobre como trata dos sinistros, e um manifesto curto.",
+                  "The same insurance broker as we would build it: one line over a photograph of a pillar says what the broker does, its five kinds of insurance in very large type, the four steps of a claim it handles on the client's behalf, and a short manifesto beside its symbol drawn on its own grid.",
+                  "A mesma mediadora de seguros como a faríamos: uma linha sobre a fotografia de um pilar diz o que a mediadora faz, os cinco tipos de seguro em letra muito grande, as quatro etapas de um sinistro que trata pelo cliente, e um manifesto curto ao lado do símbolo desenhado sobre a sua grelha.",
                 )}
               >
                 <Ours t={t} />
