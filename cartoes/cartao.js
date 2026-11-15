@@ -51,7 +51,7 @@
      da frente, com as duas hastes da ponta em ângulo reto (uma horizontal e
      outra vertical). A aresta de fora da ponta assenta nas margens de 5 mm.
      É branca e prensada como o logótipo, e vai também na chapa. */
-  const SETA = { lado: 4.2, haste: 3.8, traco: 0.8 };
+  const SETA = { lado: 3.36, haste: 3.04, traco: 0.64 }; // 20% menor (utilizador, 2026-11-15)
   const seta = (cor) => {
     const h = SETA.traco / 2;
     const x = W - M - h, y = M + h; // a ponta, ao centro do traço
@@ -60,6 +60,28 @@
       <path d="M ${x0} ${y0} L ${x - 0.15} ${y + 0.15}"/>
       <path d="M ${x - SETA.haste} ${y} L ${x} ${y} L ${x} ${y + SETA.haste}"/>
     </g>`;
+  };
+
+  /* As notas do topo da frente (utilizador, 2026-11-15, à maneira do menu da
+     martillo): no canto superior esquerdo e a começar a meio do cartão, no
+     estilo do cargo do verso (Geist Mono, maiúsculas, espaçamento aberto).
+     Cada nota tem duas linhas e a altura da seta: o topo das maiúsculas da
+     primeira linha alinha com o topo da seta e a base da segunda com a base
+     dela. São brancas e impressas, sem deboss (o relevo comeria letra tão
+     pequena). */
+  const NOTAS = [
+    { x: M, linhas: ["Estúdio de web design", "e identidade visual"] },
+    { x: W / 2, linhas: ["nevima.studio", "Portugal"] },
+  ];
+  const MONO_CAP = 0.71; // altura das maiúsculas da Geist Mono (medida)
+  const notas = (cor) => {
+    const A = SETA.lado;
+    const corpo = A / (MONO_CAP + 1.45); // a segunda linha a 1,45 corpos da primeira
+    const y1 = M + corpo * MONO_CAP, y2 = M + A;
+    return NOTAS.map((n) =>
+      `<text font-family="'Geist Mono', monospace" font-weight="500" font-size="${corpo}" letter-spacing="${0.06 * corpo}" fill="${cor}">` +
+      `<tspan x="${n.x}" y="${y1}">${n.linhas[0].toUpperCase()}</tspan><tspan x="${n.x}" y="${y2}">${n.linhas[1].toUpperCase()}</tspan></text>`
+    ).join("");
   };
 
   /* O deboss. A face das letras é branco puro (utilizador, 2026-11-14) e o
@@ -120,6 +142,7 @@
       ${o.relevo ? `<defs>${DEBOSS_FILTER}</defs>` : ""}
       <rect x="${-b}" y="${-b}" width="${W + 2 * b}" height="${H + 2 * b}" fill="${fundo}"/>
       <g ${filtro}><g transform="${LOGO_T}" fill="${tinta}">${logoPaths()}${tm()}</g>${seta(tinta)}</g>
+      ${o.chapa ? "" : notas(tinta)}
     </svg>`;
   }
 
