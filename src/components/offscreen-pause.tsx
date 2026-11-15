@@ -33,6 +33,7 @@ const LOOPS = [
   ".rp-ba",
   ".sbs-run",
   ".sbl-kb",
+  ".sbp-figure",
   ".sbp-ask",
 ].join(",");
 
