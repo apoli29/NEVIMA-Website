@@ -47,26 +47,46 @@
   const tm = () =>
     `<text x="${TM.x}" y="${TM.base}" font-family="Satoshi, sans-serif" font-weight="500" font-size="${TM.size}" letter-spacing="2">TM</text>`;
 
-  /* O deboss. As letras são branco puro, sem sombra nem textura por cima
-     (utilizador, 2026-11-14): o relevo lê-se só no papel à volta delas, que
-     desce para a letra. A luz vem de cima e da direita (como na fotografia
-     da Antora): o rebordo de cima e da direita fica mais escuro, o de baixo
-     e da esquerda apanha um brilho mínimo. */
+  /* O deboss. A face das letras é branco puro (utilizador, 2026-11-14) e o
+     relevo tem de se ver (utilizador, 2026-11-15). A luz vem de cima e da
+     direita, como na fotografia da Antora:
+     - à volta da letra, o papel desce para ela e a rampa do lado de cima e
+       da direita escurece (num papel preto quase não se vê);
+     - a aresta de baixo e da esquerda, onde o papel dobra, apanha um fio de
+       luz nítido;
+     - dentro da letra, só o rebordo de cima e da direita leva a sombra fina
+       que a parede projeta no fundo; o resto da face fica branco puro. */
   const DEBOSS_FILTER = `
     <filter id="deboss" x="-4%" y="-25%" width="108%" height="150%" color-interpolation-filters="sRGB">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="0.24" result="ab"/>
-      <feOffset in="ab" dx="0.18" dy="-0.18" result="ab1"/>
-      <feComposite in="ab1" in2="SourceAlpha" operator="out" result="rebordoEscA"/>
-      <feFlood flood-color="#000" flood-opacity="0.95"/>
-      <feComposite in2="rebordoEscA" operator="in" result="rebordoEsc"/>
-      <feOffset in="ab" dx="-0.16" dy="0.16" result="ab2"/>
-      <feComposite in="ab2" in2="SourceAlpha" operator="out" result="rebordoLuzA"/>
-      <feFlood flood-color="#fff" flood-opacity="0.16"/>
-      <feComposite in2="rebordoLuzA" operator="in" result="rebordoLuz"/>
+      <feGaussianBlur in="SourceAlpha" stdDeviation="0.16" result="ab"/>
+      <feOffset in="ab" dx="-0.12" dy="0.12" result="rampaLuz1"/>
+      <feComposite in="rampaLuz1" in2="SourceAlpha" operator="out" result="rampaLuzA"/>
+      <feFlood flood-color="#fff" flood-opacity="0.14"/>
+      <feComposite in2="rampaLuzA" operator="in" result="rampaLuz"/>
+      <feOffset in="ab" dx="0.12" dy="-0.12" result="rampaSomb1"/>
+      <feComposite in="rampaSomb1" in2="SourceAlpha" operator="out" result="rampaSombA"/>
+      <feFlood flood-color="#000"/>
+      <feComposite in2="rampaSombA" operator="in" result="rampaSomb"/>
+
+      <feMorphology in="SourceAlpha" operator="dilate" radius="0.09" result="dil"/>
+      <feOffset in="dil" dx="-0.12" dy="0.12" result="dil0"/>
+      <feGaussianBlur in="dil0" stdDeviation="0.03" result="dil1"/>
+      <feComposite in="dil1" in2="SourceAlpha" operator="out" result="fioA"/>
+      <feFlood flood-color="#a6a6a6" flood-opacity="0.8"/>
+      <feComposite in2="fioA" operator="in" result="fio"/>
+
+      <feComponentTransfer in="SourceAlpha" result="fora"><feFuncA type="table" tableValues="1 0"/></feComponentTransfer>
+      <feOffset in="fora" dx="-0.3" dy="0.32" result="f1"/>
+      <feGaussianBlur in="f1" stdDeviation="0.1" result="f1b"/>
+      <feComposite in="f1b" in2="SourceAlpha" operator="in" result="paredeA"/>
+      <feFlood flood-color="#000" flood-opacity="0.72"/>
+      <feComposite in2="paredeA" operator="in" result="parede"/>
+
       <feMerge>
-        <feMergeNode in="rebordoEsc"/>
-        <feMergeNode in="rebordoLuz"/>
+        <feMergeNode in="rampaSomb"/>
+        <feMergeNode in="fio"/>
         <feMergeNode in="SourceGraphic"/>
+        <feMergeNode in="parede"/>
       </feMerge>
     </filter>`;
 

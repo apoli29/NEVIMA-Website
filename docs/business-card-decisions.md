@@ -12,6 +12,10 @@ Os cartões do António e do Emanuel. A fonte é `cartoes/` (`cartao.js` desenha
     - Leva o **™**, em Satoshi 500, a seguir ao "a", com o topo na altura de x. O ™ também vai na chapa.
     - As letras são **branco puro**: saíram a sombra interior, o brilho e as manchas de tinta. O relevo lê-se só no papel à volta das letras.
     - Nos mockups, a sombra diagonal da cena passa a ficar só no fundo, para não acinzentar o branco.
+  - **3.ª ronda (utilizador, 2026-11-15: "garante que esse efeito é visível"):** só com os rebordos à volta, o relevo quase não se via no papel preto. Agora lê-se por dois sinais, os de um deboss real com a luz a vir de cima e da direita:
+    - a **sombra que a parede projeta para dentro da letra**, ao longo do rebordo de cima e da direita (0,3 mm, macia);
+    - um **fio de luz cinzento na parede de baixo e da esquerda**, que está virada para a luz.
+  - O resto da face continua branco puro, sem manchas nem textura. Tirou-se o halo de luz à volta das letras, que se lia como brilho e não como relevo. Os valores estão em `DEBOSS_FILTER`, em `cartoes/cartao.js`.
 - **Verso (utilizador):** fundo branco com grãos pretos (a referência Duna, invertida). O grão é leve em todo o cartão e mais denso e irregular no canto superior direito, com uma risca curva e subtil nesse canto, desfocada pelo próprio granulado. À volta do "n", em baixo à direita, o grão rareia aos poucos, até 85% menos junto ao símbolo, para que se leia limpo (utilizador, 2026-11-14). O desenho do grão é fixo (semente em `cartao.js`): é igual nos dois cartões e sai igual sempre que se gera.
 - **Informações (utilizador: a disposição da Antora):**
   - O "n" fica em baixo à direita. Só se usam as letras do site.
