@@ -540,7 +540,7 @@ function Arrowed({ children }: { children: ReactNode }) {
 /* "Get your free proposal": the form opens on this page, grown out of
    this button, which keeps its place unseen while the form is out. With
    no form on the page, it goes to the home page's. */
-function ProposalAsk({ label }: { label: string }) {
+export function ProposalAsk({ label }: { label: string }) {
   const proposal = useProposal();
   const button = useRef<HTMLButtonElement>(null);
   const [launched, setLaunched] = useState(false);
