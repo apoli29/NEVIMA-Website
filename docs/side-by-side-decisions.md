@@ -509,3 +509,5 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
 - The card does nothing until it is at least 30% on screen, so the story is seen from its start; the call card already waited for 40% of itself.
 
 - 2026-11-17 (user): the areas lost their boxes, plain words only (the chosen one brightens and grows a little), and they float closer to the middle of the card, still spread out.
+
+- 2026-11-17 (user): the time bar moved over the two walls and made smaller; the three keys are one black block with no rules between them, and finer icons (thin long arrows that lean on hover, thin pause and an outlined play).
