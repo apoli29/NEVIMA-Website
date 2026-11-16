@@ -53,9 +53,11 @@ type Part = { head: string; body: string };
 type Service = {
   id: string;
   kicker: string;
-  /** the title in two lines: the light one, then the medium one */
+  /** the line laid over the photograph, under the service's name */
   title: [string, string];
-  lede: string;
+  /** said first under the hero, where the page's description does not
+      already say it (the photo shoot's would only repeat itself) */
+  lede?: Part;
   photo: string;
   credit: string;
   alt: string;
@@ -69,10 +71,13 @@ function services(t: T): Service[] {
       id: "visual-identity",
       kicker: t("Sold with the web design", "Vendido com o web design"),
       title: [t("An outdated logo", "Um logótipo antiquado"), t("undoes a first-rate website.", "desfaz um website de topo.")],
-      lede: t(
-        "A logo that no longer matches what the business has become — or never did — is the first thing a new client sees. The answer is a first-rate website with a professional visual identity beside it.",
-        "Um logótipo que já não corresponde ao que o negócio é hoje — ou que nunca correspondeu — é a primeira coisa que um cliente novo vê. A resposta é um website de topo acompanhado de uma identidade visual profissional.",
-      ),
+      lede: {
+        head: t("What this is for", "Para que serve"),
+        body: t(
+          "A logo that no longer matches what the business has become — or never did — is the first thing a new client sees. The answer is a first-rate website with a professional visual identity beside it.",
+          "Um logótipo que já não corresponde ao que o negócio é hoje — ou que nunca correspondeu — é a primeira coisa que um cliente novo vê. A resposta é um website de topo acompanhado de uma identidade visual profissional.",
+        ),
+      },
       photo: shot("1590966237968-8ef11924362d"),
       credit: "Thalia Ruiz / Unsplash",
       alt: t("A red wax seal on an envelope, among old letters", "Um selo de cera vermelho num envelope, entre cartas antigas"),
@@ -109,10 +114,13 @@ function services(t: T): Service[] {
       id: "back-end-features",
       kicker: t("Additional service", "Serviço adicional"),
       title: [t("Even the smallest business", "Até o negócio mais pequeno"), t("gains from this.", "ganha com isto.")],
-      lede: t(
-        "With the growth of the digital world and of artificial intelligence, no company grows today without using the digital to assist or automate what it does internally.",
-        "Com o crescimento do digital e das inteligências artificiais, nenhuma empresa cresce hoje sem usar o digital para assistir ou automatizar os processos internos.",
-      ),
+      lede: {
+        head: t("Why, even for the smallest business", "Porquê, mesmo para o negócio mais pequeno"),
+        body: t(
+          "With the growth of the digital world and of artificial intelligence, no company grows today without using the digital to assist or automate what it does internally.",
+          "Com o crescimento do digital e das inteligências artificiais, nenhuma empresa cresce hoje sem usar o digital para assistir ou automatizar os processos internos.",
+        ),
+      },
       photo: shot("1633451238042-85d93d267866"),
       credit: "Lukas Tennie / Unsplash",
       alt: t("A watch movement in close-up, its gears in gold on black", "Um mecanismo de relógio em grande plano, as engrenagens douradas sobre preto"),
@@ -149,10 +157,13 @@ function services(t: T): Service[] {
       id: "seo",
       kicker: t("Additional service", "Serviço adicional"),
       title: [t("A search engine only recommends", "O motor de busca só recomenda"), t("websites that speak its language.", "websites que comuniquem na sua língua.")],
-      lede: t(
-        "SEO (Search Engine Optimization) is a set of practices that put a website in the best possible positions in the searches made by its target audiences. With poorly worked SEO, a website is lost in the last pages of results; with personalized SEO, it has a much better chance of reaching the first pages.",
-        "O SEO (Search Engine Optimization) consiste num conjunto de práticas que colocam um website nas melhores posições possíveis das pesquisas efetuadas pelos públicos-alvo. Com um SEO mal trabalhado, um website fica perdido nas últimas páginas de resultados; com um SEO personalizado, tem muito mais hipóteses de alcançar as primeiras páginas.",
-      ),
+      lede: {
+        head: t("What SEO is", "O que é o SEO"),
+        body: t(
+          "SEO (Search Engine Optimization) is a set of practices that put a website in the best possible positions in the searches made by its target audiences. With poorly worked SEO, a website is lost in the last pages of results; with personalized SEO, it has a much better chance of reaching the first pages.",
+          "O SEO (Search Engine Optimization) consiste num conjunto de práticas que colocam um website nas melhores posições possíveis das pesquisas efetuadas pelos públicos-alvo. Com um SEO mal trabalhado, um website fica perdido nas últimas páginas de resultados; com um SEO personalizado, tem muito mais hipóteses de alcançar as primeiras páginas.",
+        ),
+      },
       photo: shot("1536125434175-6c5657605fb0"),
       credit: "Evgeni Tcherkasski / Unsplash",
       alt: t("A lighthouse at dusk, its beam over the water", "Um farol ao crepúsculo, o seu feixe sobre a água"),
@@ -182,10 +193,6 @@ function services(t: T): Service[] {
       id: "photo-shoot",
       kicker: t("Additional service", "Serviço adicional"),
       title: [t("With no visual content worth the name,", "Sem conteúdo visual de qualidade,"), t("a website is better left unmade.", "mais vale não ter website.")],
-      lede: t(
-        "When a business, especially one with a physical space, has no high-quality visual content on its website — photos, videos and the like — it is better off with no website at all.",
-        "Quando um negócio, sobretudo com espaço físico, não tem conteúdo visual de qualidade no website — fotografias, vídeos e afins —, mais vale não ter website.",
-      ),
       photo: shot("1608186336271-53313eeaf864"),
       credit: "Yael Yañez / Unsplash",
       alt: t("A camera lens head on, in the dark", "Uma lente de câmara vista de frente, no escuro"),
@@ -273,24 +280,38 @@ function ProposalAsk({ label }: { label: string }) {
   );
 }
 
-/** One service: the photograph, its name laid in the dark at its foot,
-    the card over its edge, the three facts, and what there is to say. */
-function Plate({ s, ask, reduce }: { s: Service; ask: string; reduce: boolean }) {
-  const [ref, inView] = useInView<HTMLElement>(0.18);
+/* ---------------------------------------------------------------- */
+
+/** The photograph, first on the page and before anything else is read
+    (user, 2026-11-16): the service's name laid over the dark at its
+    foot, under the kind of service it is, with the line the studio
+    wrote under them both. The facts come over its foot on the right,
+    with the way in on their white.
+
+    The page's own title lives here, so a service with no photograph
+    keeps the title block it had: see service-page.tsx. */
+export function ServiceHero({ slug, name, ask }: { slug: string; name: string; ask?: string }) {
+  const t = useT();
+  const reduce = useReducedMotion() ?? false;
+  const [ref, inView] = useInView<HTMLDivElement>(0.12);
   const shown = inView || reduce;
+  const s = services(t).find((one) => one.id === slug);
+  if (!s) return null;
+  const label = ask ?? t("Get your free proposal", "Pedir proposta gratuita");
 
   return (
-    <article ref={ref} className="svd-plate" data-in={shown || undefined}>
+    <div ref={ref} className="svd-plate" data-in={shown || undefined}>
       <div className="svd-shot">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={s.photo} alt={s.alt} draggable={false} loading="lazy" />
+        <img src={s.photo} alt={s.alt} draggable={false} fetchPriority="high" />
         <span aria-hidden="true" className="svd-scrim" />
         <div className="svd-name">
           <p className="mono-label svd-kicker">{s.kicker}</p>
-          <h3 id={`svd-${s.id}`} className="display svd-title">
+          <h1 className="display svd-h1">{name}</h1>
+          <p className="svd-title">
             <span className="font-light">{s.title[0]}</span>{" "}
             <span className="font-medium sm:block">{s.title[1]}</span>
-          </h3>
+          </p>
         </div>
         <p className="svd-credit mono-label" aria-hidden="true">
           {s.credit}
@@ -299,7 +320,7 @@ function Plate({ s, ask, reduce }: { s: Service; ask: string; reduce: boolean })
 
       {/* The facts in a card over the photograph's foot, as the page the
           user sent carries its figures, with the way in on the white
-          where it can be read. */}
+          where a black drop can be read. */}
       <div className="svd-sheet">
         <dl className="svd-facts">
           {s.facts.map((f) => (
@@ -310,33 +331,27 @@ function Plate({ s, ask, reduce }: { s: Service; ask: string; reduce: boolean })
           ))}
         </dl>
         <div className="svd-ask">
-          <ProposalAsk label={ask} />
+          <ProposalAsk label={label} />
         </div>
       </div>
-
-      <p className="svd-lede">{s.lede}</p>
-
-      <div className="svd-parts">
-        {s.parts.map((p) => (
-          <section key={p.head} className="svd-part">
-            <h4 className="svd-part-head">{p.head}</h4>
-            <p className="svd-part-body">{p.body}</p>
-          </section>
-        ))}
-      </div>
-    </article>
+    </div>
   );
 }
 
-/** The plate of the service a page is for, under its description. */
+/** What the studio has to say about the service, under its description. */
 export function ServiceDepth({ slug }: { slug: string }) {
   const t = useT();
-  const reduce = useReducedMotion() ?? false;
   const s = services(t).find((one) => one.id === slug);
   if (!s) return null;
+  const parts = s.lede ? [s.lede, ...s.parts] : s.parts;
   return (
-    <section aria-labelledby={`svd-${s.id}`} className="svd">
-      <Plate s={s} ask={t("Get your free proposal", "Pedir proposta gratuita")} reduce={reduce} />
-    </section>
+    <div className="svd-parts">
+      {parts.map((p) => (
+        <section key={p.head} className="svd-part">
+          <h2 className="svd-part-head">{p.head}</h2>
+          <p className="svd-part-body">{p.body}</p>
+        </section>
+      ))}
+    </div>
   );
 }

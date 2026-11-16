@@ -5314,6 +5314,7 @@
     aspect-ratio: 4 / 5;
   }
   @media (min-width: 640px) { .svd-shot { aspect-ratio: 16 / 9; } }
+  @media (min-width: 1100px) { .svd-shot { aspect-ratio: 2.1 / 1; min-height: 30rem; } }
   .svd-shot img {
     width: 100%;
     height: 100%;
@@ -5341,11 +5342,21 @@
   }
   @media (min-width: 900px) { .svd-name { right: 42%; } }
   .svd-kicker { color: rgb(255 255 255 / 0.72); }
-  .svd-title {
+  /* The service's name, which is the page's title, and under it the
+     line the studio wrote. */
+  .svd-h1 {
     margin-top: 0.9rem;
-    max-width: 20ch;
-    font-size: clamp(1.75rem, 4.2vw, 3.75rem);
-    line-height: 1.02;
+    font-weight: 300;
+    font-size: clamp(2.25rem, 5.6vw, 4.5rem);
+    line-height: 1;
+  }
+  .svd-title {
+    margin-top: 1rem;
+    max-width: 30ch;
+    font-size: clamp(1.0625rem, 1.9vw, 1.5rem);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: rgb(255 255 255 / 0.9);
     text-wrap: balance;
   }
   /* The photographs are other people's work, and say so. */
@@ -5395,16 +5406,8 @@
   .svd-ask { display: flex; }
 
   /* What there is to say, under the plate. */
-  .svd-lede {
-    margin-top: clamp(2.5rem, 5vw, 3.5rem);
-    max-width: 44ch;
-    font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
-    line-height: 1.5;
-    color: var(--color-ink);
-    text-wrap: pretty;
-  }
   .svd-parts {
-    margin-top: clamp(2rem, 4vw, 3rem);
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
     padding-top: clamp(1.5rem, 3vw, 2rem);
     border-top: 1px solid var(--color-hair);
     display: grid;
@@ -5418,25 +5421,20 @@
   /* The plate arrives once, as everything else on the page does. */
   .svd-plate .svd-shot,
   .svd-plate .svd-sheet,
-  .svd-plate .svd-lede,
-  .svd-plate .svd-parts {
+  .svd-parts {
     opacity: 0;
     translate: 0 1.25rem;
     transition: opacity 0.7s ease, translate 0.9s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .svd-plate[data-in] .svd-shot,
-  .svd-plate[data-in] .svd-sheet,
-  .svd-plate[data-in] .svd-lede,
-  .svd-plate[data-in] .svd-parts { opacity: 1; translate: 0 0; }
+  .svd-plate[data-in] .svd-sheet { opacity: 1; translate: 0 0; }
   .svd-plate[data-in] .svd-sheet { transition-delay: 0.12s; }
-  .svd-plate[data-in] .svd-lede { transition-delay: 0.2s; }
-  .svd-plate[data-in] .svd-parts { transition-delay: 0.26s; }
+  /* What is said under the hero is read on its way in, not held back. */
+  .svd-parts { opacity: 1; translate: none; }
 
   @media (prefers-reduced-motion: reduce) {
     .svd-plate .svd-shot,
-    .svd-plate .svd-sheet,
-    .svd-plate .svd-lede,
-    .svd-plate .svd-parts { opacity: 1; translate: none; transition: none; }
+    .svd-plate .svd-sheet { opacity: 1; translate: none; transition: none; }
     .svd-shot img { transform: none; transition: none; }
   }
 }

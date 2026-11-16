@@ -9,7 +9,7 @@ import { Footer } from "./footer";
 import { ProposalHost } from "./proposal-host";
 import { FloatingNav } from "./floating-nav";
 import { Included } from "./services";
-import { ServiceDepth } from "./service-depth";
+import { ServiceDepth, ServiceHero } from "./service-depth";
 import { WorkTogether } from "./work-together";
 
 /* ==================================================================
@@ -71,16 +71,22 @@ export function ServicePage({ slug, lang }: { slug: string; lang: Lang }) {
           held the mark and a way back to the services. */}
       <FloatingNav />
       <main id="top" className="relative min-h-[100svh] bg-paper">
-        <div className="shell pt-[calc(var(--section-gap)+3.5rem)] pb-28 md:pb-40">
+        {/* The photograph first, before anything is read (user,
+            2026-11-16), with the service's name laid over it: it is the
+            page's title. A service the studio has not written a plate
+            for keeps the title block the page had. */}
+        {/* Clear of the bar and no more: the photograph is the first
+            thing on the page. */}
+        <div className="shell pt-[5.75rem] md:pt-[calc(var(--section-gap)+3rem)]">
+          <ServiceHero slug={service.slug} name={service.title} ask={t("Get your free proposal", "Pedir proposta gratuita")} />
+        </div>
+
+        <div className="shell pt-12 pb-28 md:pt-16 md:pb-40">
           <p className="text-[0.875rem] leading-snug text-ash">
             {service.full ?? t("Service", "Serviço")}
           </p>
 
-          <h1 className="display mt-3 text-[clamp(2.75rem,7vw,5.5rem)] font-light text-ink">
-            {service.title}
-          </h1>
-
-          <p className="mt-9 max-w-[54ch] text-[clamp(1.125rem,1.5vw,1.375rem)] leading-[1.45] tracking-[-0.012em] text-ink md:mt-12">
+          <p className="mt-6 max-w-[54ch] text-[clamp(1.125rem,1.5vw,1.375rem)] leading-[1.45] tracking-[-0.012em] text-ink">
             {service.body}
           </p>
 
@@ -92,6 +98,7 @@ export function ServicePage({ slug, lang }: { slug: string; lang: Lang }) {
               (service-depth.tsx). Only the services it has written for
               carry one. */}
           <ServiceDepth slug={service.slug} />
+
 
           <div className="mt-11 flex flex-wrap items-center gap-3 md:mt-14">
             <a

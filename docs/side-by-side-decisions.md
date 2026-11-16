@@ -472,3 +472,19 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
 - The home page's comparison had gone white type on a light ground.
   Not this work: `.cmp-ground` was taken grey along with the
   side-by-side page's own ground in d72104d. Put back to its black.
+
+## Eighth pass (2026-11-16, user): the photograph first
+
+- "A primeira coisa que o utilizador vê é a imagem": the plate is now
+  the page's hero, under the bar and before anything is read. Over it,
+  at its foot: the kind of service in mono, the service's name as the
+  page's `h1`, and under them the line the studio wrote. The facts card
+  still comes over its foot on the right, with the free-proposal drop on
+  its white.
+- The description the service record carries follows the hero, then
+  what it includes, then the parts. The lede each plate had became the
+  first part, with a head of its own ("What this is for", "Why, even for
+  the smallest business", "What SEO is"); the photo shoot's was dropped,
+  since it only said again what its description says.
+- The hero is 2.1:1 from 1100px, 16:9 from 640px and 4:5 on a phone, and
+  clears the bar by no more than it must.
