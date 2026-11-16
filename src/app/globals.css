@@ -5507,6 +5507,14 @@
     transition: opacity 0.28s ease, translate 0.38s var(--ease-out-quint);
   }
   .nav-svc-panel[data-open] { opacity: 1; translate: 0 0; pointer-events: auto; }
+  /* The gap between the cell and the panel, held by the panel itself so
+     the pointer crossing it never leaves the menu (user, 2026-11-16). */
+  .nav-svc-panel::before {
+    content: "";
+    position: absolute;
+    inset: auto -1px 100% -1px;
+    height: calc(0.5rem + 2px);
+  }
 
   .nav-svc-item {
     display: flex;
