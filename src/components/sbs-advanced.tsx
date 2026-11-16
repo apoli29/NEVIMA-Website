@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { PilarLogo, PilarReviews, pilarCopy, pilarDisplay, pilarMono, pilarSans, useLapStep } from "./sbs-pilar";
 import SlidingEaseVerticalBars from "./ui/sliding-ease";
+import { PilarMetal } from "./pilar-metal";
 import { useT } from "@/lib/use-lang";
 
 /* ==================================================================
@@ -171,7 +172,7 @@ export function Advanced({ t }: { t: T }) {
         {/* The opening, over the hero: the symbol on the violet, turning
             to face the visitor, then the view through the square of the P. */}
         <div className="sbs-a-intro" aria-hidden="true">
-          <Solid className="sbs-a-intro-solid" />
+          <PilarMetal className="sbs-a-metal" />
         </div>
       </div>
 

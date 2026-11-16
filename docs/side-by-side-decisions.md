@@ -695,3 +695,18 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
 - 2026-11-17 (user): the symbol beside the five kinds stands level with
   the top of the kind being read, starting with the first; its place is
   read off the rows themselves (`--y`), so it follows the list down.
+- 2026-11-17 (user): the steps' band is lower (196px, cards 140px) and
+  runs the page's whole width, past the section's padding.
+- 2026-11-17 (user: the 3D read as "30%", a prototype): the opening's
+  symbol is now rendered in WebGL (`pilar-metal.tsx`, three.js 0.180,
+  the site's first 3D dependency). The guide's outline extruded with a
+  rounded bevel on every edge, a physical white metal (metalness 1, fine
+  roughness with a brushed grain, anisotropy, clear coat), lit by a
+  studio built for it and baked into an environment map: a room dark
+  below and lavender above (the hero's sky), long soft white panels
+  above and at each side, a strip behind for the rims and a large panel
+  in front so the face reads white. The studio turns a little, so light
+  moves on the metal while the symbol stays face on. The flight through
+  the square of the P is the camera's, read off the page's loop every
+  frame; it draws only while the opening can be seen. The CSS stack of
+  layers stays for the symbols beside the kinds and in the foot.

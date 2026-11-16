@@ -4487,29 +4487,10 @@
     border-radius: 50%;
     background: radial-gradient(closest-side, rgb(46 40 84 / 0.28), transparent);
   }
-  /* The symbol in white metal, whole (no slats), shown face on from the
-     start (user, 2026-11-17): a brushed white-to-silver face with a light
-     across it, deeper sides of silver going to a violet grey. The eye is
-     set at the square of the P (69% 33%), so the flight goes through it
-     and the sides show as a bevel around the face. */
-  .sbs-a-intro-solid {
-    width: 160px;
-    height: 160px;
-    perspective: 600px;
-    perspective-origin: 69% 33%;
-    --side-a: #e4e5ee;
-    --side-b: #6f7088;
-  }
-  .sbs-a-intro-solid .sbs-a-turn { transform: none; }
-  .sbs-a-intro-solid .sbs-a-turn > i { transform: translateZ(calc(var(--z) * -2.6px)); }
-  .sbs-a-intro-solid .sbs-a-turn > b {
-    --slat: 9px;
-    background:
-      linear-gradient(112deg, transparent 38%, rgb(255 255 255 / 0.95) 48%, transparent 58%) 130% 0 / 260% 100% no-repeat,
-      repeating-linear-gradient(90deg, rgb(255 255 255 / 0) 0 2px, rgb(255 255 255 / 0.22) 2px 3px),
-      linear-gradient(160deg, #ffffff 0%, #eceef4 30%, #c9ccd9 52%, #f3f4f8 70%, #b3b6c6 100%);
-  }
-  .sbs-a-intro-solid .sbs-a-turn { transition: none; }
+  /* The symbol in white metal, rendered in WebGL (pilar-metal.tsx): it
+     fills the opening, drawn at the size it is seen; the flight through
+     the square of the P is its camera's, on this page's loop. */
+  .sbs-a-metal { position: absolute; inset: 0; }
 
   /* 2 · the five kinds of insurance (after Palais de Tokyo) -------------- */
   .sbs-a-index {
@@ -4610,14 +4591,16 @@
   .sbs-a-how-head h4 { margin: 0; font-family: var(--p-display); font-weight: 400; font-size: 40px; line-height: 1.04; letter-spacing: -0.015em; }
   .sbs-a-how-head h4 span { display: block; }
   .sbs-a-how-head p { margin: 0; font-size: 14.5px; line-height: 1.6; }
+  /* the band runs the page's whole width, out past the section's
+     padding, and is kept low (user, 2026-11-17) */
   .sbs-a-carousel {
     position: relative;
     isolation: isolate;
     overflow: hidden;
     display: flex;
     align-items: center;
-    height: 268px;
-    border-radius: 14px;
+    height: 196px;
+    margin-inline: -60px;
     background: var(--p-noite);
   }
   .sbs-a-bars { position: absolute; inset: 0; z-index: -1; }
@@ -4640,10 +4623,10 @@
     flex: none;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
     width: 300px;
-    min-height: 196px;
-    padding: 22px 22px 24px;
+    min-height: 140px;
+    padding: 16px 20px 18px;
     border: 1px solid rgb(255 255 255 / 0.14);
     border-radius: 12px;
     background: rgb(17 21 37 / 0.72);
@@ -4652,7 +4635,7 @@
   }
   .sbs-a-card-num { font-family: var(--p-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--p-nevoa); }
   .sbs-a-card-num i { font-style: normal; opacity: 0.6; }
-  .sbs-a-card b { margin-top: auto; font-family: var(--p-display); font-weight: 400; font-size: 32px; line-height: 1.04; letter-spacing: -0.02em; }
+  .sbs-a-card b { margin-top: auto; font-family: var(--p-display); font-weight: 400; font-size: 26px; line-height: 1.04; letter-spacing: -0.02em; }
   .sbs-a-card-text { font-size: 13.5px; line-height: 1.5; color: rgb(255 255 255 / 0.74); }
 
   /* 5 · the foot: the closing band on rings, the symbol large in depth */
@@ -4693,26 +4676,11 @@
   }
   /* the fade in is on the symbol's box, never on the turning stack:
      opacity on a preserve-3d element flattens it */
-  .sbs-run .sbs-a-intro-solid { animation: sbs-a-intro-in var(--sbs-loop) linear infinite; }
+  .sbs-run .sbs-a-metal { animation: sbs-a-intro-in var(--sbs-loop) linear infinite; }
   @keyframes sbs-a-intro-in {
     0% { opacity: 0; animation-timing-function: var(--a-ease); }
     1.5%, 96% { opacity: 1; }
     97%, 100% { opacity: 0; }
-  }
-  /* face on from the start: it stands still while a light crosses the
-     metal, then the view flies through the square of the P */
-  .sbs-run .sbs-a-intro-solid .sbs-a-turn { animation: sbs-a-fly var(--sbs-loop) linear infinite; }
-  @keyframes sbs-a-fly {
-    /* depth already speeds the growth up (1 / (600 - z)), so the flight
-       eases out: the square widens at a steady rate rather than at once */
-    0%, 6.5% { transform: translateZ(0); animation-timing-function: cubic-bezier(0.5, 0, 0.12, 1); }
-    12.5%, 96% { transform: translateZ(599.7px); }
-    97%, 100% { transform: translateZ(0); }
-  }
-  .sbs-run .sbs-a-intro-solid .sbs-a-turn > b { animation: sbs-a-gleam var(--sbs-loop) linear infinite; }
-  @keyframes sbs-a-gleam {
-    0%, 1.5% { background-position: 130% 0, 0 0, 0 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
-    5.5%, 100% { background-position: -30% 0, 0 0, 0 0; }
   }
   .sbs-run .sbs-a-intro::before { animation: sbs-a-shadow var(--sbs-loop) linear infinite; }
   @keyframes sbs-a-shadow {
@@ -4846,6 +4814,7 @@
     .sbs-a-tr[data-first] .sbs-a-cell[data-pick] { font-size: 22px; }
     .sbs-a-foot-cell .sbs-p-wide { padding: 10px 12px; font-size: 11.5px; white-space: nowrap; }
     .sbs-a-how { padding: 48px 36px 52px; }
+    .sbs-a-carousel { margin-inline: -36px; }
     .sbs-a-how-head { grid-template-columns: 1fr; gap: 16px; padding-bottom: 28px; }
     .sbs-a-foot { padding: 32px 36px 0; }
     .sbs-a-band { flex-direction: column; align-items: flex-start; gap: 22px; padding: 40px 28px; }
