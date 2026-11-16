@@ -558,3 +558,19 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   go to two, and the third news card is dropped.
 - The plates' labels and the intro paragraph are unchanged (the intro
   still speaks of a template; the user's to change).
+
+- 2026-11-17 (user, second round): the first version read as two
+  websites, the A. Octávio's in the first two sections and the M.Costa's
+  in the last ones. What the user meant by "99,9%" was a homogeneous
+  result that captures the kind of design, not a faithful mix of both.
+  It is now one idiom from top to foot, the first half's: Arial
+  throughout (Georgia only in the logo); one title for every section
+  (navy bold capitals, centred, a short blue rule under it), so "O melhor
+  aconselhamento", "Os nossos serviços", "Acidente de automóvel", "Quem
+  somos" (was "Pilar"), "Últimas notícias" and "Onde nos encontrar" are
+  all set alike; one icon (blue line in a pale blue square) for the
+  insurance, the services and the offices; one card (white, a border, a
+  faint shadow) for each of them and the news; pale grey and white
+  grounds in turn; navy at the top strip and both footer bars. The
+  spaced thin capitals, the grey icons, the large light sentence and the
+  grey footer are gone; the slider's word is bold and its button blue.

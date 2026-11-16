@@ -3972,12 +3972,14 @@
   }
 
   /* ============ the website other professionals deliver ============= */
-  /* A joining of two real brokers' websites the user brought
-     (2026-11-17): the A. Octávio's royal blue, capitals, contact boxes,
-     icon cards and addresses; the M.Costa's spaced-out titles, grey
-     icons, walls of text and Arial. Nothing here moves: the page only
-     goes down, to the same moments as ours, its stops read off its own
-     data-stop sections. The fallbacks are for a page without them. */
+  /* The kind of website many brokers are handed, after two real ones
+     the user brought (2026-11-17), set in one idiom from top to foot so
+     it reads as one website (user, the same day): Arial; navy capitals
+     with a short blue rule under every title; icons as on a slide, in
+     pale blue squares; white cards with a border and a faint shadow;
+     white and pale grey grounds in turn; navy at the top and the foot.
+     Nothing moves: the page only goes down, to the same moments as ours,
+     its stops read off its own data-stop sections. */
   .sbs-c-page {
     --sbs-stop-1: -660px;
     --sbs-stop-2: -1180px;
@@ -3986,15 +3988,23 @@
     --c-navy: #1d3c87;
     --c-blue: #1b4f9e;
     --c-link: #3b8ad4;
-    --c-text: #555;
+    --c-pale: #f3f5f9;
     background: #fff;
-    color: var(--c-text);
+    color: #555;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 13px;
     line-height: 1.55;
   }
   .sbs-c-a { color: var(--c-link); }
-  .sbs-c-spaced { margin: 0; text-align: center; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 300; font-size: 15px; letter-spacing: 0.55em; color: #222; }
+
+  /* The one title, everywhere. */
+  .sbs-c-title { margin: 0 0 28px; text-align: center; font-size: 22px; font-weight: 700; color: var(--c-navy); }
+  .sbs-c-title::after { content: ""; display: block; width: 46px; height: 3px; margin: 10px auto 0; background: var(--c-link); }
+  /* The one icon, everywhere. */
+  .sbs-c-ico { display: inline-flex; padding: 9px; background: #e3eefb; color: #2f7fd0; border-radius: 4px; }
+  .sbs-c-ico svg { width: 34px; height: 34px; }
+  /* The one card, everywhere. */
+  .sbs-c-kind, .sbs-c-srow > span, .sbs-c-card, .sbs-c-offices > div { background: #fff; border: 1px solid #e1e5ec; box-shadow: 0 1px 4px rgb(0 0 0 / 0.06); }
 
   .sbs-c-strip { display: flex; justify-content: flex-end; align-items: center; gap: 6px; padding: 3px 24px; background: var(--c-navy); color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; }
   .sbs-c-flag { width: 14px; height: 9px; margin-left: 8px; background: linear-gradient(90deg, #046a38 0 40%, #da291c 40%); }
@@ -4006,7 +4016,7 @@
   .sbs-c-logo-name b { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-size: 26px; line-height: 1; color: var(--c-navy); text-shadow: 1px 1px 0 #b9c9e6; }
   .sbs-c-logo-name i { font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: #f39200; }
   .sbs-c-logo small { display: block; margin-top: 2px; font-size: 9px; color: #888; }
-  .sbs-c-nav { display: flex; flex-wrap: wrap; gap: 0; margin-left: auto; font-size: 10px; font-weight: 700; color: #444; }
+  .sbs-c-nav { display: flex; flex-wrap: wrap; margin-left: auto; font-size: 10px; font-weight: 700; color: #444; }
   .sbs-c-nav span { padding: 3px 7px; border-left: 1px solid #d5d5d5; }
   .sbs-c-nav span:first-child { border-left: 0; }
   .sbs-c-nav span[data-on] { color: var(--c-link); }
@@ -4018,9 +4028,9 @@
 
   .sbs-c-slide { position: relative; height: 400px; overflow: hidden; background: #3a6ea8; }
   .sbs-c-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .sbs-c-slide-copy { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; }
-  .sbs-c-slide-copy h3 { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 300; font-size: 44px; letter-spacing: 0.4em; padding-left: 0.4em; color: #fff; text-shadow: 0 2px 8px rgb(0 0 0 / 0.45); }
-  .sbs-c-slide-copy span { padding: 8px 22px; background: #2b2b2b; color: #fff; font-size: 10px; letter-spacing: 0.15em; }
+  .sbs-c-slide-copy { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
+  .sbs-c-slide-copy h3 { margin: 0; font-size: 46px; font-weight: 700; letter-spacing: 0.08em; color: #fff; text-shadow: 0 2px 8px rgb(0 0 0 / 0.45); }
+  .sbs-c-slide-copy span { padding: 9px 24px; background: var(--c-blue); color: #fff; font-size: 11px; font-weight: 700; border-radius: 3px; }
   .sbs-c-arrow { position: absolute; top: 50%; left: 14px; translate: 0 -50%; font-size: 46px; line-height: 1; color: rgb(255 255 255 / 0.8); }
   .sbs-c-arrow[data-right] { left: auto; right: 14px; }
   .sbs-c-dots { position: absolute; bottom: 14px; left: 50%; translate: -50% 0; display: flex; gap: 6px; }
@@ -4033,66 +4043,59 @@
   .sbs-c-boxes svg { width: 17px; height: 17px; }
   .sbs-c-boxes span { display: block; margin-top: 7px; font-size: 13px; opacity: 0.9; }
 
-  .sbs-c-advice { display: grid; grid-template-columns: 1fr 1.2fr; gap: 26px; align-items: center; padding: 40px 24px 36px; }
-  .sbs-c-advice h4 { margin: 0; padding-right: 22px; border-right: 3px solid var(--c-navy); text-align: right; font-size: 26px; line-height: 1.4; color: var(--c-navy); }
-  .sbs-c-advice h4 span { display: block; }
-  .sbs-c-advice p { margin: 0; font-size: 14px; }
-
-  .sbs-c-kinds { padding: 0 24px 40px; background: #f4f6f9; }
-  .sbs-c-tabs { display: flex; justify-content: center; gap: 30px; padding: 16px 0 20px; font-size: 10px; color: #888; }
+  /* Grounds in turn: pale, white, white, pale, white, pale. */
+  .sbs-c-advice { padding: 40px 24px 10px; background: var(--c-pale); text-align: center; }
+  .sbs-c-advice p { max-width: 62ch; margin: 0 auto; font-size: 14px; }
+  .sbs-c-kinds { padding: 0 24px 40px; background: var(--c-pale); }
+  .sbs-c-tabs { display: flex; justify-content: center; gap: 30px; padding: 20px 0; font-size: 10px; font-weight: 700; color: #888; }
   .sbs-c-tabs span { padding-bottom: 6px; }
   .sbs-c-tabs span[data-on] { color: var(--c-link); border-bottom: 2px solid var(--c-link); }
   .sbs-c-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
-  .sbs-c-kind { padding: 22px 16px 18px; background: #fff; border: 1px solid #e4e7ec; text-align: center; box-shadow: 0 1px 4px rgb(0 0 0 / 0.06); }
-  .sbs-c-kind h5 { margin: 0 0 12px; font-size: 18px; font-weight: 400; color: var(--c-navy); }
-  .sbs-c-kind-ico { display: inline-flex; padding: 9px; background: #e3eefb; color: #2f7fd0; border-radius: 4px; }
-  .sbs-c-kind-ico svg { width: 38px; height: 38px; }
-  .sbs-c-kind small { display: block; margin-top: 12px; font-size: 8.5px; color: #666; }
+  .sbs-c-kind { padding: 22px 16px 18px; text-align: center; }
+  .sbs-c-kind h5 { margin: 12px 0 4px; font-size: 16px; font-weight: 700; color: var(--c-navy); }
+  .sbs-c-kind small { display: block; font-size: 9px; color: #666; }
 
-  .sbs-c-services { padding: 50px 24px 46px; border-top: 1px solid #e5e5e5; }
-  .sbs-c-srow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 36px; text-align: center; }
-  .sbs-c-srow span { color: #a6a6a6; }
-  .sbs-c-srow span[data-on] { color: #222; }
-  .sbs-c-srow svg { width: 40px; height: 40px; }
-  .sbs-c-srow small { display: block; margin-top: 10px; font-size: 9.5px; letter-spacing: 0.18em; color: inherit; }
-  .sbs-c-srow span[data-on] small { font-weight: 700; }
+  .sbs-c-services { padding: 44px 24px 40px; }
+  .sbs-c-srow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; text-align: center; }
+  .sbs-c-srow > span { padding: 18px 8px 16px; }
+  .sbs-c-srow small { display: block; margin-top: 12px; font-size: 10px; font-weight: 700; color: var(--c-navy); }
 
-  .sbs-c-text { padding: 10px 24px 44px; font-size: 12px; color: #444; }
-  .sbs-c-text h4 { margin-bottom: 22px; font-size: 13px; }
-  .sbs-c-text p { margin: 0 0 11px; }
-  .sbs-c-text ul { margin: -4px 0 12px; padding-left: 34px; list-style: disc; }
+  .sbs-c-text { padding: 12px 24px 44px; font-size: 12.5px; color: #555; }
+  .sbs-c-text .sbs-c-title { margin-bottom: 22px; font-size: 18px; }
+  .sbs-c-text p { margin: 0 0 10px; }
+  .sbs-c-text .sbs-c-q { margin-top: 16px; font-weight: 700; color: var(--c-navy); }
+  .sbs-c-text ul { margin: -2px 0 12px; padding-left: 34px; list-style: disc; }
   .sbs-c-text li { margin: 1px 0; }
-  .sbs-c-text b { color: #222; }
+  .sbs-c-text b { color: #333; }
   .sbs-c-under { text-decoration: underline; }
 
-  .sbs-c-about { padding: 50px 24px 36px; border-top: 1px solid #e5e5e5; }
-  .sbs-c-about .sbs-c-spaced { text-align: left; font-size: 13px; }
-  .sbs-c-cols { display: grid; grid-template-columns: 1.15fr 1fr 1fr; gap: 26px; margin-top: 30px; }
-  .sbs-c-cols p { margin: 0; font-size: 11.5px; color: #555; }
-  .sbs-c-cols .sbs-c-big { font-family: "Helvetica Neue", Arial, sans-serif; font-weight: 300; font-size: 21px; line-height: 1.55; color: #333; }
-  .sbs-c-privacy { display: block; margin-top: 30px; font-size: 11px; }
-  .sbs-c-privacy .sbs-c-a { color: #222; text-decoration: underline; }
+  .sbs-c-about { padding: 44px 24px 34px; background: var(--c-pale); }
+  .sbs-c-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .sbs-c-cols p { margin: 0; font-size: 12.5px; }
+  .sbs-c-cols .sbs-c-lead { font-size: 14px; font-weight: 700; color: var(--c-navy); }
+  .sbs-c-privacy { display: block; margin-top: 26px; text-align: center; font-size: 11px; }
+  .sbs-c-privacy .sbs-c-a { text-decoration: underline; }
 
-  .sbs-c-news { padding: 40px 24px 34px; background: #fafafa; }
-  .sbs-c-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 30px; }
+  .sbs-c-news { padding: 44px 24px 34px; }
+  .sbs-c-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .sbs-c-card { padding-bottom: 14px; text-align: center; }
   .sbs-c-card img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
-  .sbs-c-card small { display: block; margin-top: 14px; text-align: center; font-size: 10px; font-weight: 700; color: var(--c-link); }
-  .sbs-c-card h5 { margin: 6px 0 0; text-align: center; font-size: 15px; font-weight: 400; line-height: 1.35; letter-spacing: 0.04em; color: #222; }
+  .sbs-c-card small { display: block; margin-top: 12px; font-size: 10px; font-weight: 700; color: var(--c-link); }
+  .sbs-c-card h5 { margin: 6px 12px 0; font-size: 12.5px; font-weight: 700; line-height: 1.4; color: var(--c-navy); }
   /* The carousel's own scrollbar, left showing. */
   .sbs-c-scroll { display: block; position: relative; height: 6px; margin-top: 22px; background: #e2e2e2; border-radius: 3px; }
-  .sbs-c-scroll i { position: absolute; left: 0; top: 0; bottom: 0; width: 72%; background: #555; border-radius: 3px; }
+  .sbs-c-scroll i { position: absolute; left: 0; top: 0; bottom: 0; width: 72%; background: #9aa3b2; border-radius: 3px; }
 
-  .sbs-c-visit { display: grid; grid-template-columns: 0.9fr 2fr; gap: 26px; padding: 44px 24px 50px; }
-  .sbs-c-visit h4 { align-self: start; margin: 0; padding-right: 20px; border-right: 3px solid var(--c-navy); text-align: right; font-size: 24px; line-height: 1.3; color: var(--c-navy); }
-  .sbs-c-visit h4 span { display: block; }
+  .sbs-c-visit { padding: 44px 24px 44px; background: var(--c-pale); }
   .sbs-c-offices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; font-size: 11.5px; }
-  .sbs-c-offices > div > * { display: block; }
-  .sbs-c-offices b { margin-bottom: 8px; font-size: 15px; font-weight: 400; color: var(--c-link); }
-  .sbs-c-offices .sbs-c-a { text-decoration: underline; color: #2a6db8; }
-  .sbs-c-offices em { font-style: italic; color: #666; }
+  .sbs-c-offices > div { padding: 18px 16px; text-align: center; }
+  .sbs-c-offices > div > :not(.sbs-c-ico) { display: block; }
+  .sbs-c-offices b { margin: 10px 0 6px; font-size: 16px; color: var(--c-navy); }
+  .sbs-c-offices .sbs-c-a { text-decoration: underline; }
+  .sbs-c-offices em { font-style: italic; font-size: 10.5px; color: #777; }
 
-  .sbs-c-legal { padding: 18px 24px; background: #727272; color: #fff; font-size: 11px; }
-  .sbs-c-copy { padding: 8px 24px 12px; background: #555; color: rgb(255 255 255 / 0.85); font-size: 9.5px; }
+  .sbs-c-legal { padding: 18px 24px; background: var(--c-navy); color: #fff; font-size: 11px; }
+  .sbs-c-copy { padding: 8px 24px 12px; background: #142c66; color: rgb(255 255 255 / 0.8); font-size: 9.5px; }
 
   /* ========================= ours ================================== */
   /* Pilar Seguros, an invented insurance broker, in its own four colours
@@ -4345,14 +4348,11 @@
     .sbs-c-boxes { gap: 12px; padding: 22px 18px 28px; }
     .sbs-c-boxes b { font-size: 15px; }
     .sbs-c-boxes span { font-size: 10.5px; }
-    .sbs-c-advice { grid-template-columns: 1fr; gap: 16px; }
-    .sbs-c-advice h4 { border-right: 0; padding-right: 0; text-align: left; }
+    .sbs-c-srow { grid-template-columns: 1fr 1fr; }
     .sbs-c-cols { grid-template-columns: 1fr 1fr; }
-    .sbs-c-cols .sbs-c-big { grid-column: 1 / -1; }
+    .sbs-c-cols .sbs-c-lead { grid-column: 1 / -1; }
     .sbs-c-cards { grid-template-columns: 1fr 1fr; }
     .sbs-c-cards > :last-child { display: none; }
-    .sbs-c-visit { grid-template-columns: 1fr; }
-    .sbs-c-visit h4 { border-right: 0; padding-right: 0; text-align: left; }
     .sbs-c-offices { grid-template-columns: 1fr 1fr; }
 
     .sbs-p-page { --sbs-stop-1: -826px; --sbs-stop-2: -1262px; --sbs-stop-3: -1900px; }

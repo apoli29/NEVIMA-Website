@@ -160,7 +160,10 @@ function Plate({
    cookie wall. What reads as dated is the design itself: a home-made
    logotype, a royal blue and greys, capitals everywhere, line icons as
    on a slide, a great deal of text, stock photography, a contact strip
-   before anything is said. Its sections are its own, not ours; each
+   before anything is said. One idiom from top to foot (user,
+   2026-11-17: it had read as two websites): Arial, navy capitals with
+   a short blue rule, icons in pale blue squares, white cards with a
+   border, white and pale grey grounds in turn, navy at both ends. Its sections are its own, not ours; each
    carries data-stop so it reaches the top of the plate at the moment
    ours does. The one flaw of structure is the contacts coming first. */
 
@@ -346,10 +349,7 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
       </div>
 
       <div className="sbs-c-advice" data-stop>
-        <h4>
-          <span>{t("THE BEST", "O MELHOR")}</span>
-          <span>{t("ADVICE", "ACONSELHAMENTO")}</span>
-        </h4>
+        <h4 className="sbs-c-title">{t("THE BEST ADVICE", "O MELHOR ACONSELHAMENTO")}</h4>
         <p>
           {t("At ", "Na ")}
           <span className="sbs-c-a">{t("Pilar Insurance – Insurance Brokerage, Lda.", "Pilar Seguros – Mediação de Seguros, Lda.")}</span>
@@ -368,10 +368,10 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
         <div className="sbs-c-grid">
           {kinds.map(([icon, name, line]) => (
             <div key={name} className="sbs-c-kind">
-              <h5>{name}</h5>
-              <span className="sbs-c-kind-ico">
+              <span className="sbs-c-ico">
                 <CIcon name={icon} />
               </span>
+              <h5>{name}</h5>
               <small>{line}</small>
             </div>
           ))}
@@ -379,11 +379,13 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
       </div>
 
       <div className="sbs-c-services" data-stop>
-        <h4 className="sbs-c-spaced">{t("SERVICES", "SERVIÇOS")}</h4>
+        <h4 className="sbs-c-title">{t("OUR SERVICES", "OS NOSSOS SERVIÇOS")}</h4>
         <div className="sbs-c-srow">
-          {services.map(([icon, name], i) => (
-            <span key={name} data-on={i === 0 ? "" : undefined}>
-              <CIcon name={icon} fill={icon === "person"} />
+          {services.map(([icon, name]) => (
+            <span key={name}>
+              <span className="sbs-c-ico">
+                <CIcon name={icon} />
+              </span>
               <small>{name}</small>
             </span>
           ))}
@@ -391,15 +393,15 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
       </div>
 
       <div className="sbs-c-text">
-        <h4 className="sbs-c-spaced">{t("CAR ACCIDENT", "ACIDENTE DE AUTOMÓVEL")}</h4>
-        <p>{t("What to do in the event of an accident?", "O que fazer em caso de acidente?")}</p>
+        <h4 className="sbs-c-title">{t("CAR ACCIDENT", "ACIDENTE DE AUTOMÓVEL")}</h4>
+        <p className="sbs-c-q">{t("What to do in the event of an accident?", "O que fazer em caso de acidente?")}</p>
         <p>
           {t(
             "All measures within reach should be taken to limit the consequences of the claim. The mandatory documents must always be kept in the vehicle: driving licence, green card and vehicle documents.",
             "Devem ser tomadas todas as medidas ao alcance para limitar as consequências do sinistro. Os documentos obrigatórios devem estar sempre no veículo: carta de condução, carta verde e documentos do veículo.",
           )}
         </p>
-        <p>{t("What to do if only the vehicles are damaged?", "O que fazer se houver apenas danos nos veículos?")}</p>
+        <p className="sbs-c-q">{t("What to do if only the vehicles are damaged?", "O que fazer se houver apenas danos nos veículos?")}</p>
         <p>
           {t("Whenever possible, reach an agreement with the other parties by filling in and signing the ", "Sempre que possível, chegar a acordo com os intervenientes, preenchendo e assinando a ")}
           <b>{t("European Accident Statement (DAAA)", "Declaração Amigável de Acidente Automóvel (DAAA)")}</b>
@@ -415,7 +417,7 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
           <li>{t("Visible damage", "Danos visíveis")}</li>
           <li>{t("Signature of both drivers", "Assinatura de ambos os condutores")}</li>
         </ul>
-        <p>
+        <p className="sbs-c-q">
           {t(
             "What to do if the other party refuses to fill in the DAAA, or does not agree on how the accident happened?",
             "O que fazer se o outro interveniente não quiser preencher a DAAA, ou não estiver de acordo quanto às circunstâncias do acidente?",
@@ -442,9 +444,9 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
       </div>
 
       <div className="sbs-c-about" data-stop>
-        <h4 className="sbs-c-spaced">PILAR</h4>
+        <h4 className="sbs-c-title">{t("ABOUT US", "QUEM SOMOS")}</h4>
         <div className="sbs-c-cols">
-          <p className="sbs-c-big">
+          <p className="sbs-c-lead">
             {t(
               "Founded in 2009, Pilar Insurance – Insurance Brokerage, Lda. is a family-run company that operates in the market with rigour and professional impartiality.",
               "Fundada em 2009, a Pilar Seguros – Mediação de Seguros, Lda. é uma empresa de cariz familiar, que opera no mercado com rigor e isenção profissional.",
@@ -470,7 +472,7 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
       </div>
 
       <div className="sbs-c-news">
-        <h4 className="sbs-c-spaced">{t("LATEST NEWS", "ÚLTIMAS NOTÍCIAS")}</h4>
+        <h4 className="sbs-c-title">{t("LATEST NEWS", "ÚLTIMAS NOTÍCIAS")}</h4>
         <div className="sbs-c-cards">
           {news.map(([id, title]) => (
             <div key={id} className="sbs-c-card">
@@ -487,13 +489,13 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
       </div>
 
       <div className="sbs-c-visit" data-stop>
-        <h4>
-          <span>{t("WHERE TO", "ONDE NOS")}</span>
-          <span>{t("FIND US:", "ENCONTRAR:")}</span>
-        </h4>
+        <h4 className="sbs-c-title">{t("WHERE TO FIND US", "ONDE NOS ENCONTRAR")}</h4>
         <div className="sbs-c-offices">
           {offices.map(([town, street, code, tel, cell, mail]) => (
             <div key={town}>
+              <span className="sbs-c-ico">
+                <CIcon name="pin" />
+              </span>
               <b>{town}</b>
               <span>{street}</span>
               <span>{code}</span>
