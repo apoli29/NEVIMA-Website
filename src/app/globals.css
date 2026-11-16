@@ -4470,6 +4470,22 @@
     opacity: 0;
   }
 
+  /* Every section fills the plate's view (user, 2026-11-17: the next one
+     showed under the hero while it was held), its content centred in it;
+     --sbs-view is the view's height in the page's pixels (useFit). */
+  .sbs-a-page .sbs-a-hero { height: max(700px, var(--sbs-view, 700px)); }
+  .sbs-a-page .sbs-a-index,
+  .sbs-a-page .sbs-a-sheet,
+  .sbs-a-page .sbs-a-how,
+  .sbs-a-page .sbs-a-foot { min-height: var(--sbs-view, 0px); }
+  .sbs-a-page .sbs-a-index { align-content: center; }
+  .sbs-a-page .sbs-a-sheet,
+  .sbs-a-page .sbs-a-how,
+  .sbs-a-page .sbs-a-foot { display: flex; flex-direction: column; justify-content: center; }
+  @media (max-width: 899.98px) {
+    .sbs-a-page .sbs-a-hero { height: max(826px, var(--sbs-view, 826px)); }
+  }
+
   /* 1 · the opening and the hero ---------------------------------------- */
   .sbs-a-rings ellipse { stroke: rgb(255 255 255 / 0.42); }
   .sbs-a-lead h3 .sbs-a-line { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }

@@ -150,7 +150,7 @@ export function SbsPreview({
   }, [open]);
 
   // 15% slower than the wheel, for a calmer, more premium pace (user, 2026-11-17)
-  usePlateScrub(box, open, undefined, 0.85);
+  usePlateScrub(box, open, undefined, 0.85, false);
 
   if (!mounted || !open) return null;
   return createPortal(

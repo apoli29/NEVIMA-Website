@@ -797,3 +797,20 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   to face on in one continuous move over the whole hold (an even ease),
   read off the loop rather than the clock, so it is the same every time
   and arrives face on as the flight begins.
+- 2026-11-17 (user, with a review of the motion):
+  - every Advanced section fills the plate's view (`--sbs-view`, written
+    by useFit), its content centred, so the next section no longer shows
+    under the one held;
+  - by hand, the Advanced page follows a course of its own: while a
+    section's effects play it drifts on slowly (30% of the scroll, never
+    more than half the way to the next), and between sections it moves
+    one for one with the scroll, so each sheet transition plays exactly
+    while the next section comes up into the frame (before, the
+    transitions often played while their section was still off the
+    plate);
+  - on a plate on the website, the wheel is held for a second at either
+    end before the website takes it, so a last flick does not carry the
+    visitor off up or down the page; not in the larger window, which
+    holds the website still;
+  - the steps and the kinds follow the loop every 60ms (they lagged by
+    up to 150ms).

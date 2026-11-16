@@ -77,7 +77,7 @@ function bezier([x1, y1, x2, y2]: [number, number, number, number]) {
   };
 }
 
-type Segment = { t0: number; t1: number; v0: number; len: number; move: boolean; stop: number };
+type Segment = { t0: number; t1: number; v0: number; len: number; move: boolean; stop: number; y0?: number; y1?: number };
 
 /** The page's loop and its segments, in scroll (the page's pixels). */
 function plan(page: HTMLElement) {
@@ -87,11 +87,39 @@ function plan(page: HTMLElement) {
   const stop = (n: number) => (n === 0 ? 0 : Math.abs(parseFloat(getComputedStyle(page).getPropertyValue(`--sbs-stop-${n}`)) || 0));
   const segments: Segment[] = [];
   let v = 0;
+  // An even loop (Advanced) is given its own course for the page: during a
+  // hold the section in view drifts on slowly (DRIFT of the scroll), so it
+  // never stops and stays in view while its effects play; during a move,
+  // the page crosses to the next section one for one with the scroll, so
+  // each transition between sections plays exactly while the next section
+  // comes up into the frame.
+  const DRIFT = 0.3;
+  let y = 0;
   for (let i = 1; i < lap.points.length; i++) {
     const [t0, s0] = lap.points[i - 1];
     const [t1, s1] = lap.points[i];
     const move = s0 !== s1;
-    const len = lap.even ? (t1 - t0) * lap.even : move ? Math.abs(stop(s1) - stop(s0)) : (t1 - t0) * lap.hold;
+    if (lap.even) {
+      if (move) {
+        const y1 = stop(s1);
+        const len = Math.max(1, y1 - y);
+        segments.push({ t0, t1, v0: v, len, move, stop: s1, y0: y, y1 });
+        v += len;
+        y = y1;
+      } else {
+        const len = (t1 - t0) * lap.even;
+        // the part of an opening that plays on its own does not move the page
+        const own = lap.auto && t0 < lap.auto ? Math.max(0, Math.min(t1, lap.auto) - t0) / (t1 - t0) : 0;
+        const next = lap.points[i + 1] ? stop(lap.points[i + 1][1]) : y;
+        const room = Math.max(0, next - y) * 0.5;
+        const y1 = y + Math.min(room, len * (1 - own) * DRIFT);
+        segments.push({ t0, t1, v0: v, len, move, stop: s1, y0: y, y1 });
+        v += len;
+        y = y1;
+      }
+      continue;
+    }
+    const len = move ? Math.abs(stop(s1) - stop(s0)) : (t1 - t0) * lap.hold;
     segments.push({ t0, t1, v0: v, len, move, stop: s1 });
     v += len;
   }
@@ -121,6 +149,17 @@ function scrollAt(p: ReturnType<typeof plan>, t: number) {
     between. Each page uses its own stops, so the two pages of the
     comparison reach the same section together. */
 function placeAt(p: ReturnType<typeof plan>, page: HTMLElement, v: number) {
+  if (p.even) {
+    const at = Math.max(0, Math.min(p.length, v));
+    const seg = p.segments.find((s) => at <= s.v0 + s.len) ?? p.segments[p.segments.length - 1];
+    const y0 = seg.y0 ?? 0;
+    const y1 = seg.y1 ?? y0;
+    // the part of the first hold that belongs to the opening holds still
+    const ownEnd = p.auto && seg.t0 < p.auto ? seg.v0 + seg.len * Math.min(1, (p.auto - seg.t0) / (seg.t1 - seg.t0)) : seg.v0;
+    if (at <= ownEnd) return y0;
+    const u = (at - ownEnd) / Math.max(1, seg.v0 + seg.len - ownEnd);
+    return y0 + u * (y1 - y0);
+  }
   const stop = (n: number) => (n === 0 ? 0 : Math.abs(parseFloat(getComputedStyle(page).getPropertyValue(`--sbs-stop-${n}`)) || 0));
   const knots: [number, number][] = [[0, 0]];
   // the page stands at the top until any opening that plays on its own is
@@ -160,6 +199,8 @@ export function usePlateScrub(
   key?: unknown,
   /** share of the wheel or the drag taken (the larger window: 0.85) */
   speed = 1,
+  /** hold the wheel a second at either end before the website takes it */
+  barrier = true,
 ) {
   useEffect(() => {
     const box = container.current;
@@ -254,13 +295,24 @@ export function usePlateScrub(
     frame = requestAnimationFrame(tick);
 
     const k = (el: HTMLElement) => parseFloat(getComputedStyle(el).getPropertyValue("--sbs-k")) || 0.5;
+    // When the scroll reaches either end, the wheel is held there for a
+    // second before the website takes it, so a last flick does not carry
+    // the visitor off up or down the website (user, 2026-11-17). Not in
+    // the larger window, which holds the website still anyway.
+    let edgeAt = 0;
     const nudge = (by: number) => {
-      if (!measured) return false;
       if (opening) return true;
+      if (!measured) return false;
       const next = Math.max(floor, Math.min(measured.length, target + by * speed));
       const moved = next !== target;
       target = next;
-      return moved;
+      if (moved) {
+        edgeAt = next === floor || next === measured.length ? performance.now() : 0;
+        return true;
+      }
+      if (!barrier) return false;
+      if (!edgeAt) edgeAt = performance.now();
+      return performance.now() - edgeAt < 1000;
     };
 
     // The wheel: a screen's pixel is a page's 1 / k pixels, so the page
@@ -319,5 +371,5 @@ export function usePlateScrub(
         for (const a of anims) a.play();
       }
     };
-  }, [container, manual, key, speed]);
+  }, [container, manual, key, speed, barrier]);
 }

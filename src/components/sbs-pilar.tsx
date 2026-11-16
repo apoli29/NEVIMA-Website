@@ -45,6 +45,8 @@ export function useFit() {
       // A page without marks keeps the stops written in globals.css.
       const marks = page.querySelectorAll<HTMLElement>("[data-stop]");
       const view = el.clientHeight / k;
+      // the view's own height, for pages whose sections fill it (Advanced)
+      page.style.setProperty("--sbs-view", `${Math.round(view)}px`);
       const last = page.offsetHeight - view;
       marks.forEach((mark, i) => {
         page.style.setProperty(`--sbs-stop-${i + 1}`, `${-Math.round(Math.min(mark.offsetTop, last))}px`);
@@ -281,7 +283,7 @@ export function useLapStep(
       }
       if (held.current) return;
       setAt(marks.filter((m) => p >= m).length);
-    }, 150);
+    }, 60);
     return () => window.clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [count, lap.name, lap.from, lap.to, lap.reset]);
