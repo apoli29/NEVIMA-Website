@@ -584,3 +584,10 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   "(chamada para rede …)" notes, the e-mail; Horário), then the ASF and
   copyright bars. The news and the footer were tightened so the last
   stop shows both whole at 900px, as ours shows its own foot.
+
+- 2026-11-17 (user): the three blue contact boxes under the slider
+  ("Ligar Agora", "Enviar E-mail", "Visitar-nos") are gone, and with them
+  the one flaw of structure (contacts before anything is said). The
+  slider now leads straight into "O melhor aconselhamento"; the contacts
+  live only in the footer. The stops are read off the page, so they
+  moved up on their own.

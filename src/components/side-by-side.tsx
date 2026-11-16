@@ -159,13 +159,12 @@ function Plate({
    side but the page going down: no loading bar, no slider turning, no
    cookie wall. What reads as dated is the design itself: a home-made
    logotype, a royal blue and greys, capitals everywhere, line icons as
-   on a slide, a great deal of text, stock photography, a contact strip
-   before anything is said. One idiom from top to foot (user,
+   on a slide, a great deal of text, stock photography. One idiom from top to foot (user,
    2026-11-17: it had read as two websites): Arial, navy capitals with
    a short blue rule, icons in pale blue squares, white cards with a
    border, white and pale grey grounds in turn, navy at both ends. Its sections are its own, not ours; each
    carries data-stop so it reaches the top of the plate at the moment
-   ours does. The one flaw of structure is the contacts coming first. */
+   ours does. */
 
 /** Line icons, drawn the way a slide deck draws them. */
 const C_ICONS: Record<string, string> = {
@@ -319,28 +318,6 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
           <i />
           <i />
         </span>
-      </div>
-
-      {/* The contacts, before anything has been said. */}
-      <div className="sbs-c-boxes">
-        <div>
-          <b>
-            <CIcon name="phone" fill /> {t("Call Now", "Ligar Agora")}
-          </b>
-          <span>+351 210 000 000</span>
-        </div>
-        <div>
-          <b>
-            <CIcon name="mail" /> {t("Send an E-mail", "Enviar E-mail")}
-          </b>
-          <span>geral@pilarseguros.example</span>
-        </div>
-        <div>
-          <b>
-            <CIcon name="pin" /> {t("Visit Us", "Visitar-nos")}
-          </b>
-          <span>{t("Av. da República, Lisbon", "Av. da República, Lisboa")}</span>
-        </div>
       </div>
 
       <div className="sbs-c-advice" data-stop>
@@ -1010,8 +987,8 @@ export function SideBySide() {
                 label={t("Designs from other professionals", "Design de outros profissionais")}
                 address={t("pilar-insurance.example/home", "pilar-seguros.example/inicio")}
                 says={t(
-                  "The same insurance broker as many web designers deliver it: a home-made logo, a seven-item menu in capitals, a stock photograph of a padlock, three blue boxes of contacts before anything is said, insurance and services as line icons, a long text on what to do after a car accident, and news with stock photographs above a navy footer with the contacts and opening hours.",
-                  "A mesma mediadora de seguros como muitos a entregam: um logótipo caseiro, um menu de sete itens em maiúsculas, a fotografia de stock de um cadeado, três caixas azuis de contactos antes de se dizer o que quer que seja, seguros e serviços em ícones de linha, um texto longo sobre o que fazer num acidente de automóvel, notícias com fotografias de stock sobre um rodapé azul-escuro com os contactos e o horário.",
+                  "The same insurance broker as many web designers deliver it: a home-made logo, a seven-item menu in capitals, a stock photograph of a padlock, insurance and services as line icons, a long text on what to do after a car accident, and news with stock photographs above a navy footer with the contacts and opening hours.",
+                  "A mesma mediadora de seguros como muitos a entregam: um logótipo caseiro, um menu de sete itens em maiúsculas, a fotografia de stock de um cadeado, seguros e serviços em ícones de linha, um texto longo sobre o que fazer num acidente de automóvel, notícias com fotografias de stock sobre um rodapé azul-escuro com os contactos e o horário.",
                 )}
               >
                 <Template t={t} />

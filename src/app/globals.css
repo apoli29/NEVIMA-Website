@@ -4037,11 +4037,6 @@
   .sbs-c-dots i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid #fff; }
   .sbs-c-dots i[data-on] { background: #fff; }
 
-  .sbs-c-boxes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; padding: 28px 24px 34px; }
-  .sbs-c-boxes > div { padding: 18px 10px 16px; background: var(--c-blue); border-radius: 3px; color: #fff; text-align: center; box-shadow: 0 3px 0 #133a75; }
-  .sbs-c-boxes b { display: flex; align-items: center; justify-content: center; gap: 7px; font-size: 19px; font-weight: 400; }
-  .sbs-c-boxes svg { width: 17px; height: 17px; }
-  .sbs-c-boxes span { display: block; margin-top: 7px; font-size: 13px; opacity: 0.9; }
 
   /* Grounds in turn: pale, white, white, pale, white, pale. */
   .sbs-c-advice { padding: 40px 24px 10px; background: var(--c-pale); text-align: center; }
@@ -4353,10 +4348,7 @@
     .sbs-c-burger { display: flex; }
     .sbs-c-slide { height: 360px; }
     .sbs-c-slide-copy h3 { font-size: 34px; }
-    .sbs-c-boxes { gap: 12px; padding: 22px 18px 28px; }
-    .sbs-c-boxes b { font-size: 15px; }
-    .sbs-c-boxes span { font-size: 10.5px; }
-    .sbs-c-srow { grid-template-columns: 1fr 1fr; }
+          .sbs-c-srow { grid-template-columns: 1fr 1fr; }
     .sbs-c-cols { grid-template-columns: 1fr 1fr; }
     .sbs-c-cols .sbs-c-lead { grid-column: 1 / -1; }
     .sbs-c-cards { grid-template-columns: 1fr 1fr; }
