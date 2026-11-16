@@ -41,6 +41,33 @@ import { useHref, useT } from "@/lib/use-lang";
    answer.
    ================================================================== */
 
+/** Every animation and transition in the personalization card (and the
+    steps under it, on the same clock) played twice as fast, all in
+    proportion, delays included (user, 2026-11-17). Done on the running
+    animations themselves, so the card's own timings (written in seconds
+    across this file and globals.css) keep their ratios; the phases move on
+    through their animations' ends, so they follow. Picked up again as the
+    card changes, since each change starts new animations. */
+function useDoubleSpeed(box: React.RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const fast = () => {
+      for (const a of el.getAnimations({ subtree: true })) if (a.playbackRate !== 2) a.playbackRate = 2;
+    };
+    fast();
+    const watch = new MutationObserver(fast);
+    watch.observe(el, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "data-phase", "data-on", "style"] });
+    el.addEventListener("animationstart", fast, true);
+    el.addEventListener("transitionrun", fast, true);
+    return () => {
+      watch.disconnect();
+      el.removeEventListener("animationstart", fast, true);
+      el.removeEventListener("transitionrun", fast, true);
+    };
+  }, [box]);
+}
+
 /** One run of the card, forwards; the way back takes as long again. */
 const RUN_S = 13;
 
@@ -902,6 +929,7 @@ export function SbsPersonal() {
   // seen from the start (user, 2026-11-17); then it chooses, builds,
   // and chooses again, for the next business.
   const [figure, seen] = useInView<HTMLElement>(0.3);
+  useDoubleSpeed(figure);
   const [phase, setPhase] = useState<Phase>("wait");
   const [which, setWhich] = useState(0);
   useEffect(() => {

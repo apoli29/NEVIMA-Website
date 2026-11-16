@@ -841,3 +841,17 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   - the metal symbol is twice the size, every part of its move in
     proportion (the object, its float, the square the camera flies to
     and how far past it the camera goes); none of the timing changes.
+- 2026-11-17 (user):
+  - by hand, the Essential+ steps take no notice of the scroll at all
+    (scrolling up had set them back to the first): they walk on by
+    themselves, a step every 2.4 seconds, round and round, unless a click
+    takes them over;
+  - every animation and transition in the personalization card and the
+    steps under it plays twice as fast, all in proportion, delays
+    included: set on the running animations (playbackRate 2) and picked
+    up again as the card changes, so the timings written in the code keep
+    their ratios and the phases, moved on by the animations' ends, follow;
+  - the kinds no longer tremble as they change: every line under a kind
+    takes the same room (two lines), so as one opens and another closes,
+    on the same curve, the list keeps its height and the section, centred
+    in the frame, holds still; the line's spacing no longer jumps on.

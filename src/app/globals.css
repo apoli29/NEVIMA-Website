@@ -4560,9 +4560,13 @@
   .sbs-a-kind b > span { display: block; color: rgb(255 255 255 / 0.32); transition: color 0.6s var(--a-ease); }
   .sbs-a-kind[data-on] b > span { color: #fff; }
   .sbs-a-about { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.7s var(--a-ease); }
-  .sbs-a-about > p { overflow: hidden; margin: 0; max-width: 40ch; font-size: 14px; line-height: 1.5; color: rgb(255 255 255 / 0.7); }
+  /* every line takes the same room (two lines, whether it needs one or
+     two), so as one opens and another closes, on the same curve, the list
+     keeps its height and the section, centred in the frame, holds still
+     (user, 2026-11-17: a small tremble under the list as the kinds changed) */
+  .sbs-a-about { overflow: hidden; }
+  .sbs-a-about > p { overflow: hidden; height: 3.4em; margin: 0; padding-top: 0.3em; max-width: 40ch; font-size: 14px; line-height: 1.5; color: rgb(255 255 255 / 0.7); }
   .sbs-a-kind[data-on] .sbs-a-about { grid-template-rows: 1fr; }
-  .sbs-a-kind[data-on] .sbs-a-about > p { padding: 4px 0 6px; }
 
   /* 3 · the quotes as a comparison table, Pilar's pick its lit column */
   .sbs-a-sheet { padding: 64px 60px 66px; background: #fff; }

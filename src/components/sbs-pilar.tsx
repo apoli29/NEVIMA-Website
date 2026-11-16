@@ -282,20 +282,22 @@ export function useLapStep(
         .find((a) => (a as CSSAnimation).animationName === lap.name);
       const p = run?.effect?.getComputedTiming().progress;
       if (p == null) return;
+      if (own && run?.playState === "paused") {
+        // by hand: the steps take no notice of the scroll at all (user,
+        // 2026-11-17: scrolling up had set them back): they walk on by
+        // themselves, a step every `own` ms, round and round, unless a
+        // click has taken them over
+        if (!reachedAt.current) reachedAt.current = performance.now();
+        if (!held.current) setAt(Math.floor((performance.now() - reachedAt.current) / own) % count);
+        return;
+      }
+      reachedAt.current = 0;
       if (p < lap.reset) {
         held.current = false;
-        reachedAt.current = 0;
         setAt(0);
         return;
       }
       if (held.current) return;
-      if (own && run?.playState === "paused") {
-        // by hand: once reached, the steps walk on by themselves
-        if (!reachedAt.current) reachedAt.current = performance.now();
-        setAt(Math.min(last, Math.floor((performance.now() - reachedAt.current) / own)));
-        return;
-      }
-      reachedAt.current = 0;
       setAt(marks.filter((m) => p >= m).length);
     }, 60);
     return () => window.clearInterval(id);
