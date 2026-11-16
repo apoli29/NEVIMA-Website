@@ -361,6 +361,17 @@ export function SbsIncluded() {
         >
           <div className="sbi-walls">
           <figure className="sbi-wall-fig">
+            <figcaption className="sbi-wall-cap">
+              <span className="sbi-rule" />
+              {t("Traditional agencies", "Agências tradicionais")}
+            </figcaption>
+            <TheirWall list={list} t={t} col={col} row={row} />
+          </figure>
+          <figure className="sbi-wall-fig">
+            <figcaption className="sbi-wall-cap">
+              <span className="sbi-rule" />
+              nevima
+            </figcaption>
           <div ref={wall} className="sbi-wall" style={{ ["--col" as string]: col, ["--row" as string]: row }}>
             <span aria-hidden="true" className="sbi-beam" />
             <span aria-hidden="true" className="sbi-light" />
@@ -398,17 +409,6 @@ export function SbsIncluded() {
               })}
             </div>
           </div>
-            <figcaption className="sbi-wall-cap">
-              <span className="sbi-rule" />
-              nevima
-            </figcaption>
-          </figure>
-          <figure className="sbi-wall-fig">
-            <TheirWall list={list} t={t} col={col} row={row} />
-            <figcaption className="sbi-wall-cap">
-              <span className="sbi-rule" />
-              {t("Traditional agencies", "Agências tradicionais")}
-            </figcaption>
           </figure>
           </div>
 

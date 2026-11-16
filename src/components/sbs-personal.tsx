@@ -184,85 +184,118 @@ function Pic({ kind = "land", dark, className = "" }: { kind?: "land" | "person"
   );
 }
 
-function Nav({ t }: { t: T }) {
+function Nav({ brand, links }: { brand: string; links: string[] }) {
   return (
     <span className="pg-nav">
-      <b>Alvor</b>
-      <i>{t("Services", "Serviços")}</i>
-      <i>{t("Team", "Equipa")}</i>
-      <i>{t("Contact", "Contactos")}</i>
+      <b>{brand}</b>
+      {links.map((l) => (
+        <i key={l}>{l}</i>
+      ))}
     </span>
   );
 }
 
 /* ---------------------------------------------------------------- */
-/* The five pages, each as that page usually is                      */
+/* The pages, each as that page usually is                           */
 /* ---------------------------------------------------------------- */
 
-function HomePage({ t }: { t: T }) {
+/** A home page under a photograph: its title, a line and a button over
+    it, three pictures and a block under it. */
+function HomePhoto({ nav, title, button, more, seed }: { nav: ReactNode; title: string; button: string; more: string; seed: number }) {
   return (
     <>
-      <Nav t={t} />
+      {nav}
       <span className="pg-hero">
         <Pic dark className="pg-hero-pic" />
         <span className="pg-hero-copy">
-          <b className="pg-h">{t("Dentistry, with time for it.", "Medicina dentária, sem pressas.")}</b>
-          <Scrawl seed={2} w={80} />
-          <span className="pg-btn">{t("Book a visit", "Marcar consulta")}</span>
+          <b className="pg-h">{title}</b>
+          <Scrawl seed={seed} w={80} />
+          <span className="pg-btn">{button}</span>
         </span>
       </span>
       <span className="pg-trio">
         {[0, 1, 2].map((i) => (
           <span key={i} className="pg-trio-item">
             <Pic />
-            <Scrawl seed={5 + i} w={90} />
+            <Scrawl seed={seed + 3 + i} w={90} />
           </span>
         ))}
       </span>
       <span className="pg-more">
-        <b className="pg-h">{t("Why Alvor", "Porquê a Alvor")}</b>
-        <Scrawl seed={8} w={96} />
+        <b className="pg-h">{more}</b>
+        <Scrawl seed={seed + 7} w={96} />
         <Lines n={3} />
       </span>
     </>
   );
 }
 
-function ServicesPage({ t }: { t: T }) {
-  const items = [t("Implants", "Implantes"), t("Orthodontics", "Ortodontia"), t("Hygiene", "Higiene")];
+/** An estate agent's home page: the title, a search under it, then a
+    wide photograph and a block. */
+function HomeSearch({ nav, title, fields, button, more, seed }: { nav: ReactNode; title: string; fields: string[]; button: string; more: string; seed: number }) {
   return (
     <>
-      <Nav t={t} />
-      <b className="pg-h pg-title">{t("Services", "Serviços")}</b>
-      <span className="pg-list">
-        {items.map((name, i) => (
-          <span key={name} className="pg-row">
-            <span className="pg-mark" />
-            <span className="pg-row-copy">
-              <b>{name}</b>
-              <Scrawl seed={11 + i} w={92} />
-              <Lines n={1} />
-            </span>
-          </span>
-        ))}
+      {nav}
+      <span className="pg-search-hero">
+        <b className="pg-h">{title}</b>
+        <span className="pg-search">
+          {fields.map((f) => (
+            <small key={f}>{f}</small>
+          ))}
+          <span className="pg-btn">{button}</span>
+        </span>
       </span>
+      <Pic dark className="pg-wide" />
       <span className="pg-more">
-        <span className="pg-btn">{t("Book a visit", "Marcar consulta")}</span>
+        <b className="pg-h">{more}</b>
+        <Scrawl seed={seed} w={96} />
+        <Lines n={3} />
       </span>
     </>
   );
 }
 
-function TeamPage({ t }: { t: T }) {
+/** A list with a mark, a name and a body for each item, and, when there
+    is one, a price. */
+function ListPage({ nav, title, items, prices, button, seed }: { nav: ReactNode; title: string; items: string[]; prices?: string[]; button?: string; seed: number }) {
   return (
     <>
-      <Nav t={t} />
-      <b className="pg-h pg-title">{t("Team", "Equipa")}</b>
+      {nav}
+      <b className="pg-h pg-title">{title}</b>
+      <span className="pg-list">
+        {items.map((name, i) => (
+          <span key={name} className="pg-row">
+            {!prices && <span className="pg-mark" />}
+            <span className="pg-row-copy">
+              <b>
+                {name}
+                {prices && <em>{prices[i]}</em>}
+              </b>
+              <Scrawl seed={seed + i} w={92} />
+              <Lines n={1} />
+            </span>
+          </span>
+        ))}
+      </span>
+      {button && (
+        <span className="pg-more">
+          <span className="pg-btn">{button}</span>
+        </span>
+      )}
+    </>
+  );
+}
+
+function PeoplePage({ nav, title, seed }: { nav: ReactNode; title: string; seed: number }) {
+  return (
+    <>
+      {nav}
+      <b className="pg-h pg-title">{title}</b>
       <span className="pg-people">
         {[0, 1, 2, 3].map((i) => (
           <span key={i} className="pg-person">
             <Pic kind="person" />
-            <Scrawl seed={21 + i} w={70} />
+            <Scrawl seed={seed + i} w={70} />
             <Lines n={1} />
           </span>
         ))}
@@ -271,11 +304,11 @@ function TeamPage({ t }: { t: T }) {
   );
 }
 
-function GalleryPage({ t }: { t: T }) {
+function WallPage({ nav, title }: { nav: ReactNode; title: string }) {
   return (
     <>
-      <Nav t={t} />
-      <b className="pg-h pg-title">{t("Gallery", "Galeria")}</b>
+      {nav}
+      <b className="pg-h pg-title">{title}</b>
       <span className="pg-wall">
         {[0, 1, 2, 3, 4].map((i) => (
           <Pic key={i} dark={i === 1 || i === 4} className={`pg-wall-${i}`} />
@@ -285,49 +318,279 @@ function GalleryPage({ t }: { t: T }) {
   );
 }
 
-function ContactPage({ t }: { t: T }) {
+/** A form: its fields, a tall one when there is a message, and the button;
+    beside it a map, or a picture. */
+function FormPage({ nav, title, fields, tall, button, side, seed }: { nav: ReactNode; title: string; fields: string[]; tall?: string; button: string; side: "map" | "pic"; seed: number }) {
   return (
     <>
-      <Nav t={t} />
-      <b className="pg-h pg-title">{t("Contact", "Contactos")}</b>
+      {nav}
+      <b className="pg-h pg-title">{title}</b>
       <span className="pg-contact">
         <span className="pg-form">
-          {[t("Name", "Nome"), t("Email", "E-mail")].map((l) => (
+          {fields.map((l) => (
             <span key={l} className="pg-field">
               <small>{l}</small>
               <i />
             </span>
           ))}
-          <span className="pg-field pg-field-tall">
-            <small>{t("Message", "Mensagem")}</small>
-            <i />
-          </span>
-          <span className="pg-btn">{t("Send", "Enviar")}</span>
+          {tall && (
+            <span className="pg-field pg-field-tall">
+              <small>{tall}</small>
+              <i />
+            </span>
+          )}
+          <span className="pg-btn">{button}</span>
         </span>
-        <span className="pg-map">
-          <span className="pg-pin" />
-          <Scrawl seed={31} w={70} />
+        {side === "map" ? (
+          <span className="pg-map">
+            <span className="pg-pin" />
+            <Scrawl seed={seed} w={70} />
+          </span>
+        ) : (
+          <Pic className="pg-side-pic" />
+        )}
+      </span>
+    </>
+  );
+}
+
+/** Houses for sale: a picture, the price, the size and a line each. */
+function ListingsPage({ nav, title, seed }: { nav: ReactNode; title: string; seed: number }) {
+  const homes = [
+    ["385 000 €", "T3 · 120 m²"],
+    ["240 000 €", "T2 · 84 m²"],
+    ["512 000 €", "T4 · 168 m²"],
+    ["298 000 €", "T2 · 96 m²"],
+  ];
+  return (
+    <>
+      {nav}
+      <b className="pg-h pg-title">{title}</b>
+      <span className="pg-homes">
+        {homes.map(([price, size], i) => (
+          <span key={price} className="pg-home">
+            <Pic dark={i % 3 === 1} />
+            <b>{price}</b>
+            <small>{size}</small>
+            <Scrawl seed={seed + i} w={80} />
+          </span>
+        ))}
+      </span>
+    </>
+  );
+}
+
+/** How something is done, in numbered steps, and the button that starts it. */
+function StepsPage({ nav, title, steps, button, seed }: { nav: ReactNode; title: string; steps: string[]; button: string; seed: number }) {
+  return (
+    <>
+      {nav}
+      <b className="pg-h pg-title">{title}</b>
+      <span className="pg-steps">
+        {steps.map((s, i) => (
+          <span key={s} className="pg-step">
+            <small>{String(i + 1).padStart(2, "0")}</small>
+            <b>{s}</b>
+            <Scrawl seed={seed + i} w={86} />
+          </span>
+        ))}
+      </span>
+      <span className="pg-more">
+        <span className="pg-btn">{button}</span>
+      </span>
+    </>
+  );
+}
+
+/** About: a photograph, and the story under it. */
+function AboutPage({ nav, title, seed }: { nav: ReactNode; title: string; seed: number }) {
+  return (
+    <>
+      {nav}
+      <b className="pg-h pg-title">{title}</b>
+      <span className="pg-about">
+        <Pic className="pg-about-pic" />
+        <span className="pg-about-copy">
+          <Scrawl seed={seed} w={96} />
+          <Scrawl seed={seed + 1} w={88} />
+          <Scrawl seed={seed + 2} w={64} />
+          <Lines n={4} />
         </span>
       </span>
     </>
   );
 }
 
-type Page = { id: string; label: string; slug: string; chosen: number | null; draw?: (t: T) => ReactNode };
+/* ---------------------------------------------------------------- */
+/* The three businesses the card builds for, in turn                 */
+/* ---------------------------------------------------------------- */
 
-/** The pages the card offers, as the proposal form does (questions.ts),
-    with home and contact; five of them are chosen, in this order. */
-function cardPages(t: T): Page[] {
-  return [
-    { id: "home", label: t("Home", "Início"), slug: "", chosen: 0, draw: (t) => <HomePage t={t} /> },
-    { id: "services", label: t("Services", "Serviços"), slug: t("services", "servicos"), chosen: 1, draw: (t) => <ServicesPage t={t} /> },
-    { id: "team", label: t("Team", "Equipa"), slug: t("team", "equipa"), chosen: 2, draw: (t) => <TeamPage t={t} /> },
-    { id: "prices", label: t("Prices", "Preços"), slug: t("prices", "precos"), chosen: null },
-    { id: "gallery", label: t("Gallery", "Galeria"), slug: t("gallery", "galeria"), chosen: 3, draw: (t) => <GalleryPage t={t} /> },
-    { id: "testimonials", label: t("Testimonials", "Testemunhos"), slug: t("testimonials", "testemunhos"), chosen: null },
-    { id: "faq", label: t("FAQ", "Perguntas frequentes"), slug: t("faq", "perguntas"), chosen: null },
-    { id: "contact", label: t("Contact", "Contactos"), slug: t("contact", "contactos"), chosen: 4, draw: (t) => <ContactPage t={t} /> },
-  ];
+type Option = { label: string; slug: string; chosen: number | null };
+type Sheet = { layout: string; slug: string; draw: ReactNode };
+type Business = { options: Option[]; sheets: Sheet[] };
+
+function businesses(t: T): Business[] {
+  const contactLabel = t("Contact", "Contactos");
+  const contactSlug = t("contact", "contactos");
+  const galleryLabel = t("Gallery", "Galeria");
+  const gallerySlug = t("gallery", "galeria");
+
+  // A dental clinic
+  const alvorNav = <Nav brand="Alvor" links={[t("Services", "Serviços"), t("Team", "Equipa"), contactLabel]} />;
+  const alvor: Business = {
+    options: [
+      { label: t("Home", "Início"), slug: "", chosen: 0 },
+      { label: t("Services", "Serviços"), slug: t("services", "servicos"), chosen: 1 },
+      { label: t("Team", "Equipa"), slug: t("team", "equipa"), chosen: 2 },
+      { label: t("Prices", "Preços"), slug: "", chosen: null },
+      { label: galleryLabel, slug: gallerySlug, chosen: 3 },
+      { label: t("Testimonials", "Testemunhos"), slug: "", chosen: null },
+      { label: t("FAQ", "Perguntas frequentes"), slug: "", chosen: null },
+      { label: contactLabel, slug: contactSlug, chosen: 4 },
+    ],
+    sheets: [
+      {
+        layout: "home",
+        slug: "",
+        draw: (
+          <HomePhoto
+            nav={alvorNav}
+            title={t("Dentistry, with time for it.", "Medicina dentária, sem pressas.")}
+            button={t("Book a visit", "Marcar consulta")}
+            more={t("Why Alvor", "Porquê a Alvor")}
+            seed={2}
+          />
+        ),
+      },
+      {
+        layout: "list",
+        slug: t("services", "servicos"),
+        draw: (
+          <ListPage
+            nav={alvorNav}
+            title={t("Services", "Serviços")}
+            items={[t("Implants", "Implantes"), t("Orthodontics", "Ortodontia"), t("Hygiene", "Higiene")]}
+            button={t("Book a visit", "Marcar consulta")}
+            seed={11}
+          />
+        ),
+      },
+      { layout: "people", slug: t("team", "equipa"), draw: <PeoplePage nav={alvorNav} title={t("Team", "Equipa")} seed={21} /> },
+      { layout: "wall", slug: gallerySlug, draw: <WallPage nav={alvorNav} title={galleryLabel} /> },
+      {
+        layout: "form",
+        slug: contactSlug,
+        draw: <FormPage nav={alvorNav} title={contactLabel} fields={[t("Name", "Nome"), t("Email", "E-mail")]} tall={t("Message", "Mensagem")} button={t("Send", "Enviar")} side="map" seed={31} />,
+      },
+    ],
+  };
+
+  // A restaurant
+  const mareNav = <Nav brand="Maré" links={[t("Menu", "Menu"), t("Bookings", "Reservas"), contactLabel]} />;
+  const mare: Business = {
+    options: [
+      { label: t("Home", "Início"), slug: "", chosen: 0 },
+      { label: t("Menu", "Menu"), slug: t("menu", "menu"), chosen: 1 },
+      { label: t("Bookings", "Reservas"), slug: t("bookings", "reservas"), chosen: 2 },
+      { label: t("Events", "Eventos"), slug: "", chosen: null },
+      { label: galleryLabel, slug: gallerySlug, chosen: 3 },
+      { label: t("Testimonials", "Testemunhos"), slug: "", chosen: null },
+      { label: t("Team", "Equipa"), slug: "", chosen: null },
+      { label: contactLabel, slug: contactSlug, chosen: 4 },
+    ],
+    sheets: [
+      {
+        layout: "home",
+        slug: "",
+        draw: (
+          <HomePhoto
+            nav={mareNav}
+            title={t("Market cooking, by the river.", "Cozinha de mercado, à beira-rio.")}
+            button={t("Book a table", "Reservar mesa")}
+            more={t("The kitchen", "A cozinha")}
+            seed={41}
+          />
+        ),
+      },
+      {
+        layout: "list",
+        slug: t("menu", "menu"),
+        draw: (
+          <ListPage
+            nav={mareNav}
+            title={t("Menu", "Menu")}
+            items={[t("Starters", "Entradas"), t("Mains", "Pratos"), t("Desserts", "Sobremesas")]}
+            prices={["9 €", "18 €", "7 €"]}
+            seed={51}
+          />
+        ),
+      },
+      {
+        layout: "form",
+        slug: t("bookings", "reservas"),
+        draw: <FormPage nav={mareNav} title={t("Bookings", "Reservas")} fields={[t("Date", "Data"), t("Time", "Hora"), t("People", "Pessoas")]} button={t("Book a table", "Reservar mesa")} side="pic" seed={61} />,
+      },
+      { layout: "wall", slug: gallerySlug, draw: <WallPage nav={mareNav} title={galleryLabel} /> },
+      {
+        layout: "form",
+        slug: contactSlug,
+        draw: <FormPage nav={mareNav} title={contactLabel} fields={[t("Name", "Nome"), t("Email", "E-mail")]} tall={t("Message", "Mensagem")} button={t("Send", "Enviar")} side="map" seed={71} />,
+      },
+    ],
+  };
+
+  // An estate agent
+  const casaNav = <Nav brand="Casa Norte" links={[t("Homes", "Imóveis"), t("Sell", "Vender"), contactLabel]} />;
+  const casa: Business = {
+    options: [
+      { label: t("Home", "Início"), slug: "", chosen: 0 },
+      { label: t("Homes", "Imóveis"), slug: t("homes", "imoveis"), chosen: 1 },
+      { label: t("Sell", "Vender"), slug: t("sell", "vender"), chosen: 2 },
+      { label: t("Team", "Equipa"), slug: "", chosen: null },
+      { label: t("About", "Sobre"), slug: t("about", "sobre"), chosen: 3 },
+      { label: t("Testimonials", "Testemunhos"), slug: "", chosen: null },
+      { label: t("FAQ", "Perguntas frequentes"), slug: "", chosen: null },
+      { label: contactLabel, slug: contactSlug, chosen: 4 },
+    ],
+    sheets: [
+      {
+        layout: "home-search",
+        slug: "",
+        draw: (
+          <HomeSearch
+            nav={casaNav}
+            title={t("Homes with a history, in Porto.", "Casas com história, no Porto.")}
+            fields={[t("Type", "Tipologia"), t("Area", "Zona")]}
+            button={t("Search", "Procurar")}
+            more={t("Selling with us", "Vender connosco")}
+            seed={81}
+          />
+        ),
+      },
+      { layout: "homes", slug: t("homes", "imoveis"), draw: <ListingsPage nav={casaNav} title={t("Homes", "Imóveis")} seed={91} /> },
+      {
+        layout: "steps",
+        slug: t("sell", "vender"),
+        draw: (
+          <StepsPage
+            nav={casaNav}
+            title={t("Sell", "Vender")}
+            steps={[t("Valuation", "Avaliação"), t("Photographs", "Fotografias"), t("Sale", "Venda")]}
+            button={t("Value my home", "Avaliar imóvel")}
+            seed={101}
+          />
+        ),
+      },
+      { layout: "about", slug: t("about", "sobre"), draw: <AboutPage nav={casaNav} title={t("About", "Sobre")} seed={111} /> },
+      {
+        layout: "form",
+        slug: contactSlug,
+        draw: <FormPage nav={casaNav} title={contactLabel} fields={[t("Name", "Nome"), t("Email", "E-mail")]} tall={t("Message", "Mensagem")} button={t("Send", "Enviar")} side="map" seed={121} />,
+      },
+    ],
+  };
+
+  return [alvor, mare, casa];
 }
 
 /** Where each sheet stands as a page of its own, and as a section of the
@@ -346,8 +609,13 @@ function sheetPlace(i: number) {
 }
 
 function SitemapCard({ t, run }: { t: T; run: boolean }) {
-  const all = useMemo(() => cardPages(t), [t]);
-  const chosen = all.filter((p) => p.chosen !== null).sort((a, b) => a.chosen! - b.chosen!);
+  const all = useMemo(() => businesses(t), [t]);
+  // The business changes at the end of each way back, when the card is
+  // empty: the same elements stay, only what is drawn in them changes, so
+  // the clock is never broken.
+  const [which, setWhich] = useState(0);
+  const turns = useRef(0);
+  const biz = all[which % all.length]!;
   const counts = [
     t("One page.", "Uma página."),
     t("Two pages.", "Duas páginas."),
@@ -361,7 +629,13 @@ function SitemapCard({ t, run }: { t: T; run: boolean }) {
 
       <div className="sbp-card-side">
         <div className="sbx-switch sbx-switch-dark sbp-modes" style={{ ["--n" as string]: 2 } as CSSProperties}>
-          <span className="sbp-modes-thumb" />
+          <span
+            className="sbp-modes-thumb"
+            onAnimationIteration={() => {
+              turns.current += 1;
+              if (turns.current % 2 === 0) setWhich((w) => w + 1);
+            }}
+          />
           <span className="sbx-switch-opt">
             <span className="sbx-switch-n">01</span>
             {t("Website", "Website")}
@@ -373,8 +647,8 @@ function SitemapCard({ t, run }: { t: T; run: boolean }) {
         </div>
 
         <ul className="sbp-opts">
-          {all.map((p) => (
-            <li key={p.id} className="sbp-opt" data-i={p.chosen ?? undefined} data-off={p.chosen === null || undefined}>
+          {biz.options.map((p, i) => (
+            <li key={i} className="sbp-opt" data-i={p.chosen ?? undefined} data-off={p.chosen === null || undefined}>
               <span className="sbp-tick">
                 <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6">
                   <path d="M2.5 6.2 5 8.6l4.6-5" pathLength={14} />
@@ -399,11 +673,11 @@ function SitemapCard({ t, run }: { t: T; run: boolean }) {
 
       <div className="sbp-stage">
         <span className="sbp-frame" />
-        {chosen.map((p, i) => (
-          <div key={p.id} className="sbp-sheet" data-i={i} data-page={p.id} style={sheetPlace(i)}>
-            <span className="pg">{p.draw?.(t)}</span>
-            <span className="sbp-path">/{p.slug}</span>
-            <span className="sbp-anchor">#{p.slug || t("top", "inicio")}</span>
+        {biz.sheets.map((s, i) => (
+          <div key={i} className="sbp-sheet" data-i={i} data-page={s.layout} style={sheetPlace(i)}>
+            <span className="pg">{s.draw}</span>
+            <span className="sbp-path">/{s.slug}</span>
+            <span className="sbp-anchor">#{s.slug || t("top", "inicio")}</span>
           </div>
         ))}
       </div>
@@ -549,17 +823,9 @@ function ProposalAsk({ label }: { label: string }) {
     if (!present) setLaunched(false);
   }, [present]);
   useOriginFade(button, proposal?.progress, launched && present);
-  const look = "cta-drop cta-drop-light relative isolate inline-flex items-center justify-center text-[0.9375rem] leading-none whitespace-nowrap";
-  const face = (
-    <span className="btn-neu-face">
-      <span>
-        {label}
-        <span aria-hidden="true" className="ml-2.5 inline-block">
-          &rarr;
-        </span>
-      </span>
-    </span>
-  );
+  // The portfolio's button, as it is there: the light drop, the words alone.
+  const look = "cta-drop cta-drop-light inline-flex text-[0.9375rem] leading-none whitespace-nowrap";
+  const face = <span className="btn-neu-face">{label}</span>;
   if (!proposal) {
     return (
       <a href={href("/#proposal")} className={look}>
@@ -639,12 +905,12 @@ export function SbsPersonal() {
         </figure>
 
         <div className="sbp-ask sbx-metal">
+          <h3 className="sbp-answer display">
+            <span className="font-light sm:block">{t("Not sure what to choose? Don’t worry.", "Sem saber o que escolher? Não há problema.")}</span>{" "}
+            <span className="font-medium sm:block">{t("When we meet, we’ll help you choose.", "Na reunião que marcamos, ajudamos a escolher.")}</span>
+          </h3>
           <CallGraph t={t} still={reduce} />
           <div className="sbp-ask-foot">
-            <h3 className="sbp-answer display">
-              <span className="font-light sm:block">{t("Not sure what to choose? Don’t worry.", "Sem saber o que escolher? Não há problema.")}</span>{" "}
-              <span className="font-medium sm:block">{t("When we meet, we’ll help you choose.", "Na reunião que marcamos, ajudamos a escolher.")}</span>
-            </h3>
             <ProposalAsk label={t("Get your free proposal", "Pedir proposta gratuita")} />
           </div>
         </div>
