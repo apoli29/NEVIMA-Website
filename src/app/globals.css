@@ -4382,7 +4382,7 @@
 
    It runs on a loop of its own, longer than the comparison's so the
    opening has room: sbs-a-scroll, 26s (--sbs-loop on its screen). The
-   opening 0-14%, the hero held to 22%, the five kinds 26-46%, the table
+   opening 0-17.5%, the hero held to 22%, the five kinds 26-46%, the table
    50-60%, the steps 64-86%, the foot 89-96%, back to the top by 100%;
    every section is set back from 97%. sbs-advanced.tsx reads the same
    holds for the kinds and the steps (keep them in step). Only under
@@ -4464,14 +4464,14 @@
   .sbs-a-lead h3 .sbs-a-line { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
   .sbs-a-lead h3 .sbs-a-line > span { display: block; }
   /* the opening's ground: the photograph's own sky (#abadbf to #bfc0cd),
-     taken a little further to violet (user, 2026-11-17) */
+     kept to its grey lavender (user, 2026-11-17: closer to the hero) */
   .sbs-a-intro {
     position: absolute;
     inset: 0;
     z-index: 30;
     display: grid;
     place-items: center;
-    background: radial-gradient(110% 90% at 50% 42%, #d0cee2, #aeabc8 78%);
+    background: radial-gradient(110% 90% at 50% 40%, #c8c9d6, #a9abbe 80%);
     opacity: 0;
     visibility: hidden;
   }
@@ -4484,8 +4484,8 @@
     inset: -20%;
     pointer-events: none;
   }
-  .sbs-a-intro::before { background: radial-gradient(38% 42% at 30% 70%, rgb(124 114 178 / 0.55), transparent 70%); }
-  .sbs-a-intro::after { background: radial-gradient(34% 38% at 72% 28%, rgb(244 242 252 / 0.7), transparent 70%); }
+  .sbs-a-intro::before { background: radial-gradient(38% 42% at 30% 70%, rgb(138 140 166 / 0.5), transparent 70%); }
+  .sbs-a-intro::after { background: radial-gradient(34% 38% at 72% 28%, rgb(228 229 238 / 0.65), transparent 70%); }
   .sbs-a-metal { z-index: 1; }
   /* The symbol in white metal, rendered in WebGL (pilar-metal.tsx): it
      fills the opening, drawn at the size it is seen; the flight through
@@ -4670,8 +4670,8 @@
      page returns to the top */
   .sbs-run .sbs-a-intro { animation: sbs-a-intro var(--sbs-loop) linear infinite; }
   @keyframes sbs-a-intro {
-    0%, 11.5% { opacity: 1; visibility: visible; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-    15%, 96% { opacity: 0; visibility: hidden; }
+    0%, 13.5% { opacity: 1; visibility: visible; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+    17.5%, 96% { opacity: 0; visibility: hidden; }
     99%, 100% { opacity: 1; visibility: visible; }
   }
   /* the fade in is on the symbol's box, never on the turning stack:
@@ -4695,26 +4695,26 @@
   .sbs-run .sbs-a-lead h3 .sbs-a-line > span { animation: sbs-a-line var(--sbs-loop) linear infinite both; }
   .sbs-run .sbs-a-lead h3 .sbs-a-line + .sbs-a-line > span { animation-delay: 0.14s; }
   @keyframes sbs-a-line {
-    0%, 12% { translate: 0 110%; animation-timing-function: var(--a-ease); }
-    17%, 96% { translate: 0 0; }
+    0%, 14% { translate: 0 110%; animation-timing-function: var(--a-ease); }
+    19.5%, 96% { translate: 0 0; }
     97%, 100% { translate: 0 110%; }
   }
   .sbs-run .sbs-a-lead p, .sbs-run .sbs-a-lead .sbs-p-pill, .sbs-run .sbs-a-hero .sbs-p-reviews { animation: sbs-a-fade var(--sbs-loop) linear infinite both; }
   @keyframes sbs-a-fade {
-    0%, 14% { opacity: 0; translate: 0 10px; animation-timing-function: var(--a-ease); }
-    18%, 96% { opacity: 1; translate: 0 0; }
+    0%, 15.5% { opacity: 0; translate: 0 10px; animation-timing-function: var(--a-ease); }
+    20%, 96% { opacity: 1; translate: 0 0; }
     97%, 100% { opacity: 0; }
   }
   .sbs-run .sbs-a-hero .sbs-p-sky { animation: sbs-a-sky var(--sbs-loop) linear infinite both; }
   @keyframes sbs-a-sky {
-    0%, 10% { scale: 1.12; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
-    20%, 96% { scale: 1; }
+    0%, 12.5% { scale: 1.12; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+    22%, 96% { scale: 1; }
     97%, 100% { scale: 1.12; }
   }
   .sbs-run .sbs-a-rings ellipse { animation: sbs-a-draw-hero var(--sbs-loop) linear infinite both; animation-delay: calc(var(--i) * 0.09s); }
   @keyframes sbs-a-draw-hero {
-    0%, 12% { stroke-dashoffset: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
-    20%, 96% { stroke-dashoffset: 0; }
+    0%, 14% { stroke-dashoffset: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+    22%, 96% { stroke-dashoffset: 0; }
     97%, 100% { stroke-dashoffset: 1; }
   }
 

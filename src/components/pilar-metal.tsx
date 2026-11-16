@@ -18,11 +18,11 @@ import * as THREE from "three";
    across the metal while the symbol stays face on.
 
    It plays on the page's own loop (sbs-a-scroll), read every frame: the
-   symbol held face on, floating and swaying a little, with the light
-   moving (0-6.5%), then the camera
-   flies into the square of the P and through it (6.5-12.5%); the CSS
+   symbol held face on, floating and swaying, with the light moving
+   (0-7%), settled and centred by then; the camera then flies along the
+   line to the square of the P and through it (7-14.5%); the CSS
    fade over it reveals the website. It draws only while the opening can
-   be seen (before 16% and after 96% of a lap) and only on screen; a
+   be seen (before 18% and after 96% of a lap) and only on screen; a
    paused or seeked loop is drawn where it stands.
    ================================================================== */
 
@@ -83,8 +83,8 @@ function studio(renderer: THREE.WebGLRenderer) {
   sky.height = 256;
   const g = sky.getContext("2d")!;
   const grad = g.createLinearGradient(0, 0, 0, 256);
-  grad.addColorStop(0, "#d9d7ea");
-  grad.addColorStop(0.42, "#8f8bb0");
+  grad.addColorStop(0, "#d6d7e2");
+  grad.addColorStop(0.42, "#8e90a8");
   grad.addColorStop(0.55, "#3b3854");
   grad.addColorStop(1, "#121020");
   g.fillStyle = grad;
@@ -161,7 +161,6 @@ function brushed() {
   return t;
 }
 
-const ease = (t: number) => 1 - Math.pow(1 - t, 3);
 const inOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 
 export function PilarMetal({ className }: { className?: string }) {
@@ -175,7 +174,7 @@ export function PilarMetal({ className }: { className?: string }) {
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = 0.82;
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
     renderer.domElement.style.display = "block";
@@ -252,7 +251,7 @@ export function PilarMetal({ className }: { className?: string }) {
       frame = requestAnimationFrame(draw);
       if (!seen) return;
       const p = lapOf();
-      const live = p < 0.16 || p > 0.96;
+      const live = p < 0.18 || p > 0.96;
       if (!live && last >= 0) return;
       last = p;
 
@@ -261,18 +260,22 @@ export function PilarMetal({ className }: { className?: string }) {
       scene.environmentRotation.set(0.04 * Math.sin(time * 0.35), 0.16 * Math.sin(time * 0.22), 0);
       key.position.set(-40 + 30 * Math.sin(time * 0.3), 60, 80);
 
-      // the flight: 6.5% to 12.5% of the lap, into the square and through
-      const f = p > 0.96 ? 0 : Math.min(1, Math.max(0, (p - 0.065) / 0.06));
-      const k = inOut(f);
-      // a slow float and a slight sway while it is held, eased back to
-      // face on as the flight begins, so the camera goes straight through
-      const still = 1 - inOut(Math.min(1, f * 2.5));
-      symbol.rotation.y = 0.12 * Math.sin(time * 0.5) * still;
-      symbol.rotation.x = 0.05 * Math.sin(time * 0.37 + 1.2) * still;
-      symbol.position.y = 1.8 * Math.sin(time * 0.62) * still;
-      const aim = HOLE.clone().multiplyScalar(ease(Math.min(1, f * 1.6)));
-      camera.position.set(aim.x, aim.y, START - (START + 40) * k);
-      camera.lookAt(aim.x, aim.y, -100);
+      // held (0-7% of the lap): a slow float and a wider sway, which
+      // settle to face on and centred by 7%, so nothing moves into place
+      // when the flight begins (user, 2026-11-17)
+      const settle = p > 0.96 ? 1 : 1 - inOut(Math.min(1, Math.max(0, (p - 0.045) / 0.025)));
+      symbol.rotation.y = 0.24 * Math.sin(time * 0.32) * settle;
+      symbol.rotation.x = 0.1 * Math.sin(time * 0.24 + 1.2) * settle;
+      symbol.position.y = 2.2 * Math.sin(time * 0.4) * settle;
+
+      // the flight (7-14.5%): the camera moves along the line from where it
+      // stands to the square of the P and on through it, still looking
+      // straight ahead, so the symbol stays where it is and the square
+      // grows in its own place until it fills the view
+      const f = p > 0.96 ? 0 : Math.min(1, Math.max(0, (p - 0.07) / 0.075));
+      const along = inOut(f) * ((START + 40) / START);
+      camera.position.set(HOLE.x * along, HOLE.y * along, START + (HOLE.z - START) * along);
+      camera.lookAt(camera.position.x, camera.position.y, camera.position.z - 100);
       renderer.render(scene, camera);
     };
     frame = requestAnimationFrame(draw);

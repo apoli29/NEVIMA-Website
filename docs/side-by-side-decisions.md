@@ -715,3 +715,13 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   drifting slowly across it out of step (11s and 15s); the symbol floats
   and sways a little while it is held, easing back to face on as the
   flight begins so the camera goes straight through the square.
+- 2026-11-17 (user): the symbol sways further (about 14° and 6°) and more
+  slowly, and settles to face on and centred before the flight, which
+  now runs along the line from the camera to the square of the P,
+  still looking straight ahead: the symbol stays where it is and the
+  square grows in its own place, so nothing is moved into position when
+  the flight begins. The opening is a little slower (flight 7-14.5%,
+  the fade to 17.5%, the hero's own entrances moved with it). The
+  exposure is lower (0.82), so the metal is less bright. The ground is
+  the hero's sky as it is, a grey lavender (#c8c9d6 to #a9abbe), and so
+  is the studio the metal reflects.
