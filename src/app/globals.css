@@ -5370,26 +5370,34 @@
     text-shadow: 0 1px 6px rgb(0 0 0 / 0.5);
   }
 
-  /* The facts in a white card that comes over the photograph's foot on
-     the right, where that page carries its figures, and the way in with
-     them, on white, where a black drop can be read. */
+  /* The facts, where that page carries its figures. Not a card laid on
+     the photograph but a bite taken out of it (user, 2026-11-16: "como
+     se não tivesse lá algo por cima"): the page's own white, flush with
+     the photograph's right and foot, rounded only where it cuts in, so
+     the two read as one shape. Under 900px there is no room for that,
+     and it simply follows the photograph. */
   .svd-sheet {
     position: relative;
     z-index: 1;
     display: grid;
     gap: 1.5rem;
-    padding: clamp(1.35rem, 2.6vw, 2rem);
+    margin-top: 1.75rem;
+    padding: clamp(1.35rem, 2.6vw, 2rem) 0 0;
     background: var(--color-paper);
-    border: 1px solid var(--color-hair-strong);
-    border-radius: 16px;
-    box-shadow: 0 1.5rem 3rem -1.75rem rgb(0 0 0 / 0.4);
   }
   @media (min-width: 900px) {
+    .svd-plate { position: relative; }
     .svd-sheet {
-      width: min(34rem, 58%);
-      margin-left: auto;
-      margin-top: clamp(-5rem, -4vw, -3rem);
-      margin-right: clamp(0rem, 2vw, 2rem);
+      position: absolute;
+      /* A pixel past the photograph's own edge, so the curve it is cut
+         into never shows along the join. */
+      right: -1px;
+      bottom: -1px;
+      width: min(33rem, 52%);
+      margin: 0;
+      padding: clamp(1.75rem, 2.6vw, 2.5rem);
+      border-top-left-radius: 2rem;
+      border-bottom-right-radius: 19px;
     }
   }
   .svd-facts { display: grid; gap: 1.25rem 1.75rem; }
