@@ -301,41 +301,43 @@ export function Advanced({ t }: { t: T }) {
         </div>
       </div>
 
-      {/* 5 · The foot: the closing band on rings, the symbol large in depth
-          beside the links set large, and the legal row. */}
+      {/* 5 · The foot, as the Essential+ page has it (Noite, one matte
+          glow of Grafite, the signature line and the way in, the links,
+          the legal row; user, 2026-11-17), set in motion: the glow drifts,
+          the rules draw across, the line rises and the columns follow. */}
       <div className="sbs-p-foot sbs-a-foot sbs-a-wipe" data-stop>
-        <div className="sbs-a-band">
-          <Rings className="sbs-a-band-rings" count={12} cx={700} cy={110} r0={40} step={30} w={900} h={220} />
-          <h4>{t("One broker. Every insurer.", "Um mediador. Todas as seguradoras.")}</h4>
+        <div className="sbs-p-foot-top">
+          <h4>
+            <span className="sbs-a-line">
+              <span>{t("One broker. Every insurer.", "Um mediador. Todas as seguradoras.")}</span>
+            </span>
+          </h4>
           <span className="sbs-p-foot-cta">{t("Get a quote", "Pedir simulação")}</span>
         </div>
-
-        <div className="sbs-a-foot-main">
-          <Solid className="sbs-a-foot-solid" />
-          <div className="sbs-a-foot-links">
+        <div className="sbs-p-foot-cols">
+          <div style={{ ["--i" as string]: 0 }}>
+            <b>{t("Insurance", "Seguros")}</b>
+            {lines.map((line) => (
+              <span key={line}>{line}</span>
+            ))}
+          </div>
+          <div style={{ ["--i" as string]: 1 }}>
+            <b>Pilar</b>
             <span>{t("How it works", "Como funciona")}</span>
             <span>{t("Claims", "Sinistros")}</span>
             <span>{t("Client area", "Área de cliente")}</span>
-            <span>{t("Contact", "Contacto")}</span>
           </div>
-          <div className="sbs-a-foot-small">
-            <div>
-              <b>{t("Insurance", "Seguros")}</b>
-              <span>{lines.join(" · ")}</span>
-            </div>
-            <div>
-              <b>{t("Office", "Escritório")}</b>
-              <span>{t("Lisbon", "Lisboa")}</span>
-              <small>{t("Monday to Friday, 9am to 6pm", "Segunda a sexta, 9h–18h")}</small>
-            </div>
-            <div>
-              <b>{t("Contact", "Contacto")}</b>
-              <span>{t("hello@pilarinsurance.example", "ola@pilarseguros.example")}</span>
-              <small>{t("A reply the same working day.", "Resposta no mesmo dia útil.")}</small>
-            </div>
+          <div style={{ ["--i" as string]: 2 }}>
+            <b>{t("Office", "Escritório")}</b>
+            <span>{t("Lisbon", "Lisboa")}</span>
+            <small>{t("Monday to Friday, 9am to 6pm", "Segunda a sexta, 9h–18h")}</small>
+          </div>
+          <div style={{ ["--i" as string]: 3 }}>
+            <b>{t("Contact", "Contacto")}</b>
+            <span>{t("hello@pilarinsurance.example", "ola@pilarseguros.example")}</span>
+            <small>{t("A reply the same working day.", "Resposta no mesmo dia útil.")}</small>
           </div>
         </div>
-
         <div className="sbs-p-foot-legal">
           <span>© 2026 {t("Pilar Insurance · Insurance brokerage", "Pilar Seguros · Mediação de seguros")}</span>
           <span>

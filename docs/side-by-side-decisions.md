@@ -725,3 +725,10 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   exposure is lower (0.82), so the metal is less bright. The ground is
   the hero's sky as it is, a grey lavender (#c8c9d6 to #a9abbe), and so
   is the studio the metal reflects.
+- 2026-11-17 (user): the Advanced foot is the Essential+ foot (the
+  signature line and "Pedir simulação", the four columns, the legal row
+  with the complaints book, Noite with one matte glow of Grafite), set
+  in motion: the glow's centre drifts slowly, the two hairlines are drawn
+  across as the foot arrives, the line rises into place and the way in,
+  the columns and the legal row follow. The ringed band and the large
+  symbol in depth are gone.

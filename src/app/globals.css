@@ -4388,6 +4388,8 @@
    holds for the kinds and the steps (keep them in step). Only under
    .sbs-run: without the loop (less motion) every section is finished. */
 @property --slat { syntax: "<length>"; inherits: false; initial-value: 9px; }
+@property --glow-x { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
+@property --glow-y { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
 @property --wipe { syntax: "<length>"; inherits: false; initial-value: 0px; }
 
 @layer components {
@@ -4638,30 +4640,27 @@
   .sbs-a-card b { margin-top: auto; font-family: var(--p-display); font-weight: 400; font-size: 26px; line-height: 1.04; letter-spacing: -0.02em; }
   .sbs-a-card-text { font-size: 13.5px; line-height: 1.5; color: rgb(255 255 255 / 0.74); }
 
-  /* 5 · the foot: the closing band on rings, the symbol large in depth */
-  .sbs-a-foot { padding-top: 40px; }
-  .sbs-a-band {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 32px;
-    padding: 50px 40px;
-    border: 1px solid rgb(255 255 255 / 0.1);
-    border-radius: 14px;
+  /* 5 · the foot: the Essential+ foot (.sbs-p-foot-*), in motion. Its
+     hairlines are drawn as pseudo-elements so they can be drawn across;
+     the section's own grain stays on its ::after. */
+  .sbs-a-foot .sbs-p-foot-top,
+  .sbs-a-foot .sbs-p-foot-legal { position: relative; border-color: transparent; }
+  .sbs-a-foot .sbs-p-foot-top::after,
+  .sbs-a-foot .sbs-p-foot-legal::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgb(255 255 255 / 0.14);
+    transform-origin: 0 50%;
   }
-  .sbs-a-band-rings { z-index: -1; transform-origin: 78% 50%; }
-  .sbs-a-band-rings ellipse { stroke: rgb(168 170 188 / 0.34); }
-  .sbs-a-band h4 { margin: 0; max-width: 16ch; font-family: var(--p-display); font-weight: 400; font-size: 36px; line-height: 1.05; letter-spacing: -0.015em; }
-  .sbs-a-foot-main { display: grid; grid-template-columns: 160px 1fr 1fr; gap: 40px; align-items: start; padding: 44px 0 40px; }
-  .sbs-a-foot-solid { width: 150px; height: 150px; --face: linear-gradient(180deg, #fff, var(--p-nevoa)); --side-a: var(--p-grafite); --side-b: #0a0d18; }
-  .sbs-a-foot-links span { display: block; font-family: var(--p-display); font-size: 30px; line-height: 1.32; letter-spacing: -0.015em; }
-  .sbs-a-foot-small > div + div { margin-top: 18px; }
-  .sbs-a-foot-small b { display: block; margin-bottom: 8px; font-family: var(--p-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--p-nevoa); }
-  .sbs-a-foot-small span { display: block; font-size: 13.5px; line-height: 1.6; color: rgb(255 255 255 / 0.86); }
-  .sbs-a-foot-small small { display: block; font-size: 12.5px; line-height: 1.55; color: rgb(255 255 255 / 0.74); }
+  .sbs-a-foot .sbs-p-foot-top::after { bottom: 0; }
+  .sbs-a-foot .sbs-p-foot-legal::before { top: 0; }
+  .sbs-a-foot .sbs-p-foot-top h4 .sbs-a-line { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+  .sbs-a-foot .sbs-p-foot-top h4 .sbs-a-line > span { display: block; }
+  /* the matte glow of Grafite, its centre drifting slowly */
+  .sbs-a-foot { background: radial-gradient(140% 110% at var(--glow-x) var(--glow-y), rgb(67 70 85 / 0.38), rgb(67 70 85 / 0) 65%), var(--p-noite); }
 
   /* ---- the loop: each section's finish played as it arrives -------- */
   /* the opening: the violet and the symbol, the turn to face, the flight
@@ -4722,7 +4721,6 @@
   .sbs-run .sbs-a-index { animation: sbs-a-wipe-1 var(--sbs-loop) linear infinite; }
   .sbs-run .sbs-a-sheet { animation: sbs-a-wipe-2 var(--sbs-loop) linear infinite; }
   .sbs-run .sbs-a-how { animation: sbs-a-wipe-3 var(--sbs-loop) linear infinite; }
-  .sbs-run .sbs-a-foot { animation: sbs-a-wipe-4 var(--sbs-loop) linear infinite; }
   @keyframes sbs-a-wipe-1 {
     0%, 22% { --wipe: 30px; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
     27%, 97% { --wipe: 0px; }
@@ -4791,12 +4789,38 @@
     98%, 100% { opacity: 0; }
   }
 
-  .sbs-run .sbs-a-band-rings { animation: sbs-a-breathe 9s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate; }
-  @keyframes sbs-a-breathe { to { scale: 1.08; } }
-  .sbs-run .sbs-a-foot-solid .sbs-a-turn { animation: sbs-a-sway 12s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate; }
-  @keyframes sbs-a-sway {
-    from { transform: rotateX(12deg) rotateY(-40deg); }
-    to { transform: rotateX(8deg) rotateY(-14deg); }
+  /* the foot, on arrival (86-89%): the rules drawn across, the line
+     rising, the way in and the columns following; the glow drifts all
+     the while, on a slow loop of its own */
+  .sbs-run .sbs-a-foot .sbs-p-foot-top::after,
+  .sbs-run .sbs-a-foot .sbs-p-foot-legal::before { animation: sbs-a-rule var(--sbs-loop) linear infinite both; }
+  .sbs-run .sbs-a-foot .sbs-p-foot-legal::before { animation-delay: 0.35s; }
+  @keyframes sbs-a-rule {
+    0%, 87% { scale: 0 1; animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1); }
+    91.5%, 98% { scale: 1 1; }
+    99%, 100% { scale: 0 1; }
+  }
+  .sbs-run .sbs-a-foot .sbs-p-foot-top h4 .sbs-a-line > span { animation: sbs-a-foot-line var(--sbs-loop) linear infinite both; }
+  @keyframes sbs-a-foot-line {
+    0%, 87% { translate: 0 110%; animation-timing-function: var(--a-ease); }
+    91%, 98% { translate: 0 0; }
+    99%, 100% { translate: 0 110%; }
+  }
+  .sbs-run .sbs-a-foot .sbs-p-foot-cta,
+  .sbs-run .sbs-a-foot .sbs-p-foot-cols > div,
+  .sbs-run .sbs-a-foot .sbs-p-foot-legal > span { animation: sbs-a-foot-up var(--sbs-loop) linear infinite both; }
+  .sbs-run .sbs-a-foot .sbs-p-foot-cta { animation-delay: 0.15s; }
+  .sbs-run .sbs-a-foot .sbs-p-foot-cols > div { animation-delay: calc(0.25s + var(--i) * 0.08s); }
+  .sbs-run .sbs-a-foot .sbs-p-foot-legal > span { animation-delay: 0.6s; }
+  @keyframes sbs-a-foot-up {
+    0%, 87.5% { opacity: 0; translate: 0 14px; animation-timing-function: var(--a-ease); }
+    91.5%, 98% { opacity: 1; translate: 0 0; }
+    99%, 100% { opacity: 0; translate: 0 14px; }
+  }
+  .sbs-run .sbs-a-foot { animation: sbs-a-wipe-4 var(--sbs-loop) linear infinite, sbs-a-glow 18s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate; }
+  @keyframes sbs-a-glow {
+    from { --glow-x: 0%; --glow-y: 0%; }
+    to { --glow-x: 70%; --glow-y: 40%; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -4820,13 +4844,6 @@
     .sbs-a-how { padding: 48px 36px 52px; }
     .sbs-a-carousel { margin-inline: -36px; }
     .sbs-a-how-head { grid-template-columns: 1fr; gap: 16px; padding-bottom: 28px; }
-    .sbs-a-foot { padding: 32px 36px 0; }
-    .sbs-a-band { flex-direction: column; align-items: flex-start; gap: 22px; padding: 40px 28px; }
-    .sbs-a-band h4 { font-size: 30px; }
-    .sbs-a-foot-main { grid-template-columns: 120px 1fr; gap: 28px; }
-    .sbs-a-foot-solid { width: 110px; height: 110px; }
-    .sbs-a-foot-small { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-    .sbs-a-foot-small > div + div { margin-top: 0; }
   }
 }
 
