@@ -360,6 +360,27 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   sempre incluído" is the wording wherever the site makes no claim of
   its own; a stronger one is the user's to decide.
 
+## Fifth pass (2026-11-16, user)
+
+- Personalization: two more businesses in the loop, from other sectors,
+  after Alvor (a dental clinic): Maré, a restaurant (Home, Menu with
+  prices, Bookings with date, time and people, Gallery, Contact) and
+  Casa Norte, an estate agent (Home with a search, Homes with price and
+  size, Sell in three steps, About, Contact). Each has its own eight
+  options with five chosen. The business changes at the end of each way
+  back, when the card is empty, and the same elements are kept, so the
+  single clock is never broken. The pages are written as kinds
+  (home, home-search, list, people, wall, form, homes, steps, about),
+  each with its tall and its wide layout.
+- The call: the answer above the drawing; under it the portfolio's own
+  button (the light drop, words alone, no arrow), "Pedir proposta
+  gratuita".
+- Included: the walls swapped (theirs first, ours second, and the two
+  labels under them in the same order), the names over the walls, and
+  the grey walls replaced, both alike, by the black metal of the cards
+  below; the lit work's frame turns white, their few hung works are
+  dimmed.
+
 ## Open
 
 - Nothing open from the clinic version; Pilar settles both questions.
