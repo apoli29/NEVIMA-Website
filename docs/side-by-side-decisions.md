@@ -591,3 +591,9 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   slider now leads straight into "O melhor aconselhamento"; the contacts
   live only in the footer. The stops are read off the page, so they
   moved up on their own.
+
+- 2026-11-17 (user): "Últimas notícias" became "Onde nos encontrar" (the
+  user's intent in the round before): the three offices in the page's
+  cards, each with the pin icon, are the last stop, above the footer.
+  The news and their three stock photographs are gone; only the padlock
+  in the slider is still from Unsplash. Both show whole at the last stop.

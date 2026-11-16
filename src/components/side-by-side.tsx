@@ -254,19 +254,10 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
     ["euro", t("PAYMENT MANAGEMENT", "GESTÃO DE COBRANÇAS")],
     ["gears", t("CLAIMS MANAGEMENT", "GESTÃO DE SINISTROS")],
   ];
-  const news = [
-    [
-      "1729838809728-48566c1ef0e9",
-      t("INSURANCE BROKER IN LISBON | PILAR INSURANCE | 17 YEARS AT OUR CLIENTS’ SERVICE", "MEDIADOR DE SEGUROS EM LISBOA | PILAR SEGUROS | 17 ANOS AO SERVIÇO DOS CLIENTES"),
-    ],
-    [
-      "1791220154760-43ad2bf459c2",
-      t("PARTNERS IN PROTECTION AND FINANCIAL STABILITY: TIPS FOR 2026", "PARCEIROS NA PROTEÇÃO E NA ESTABILIDADE FINANCEIRA: DICAS PARA 2026"),
-    ],
-    [
-      "1758519288905-38b7b00c1023",
-      t("THE 5 MOST COMMON MISTAKES WHEN CHOOSING HOME INSURANCE", "OS 5 ERROS MAIS COMUNS AO ESCOLHER UM SEGURO DE CASA"),
-    ],
+  const offices = [
+    [t("Lisbon", "Lisboa"), "Av. da República, 00, 1.º Esq.", "1050-000 Lisboa", "+351 210 000 000", "+351 910 000 000", "lisboa@pilarseguros.example"],
+    ["Almada", "Rua Cândido dos Reis, 00", "2800-000 Almada", "+351 212 000 000", "+351 920 000 000", "almada@pilarseguros.example"],
+    ["Oeiras", "Av. Dom João I, 00, Loja B", "2780-000 Oeiras", "+351 214 000 000", "+351 930 000 000", "oeiras@pilarseguros.example"],
   ];
   const fixed = t("(call to a national landline)", "(chamada para rede fixa nacional)");
   const mobile = t("(call to a national mobile network)", "(chamada para rede móvel nacional)");
@@ -443,21 +434,25 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
         </span>
       </div>
 
-      <div className="sbs-c-news" data-stop>
-        <h4 className="sbs-c-title">{t("LATEST NEWS", "ÚLTIMAS NOTÍCIAS")}</h4>
-        <div className="sbs-c-cards">
-          {news.map(([id, title]) => (
-            <div key={id} className="sbs-c-card">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={cStock(id, 520)} alt="" draggable={false} />
-              <small>{t("INFORMATION", "INFORMAÇÕES")}</small>
-              <h5>{title}</h5>
+      <div className="sbs-c-visit" data-stop>
+        <h4 className="sbs-c-title">{t("WHERE TO FIND US", "ONDE NOS ENCONTRAR")}</h4>
+        <div className="sbs-c-offices">
+          {offices.map(([town, street, code, tel, cell, mail]) => (
+            <div key={town}>
+              <span className="sbs-c-ico">
+                <CIcon name="pin" />
+              </span>
+              <b>{town}</b>
+              <span>{street}</span>
+              <span>{code}</span>
+              <span className="sbs-c-a">{tel}</span>
+              <em>{fixed}</em>
+              <span className="sbs-c-a">{cell}</span>
+              <em>{mobile}</em>
+              <span className="sbs-c-a">{mail}</span>
             </div>
           ))}
         </div>
-        <span className="sbs-c-scroll">
-          <i />
-        </span>
       </div>
 
       {/* The footer, as such websites have it: four columns on navy, each
@@ -484,7 +479,6 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
             t("Personal Insurance", "Seguros Particulares"),
             t("Business Insurance", "Seguros Empresas"),
             t("Claims", "Sinistros"),
-            t("News", "Notícias"),
           ].map((link) => (
             <span key={link}>» {link}</span>
           ))}
@@ -987,8 +981,8 @@ export function SideBySide() {
                 label={t("Designs from other professionals", "Design de outros profissionais")}
                 address={t("pilar-insurance.example/home", "pilar-seguros.example/inicio")}
                 says={t(
-                  "The same insurance broker as many web designers deliver it: a home-made logo, a seven-item menu in capitals, a stock photograph of a padlock, insurance and services as line icons, a long text on what to do after a car accident, and news with stock photographs above a navy footer with the contacts and opening hours.",
-                  "A mesma mediadora de seguros como muitos a entregam: um logótipo caseiro, um menu de sete itens em maiúsculas, a fotografia de stock de um cadeado, seguros e serviços em ícones de linha, um texto longo sobre o que fazer num acidente de automóvel, notícias com fotografias de stock sobre um rodapé azul-escuro com os contactos e o horário.",
+                  "The same insurance broker as many web designers deliver it: a home-made logo, a seven-item menu in capitals, a stock photograph of a padlock, insurance and services as line icons, a long text on what to do after a car accident, and the three offices' addresses above a navy footer with the contacts and opening hours.",
+                  "A mesma mediadora de seguros como muitos a entregam: um logótipo caseiro, um menu de sete itens em maiúsculas, a fotografia de stock de um cadeado, seguros e serviços em ícones de linha, um texto longo sobre o que fazer num acidente de automóvel, as moradas dos três escritórios sobre um rodapé azul-escuro com os contactos e o horário.",
                 )}
               >
                 <Template t={t} />
