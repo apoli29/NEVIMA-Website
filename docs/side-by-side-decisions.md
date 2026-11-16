@@ -827,3 +827,17 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
     raced with it): once its section is reached it walks on by itself, a
     step every 2.4 seconds; the loop on its own still drives it as
     before, and a click still takes over.
+- 2026-11-17 (user):
+  - the Essential+ steps card did not respond by hand: a press on a
+    plate took the pointer at once (for dragging), so its buttons never
+    got the click, and the tap that takes a plate over also pressed
+    whatever button lay under it, which held the steps. A press now only
+    becomes a drag once it moves (5px), and the click after the tap that
+    takes over is kept from the page;
+  - the Advanced hero's line is quicker (about 0.6s instead of 1.4s, the
+    second line 0.08s behind) and finer: each line rises from its mask
+    with a slight turn (4°) that straightens as it lands, and a short
+    fade; the text under it follows sooner;
+  - the metal symbol is twice the size, every part of its move in
+    proportion (the object, its float, the square the camera flies to
+    and how far past it the camera goes); none of the timing changes.

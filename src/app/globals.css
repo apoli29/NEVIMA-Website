@@ -4489,7 +4489,7 @@
   /* 1 · the opening and the hero ---------------------------------------- */
   .sbs-a-rings ellipse { stroke: rgb(255 255 255 / 0.42); }
   .sbs-a-lead h3 .sbs-a-line { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
-  .sbs-a-lead h3 .sbs-a-line > span { display: block; }
+  .sbs-a-lead h3 .sbs-a-line > span { display: block; transform-origin: 0 100%; }
   /* the opening's ground: the photograph's own sky (#abadbf to #bfc0cd),
      kept to its grey lavender (user, 2026-11-17: closer to the hero) */
   .sbs-a-intro {
@@ -4717,16 +4717,19 @@
     to { translate: -10% 9%; scale: 0.95; }
   }
   .sbs-run .sbs-a-lead h3 .sbs-a-line > span { animation: sbs-a-line var(--sbs-loop) linear infinite both; }
-  .sbs-run .sbs-a-lead h3 .sbs-a-line + .sbs-a-line > span { animation-delay: 0.14s; }
+  .sbs-run .sbs-a-lead h3 .sbs-a-line + .sbs-a-line > span { animation-delay: 0.08s; }
+  /* each line rises from its mask with a slight turn that straightens as
+     it lands, in about 0.6s (user, 2026-11-17: quicker, finer) */
   @keyframes sbs-a-line {
-    0%, 14% { translate: 0 110%; animation-timing-function: var(--a-ease); }
-    19.5%, 96% { translate: 0 0; }
-    97%, 100% { translate: 0 110%; }
+    0%, 14% { translate: 0 105%; rotate: 4deg; opacity: 0; animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1); }
+    14.6% { opacity: 1; }
+    16.4%, 96% { translate: 0 0; rotate: 0deg; opacity: 1; }
+    97%, 100% { translate: 0 105%; rotate: 4deg; opacity: 0; }
   }
   .sbs-run .sbs-a-lead p, .sbs-run .sbs-a-lead .sbs-p-pill, .sbs-run .sbs-a-hero .sbs-p-reviews { animation: sbs-a-fade var(--sbs-loop) linear infinite both; }
   @keyframes sbs-a-fade {
-    0%, 15.5% { opacity: 0; translate: 0 10px; animation-timing-function: var(--a-ease); }
-    20%, 96% { opacity: 1; translate: 0 0; }
+    0%, 15% { opacity: 0; translate: 0 10px; animation-timing-function: var(--a-ease); }
+    17.5%, 96% { opacity: 1; translate: 0 0; }
     97%, 100% { opacity: 0; }
   }
   .sbs-run .sbs-a-hero .sbs-p-sky { animation: sbs-a-sky var(--sbs-loop) linear infinite both; }

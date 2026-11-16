@@ -45,6 +45,9 @@ export function PlateScreen({
     over: it calls `go`, unless the plate is already by hand. */
 export function useTapToTakeOver(manual: boolean, go: () => void) {
   const from = useRef<{ x: number; y: number } | null>(null);
+  // the click that follows the tap is kept from whatever lies under it
+  // (a step's button would otherwise be pressed and the steps held)
+  const swallow = useRef(false);
   return {
     onPointerDown: (e: React.PointerEvent) => {
       if (!manual) from.current = { x: e.clientX, y: e.clientY };
@@ -53,7 +56,16 @@ export function useTapToTakeOver(manual: boolean, go: () => void) {
       const f = from.current;
       from.current = null;
       if (manual || !f) return;
-      if (Math.hypot(e.clientX - f.x, e.clientY - f.y) < 6) go();
+      if (Math.hypot(e.clientX - f.x, e.clientY - f.y) < 6) {
+        swallow.current = true;
+        go();
+      }
+    },
+    onClickCapture: (e: React.MouseEvent) => {
+      if (!swallow.current) return;
+      swallow.current = false;
+      e.stopPropagation();
+      e.preventDefault();
     },
   };
 }

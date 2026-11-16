@@ -68,7 +68,10 @@ function symbolShapes() {
 }
 
 /** The square of the P, its centre in the symbol's own units. */
-const HOLE = new THREE.Vector3(69 - 50, 50 - 33, 0);
+/** The symbol's size in the opening (user, 2026-11-17: twice as large,
+    every part of the move in proportion). */
+const SIZE = 2;
+const HOLE = new THREE.Vector3(69 - 50, 50 - 33, 0).multiplyScalar(SIZE);
 
 /** A photographer's studio for the metal: a lavender room (the hero's
     sky), long softboxes and a strip light, all emissive, baked into an
@@ -210,6 +213,7 @@ export function PilarMetal({ className }: { className?: string }) {
     geometry.translate(0, 0, -7);
     geometry.computeVertexNormals();
     const symbol = new THREE.Mesh(geometry, material);
+    symbol.scale.setScalar(SIZE);
     // one key light for a crisp specular on top of the studio
     const key = new THREE.DirectionalLight(0xffffff, 0.6);
     key.position.set(-40, 60, 80);
@@ -268,14 +272,14 @@ export function PilarMetal({ className }: { className?: string }) {
       const turn = p > 0.96 ? 0 : 0.5 - 0.5 * Math.cos(Math.PI * Math.min(1, p / 0.07));
       symbol.rotation.y = 0.26 * (1 - turn);
       symbol.rotation.x = -0.08 * (1 - turn);
-      symbol.position.y = 1.6 * (1 - turn);
+      symbol.position.y = 1.6 * SIZE * (1 - turn);
 
       // the flight (7-14.5%): the camera moves along the line from where it
       // stands to the square of the P and on through it, still looking
       // straight ahead, so the symbol stays where it is and the square
       // grows in its own place until it fills the view
       const f = p > 0.96 ? 0 : Math.min(1, Math.max(0, (p - 0.07) / 0.075));
-      const along = inOut(f) * ((START + 40) / START);
+      const along = inOut(f) * ((START + 40 * SIZE) / START);
       camera.position.set(HOLE.x * along, HOLE.y * along, START + (HOLE.z - START) * along);
       camera.lookAt(camera.position.x, camera.position.y, camera.position.z - 100);
       renderer.render(scene, camera);

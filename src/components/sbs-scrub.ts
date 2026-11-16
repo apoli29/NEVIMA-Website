@@ -328,16 +328,22 @@ export function usePlateScrub(
       if (nudge(by)) e.preventDefault();
     };
 
-    // A finger or a held pointer drags the page.
-    let drag: { y: number; id: number; k: number } | null = null;
+    // A finger or a held pointer drags the page; a press that does not
+    // move stays a click, so the buttons in the page (the steps) still
+    // work by hand (the pointer was taken at once and swallowed them).
+    let drag: { y: number; id: number; k: number; screen: HTMLElement; on: boolean } | null = null;
     const down = (e: PointerEvent) => {
       if (e.button !== 0) return;
       const screen = e.currentTarget as HTMLElement;
-      drag = { y: e.clientY, id: e.pointerId, k: k(screen) };
-      screen.setPointerCapture(e.pointerId);
+      drag = { y: e.clientY, id: e.pointerId, k: k(screen), screen, on: false };
     };
     const move = (e: PointerEvent) => {
       if (!drag || e.pointerId !== drag.id) return;
+      if (!drag.on) {
+        if (Math.abs(e.clientY - drag.y) < 5) return;
+        drag.on = true;
+        drag.screen.setPointerCapture(e.pointerId);
+      }
       nudge((drag.y - e.clientY) / drag.k);
       drag.y = e.clientY;
     };
