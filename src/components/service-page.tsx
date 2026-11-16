@@ -7,6 +7,7 @@ import { SERVICES, findService, servicePath, servicesIn } from "@/lib/services";
 import { JsonLd } from "./json-ld";
 import { Footer } from "./footer";
 import { ProposalHost } from "./proposal-host";
+import { FloatingNav } from "./floating-nav";
 import { Included } from "./services";
 import { ServiceDepth } from "./service-depth";
 import { WorkTogether } from "./work-together";
@@ -64,30 +65,13 @@ export function ServicePage({ slug, lang }: { slug: string; lang: Lang }) {
   return (
     <ProposalHost>
       <JsonLd data={serviceGraph(service.slug, lang)} />
+      {/* The bar the rest of the site carries, as it is everywhere else
+          (user, 2026-11-16: the bar is not to change on the way into a
+          service). It replaced a black strip of this page's own, which
+          held the mark and a way back to the services. */}
+      <FloatingNav />
       <main id="top" className="relative min-h-[100svh] bg-paper">
-        {/* The same black strip the home page floats, holding the same mark. */}
-        <header className="pt-4 md:pt-6">
-          <div className="shell">
-            <div className="-mx-3 flex items-center justify-between gap-4 rounded-[16px] bg-ink px-3 py-2.5 md:-mx-5 md:gap-8 md:px-5 md:py-3 xl:-mx-8 xl:px-8">
-              <Link href={href("/")} aria-label={t("nevima, home", "nevima, início")} className="hit-wide flex shrink-0 items-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/nevima-wordmark-white.svg"
-                  alt="nevima"
-                  className="block h-[1.35rem] w-auto md:h-[1.55rem]"
-                />
-              </Link>
-              <Link
-                href={href("/#services")}
-                className="btn-neu rounded-[8px] px-5 py-2.5 text-[0.9375rem] leading-none"
-              >
-                <span className="btn-neu-face">{t("All services", "Todos os serviços")}</span>
-              </Link>
-            </div>
-          </div>
-        </header>
-
-        <div className="shell pt-(--section-gap) pb-28 md:pb-40">
+        <div className="shell pt-[calc(var(--section-gap)+3.5rem)] pb-28 md:pb-40">
           <p className="text-[0.875rem] leading-snug text-ash">
             {service.full ?? t("Service", "Serviço")}
           </p>

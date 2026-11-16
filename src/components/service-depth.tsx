@@ -235,8 +235,17 @@ function ProposalAsk({ label }: { label: string }) {
     if (!present) setLaunched(false);
   }, [present]);
   useOriginFade(button, proposal?.progress, launched && present);
-  const look = "cta-drop cta-drop-light inline-flex text-[0.9375rem] leading-none whitespace-nowrap";
-  const face = <span className="btn-neu-face">{label}</span>;
+  // The drop the rest of the site presses (user, 2026-11-16: the buttons
+  // we have been using), black and arrowed, as the FAQ's is.
+  const look = "cta-drop relative isolate inline-flex items-center justify-center text-[0.9375rem] leading-none whitespace-nowrap";
+  const face = (
+    <span className="btn-neu-face">
+      {label}
+      <span aria-hidden="true" className="ml-2.5 inline-block">
+        &rarr;
+      </span>
+    </span>
+  );
   if (!proposal) {
     return (
       <a href={href("/#proposal")} className={look}>
@@ -288,21 +297,24 @@ function Plate({ s, ask, reduce }: { s: Service; ask: string; reduce: boolean })
         </p>
       </div>
 
-      <div className="svd-card">
-        <p className="svd-lede">{s.lede}</p>
+      {/* The facts in a card over the photograph's foot, as the page the
+          user sent carries its figures, with the way in on the white
+          where it can be read. */}
+      <div className="svd-sheet">
+        <dl className="svd-facts">
+          {s.facts.map((f) => (
+            <div key={f.label}>
+              <dt className="svd-fact-value">{f.value}</dt>
+              <dd className="svd-fact-label mono-label">{f.label}</dd>
+            </div>
+          ))}
+        </dl>
         <div className="svd-ask">
           <ProposalAsk label={ask} />
         </div>
       </div>
 
-      <dl className="svd-facts">
-        {s.facts.map((f) => (
-          <div key={f.label}>
-            <dt className="svd-fact-value">{f.value}</dt>
-            <dd className="svd-fact-label mono-label">{f.label}</dd>
-          </div>
-        ))}
-      </dl>
+      <p className="svd-lede">{s.lede}</p>
 
       <div className="svd-parts">
         {s.parts.map((p) => (

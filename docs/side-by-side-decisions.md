@@ -453,3 +453,22 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   links, so the same list is a second block inside the "Menu" panel.
   The service pages keep their own small header, so the menu is not on
   them; their way back is the "All services" button they already had.
+
+## Seventh pass (2026-11-16, user), on the service pages
+
+- The bar is not to change on the way into a service: the small black
+  strip those pages carried (the mark and "All services") is gone and
+  they carry `FloatingNav`, as every other page does. The Services menu
+  is the way back out.
+- The plate is set closer to the page the user sent: the photograph
+  fills 16:9, the name is laid large over the dark at its foot, and the
+  three facts are in a white card that comes over the photograph's foot
+  on the right, where that page carries its figures. The lede moved out
+  of its own card to under the plate, where it reads at length.
+- The free-proposal button is the one the rest of the site presses (the
+  black drop with its arrow, as the FAQ's), not the light drop it was
+  given first. It sits inside the white card, where a black drop can be
+  read; on the photograph it could not.
+- The home page's comparison had gone white type on a light ground.
+  Not this work: `.cmp-ground` was taken grey along with the
+  side-by-side page's own ground in d72104d. Put back to its black.
