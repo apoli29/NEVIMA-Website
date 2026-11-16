@@ -4390,7 +4390,6 @@
 @property --slat { syntax: "<length>"; inherits: false; initial-value: 9px; }
 @property --glow-x { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
 @property --glow-y { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
-@property --wipe { syntax: "<length>"; inherits: false; initial-value: 0px; }
 
 @layer components {
   .sbs-a-page {
@@ -4450,15 +4449,21 @@
     stroke-dashoffset: 0;
   }
 
-  /* Between sections: each section comes in through slats (Evolve's),
-     widening as it arrives; between them the page's own ground, Noite,
-     so a section waiting below another reads as dark space, not a block. */
-  .sbs-a-page { background: var(--p-noite); }
-  .sbs-a-wipe {
-    position: relative;
-    isolation: isolate;
-    -webkit-mask: repeating-linear-gradient(to bottom, #000 0 calc(30px - var(--wipe)), transparent calc(30px - var(--wipe)) 30px);
-    mask: repeating-linear-gradient(to bottom, #000 0 calc(30px - var(--wipe)), transparent calc(30px - var(--wipe)) 30px);
+  /* Between sections: stacked sheets. The section being left is pushed
+     back (shrinks from its top, darkens, rounds its corners) while the next
+     rises over it as a sheet whose rounded top widens to the page and
+     squares off (user, 2026-11-17: "mais avançada, premium"; it replaces
+     the slats). Between them the page's own ground, Noite. */
+  .sbs-a-page { background: var(--p-noite); --a-move: cubic-bezier(0.77, 0, 0.175, 1); --a-enter: cubic-bezier(0.23, 1, 0.32, 1); }
+  .sbs-a-sheetx { position: relative; isolation: isolate; transform-origin: 50% 0; }
+  .sbs-a-sheetx::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    pointer-events: none;
+    background: #05060c;
+    opacity: 0;
   }
 
   /* 1 · the opening and the hero ---------------------------------------- */
@@ -4717,30 +4722,32 @@
     97%, 100% { stroke-dashoffset: 1; }
   }
 
-  /* the slats between sections, each widening as its section arrives */
-  .sbs-run .sbs-a-index { animation: sbs-a-wipe-1 var(--sbs-loop) linear infinite; }
-  .sbs-run .sbs-a-sheet { animation: sbs-a-wipe-2 var(--sbs-loop) linear infinite; }
-  .sbs-run .sbs-a-how { animation: sbs-a-wipe-3 var(--sbs-loop) linear infinite; }
-  @keyframes sbs-a-wipe-1 {
-    0%, 22% { --wipe: 30px; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-    27%, 97% { --wipe: 0px; }
-    98%, 100% { --wipe: 30px; }
-  }
-  @keyframes sbs-a-wipe-2 {
-    0%, 46% { --wipe: 30px; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-    51%, 97% { --wipe: 0px; }
-    98%, 100% { --wipe: 30px; }
-  }
-  @keyframes sbs-a-wipe-3 {
-    0%, 60% { --wipe: 30px; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-    65%, 97% { --wipe: 0px; }
-    98%, 100% { --wipe: 30px; }
-  }
-  @keyframes sbs-a-wipe-4 {
-    0%, 86% { --wipe: 30px; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-    90%, 98% { --wipe: 0px; }
-    99%, 100% { --wipe: 30px; }
-  }
+  /* each change: the section left pushed back, the next one rising
+     (windows 22-26, 46-50, 60-64, 86-89; the push leads by 0.5%) */
+  .sbs-run .sbs-a-hero { animation: sbs-a-out-1 var(--sbs-loop) linear infinite; }
+  .sbs-run .sbs-a-hero::before { animation: sbs-a-veil-1 var(--sbs-loop) linear infinite; }
+  .sbs-run .sbs-a-index { animation: sbs-a-in-1 var(--sbs-loop) linear infinite, sbs-a-out-2 var(--sbs-loop) linear infinite; }
+  .sbs-run .sbs-a-index::before { animation: sbs-a-veil-2 var(--sbs-loop) linear infinite; }
+  .sbs-run .sbs-a-sheet { animation: sbs-a-in-2 var(--sbs-loop) linear infinite, sbs-a-out-3 var(--sbs-loop) linear infinite; }
+  .sbs-run .sbs-a-sheet::before { animation: sbs-a-veil-3 var(--sbs-loop) linear infinite; }
+  .sbs-run .sbs-a-how { animation: sbs-a-in-3 var(--sbs-loop) linear infinite, sbs-a-out-4 var(--sbs-loop) linear infinite; }
+  .sbs-run .sbs-a-how::before { animation: sbs-a-veil-4 var(--sbs-loop) linear infinite; }
+
+  /* outgoing: scale (and, for the hero, which has no entrance, its corners) */
+  @keyframes sbs-a-out-1 { 0%, 22% { scale: 1; clip-path: inset(0 round 0); animation-timing-function: var(--a-move); } 26%, 97% { scale: 0.94; clip-path: inset(0 round 22px); } 98%, 100% { scale: 1; clip-path: inset(0 round 0); } }
+  @keyframes sbs-a-out-2 { 0%, 46% { scale: 1; animation-timing-function: var(--a-move); } 50%, 97% { scale: 0.94; } 98%, 100% { scale: 1; } }
+  @keyframes sbs-a-out-3 { 0%, 60% { scale: 1; animation-timing-function: var(--a-move); } 64%, 97% { scale: 0.94; } 98%, 100% { scale: 1; } }
+  @keyframes sbs-a-out-4 { 0%, 86% { scale: 1; animation-timing-function: var(--a-move); } 89%, 97% { scale: 0.94; } 98%, 100% { scale: 1; } }
+  @keyframes sbs-a-veil-1 { 0%, 22% { opacity: 0; animation-timing-function: var(--a-move); } 26%, 97% { opacity: 0.5; } 98%, 100% { opacity: 0; } }
+  @keyframes sbs-a-veil-2 { 0%, 46% { opacity: 0; animation-timing-function: var(--a-move); } 50%, 97% { opacity: 0.5; } 98%, 100% { opacity: 0; } }
+  @keyframes sbs-a-veil-3 { 0%, 60% { opacity: 0; animation-timing-function: var(--a-move); } 64%, 97% { opacity: 0.5; } 98%, 100% { opacity: 0; } }
+  @keyframes sbs-a-veil-4 { 0%, 86% { opacity: 0; animation-timing-function: var(--a-move); } 89%, 97% { opacity: 0.5; } 98%, 100% { opacity: 0; } }
+
+  /* incoming: the rounded sheet widening to the page */
+  @keyframes sbs-a-in-1 { 0%, 22.5% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 26.5%, 97% { clip-path: inset(0 0 0 0 round 0); } 98%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
+  @keyframes sbs-a-in-2 { 0%, 46.5% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 50.5%, 97% { clip-path: inset(0 0 0 0 round 0); } 98%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
+  @keyframes sbs-a-in-3 { 0%, 60.5% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 64.5%, 97% { clip-path: inset(0 0 0 0 round 0); } 98%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
+  @keyframes sbs-a-in-4 { 0%, 86.5% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 89.5%, 98% { clip-path: inset(0 0 0 0 round 0); } 99%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
 
   .sbs-run .sbs-a-kind b > span { animation: sbs-a-rise var(--sbs-loop) linear infinite both; animation-delay: calc(var(--i) * 0.11s); }
   @keyframes sbs-a-rise {
@@ -4817,7 +4824,7 @@
     91.5%, 98% { opacity: 1; translate: 0 0; }
     99%, 100% { opacity: 0; translate: 0 14px; }
   }
-  .sbs-run .sbs-a-foot { animation: sbs-a-wipe-4 var(--sbs-loop) linear infinite, sbs-a-glow 18s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate; }
+  .sbs-run .sbs-a-foot { animation: sbs-a-in-4 var(--sbs-loop) linear infinite, sbs-a-glow 18s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate; }
   @keyframes sbs-a-glow {
     from { --glow-x: 0%; --glow-y: 0%; }
     to { --glow-x: 70%; --glow-y: 40%; }

@@ -732,3 +732,10 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   across as the foot arrives, the line rises into place and the way in,
   the columns and the legal row follow. The ringed band and the large
   symbol in depth are gone.
+- 2026-11-17 (user, plan `plans/001-sheet-stack-section-transition.md`):
+  between sections, stacked sheets replace the slats. The section being
+  left shrinks a little from its top (to 0.94), darkens under a veil and
+  rounds its corners; the next rises over it as a sheet whose rounded top
+  (4% in from each side, 28px corners) widens to the page and squares
+  off. The push leads the rise by half a percent of the loop; strong
+  ease-in-out for the push, strong ease-out for the rise.

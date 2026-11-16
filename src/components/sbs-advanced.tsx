@@ -27,7 +27,8 @@ import { useT } from "@/lib/use-lang";
      agreed for it.
    - The four steps as a carousel, one card at a time with the next one
      showing, over the user's sliding-ease bars in Pilar's colours.
-   - Between sections, violet slats wipe each one in as it arrives.
+   - Between sections, stacked sheets: the section left is pushed back,
+     the next rises over it with a rounded top that widens.
 
    Every effect runs on this page's own loop (sbs-a-scroll, --sbs-loop
    26s; globals.css), longer than the comparison's so the opening has
@@ -124,7 +125,7 @@ export function Advanced({ t }: { t: T }) {
     <div className={`sbs-mini sbs-p-page sbs-a-page ${pilarDisplay.variable} ${pilarSans.variable} ${pilarMono.variable}`}>
       {/* 1 · The hero, behind the opening: the photograph, contour lines
           rising from the pillar, the line rising into place. */}
-      <div className="sbs-p-hero sbs-a-hero">
+      <div className="sbs-p-hero sbs-a-hero sbs-a-sheetx">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/side-by-side/pilar-hero.webp" alt="" draggable={false} className="sbs-p-sky" />
         <Rings className="sbs-a-rings" count={11} cx={450} cy={980} r0={300} step={44} w={900} h={700} />
@@ -180,7 +181,7 @@ export function Advanced({ t }: { t: T }) {
           on the right, the symbol in depth travelling to the one read. */}
       <div
         ref={kinds.box}
-        className="sbs-a-index sbs-a-wipe"
+        className="sbs-a-index sbs-a-sheetx"
         data-stop
         style={{ ["--at" as string]: kinds.at, ["--y" as string]: `${rowTops[kinds.at] ?? 0}px` }}
       >
@@ -208,7 +209,7 @@ export function Advanced({ t }: { t: T }) {
 
       {/* 3 · The three quotes as a comparison table (kept as it was until
           a new reference is agreed). */}
-      <div className="sbs-a-sheet sbs-a-wipe" data-stop>
+      <div className="sbs-a-sheet sbs-a-sheetx" data-stop>
         <div className="sbs-a-sheet-head">
           <h4>{t("Three quotes. One page. One recommendation.", "Três propostas. Uma folha. Uma recomendação.")}</h4>
           <p>
@@ -259,7 +260,7 @@ export function Advanced({ t }: { t: T }) {
           strip sliding on its own, held under the pointer), on a band of
           the user's sliding-ease bars in Pilar's colours; the rest of the
           section on the page's white. */}
-      <div className="sbs-a-how sbs-a-wipe" data-stop>
+      <div className="sbs-a-how sbs-a-sheetx" data-stop>
         <div className="sbs-a-how-head">
           <h4>
             <span>{t("Four steps.", "Quatro passos.")}</span>{" "}
@@ -305,7 +306,7 @@ export function Advanced({ t }: { t: T }) {
           glow of Grafite, the signature line and the way in, the links,
           the legal row; user, 2026-11-17), set in motion: the glow drifts,
           the rules draw across, the line rises and the columns follow. */}
-      <div className="sbs-p-foot sbs-a-foot sbs-a-wipe" data-stop>
+      <div className="sbs-p-foot sbs-a-foot sbs-a-sheetx" data-stop>
         <div className="sbs-p-foot-top">
           <h4>
             <span className="sbs-a-line">
