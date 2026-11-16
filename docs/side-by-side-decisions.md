@@ -321,6 +321,45 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   (the dark drop, on white) sit under the drawing. No dark card: it is
   on the page's white, under a hairline.
 
+## Fourth pass (2026-11-16, user)
+
+- Personalization, "keep the scheme from before": the pages are ticked
+  one by one and their sheets stand side by side, then fold into one
+  long page; the floating businesses of the third pass are gone. What
+  the user had asked for was the inside of each sheet: each page is now
+  drawn as that page usually is, with real titles and buttons and the
+  body in a doctor's hand (a scrawl written on as the sheet arrives) or
+  empty lines: Home (bar, photograph with title and button, three
+  pictures, a second block), Services (a mark, a name and a scrawl each,
+  a button), Team (four portraits), Gallery (a wall of pictures),
+  Contact (fields, a send button, a map with a square pin). Folded into
+  a landing page, each becomes a section laid out wide (a container
+  query on the sheet's own proportions), only the first keeping the bar.
+  The invented business is Alvor, a dental clinic.
+- The card is always black, in metal (the user): a brushed dark
+  gradient, a highlight at its top edge and a light that crosses it now
+  and then. No colour inversion any more; it plays forwards and then
+  backwards instead of looping. The choices have no box round them: a
+  tick, and the name lit. The sheets are paper-white on the black.
+- The call (user: too much of a sketch; a tech company's motion
+  graphics with the agency's touch; in a black card as at first): in
+  the same black metal with a fine grid fading out, three square tiles
+  (António, Emanuel, the client), a ticked line between them. Whoever
+  speaks lights up, with a square ring leaving the tile and a level
+  meter; their words are typed in a panel over them; the line fills from
+  them to the listener, a square point of light running ahead. The
+  answer and the light drop sit under a hairline inside the card.
+- Included (user chose option A of three, "a smaller card, the same
+  look"): two walls side by side, ours (the ten framed works, the light
+  moving along them, interactive as before) and theirs (the same ten
+  places, mostly a nail and a dashed outline; hosting and SEO hung in
+  grey as "pago à parte"), smaller than the single wall was. Under them,
+  our wall label and theirs ("Agências tradicionais": "Pago à parte",
+  "Contacto indireto" or "Nem sempre incluído", and the site's own
+  "Noutros casos" sentence where there is one), then the time. "Nem
+  sempre incluído" is the wording wherever the site makes no claim of
+  its own; a stronger one is the user's to decide.
+
 ## Open
 
 - Nothing open from the clinic version; Pilar settles both questions.

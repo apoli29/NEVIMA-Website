@@ -49,7 +49,19 @@ const ICONS: Record<string, string[]> = {
   proposal: ["#########", "#.......#", "#.#.###.#", "#.......#", "#.#.###.#", "#.......#", "#.#.###.#", "#.......#", "#########"],
 };
 
-type Feature = { id: string; name: string; text: string; aside?: { lead: string; text: string } };
+type Feature = { id: string; name: string; text: string; aside?: { lead: string; text: string; elsewhere?: boolean } };
+
+/** What the same thing usually is at a traditional agency. Only hosting,
+    SEO and contact carry a claim the site already makes (the home page's
+    comparison); for the rest it says no more than that it is not always
+    included. */
+function theirs(t: T, id: string) {
+  if (id === "hosting" || id === "seo") return t("Charged extra", "Pago à parte");
+  if (id === "direct") return t("Indirect contact", "Contacto indireto");
+  return t("Not always included", "Nem sempre incluído");
+}
+/** Hung on their wall, at a price: the two the site says are charged extra. */
+const HUNG_THERE = new Set(["hosting", "seo"]);
 
 /** Everything here is said elsewhere on the site already (the about
     page's questions, the home page's comparison, the form), and only
@@ -66,6 +78,7 @@ function features(t: T): Feature[] {
       ),
       aside: {
         lead: elsewhere,
+        elsewhere: true,
         text: t(
           "platforms such as Wix, among others, can charge over €100 a year.",
           "plataformas como o Wix, entre outras, podem cobrar mais de 100 € por ano.",
@@ -101,6 +114,7 @@ function features(t: T): Feature[] {
       ),
       aside: {
         lead: elsewhere,
+        elsewhere: true,
         text: t("many agencies charge for even the most basic SEO practices.", "muitas agências cobram até pelas práticas de SEO mais básicas."),
       },
     },
@@ -137,6 +151,7 @@ function features(t: T): Feature[] {
       ),
       aside: {
         lead: elsewhere,
+        elsewhere: true,
         text: t(
           "sometimes the client never gets in direct contact with those in charge of the project.",
           "por vezes, o cliente nem chega a falar diretamente com os responsáveis pelo projeto.",
@@ -218,12 +233,53 @@ function Label({ f, n, total, active, still, id, tabId }: { f: Feature; n: numbe
         <span className="sr-only">{f.name}</span>
       </h3>
       <p className="sbi-text">{f.text}</p>
-      {f.aside && (
+      {f.aside && !f.aside.elsewhere && (
         <p className="sbi-aside">
           <span className="sbi-aside-lead mono-label">{f.aside.lead.replace(/:$/, "")}</span>
           <span>{f.aside.text.charAt(0).toUpperCase() + f.aside.text.slice(1)}</span>
         </p>
       )}
+    </div>
+  );
+}
+
+function Theirs({ f, active, t }: { f: Feature; active: boolean; t: T }) {
+  return (
+    <div className="sbi-label sbi-theirs" data-on={active || undefined}>
+      <p className="sbi-theirs-status">{theirs(t, f.id)}</p>
+      {f.aside?.elsewhere && <p className="sbi-theirs-text">{f.aside.text.charAt(0).toUpperCase() + f.aside.text.slice(1)}</p>}
+    </div>
+  );
+}
+
+/** Their wall: the same ten places, mostly empty, a nail where a work
+    would hang; the two they charge extra for hung in grey. */
+function TheirWall({ list, t, col, row }: { list: Feature[]; t: T; col: number; row: number }) {
+  return (
+    <div className="sbi-wall sbi-wall-theirs" style={{ ["--col" as string]: col, ["--row" as string]: row }} aria-hidden="true">
+      <span className="sbi-beam" />
+      <span className="sbi-light" />
+      <div className="sbi-hang">
+        {list.map((f) =>
+          HUNG_THERE.has(f.id) ? (
+            <span key={f.id} className="sbi-work sbi-work-there">
+              <span className="sbi-frame">
+                <span className="sbi-mat">
+                  <Print name={f.id} />
+                </span>
+              </span>
+              <span className="sbi-plate mono-label">{theirs(t, f.id)}</span>
+            </span>
+          ) : (
+            <span key={f.id} className="sbi-work sbi-work-empty">
+              <span className="sbi-gap">
+                <span className="sbi-nail" />
+              </span>
+              <span className="sbi-plate mono-label">{theirs(t, f.id)}</span>
+            </span>
+          ),
+        )}
+      </div>
     </div>
   );
 }
@@ -303,6 +359,8 @@ export function SbsIncluded() {
           onFocus={() => setHeld(true)}
           onBlur={() => setHeld(false)}
         >
+          <div className="sbi-walls">
+          <figure className="sbi-wall-fig">
           <div ref={wall} className="sbi-wall" style={{ ["--col" as string]: col, ["--row" as string]: row }}>
             <span aria-hidden="true" className="sbi-beam" />
             <span aria-hidden="true" className="sbi-light" />
@@ -340,6 +398,19 @@ export function SbsIncluded() {
               })}
             </div>
           </div>
+            <figcaption className="sbi-wall-cap">
+              <span className="sbi-rule" />
+              nevima
+            </figcaption>
+          </figure>
+          <figure className="sbi-wall-fig">
+            <TheirWall list={list} t={t} col={col} row={row} />
+            <figcaption className="sbi-wall-cap">
+              <span className="sbi-rule" />
+              {t("Traditional agencies", "Agências tradicionais")}
+            </figcaption>
+          </figure>
+          </div>
 
           <div className="sbi-side">
             <div className="sbi-cartel-head mono-label" aria-hidden="true">
@@ -352,6 +423,18 @@ export function SbsIncluded() {
             <div className="sbi-labels" aria-live={held ? "polite" : "off"}>
               {list.map((f, i) => (
                 <Label key={f.id} f={f} n={i + 1} total={n} active={i === at} still={reduce} id={`sbi-panel-${f.id}`} tabId={`sbi-tab-${f.id}`} />
+              ))}
+            </div>
+          </div>
+
+          <div className="sbi-them">
+            <div className="sbi-cartel-head mono-label" aria-hidden="true">
+              <span className="sbi-rule" />
+              <span>{t("Traditional agencies", "Agências tradicionais")}</span>
+            </div>
+            <div className="sbi-labels" aria-live={held ? "polite" : "off"}>
+              {list.map((f, i) => (
+                <Theirs key={f.id} f={f} t={t} active={i === at} />
               ))}
             </div>
           </div>
