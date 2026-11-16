@@ -5387,7 +5387,27 @@
   }
   @media (min-width: 900px) {
     .svd-plate { position: relative; }
+    /* The two places where the white leaves the photograph were square
+       corners, and the dark came to a point at each (user, 2026-11-16:
+       "troca só aqueles bicos por redondo"). Each is filled with a
+       quarter of the page's white, masked to leave a disc of the
+       photograph behind it, so the dark turns instead of ending. */
+    .svd-sheet::before,
+    .svd-sheet::after {
+      content: "";
+      position: absolute;
+      width: var(--svd-cut);
+      height: var(--svd-cut);
+      background: var(--color-paper);
+      -webkit-mask-image: radial-gradient(circle var(--svd-cut) at 0 0, transparent calc(100% - 0.5px), #000 100%);
+      mask-image: radial-gradient(circle var(--svd-cut) at 0 0, transparent calc(100% - 0.5px), #000 100%);
+    }
+    /* at the foot, on the left of the block */
+    .svd-sheet::before { left: calc(var(--svd-cut) * -1); bottom: 0; }
+    /* above the block, at the photograph's right edge */
+    .svd-sheet::after { right: 0; top: calc(var(--svd-cut) * -1); }
     .svd-sheet {
+      --svd-cut: 1.75rem;
       position: absolute;
       /* A pixel past the photograph's own edge, so the curve it is cut
          into never shows along the join. */
