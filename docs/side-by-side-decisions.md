@@ -686,3 +686,12 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   and the fade reveals the website. The ground is the hero photograph's
   own sky (#abadbf to #bfc0cd) taken a little towards violet (#d0cee2 to
   #aeabc8), with a soft shadow under the symbol.
+- 2026-11-17 (user): the four steps are a carousel as the hero's reviews
+  are: a strip of the four cards, twice over so the lap has no seam,
+  sliding a lap every 40s and held under the pointer. The sliding-ease
+  bars are only the strip's band (Noite, rounded as the cards), not the
+  whole section, which is back on the page's white with its title,
+  cost and link.
+- 2026-11-17 (user): the symbol beside the five kinds stands level with
+  the top of the kind being read, starting with the first; its place is
+  read off the rows themselves (`--y`), so it follows the list down.

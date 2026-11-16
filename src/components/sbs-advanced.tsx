@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { PilarLogo, PilarReviews, pilarCopy, pilarDisplay, pilarMono, pilarSans, useLapStep } from "./sbs-pilar";
 import SlidingEaseVerticalBars from "./ui/sliding-ease";
 import { useT } from "@/lib/use-lang";
@@ -78,7 +79,30 @@ function Rings({ className, count, cx, cy, r0, step, w, h }: {
 export function Advanced({ t }: { t: T }) {
   const { lines, steps } = pilarCopy(t);
   const kinds = useLapStep(lines.length, { name: LAP, from: 0.27, to: 0.46, reset: 0.2 });
-  const walk = useLapStep(steps.length, { name: LAP, from: 0.64, to: 0.86, reset: 0.58 });
+
+  /* The symbol beside the kinds sits level with the top of the one being
+     read: its place is read off the rows themselves (their tops, all
+     closed but the one read, which opens below its own top), so it starts
+     level with the first and goes down with the list. */
+  const rowsRef = useRef<HTMLDivElement>(null);
+  const [rowTops, setRowTops] = useState<number[]>([]);
+  useEffect(() => {
+    const box = rowsRef.current;
+    if (!box) return;
+    const read = () => {
+      const rows = [...box.querySelectorAll<HTMLElement>(".sbs-a-kind")];
+      if (!rows.length) return;
+      // a closed row's height, from any row not open
+      const closed = rows.find((r) => !r.hasAttribute("data-on")) ?? rows[0];
+      const h = closed.offsetHeight;
+      setRowTops(rows.map((_, i) => rows[0].offsetTop + i * h));
+    };
+    read();
+    document.fonts?.ready.then(read);
+    const size = new ResizeObserver(read);
+    size.observe(box);
+    return () => size.disconnect();
+  }, []);
 
   const about = [
     t("Contents, building and liability, for owners and tenants.", "Recheio, edifício e responsabilidade civil, para proprietários e inquilinos."),
@@ -153,12 +177,17 @@ export function Advanced({ t }: { t: T }) {
 
       {/* 2 · The five kinds of insurance, after Palais de Tokyo: the list
           on the right, the symbol in depth travelling to the one read. */}
-      <div ref={kinds.box} className="sbs-a-index sbs-a-wipe" data-stop style={{ ["--at" as string]: kinds.at }}>
+      <div
+        ref={kinds.box}
+        className="sbs-a-index sbs-a-wipe"
+        data-stop
+        style={{ ["--at" as string]: kinds.at, ["--y" as string]: `${rowTops[kinds.at] ?? 0}px` }}
+      >
         <Rings className="sbs-a-contour" count={16} cx={900} cy={0} r0={120} step={26} w={900} h={560} />
         <div className="sbs-a-kinds-mark">
           <Solid className="sbs-a-kinds-solid" style={{ ["--ry" as string]: `${-38 + kinds.at * 14}deg` }} />
         </div>
-        <div className="sbs-a-kinds">
+        <div ref={rowsRef} className="sbs-a-kinds">
           <p className="sbs-a-kicker">{t("Insurance", "Seguros")}</p>
           {lines.map((line, i) => (
             <div key={line} className="sbs-a-kind" data-on={i === kinds.at || undefined} style={{ ["--i" as string]: i }}>
@@ -225,16 +254,11 @@ export function Advanced({ t }: { t: T }) {
         </div>
       </div>
 
-      {/* 4 · The four steps: a carousel, one card at a time with the next
-          showing, over the sliding-ease bars in Pilar's colours. */}
-      <div ref={walk.box} className="sbs-a-how sbs-a-wipe" data-stop style={{ ["--at" as string]: walk.at }}>
-        <SlidingEaseVerticalBars
-          className="sbs-a-bars"
-          backgroundColor="#111525"
-          lineColor="#262a3b"
-          barColor="#434655"
-          animationSpeed={0.004}
-        />
+      {/* 4 · The four steps: a carousel as the reviews in the hero are (a
+          strip sliding on its own, held under the pointer), on a band of
+          the user's sliding-ease bars in Pilar's colours; the rest of the
+          section on the page's white. */}
+      <div className="sbs-a-how sbs-a-wipe" data-stop>
         <div className="sbs-a-how-head">
           <h4>
             <span>{t("Four steps.", "Quatro passos.")}</span>{" "}
@@ -251,32 +275,28 @@ export function Advanced({ t }: { t: T }) {
           </div>
         </div>
 
-        <div className="sbs-a-rail">
-          <div className="sbs-a-track">
-            {steps.map(([name, text], i) => (
-              <button
-                key={name}
-                type="button"
-                tabIndex={-1}
-                className="sbs-a-card"
-                data-on={i === walk.at || undefined}
-                data-past={i < walk.at || undefined}
-                onClick={() => walk.go(i)}
-              >
-                <span className="sbs-a-card-num">
-                  {String(i + 1).padStart(2, "0")} <i>/ {String(steps.length).padStart(2, "0")}</i>
-                </span>
-                <b>{name}</b>
-                <span className="sbs-a-card-text">{text}</span>
-              </button>
-            ))}
+        <div className="sbs-a-carousel">
+          <SlidingEaseVerticalBars
+            className="sbs-a-bars"
+            backgroundColor="#111525"
+            lineColor="#262a3b"
+            barColor="#434655"
+            animationSpeed={0.004}
+          />
+          <div className="sbs-a-strip">
+            {/* Twice over, so the lap closes without a seam. */}
+            <div className="sbs-a-belt">
+              {[...steps, ...steps].map(([name, text], i) => (
+                <div key={i} className="sbs-a-card">
+                  <span className="sbs-a-card-num">
+                    {String((i % steps.length) + 1).padStart(2, "0")} <i>/ {String(steps.length).padStart(2, "0")}</i>
+                  </span>
+                  <b>{name}</b>
+                  <span className="sbs-a-card-text">{text}</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-
-        <div className="sbs-a-ticks">
-          {steps.map(([name], i) => (
-            <span key={name} data-on={i === walk.at || undefined} data-past={i < walk.at || undefined} />
-          ))}
         </div>
       </div>
 

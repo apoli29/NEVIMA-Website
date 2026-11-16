@@ -4523,17 +4523,18 @@
   }
   .sbs-a-contour ellipse { stroke: rgb(168 170 188 / 0.24); }
   .sbs-a-kinds-mark { position: relative; }
-  /* the symbol travels to the row being read: rows are ~78px apart */
+  /* the symbol travels to the row being read, level with its top (--y,
+     read off the rows in sbs-advanced.tsx) */
   .sbs-a-kinds-solid {
     position: absolute;
-    top: 30px;
-    left: 40px;
-    width: 150px;
-    height: 150px;
+    top: 0;
+    left: 60px;
+    width: 120px;
+    height: 120px;
     --face: linear-gradient(180deg, #fff, var(--p-nevoa));
     --side-a: var(--p-grafite);
     --side-b: #0a0d18;
-    translate: 0 calc(var(--at, 0) * 76px);
+    translate: 0 var(--y, 0px);
     transition: translate 0.9s var(--a-ease);
   }
   .sbs-a-kicker { position: relative; display: block; margin: 0 0 14px; font-family: var(--p-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--p-nevoa); }
@@ -4602,58 +4603,57 @@
   .sbs-a-foot-cell .sbs-p-wide { display: inline-block; margin: 0; padding: 12px 22px; }
   .sbs-a-why { grid-column: 3; grid-row: 6; text-align: left; font-size: 12.5px; line-height: 1.45; color: #dcdde5; }
 
-  /* 4 · the steps: a carousel over the sliding-ease bars ----------------- */
-  .sbs-a-how { overflow: hidden; padding: 60px 0 46px; color: #fff; background: var(--p-noite); }
-  .sbs-a-bars { position: absolute; inset: 0; z-index: -1; opacity: 0.85; }
+  /* 4 · the steps: a carousel as the hero's reviews are, on a band of
+     the sliding-ease bars; the section itself on the page's white */
+  .sbs-a-how { padding: 60px 60px 62px; border-top: 1px solid #ececf1; background: #fff; }
+  .sbs-a-how-head { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: end; padding-bottom: 34px; }
+  .sbs-a-how-head h4 { margin: 0; font-family: var(--p-display); font-weight: 400; font-size: 40px; line-height: 1.04; letter-spacing: -0.015em; }
+  .sbs-a-how-head h4 span { display: block; }
+  .sbs-a-how-head p { margin: 0; font-size: 14.5px; line-height: 1.6; }
+  .sbs-a-carousel {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    height: 268px;
+    border-radius: 14px;
+    background: var(--p-noite);
+  }
+  .sbs-a-bars { position: absolute; inset: 0; z-index: -1; }
   .sbs-a-bars::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgb(17 21 37 / 0.88) 0%, rgb(17 21 37 / 0.15) 40%, rgb(17 21 37 / 0.15) 70%, rgb(17 21 37 / 0.8) 100%);
+    background: radial-gradient(90% 120% at 50% 50%, rgb(17 21 37 / 0.1), rgb(17 21 37 / 0.6));
   }
-  .sbs-a-how-head { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: end; padding: 0 60px 34px; }
-  .sbs-a-how-head h4 { margin: 0; font-family: var(--p-display); font-weight: 400; font-size: 40px; line-height: 1.04; letter-spacing: -0.015em; }
-  .sbs-a-how-head h4 span { display: block; }
-  .sbs-a-how-head p { margin: 0; font-size: 14.5px; line-height: 1.6; color: rgb(255 255 255 / 0.78); }
-  .sbs-a-how .sbs-p-go { border-bottom-color: #fff; color: #fff; }
-  .sbs-a-rail { padding-left: 60px; }
-  /* one card at a time, the next one showing on the right */
-  .sbs-a-track {
-    display: flex;
-    gap: 20px;
-    translate: calc(var(--at, 0) * -420px) 0;
-    transition: translate 0.9s var(--a-ease);
+  .sbs-a-strip {
+    width: 100%;
+    overflow: hidden;
+    mask-image: linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%);
   }
+  .sbs-a-belt { display: flex; gap: 14px; width: max-content; padding: 0 14px; }
+  .sbs-run .sbs-a-belt { animation: sbs-a-belt 40s linear infinite; }
+  .sbs-a-strip:hover .sbs-a-belt { animation-play-state: paused; }
+  @keyframes sbs-a-belt { to { translate: calc(-50% - 7px) 0; } }
   .sbs-a-card {
     flex: none;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    width: 400px;
-    min-height: 230px;
-    padding: 26px 28px 28px;
-    border: 1px solid rgb(255 255 255 / 0.12);
-    border-radius: 14px;
-    background: rgb(17 21 37 / 0.78);
-    font: inherit;
+    gap: 10px;
+    width: 300px;
+    min-height: 196px;
+    padding: 22px 22px 24px;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    border-radius: 12px;
+    background: rgb(17 21 37 / 0.72);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
     color: #fff;
-    text-align: left;
-    cursor: pointer;
-    opacity: 0.4;
-    scale: 0.94;
-    transform-origin: 0 50%;
-    transition: opacity 0.7s var(--a-ease), scale 0.9s var(--a-ease), border-color 0.7s ease;
   }
-  .sbs-a-card[data-on] { opacity: 1; scale: 1; border-color: rgb(168 170 188 / 0.45); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08); }
-  .sbs-a-card[data-past] { opacity: 0; }
   .sbs-a-card-num { font-family: var(--p-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--p-nevoa); }
   .sbs-a-card-num i { font-style: normal; opacity: 0.6; }
-  .sbs-a-card b { margin-top: auto; font-family: var(--p-display); font-weight: 400; font-size: 40px; line-height: 1.04; letter-spacing: -0.02em; }
-  .sbs-a-card-text { max-width: 32ch; font-size: 14.5px; line-height: 1.5; color: rgb(255 255 255 / 0.74); }
-  .sbs-a-ticks { display: flex; gap: 8px; padding: 26px 60px 0; }
-  .sbs-a-ticks span { position: relative; flex: 1; height: 2px; overflow: hidden; background: rgb(255 255 255 / 0.14); }
-  .sbs-a-ticks span::after { content: ""; position: absolute; inset: 0; background: #fff; scale: 0 1; transform-origin: 0 50%; transition: scale 0.9s var(--a-ease); }
-  .sbs-a-ticks span[data-past]::after, .sbs-a-ticks span[data-on]::after { scale: 1 1; }
+  .sbs-a-card b { margin-top: auto; font-family: var(--p-display); font-weight: 400; font-size: 32px; line-height: 1.04; letter-spacing: -0.02em; }
+  .sbs-a-card-text { font-size: 13.5px; line-height: 1.5; color: rgb(255 255 255 / 0.74); }
 
   /* 5 · the foot: the closing band on rings, the symbol large in depth */
   .sbs-a-foot { padding-top: 40px; }
@@ -4812,7 +4812,7 @@
 
   .sbs-run .sbs-a-how-head > * { animation: sbs-a-how var(--sbs-loop) linear infinite both; }
   .sbs-run .sbs-a-how-head > * + * { animation-delay: 0.1s; }
-  .sbs-run .sbs-a-rail { animation: sbs-a-how var(--sbs-loop) linear infinite both; animation-delay: 0.2s; }
+  .sbs-run .sbs-a-carousel { animation: sbs-a-how var(--sbs-loop) linear infinite both; animation-delay: 0.2s; }
   @keyframes sbs-a-how {
     0%, 62% { opacity: 0; translate: 0 18px; animation-timing-function: var(--a-ease); }
     67%, 97% { opacity: 1; translate: 0 0; }
@@ -4828,13 +4828,13 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .sbs-a-turn, .sbs-a-kinds-solid, .sbs-a-track, .sbs-a-card, .sbs-a-about, .sbs-a-ticks span::after { transition: none; }
+    .sbs-a-turn, .sbs-a-kinds-solid, .sbs-a-about { transition: none; }
   }
 
   /* the narrow page, on a phone (620px, as the comparison's) */
   @media (max-width: 899.98px) {
     .sbs-a-index { grid-template-columns: 150px 1fr; gap: 14px; padding: 48px 36px 52px; }
-    .sbs-a-kinds-solid { left: 10px; width: 110px; height: 110px; translate: 0 calc(var(--at, 0) * 66px); }
+    .sbs-a-kinds-solid { left: 10px; width: 100px; height: 100px; }
     .sbs-a-kind { grid-template-columns: 40px 1fr; }
     .sbs-a-kind b { font-size: 42px; }
     .sbs-a-sheet { padding: 48px 36px 52px; }
@@ -4845,12 +4845,8 @@
     .sbs-a-tr[data-first] .sbs-a-cell:not(.sbs-a-th) { font-size: 18px; }
     .sbs-a-tr[data-first] .sbs-a-cell[data-pick] { font-size: 22px; }
     .sbs-a-foot-cell .sbs-p-wide { padding: 10px 12px; font-size: 11.5px; white-space: nowrap; }
-    .sbs-a-how { padding: 48px 0 40px; }
-    .sbs-a-how-head { grid-template-columns: 1fr; gap: 16px; padding: 0 36px 28px; }
-    .sbs-a-rail { padding-left: 36px; }
-    .sbs-a-track { translate: calc(var(--at, 0) * -380px) 0; }
-    .sbs-a-card { width: 360px; }
-    .sbs-a-ticks { padding: 22px 36px 0; }
+    .sbs-a-how { padding: 48px 36px 52px; }
+    .sbs-a-how-head { grid-template-columns: 1fr; gap: 16px; padding-bottom: 28px; }
     .sbs-a-foot { padding: 32px 36px 0; }
     .sbs-a-band { flex-direction: column; align-items: flex-start; gap: 22px; padding: 40px 28px; }
     .sbs-a-band h4 { font-size: 30px; }
