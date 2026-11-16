@@ -282,6 +282,45 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   site's own pixels. A black veil sits behind the answer so the points
   never cross the words. Drawn at 30 frames a second, only while seen.
 
+## Personalization, third pass (2026-11-16, user)
+
+- The user: the card's grey ground and its Website / Landing page
+  buttons (out of shape) were not the site's. The card is now on the
+  page's own white, ruled by hairlines, and the switch is the shared one
+  (`sbx-switch`, as the bar's cells), played rather than pressed.
+- What it plays (user's order): the kinds of business the proposal form
+  asks about (SECTORS) float about the card; two seconds later one is
+  chosen (it fills with ink as the bar's button fills, takes a tick, the
+  rest fall away, and it goes up to the corner); the switch settles on a
+  website or a landing page; only then does the frame come in and the
+  website put itself together as that kind of business usually has it.
+  Three in turn: a restaurant (website: photograph, menu with prices,
+  table booking), a clinic (landing page: split hero, three treatments,
+  a band to book), an estate agent (website: a search, three houses with
+  price and size). The businesses are invented (Maré, Alvor, Casa Norte).
+  Titles and buttons are real words; the body is a doctor's hand (a
+  generated scrawl drawn on) or empty lines, as the user asked.
+- Between two businesses the inverting sheet crosses (kept from the
+  second pass), so they alternate in positive and negative instead of
+  looping. Driven by one small clock in React (phases float, pick,
+  build, out), only while the card is seen; less motion shows the first
+  website built.
+- The three steps under the card now read: the business, website or
+  landing page, the website; each lit while it happens.
+- On a phone the board is 5:4 and shows eight businesses (the chosen
+  ones always among them).
+- The subsection (user): instead of the prompt over lit points, a
+  drawing of a video call, as by hand (an SVG turbulence filter gives
+  every stroke a tremor): António and Emanuel in one window, the client
+  in the other, a dashed line between them. Each time one speaks, a
+  cloud rises over them and the line fills from the speaker to the
+  listener, who answers, and it fills back. Four lines, in the client's
+  voice and ours: "Landing page ou website?" / "Quantos serviços há para
+  mostrar?" / "Cinco, cada um com os seus preços." / "Então um website,
+  com uma página para cada serviço." The answer and the proposal button
+  (the dark drop, on white) sit under the drawing. No dark card: it is
+  on the page's white, under a hairline.
+
 ## Open
 
 - Nothing open from the clinic version; Pilar settles both questions.
