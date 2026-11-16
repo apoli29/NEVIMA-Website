@@ -18,8 +18,8 @@ import * as THREE from "three";
    across the metal while the symbol stays face on.
 
    It plays on the page's own loop (sbs-a-scroll), read every frame: the
-   symbol held face on, floating and swaying, with the light moving
-   (0-7%), settled and centred by then; the camera then flies along the
+   symbol turning in one continuous move from a tilt to face on, with the
+   light moving (0-7%); the camera then flies along the
    line to the square of the P and through it (7-14.5%); the CSS
    fade over it reveals the website. It draws only while the opening can
    be seen (before 18% and after 96% of a lap) and only on screen; a
@@ -260,13 +260,15 @@ export function PilarMetal({ className }: { className?: string }) {
       scene.environmentRotation.set(0.04 * Math.sin(time * 0.35), 0.16 * Math.sin(time * 0.22), 0);
       key.position.set(-40 + 30 * Math.sin(time * 0.3), 60, 80);
 
-      // held (0-7% of the lap): a slow float and a wider sway, which
-      // settle to face on and centred by 7%, so nothing moves into place
-      // when the flight begins (user, 2026-11-17)
-      const settle = p > 0.96 ? 1 : 1 - inOut(Math.min(1, Math.max(0, (p - 0.045) / 0.025)));
-      symbol.rotation.y = 0.24 * Math.sin(time * 0.32) * settle;
-      symbol.rotation.x = 0.1 * Math.sin(time * 0.24 + 1.2) * settle;
-      symbol.position.y = 2.2 * Math.sin(time * 0.4) * settle;
+      // held (0-7% of the lap): one continuous move, read off the loop and
+      // not off the clock, so it is the same every time: the symbol comes
+      // in tilted and turns, without a pause or a change of pace, to face
+      // on, arriving there as the flight begins (user, 2026-11-17: the
+      // settling had been abrupt)
+      const turn = p > 0.96 ? 0 : 0.5 - 0.5 * Math.cos(Math.PI * Math.min(1, p / 0.07));
+      symbol.rotation.y = 0.26 * (1 - turn);
+      symbol.rotation.x = -0.08 * (1 - turn);
+      symbol.position.y = 1.6 * (1 - turn);
 
       // the flight (7-14.5%): the camera moves along the line from where it
       // stands to the square of the P and on through it, still looking

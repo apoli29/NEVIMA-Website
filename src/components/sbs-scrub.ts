@@ -34,7 +34,12 @@ type Point = [time: number, stop: number];
    (user, 2026-11-17: on the Advanced page the holds' effects, the flight
    and the kinds, raced by in a few pixels of scroll); the page itself
    still moves on its own continuous course (placeAt). */
-const LAPS: Record<string, { points: Point[]; ease: [number, number, number, number]; hold: number; even?: number }> = {
+/* `auto`, when set, is the part of the loop that plays on its own even by
+   hand, the scroll held until it is over: the Advanced page's opening
+   (the metal symbol, the flight through the P and the fade), 0-20%
+   (user, 2026-11-17: "fica sem poderem dar scroll, acontece normalmente").
+   The scroll then starts after it and does not go back into it. */
+const LAPS: Record<string, { points: Point[]; ease: [number, number, number, number]; hold: number; even?: number; auto?: number }> = {
   "sbs-scroll": {
     points: [[0, 0], [0.13, 0], [0.17, 1], [0.28, 1], [0.32, 2], [0.43, 2], [0.47, 3], [0.8, 3], [0.84, 4], [0.94, 4]],
     ease: [0.22, 1, 0.36, 1],
@@ -45,6 +50,7 @@ const LAPS: Record<string, { points: Point[]; ease: [number, number, number, num
     ease: [0.65, 0, 0.35, 1],
     hold: 1500,
     even: 5200,
+    auto: 0.2,
   },
 };
 
@@ -89,7 +95,7 @@ function plan(page: HTMLElement) {
     segments.push({ t0, t1, v0: v, len, move, stop: s1 });
     v += len;
   }
-  return { segments, length: v, ease: bezier(lap.ease), even: !!lap.even, end: lap.points[lap.points.length - 1][0] };
+  return { segments, length: v, ease: bezier(lap.ease), even: !!lap.even, auto: lap.auto ?? 0, end: lap.points[lap.points.length - 1][0] };
 }
 
 function timeAt(p: ReturnType<typeof plan>, v: number) {
@@ -117,7 +123,14 @@ function scrollAt(p: ReturnType<typeof plan>, t: number) {
 function placeAt(p: ReturnType<typeof plan>, page: HTMLElement, v: number) {
   const stop = (n: number) => (n === 0 ? 0 : Math.abs(parseFloat(getComputedStyle(page).getPropertyValue(`--sbs-stop-${n}`)) || 0));
   const knots: [number, number][] = [[0, 0]];
-  for (const seg of p.segments) if (!seg.move) knots.push([seg.v0 + seg.len / 2, stop(seg.stop)]);
+  // the page stands at the top until any opening that plays on its own is
+  // over, so nothing jumps when the scroll takes over from it
+  const after = p.auto ? scrollAt(p, p.auto) : 0;
+  for (const seg of p.segments) {
+    if (seg.move) continue;
+    const mid = seg.v0 + seg.len / 2;
+    knots.push([seg.stop === 0 ? Math.max(after, mid) : mid, stop(seg.stop)]);
+  }
   knots.push([p.length, knots[knots.length - 1][1]]);
   const at = Math.max(0, Math.min(p.length, v));
   for (let i = 1; i < knots.length; i++) {
@@ -158,6 +171,9 @@ export function usePlateScrub(
     let current = 0;
     let frame = 0;
     let started = false;
+    // the opening playing on its own (Advanced), the scroll held meanwhile
+    let opening = false;
+    let floor = 0;
 
     // Every effect is held at the loop's moment for this scroll; the page
     // itself is then put where the continuous scroll wants it, by moving
@@ -191,9 +207,27 @@ export function usePlateScrub(
       const run = anims.find((a) => (a as CSSAnimation).animationName in LAPS) ?? anims[0];
       const delay = (run.effect?.getTiming().delay as number) || 0;
       const t = ((((Number(run.currentTime) || 0) - delay) % ms) + ms) % ms / ms;
-      target = current = scrollAt(measured, t);
+      floor = measured.auto ? scrollAt(measured, measured.auto) : 0;
+      if (measured.auto && t < measured.auto) {
+        // the opening plays on, untouched, and the scroll waits for it
+        opening = true;
+        for (const screen of screens()) for (const a of loopsOf(screen).anims) a.play();
+        target = current = floor;
+        return true;
+      }
+      target = current = Math.max(floor, scrollAt(measured, t));
       seekAll(current);
       return true;
+    };
+
+    /** The loop's moment on the newest plate, while it runs. */
+    const now = () => {
+      const all = screens();
+      const { anims, ms } = loopsOf(all[all.length - 1]);
+      const run = anims.find((a) => (a as CSSAnimation).animationName in LAPS) ?? anims[0];
+      if (!run || !ms) return 0;
+      const delay = (run.effect?.getTiming().delay as number) || 0;
+      return ((((Number(run.currentTime) || 0) - delay) % ms) + ms) % ms / ms;
     };
 
     const tick = () => {
@@ -203,6 +237,14 @@ export function usePlateScrub(
         return;
       }
       if (!measured) return;
+      if (opening) {
+        // over when the loop has played to the end of the opening
+        if (now() < measured.auto) return;
+        opening = false;
+        target = current = floor;
+        seekAll(current);
+        return;
+      }
       const gap = target - current;
       if (Math.abs(gap) < 0.2) return;
       // a soft follow, so the page glides after the wheel
@@ -214,7 +256,8 @@ export function usePlateScrub(
     const k = (el: HTMLElement) => parseFloat(getComputedStyle(el).getPropertyValue("--sbs-k")) || 0.5;
     const nudge = (by: number) => {
       if (!measured) return false;
-      const next = Math.max(0, Math.min(measured.length, target + by * speed));
+      if (opening) return true;
+      const next = Math.max(floor, Math.min(measured.length, target + by * speed));
       const moved = next !== target;
       target = next;
       return moved;

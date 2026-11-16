@@ -789,3 +789,11 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   P and the kinds no longer race by in a few pixels while the moves
   crawl. The larger window takes 85% of the wheel or the drag, and the
   page follows the input more softly (a tenth of the gap per frame).
+- 2026-11-17 (user): by hand, the Advanced opening plays on its own (the
+  metal symbol, the flight through the P, the fade: the first 20% of the
+  loop), the scroll held meanwhile; the scroll then takes over from the
+  top of the page, without a jump, and does not go back into it. The
+  symbol no longer sways and then settles: it comes in tilted and turns
+  to face on in one continuous move over the whole hold (an even ease),
+  read off the loop rather than the clock, so it is the same every time
+  and arrives face on as the flight begins.
