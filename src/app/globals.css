@@ -4481,14 +4481,14 @@
   /* two walls, ours and theirs, then the two labels under them, then the time */
   .sbi-room {
     display: grid;
-    grid-template-areas: "walls" "them" "side" "time";
+    grid-template-areas: "time" "walls" "them" "side";
     gap: 2rem;
     margin-top: clamp(2.5rem, 5vw, 4rem);
   }
   @media (min-width: 768px) {
     .sbi-room {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      grid-template-areas: "walls walls" "them side" "time time";
+      grid-template-areas: "time time" "walls walls" "them side";
       column-gap: clamp(1.25rem, 2.5vw, 2rem);
       row-gap: 2rem;
     }
@@ -4676,9 +4676,10 @@
   .sbi-aside-lead { color: var(--color-ash-2); }
 
   /* the time: one hairline per work, after Pace Gallery's */
-  .sbi-time { grid-area: time; display: flex; align-items: center; gap: clamp(1rem, 3vw, 2.5rem); }
-  .sbi-ticks { flex: 1; display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; }
-  .sbi-tick { position: relative; height: 1.25rem; cursor: pointer; }
+  /* over the walls, smaller (user, 2026-11-17) */
+  .sbi-time { grid-area: time; display: flex; align-items: center; gap: clamp(1rem, 2.5vw, 2rem); margin-bottom: -0.75rem; }
+  .sbi-ticks { flex: 1; display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; }
+  .sbi-tick { position: relative; height: 1rem; cursor: pointer; }
   .sbi-tick::before {
     content: "";
     position: absolute;
@@ -4706,35 +4707,25 @@
   }
   .sbi-tick-fill[data-run] { animation-play-state: running; }
   @keyframes sbi-fill { from { scale: 0 1; } to { scale: 1 1; } }
-  .sbi-keys { display: flex; box-shadow: inset 0 0 0 1px var(--color-hair-strong); }
+  /* one black block, no rules between the keys (user, 2026-11-17) */
+  .sbi-keys { display: flex; padding: 0 0.2rem; background: var(--color-ink); }
   .sbi-key {
     position: relative;
     isolation: isolate;
     display: grid;
     place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    color: var(--color-ink);
+    width: 2.15rem;
+    height: 2.15rem;
+    color: rgb(255 255 255 / 0.72);
     cursor: pointer;
     transition: color 0.45s cubic-bezier(0.65, 0, 0.35, 1);
   }
-  .sbi-key + .sbi-key { box-shadow: inset 1px 0 0 var(--color-hair-strong); }
-  /* the ink fills it from the left, as the bar's proposal button fills */
-  .sbi-key::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: var(--color-ink);
-    clip-path: inset(0 100% 0 0);
-    transition: clip-path 0.45s cubic-bezier(0.65, 0, 0.35, 1);
-  }
   .sbi-key:hover,
-  .sbi-key:focus-visible { color: var(--color-paper); }
-  .sbi-key:hover::before,
-  .sbi-key:focus-visible::before { clip-path: inset(0 0 0 0); }
-  .sbi-key:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 2px; }
-  .sbi-key svg { width: 0.9rem; height: 0.9rem; }
+  .sbi-key:focus-visible { color: #fff; }
+  .sbi-key:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 3px; }
+  .sbi-key svg { width: 0.95rem; height: 0.95rem; transition: translate 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+  .sbi-key:hover .sbi-key-back { translate: -2px 0; }
+  .sbi-key:hover .sbi-key-fwd { translate: 2px 0; }
 
   /* ---- two levels: one plate, two builds of the same section -------- */
   /* On a phone the plate comes between the words and the switch, so the

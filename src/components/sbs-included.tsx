@@ -457,24 +457,24 @@ export function SbsIncluded() {
             </div>
             <div className="sbi-keys">
               <Key label={t("Previous", "Anterior")} onClick={() => go(at - 1)}>
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-                  <path d="M13 8H3M7 4 3 8l4 4" />
+                <svg className="sbi-key-back" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M14.5 8h-13M5 4.5 1.5 8 5 11.5" />
                 </svg>
               </Key>
               <Key label={playing ? t("Pause", "Pausar") : t("Play", "Reproduzir")} onClick={() => setPlaying((p) => !p)}>
                 {playing ? (
-                  <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                    <path d="M4.5 3h2.25v10H4.5zM9.25 3h2.25v10H9.25z" />
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" aria-hidden="true">
+                    <path d="M6 3.5v9M10 3.5v9" />
                   </svg>
                 ) : (
-                  <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                    <path d="M5 3l8 5-8 5z" />
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5.5 3.5 12 8l-6.5 4.5z" />
                   </svg>
                 )}
               </Key>
               <Key label={t("Next", "Seguinte")} onClick={() => go(at + 1)}>
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-                  <path d="M3 8h10M9 4l4 4-4 4" />
+                <svg className="sbi-key-fwd" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M1.5 8h13M11 4.5 14.5 8 11 11.5" />
                 </svg>
               </Key>
             </div>
