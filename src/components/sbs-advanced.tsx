@@ -135,6 +135,7 @@ export function Advanced({ t }: { t: T }) {
             )}
           </p>
           <span className="sbs-p-pill sbs-p-ghost">{t("Get a quote", "Pedir simulação")}</span>
+          <span className="sbs-p-pill sbs-p-ghost">{t("Where to find us", "Onde nos encontrar")}</span>
         </div>
 
         <PilarReviews t={t} />
