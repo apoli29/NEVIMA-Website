@@ -1557,8 +1557,8 @@
     --pad-x: calc(var(--pad) * 2);
     min-height: calc(var(--ph) + var(--pad) * 2 + 1.25rem);
     background:
-      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0) 46%),
-      #e1e1de;
+      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0) 42%),
+      #0b0b0b;
   }
   @media (min-width: 768px) {
     .svc-card { --ph: 3.5rem; --pad: 1.25rem; --gap: 1.25rem; --pad-x: calc(var(--pad) * 3); }
@@ -3899,8 +3899,8 @@
     z-index: -1;
     pointer-events: none;
     background:
-      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0) 46%),
-      #e1e1de;
+      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0) 42%),
+      #0b0b0b;
   }
   .sbs-ground::after {
     content: "";
@@ -3919,8 +3919,8 @@
 
   .sbs-cap { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.75rem; }
   /* The template's name is held back a tone, so ours reads as the answer. */
-  .sbs-cap .mono-label { color: var(--color-ink); }
-  .sbs-cap .mono-label[data-quiet] { color: var(--color-ash); }
+  .sbs-cap .mono-label { color: var(--color-paper); }
+  .sbs-cap .mono-label[data-quiet] { color: rgb(255 255 255 / 0.62); }
 
   .sbs-sheet { background: var(--color-paper); }
   /* The address a browser would carry, in the gallery's own label. */
@@ -4311,7 +4311,7 @@
   .sbs-p-foot-legal { display: flex; justify-content: space-between; gap: 16px; padding: 18px 0 24px; border-top: 1px solid rgb(255 255 255 / 0.14); font-size: 12px; color: rgb(255 255 255 / 0.74); }
   .sbs-p-foot-legal > span > span + span { margin-left: 18px; }
 
-  .sbs-note { margin-top: clamp(1.5rem, 3vw, 2.25rem); color: var(--color-ash); text-transform: none; letter-spacing: 0.02em; }
+  .sbs-note { margin-top: clamp(1.5rem, 3vw, 2.25rem); color: rgb(255 255 255 / 0.62); text-transform: none; letter-spacing: 0.02em; }
 
   /* Held still: both pages as they end up, the template's mess included. */
   @media (prefers-reduced-motion: reduce) {
@@ -4507,12 +4507,14 @@
     isolation: isolate;
     overflow: hidden;
     padding: var(--pt) var(--px) var(--pb);
-    /* the black metal of the cards below, the same on both walls */
+    /* a bent sheet of metal, the same on both walls (user's pick of
+       three, 2026-11-16): graphite running to black, one wide curved
+       band of light across it and the fold's edge drawn in it */
     background-color: #0c0c0d;
     background-image:
-      radial-gradient(120% 80% at 12% 0%, rgb(255 255 255 / 0.08), transparent 55%),
-      repeating-linear-gradient(90deg, rgb(255 255 255 / 0.016) 0 1px, transparent 1px 3px),
-      linear-gradient(160deg, #1d1d1f 0%, #0b0b0c 45%, #151517 72%, #0a0a0b 100%);
+      url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 640 300%27 preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3ClinearGradient id=%27s%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%270%27%3E%3Cstop offset=%270%27 stop-color=%27%23fff%27 stop-opacity=%270%27/%3E%3Cstop offset=%27.5%27 stop-color=%27%23fff%27 stop-opacity=%27.22%27/%3E%3Cstop offset=%271%27 stop-color=%27%23fff%27 stop-opacity=%270%27/%3E%3C/linearGradient%3E%3Cfilter id=%27f%27 x=%27-20%25%27 y=%27-50%25%27 width=%27140%25%27 height=%27200%25%27%3E%3CfeGaussianBlur stdDeviation=%2715%27/%3E%3C/filter%3E%3C/defs%3E%3Cpath d=%27M-64 285 C160 60 384 330 704 45 L704 96 C397 375 166 114 -64 336 Z%27 fill=%27url(%23s)%27 filter=%27url(%23f)%27/%3E%3Cpath d=%27M-64 285 C160 60 384 330 704 45%27 fill=%27none%27 stroke=%27%23fff%27 stroke-opacity=%27.18%27 stroke-width=%271%27 vector-effect=%27non-scaling-stroke%27/%3E%3C/svg%3E"),
+      linear-gradient(135deg, #4a4a4d 0%, #1a1a1c 45%, #0c0c0d 100%);
+    background-size: 100% 100%, auto;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), inset 0 0 0 1px rgb(255 255 255 / 0.06);
   }
   /* the light: a pool on the wall over the work that is lit, carried
@@ -4869,32 +4871,27 @@
     isolation: isolate;
     overflow: hidden;
     color: var(--color-paper);
-    background-color: #0c0c0d;
-    background-image:
-      radial-gradient(120% 80% at 12% 0%, rgb(255 255 255 / 0.09), transparent 55%),
-      radial-gradient(90% 70% at 100% 100%, rgb(255 255 255 / 0.045), transparent 60%),
-      repeating-linear-gradient(90deg, rgb(255 255 255 / 0.016) 0 1px, transparent 1px 3px),
-      linear-gradient(160deg, #1d1d1f 0%, #0b0b0c 45%, #151517 72%, #0a0a0b 100%);
+    background: #0b0b0c;
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.12),
-      inset 0 0 0 1px rgb(255 255 255 / 0.06),
+      inset 0 1px 0 rgb(255 255 255 / 0.1),
+      inset 0 0 0 1px rgb(255 255 255 / 0.05),
       0 40px 80px -50px rgb(0 0 0 / 0.6);
   }
-  /* a light crossing the metal, slowly, now and then */
+  /* liquid light (user's pick of three, 2026-11-16): soft pools of light
+     on the black, curved and blurred, drifting slowly, as the light
+     behind the footer drifts */
   .sbx-metal::after {
     content: "";
     position: absolute;
-    inset: 0;
+    inset: -12%;
     z-index: 0;
-    background: linear-gradient(112deg, transparent 38%, rgb(255 255 255 / 0.045) 50%, transparent 62%);
-    background-size: 260% 100%;
-    background-position: 120% 0;
-    animation: sbx-sheen 11s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    background: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1300 600%27 preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3Cfilter id=%27b%27 x=%27-50%25%27 y=%27-50%25%27 width=%27200%25%27 height=%27200%25%27%3E%3CfeGaussianBlur stdDeviation=%2778%27/%3E%3C/filter%3E%3C/defs%3E%3Cg filter=%27url(%23b)%27%3E%3Cpath d=%27M966 329 Q966 329 915 421 Q865 514 733 557 Q600 600 489 542 Q378 485 302 407 Q226 329 274 231 Q321 133 461 82 Q600 31 706 106 Q812 181 889 255 Z%27 fill=%27%23fff%27 opacity=%270.16%27/%3E%3Cpath d=%27M831 104 Q831 104 735 171 Q639 239 542 324 Q446 408 293 363 Q140 318 103 211 Q66 104 124 11 Q182 -81 314 -92 Q446 -102 541 -66 Q636 -30 734 37 Z%27 fill=%27%23fff%27 opacity=%270.09%27/%3E%3Cpath d=%27M897 89 Q897 89 856 136 Q815 183 747 221 Q680 259 594 234 Q509 208 449 148 Q390 89 446 27 Q502 -36 591 -66 Q680 -97 767 -66 Q855 -34 876 27 Z%27 fill=%27%23fff%27 opacity=%270.12%27/%3E%3Cpath d=%27M1146 280 Q1146 280 1098 360 Q1050 441 934 468 Q819 494 716 459 Q614 423 597 351 Q579 280 618 223 Q657 166 738 140 Q819 114 893 145 Q966 176 1056 228 Z%27 fill=%27%23fff%27 opacity=%270.06%27/%3E%3C/g%3E%3C/svg%3E") center / 100% 100% no-repeat;
+    animation: sbx-drift 26s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
     pointer-events: none;
   }
-  @keyframes sbx-sheen {
-    0%, 55% { background-position: 120% 0; }
-    100% { background-position: -20% 0; }
+  @keyframes sbx-drift {
+    from { transform: translate3d(-3%, -2%, 0) scale(1); }
+    to { transform: translate3d(3%, 2.5%, 0) scale(1.06); }
   }
 
   /* ---- personalization: the pages, side by side, then one ---------- */
@@ -5164,18 +5161,6 @@
   /* ---- the call, as motion graphics, in the same metal ------------- */
   .sbp-ask { margin-top: clamp(4.5rem, 9vw, 7.5rem); padding: clamp(1.5rem, 4vw, 3.5rem); }
   .sbp-ask > * { position: relative; z-index: 1; }
-  /* a fine grid on the metal, fading out at its edges */
-  .sbp-ask::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background-image: linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
-    background-size: 48px 48px;
-    -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 40%, #000 30%, transparent 85%);
-    mask-image: radial-gradient(ellipse 70% 70% at 50% 40%, #000 30%, transparent 85%);
-    pointer-events: none;
-  }
   .sbc { --face: clamp(3.75rem, 9vw, 7rem); padding-top: clamp(7.5rem, 13vw, 9.5rem); }
   .sbc-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: start; }
   .sbc-side { display: flex; gap: clamp(0.6rem, 2vw, 1.5rem); }

@@ -384,19 +384,24 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
 ## The comparison in grey (2026-11-16, user)
 
 - The comparison, from its title down to the note under the two pages,
-  is on one grey ground (#e1e1de, the light from the top left and the
-  grain kept), instead of the black stage under a white header: the
-  ground now sits on a wrapper round the header and the stage
-  (`.sbs-top`), so there is no seam. Its type is ink.
+  is on one ground: the ground now sits on a wrapper round the header and
+  the stage (`.sbs-top`), so there is no seam. A light grey was tried
+  first; the user kept the area but wanted the stage's earlier colour
+  back (#0b0b0b, the light from the top left, the grain), so the header
+  is now white type on it too.
 - The two plates are labelled "Designs from other professionals" /
   "Design de outros profissionais" and "Nevima's design" / "Design da
   Nevima" (user's words), in place of "Off-the-shelf template" and
   "nevima". The intro paragraph still speaks of a template; it is the
   user's to change.
-- Open: the user found the cards' backgrounds (the black metal) too
-  straight and square for a site whose own surfaces are gradients and
-  curves; three alternatives were shown as prints (liquid light,
-  contour lines, a bent sheet of metal) before anything is applied.
+- The cards' backgrounds (user: the black metal was too straight and
+  square for a site whose own surfaces are gradients and curves); three
+  were shown as prints and the user chose two: the walls of Included
+  take C, a bent sheet of metal (graphite running to black, one wide
+  curved band of light and the fold's edge); the personalization card
+  and the call card take A, liquid light (soft blurred pools of light on
+  black, drifting slowly, as the footer's light drifts). The fine grid
+  on the call card went with it. Both are SVG embedded in the CSS.
 
 ## Open
 

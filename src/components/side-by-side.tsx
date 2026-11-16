@@ -701,19 +701,19 @@ export function SideBySide() {
     <ProposalHost>
       <FloatingNav />
       <main id="top" className="relative bg-paper">
-        {/* The comparison, from its title to the note under the two pages, on one grey ground (user, 2026-11-16). */}
-        <div className="sbs-top relative isolate">
+        {/* The comparison, from its title to the note under the two pages, on one dark ground, the stage's own (user, 2026-11-16). */}
+        <div className="sbs-top relative isolate text-paper">
           <div aria-hidden="true" className="sbs-ground" />
         <header className="shell pt-[calc(var(--section-gap)+2rem)] pb-[clamp(2.5rem,5vw,4rem)]">
           <SlideIn ready>
-            <p className="mono-label text-ash-2">{t("Side by side", "Lado a lado")}</p>
+            <p className="mono-label text-paper/55">{t("Side by side", "Lado a lado")}</p>
             <h1 className="display mt-7 max-w-[18ch] text-[clamp(2.5rem,6vw,4.75rem)] leading-[0.98]">
               <span className="block font-light">{t("The same business,", "A mesma empresa,")}</span>
               <span className="block font-medium">{t("built twice.", "construída duas vezes.")}</span>
             </h1>
           </SlideIn>
           <SlideIn ready distance={0} delay={0.08}>
-            <p className="mt-8 max-w-[46ch] text-[1.0625rem] leading-[1.55] text-ash">
+            <p className="mt-8 max-w-[46ch] text-[1.0625rem] leading-[1.55] text-paper/70">
               {t(
                 "One website put together from an off-the-shelf template, one of ours. Both start in the same frame and go down the page at the same moments. Everything else is the difference.",
                 "Um website montado a partir de um modelo pré-feito, outro nosso. Começam no mesmo instante e descem a página ao mesmo tempo. Tudo o resto é a diferença.",
@@ -725,7 +725,7 @@ export function SideBySide() {
         <section
           ref={stage}
           aria-labelledby="side-by-side-title"
-          className="sbs-stage relative isolate pt-[clamp(3rem,6vw,5rem)] pb-(--section-gap) text-ink"
+          className="sbs-stage relative isolate pt-[clamp(3rem,6vw,5rem)] pb-(--section-gap) text-paper"
         >
           <h2 id="side-by-side-title" className="sr-only">
             {t("The same insurance broker, as two websites", "A mesma mediadora de seguros, em dois websites")}
