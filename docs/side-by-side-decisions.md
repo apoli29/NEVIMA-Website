@@ -401,3 +401,43 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
 ## Open
 
 - Nothing open from the clinic version; Pilar settles both questions.
+
+## Sixth pass (2026-11-16, user): the other services
+
+- A fifth section under personalization, `sbs-more.tsx`, styled under
+  `.sbm-*`: the three additional services and the one sold inside the
+  web design, written from the studio's brief of 2026-11-11 (the
+  WhatsApp text the user pasted). The user asked for them here rather
+  than on the `/services/…` pages, which stay as they are.
+- Shape: the four one after another ("os quatro em sequência", the
+  user's pick over an index with a way back). Each is a plate taken
+  about 60% from a photographic landing page the user sent: the
+  photograph with a rounded corner (18px, the bar's radius), the
+  service's name laid in the dark at its foot, a white card that
+  overlaps its edge carrying the first thing to say and the
+  free-proposal button, and a row of three facts set as that page sets
+  its figures. Its colour, type and glass are not taken: the
+  photographs are the only colour, and everything on and under them is
+  the site's black, white, Satoshi and Geist Mono. The plates alternate
+  sides so four do not read as a list.
+- No figures anybody would have to invent: the row under each plate
+  carries facts the site already states (Logo / Included, 30 km of Gaia
+  / Travel included within), never a number.
+- No price (the studio has set none, and the site has never shown one):
+  in its place the same free-proposal button the rest of the page uses,
+  which opens the form that works the estimate out (user, 2026-11-16).
+- SEO and GEO: the studio's text arrived cut off mid-sentence, so the
+  title line it gave ("O motor de busca só recomenda websites que
+  comuniquem na sua língua") is kept and the body is the about page's
+  own answer, already written in both languages (user's pick).
+- Photographs, the user's picks from candidates put to him first, and
+  served from Unsplash's CDN as the service cards already are, so
+  nothing is downloaded into the repository: a red wax seal over old
+  letters (Thalia Ruiz) for the visual identity, a watch movement in
+  gold on black (Lukas Tennie) for the back end, a lighthouse at dusk
+  over water (Evgeni Tcherkasski) for SEO and GEO, a lens head on in
+  the dark (Yael Yañez) for the photo shoot. Each carries its credit
+  in the corner.
+- Still missing from the studio: the back end's tools, how they are
+  interlinked, and the prices. The section says what the brief says and
+  nothing more — no tool was named that the studio has not named.

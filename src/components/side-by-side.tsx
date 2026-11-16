@@ -7,7 +7,7 @@ import { FloatingNav } from "./floating-nav";
 import { Footer } from "./footer";
 import { ProposalHost } from "./proposal-host";
 import { WorkTogether } from "./work-together";
-import { SbsIncluded, SbsLevels, SbsPersonal } from "./sbs-service";
+import { SbsIncluded, SbsLevels, SbsMore, SbsPersonal } from "./sbs-service";
 import { useSeen } from "./use-seen";
 import { useT } from "@/lib/use-lang";
 import { Funnel_Display, IBM_Plex_Mono, Plus_Jakarta_Sans } from "next/font/google";
@@ -772,6 +772,7 @@ export function SideBySide() {
         <SbsIncluded />
         <SbsLevels />
         <SbsPersonal />
+        <SbsMore />
       </main>
 
       <WorkTogether />
