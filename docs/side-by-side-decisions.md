@@ -739,3 +739,31 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   (4% in from each side, 28px corners) widens to the page and squares
   off. The push leads the rise by half a percent of the loop; strong
   ease-in-out for the push, strong ease-out for the rise.
+
+## By hand, and the stepped loop's timing (2026-11-17, user)
+
+- The stepped loop hurt the Advanced page's timing: each move used the
+  comparison's fast ease-out, doing 80% of the distance in its first
+  quarter, while the effects used other curves and came after the page
+  had stopped. The Advanced page now moves on a smooth in-out, and the
+  sheets between sections use the same curve and the same windows as
+  the moves. The comparison and Essential+ keep their loop.
+- Two ways to see each plate (user: "2 versões"): the loop on its own,
+  in steps, and by hand, scrolled continuously by the visitor
+  (`sbs-scrub.ts`). By hand, the scroll is turned into a moment of the
+  plate's own loop and every animation on the page is held there: where
+  the loop moves the page, the page follows the wheel or the finger one
+  for one (the move's easing is undone); where it holds a section, the
+  section stays pinned while its effects play (the opening's flight, the
+  kinds, the steps). Nothing is animated twice.
+- How to get there (user: a touch, but with a call that says so): under
+  each plate, "Percorrer à vontade" / "Scroll through it yourself" (a
+  small mouse whose wheel rolls; "Reproduzir sozinho" to give it back),
+  a tap on a plate does the same, and "Abrir em grande" / "Open larger"
+  opens the plate in a window of its own over the website, by hand from
+  the start, as the proposal form opens (Escape or "Fechar" closes it,
+  the page behind is held still).
+- The comparison's two pages go together, section for section: both
+  plates are held at the same moment of their loop, whichever is
+  scrolled.
+- The temporary pause and bar under the levels' plate are gone.

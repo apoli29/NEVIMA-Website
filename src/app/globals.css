@@ -4399,7 +4399,11 @@
     --a-violet-deep: #171230;
     --sbs-loop: 26s;
   }
-  .sbs-run .sbs-a-page { animation-name: sbs-a-scroll; }
+  /* the page moves on a smooth in-out (not the comparison's fast ease-out,
+     which did 80% of each move in its first quarter and left every effect
+     to play after the page had stopped); the sheets below use the same
+     curve and the same windows, so they move with it (user, 2026-11-17) */
+  .sbs-run .sbs-a-page { animation-name: sbs-a-scroll; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
   @keyframes sbs-a-scroll {
     0%, 22% { translate: 0 0; }
     26%, 46% { translate: 0 calc(var(--sbs-stop-1) * var(--sbs-k)); }
@@ -4454,7 +4458,7 @@
      rises over it as a sheet whose rounded top widens to the page and
      squares off (user, 2026-11-17: "mais avançada, premium"; it replaces
      the slats). Between them the page's own ground, Noite. */
-  .sbs-a-page { background: var(--p-noite); --a-move: cubic-bezier(0.77, 0, 0.175, 1); --a-enter: cubic-bezier(0.23, 1, 0.32, 1); }
+  .sbs-a-page { background: var(--p-noite); --a-move: cubic-bezier(0.65, 0, 0.35, 1); --a-enter: cubic-bezier(0.65, 0, 0.35, 1); }
   .sbs-a-sheetx { position: relative; isolation: isolate; transform-origin: 50% 0; }
   .sbs-a-sheetx::before {
     content: "";
@@ -4722,8 +4726,8 @@
     97%, 100% { stroke-dashoffset: 1; }
   }
 
-  /* each change: the section left pushed back, the next one rising
-     (windows 22-26, 46-50, 60-64, 86-89; the push leads by 0.5%) */
+  /* each change: the section left pushed back, the next one rising, in
+     the same windows as the page's moves (22-26, 46-50, 60-64, 86-89) */
   .sbs-run .sbs-a-hero { animation: sbs-a-out-1 var(--sbs-loop) linear infinite; }
   .sbs-run .sbs-a-hero::before { animation: sbs-a-veil-1 var(--sbs-loop) linear infinite; }
   .sbs-run .sbs-a-index { animation: sbs-a-in-1 var(--sbs-loop) linear infinite, sbs-a-out-2 var(--sbs-loop) linear infinite; }
@@ -4744,10 +4748,10 @@
   @keyframes sbs-a-veil-4 { 0%, 86% { opacity: 0; animation-timing-function: var(--a-move); } 89%, 97% { opacity: 0.5; } 98%, 100% { opacity: 0; } }
 
   /* incoming: the rounded sheet widening to the page */
-  @keyframes sbs-a-in-1 { 0%, 22.5% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 26.5%, 97% { clip-path: inset(0 0 0 0 round 0); } 98%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
-  @keyframes sbs-a-in-2 { 0%, 46.5% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 50.5%, 97% { clip-path: inset(0 0 0 0 round 0); } 98%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
-  @keyframes sbs-a-in-3 { 0%, 60.5% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 64.5%, 97% { clip-path: inset(0 0 0 0 round 0); } 98%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
-  @keyframes sbs-a-in-4 { 0%, 86.5% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 89.5%, 98% { clip-path: inset(0 0 0 0 round 0); } 99%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
+  @keyframes sbs-a-in-1 { 0%, 22% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 26%, 97% { clip-path: inset(0 0 0 0 round 0); } 98%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
+  @keyframes sbs-a-in-2 { 0%, 46% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 50%, 97% { clip-path: inset(0 0 0 0 round 0); } 98%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
+  @keyframes sbs-a-in-3 { 0%, 60% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 64%, 97% { clip-path: inset(0 0 0 0 round 0); } 98%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
+  @keyframes sbs-a-in-4 { 0%, 86% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 89%, 98% { clip-path: inset(0 0 0 0 round 0); } 99%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
 
   .sbs-run .sbs-a-kind b > span { animation: sbs-a-rise var(--sbs-loop) linear infinite both; animation-delay: calc(var(--i) * 0.11s); }
   @keyframes sbs-a-rise {
@@ -5239,12 +5243,6 @@
   .sbl-plate .sbl-screen { position: absolute; inset: 0; aspect-ratio: auto; }
   @media (max-width: 899.98px) { .sbl-plate { aspect-ratio: 3 / 4; } }
   .sbl-caption { margin-top: 1rem; color: rgb(255 255 255 / 0.45); }
-  /* TEMPORARY (2026-11-17): the pause and the bar under the plate */
-  .sbl-temp { display: flex; align-items: center; gap: 0.9rem; margin-top: 1rem; }
-  .sbl-temp button { flex: none; padding: 0.5rem 0.9rem; background: var(--color-paper); color: var(--color-ink); font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; }
-  .sbl-temp input { flex: 1; accent-color: var(--color-paper); cursor: pointer; }
-  .sbl-temp input:disabled { opacity: 0.35; cursor: default; }
-  .sbl-temp span { flex: none; width: 3ch; font-family: var(--font-mono); font-size: 0.75rem; color: rgb(255 255 255 / 0.6); }
 
   /* ---- black metal: the personalization card and the call's card --- */
   .sbx-metal {
@@ -5979,5 +5977,114 @@
 
   @media (prefers-reduced-motion: reduce) {
     .nav-svc-panel, .nav-svc-caret { transition: none; }
+  }
+}
+
+/* ---- by hand: the call under the plates and the larger window ------
+   (sbs-explore.tsx, sbs-scrub.ts; user, 2026-11-17). Square, ruled by
+   hairlines, as the bar's cells are; the call fills with white from the
+   left, as the bar's button fills; a small mouse whose wheel rolls says
+   what it does. */
+@layer components {
+  .sbx-explore { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem; margin-top: 1.25rem; }
+  .sbx-explore button {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 2.75rem;
+    padding: 0.7rem 1.05rem;
+    border: 1px solid rgb(255 255 255 / 0.28);
+    color: var(--color-paper);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    overflow: hidden;
+    transition: color 0.45s cubic-bezier(0.65, 0, 0.35, 1), border-color 0.45s ease;
+  }
+  .sbx-explore button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--color-paper);
+    scale: 0 1;
+    transform-origin: 0 50%;
+    transition: scale 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .sbx-explore button:focus-visible { outline: 1px solid var(--color-paper); outline-offset: 3px; }
+  @media (hover: hover) and (pointer: fine) {
+    .sbx-explore button:hover { color: var(--color-ink); border-color: var(--color-paper); }
+    .sbx-explore button:hover::before { scale: 1 1; }
+  }
+  .sbx-explore .sbx-explore-go { color: var(--color-ink); border-color: var(--color-paper); }
+  .sbx-explore .sbx-explore-go::before { scale: 1 1; }
+  .sbx-explore-icon { display: grid; place-items: center; width: 1rem; height: 1rem; }
+  .sbx-explore svg { width: 1rem; height: 1rem; flex: none; }
+  .sbx-explore-wheel { animation: sbx-wheel 1.6s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+  @keyframes sbx-wheel {
+    0% { translate: 0 0; opacity: 1; }
+    70% { translate: 0 3px; opacity: 0; }
+    100% { translate: 0 0; opacity: 0; }
+  }
+  .sbx-explore-hint { color: rgb(255 255 255 / 0.55); }
+
+  /* the plate while it is by hand: it says it can be moved */
+  .sbs-screen[data-manual] { cursor: grab; touch-action: none; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.35); }
+  .sbs-screen[data-manual]:active { cursor: grabbing; }
+
+  /* the larger window */
+  /* it opens outside the sections, so it says the comparison's loop
+     itself (Advanced says its own) */
+  .sbx-prev { --sbs-loop: 18s; position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: clamp(0.75rem, 2.5vw, 2rem); }
+  .sbx-prev-backdrop { position: absolute; inset: 0; background: rgb(5 5 8 / 0.96); animation: sbx-fade 0.35s cubic-bezier(0.23, 1, 0.32, 1); }
+  .sbx-prev-frame {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    width: min(100%, 72rem);
+    height: 100%;
+    max-height: 56rem;
+    color: var(--color-paper);
+    animation: sbx-rise 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .sbx-prev-head { display: flex; align-items: center; gap: 1rem; }
+  .sbx-prev-head .mono-label { color: rgb(255 255 255 / 0.7); }
+  .sbx-prev-hint { margin-left: auto; color: rgb(255 255 255 / 0.45) !important; }
+  .sbx-prev-close {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+    padding: 0.55rem 0.9rem;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .sbx-prev-close svg { width: 0.9rem; height: 0.9rem; }
+  .sbx-prev-close:focus-visible { outline: 1px solid var(--color-paper); outline-offset: 3px; }
+  .sbx-prev-body { position: relative; flex: 1; min-height: 0; }
+  .sbx-prev-body > .sbs-screen { height: 100%; aspect-ratio: auto; margin-inline: auto; max-width: calc((100dvh - 9rem) * 9 / 7.45); background: #fff; }
+  .sbx-prev-wide { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .sbx-prev-plate { display: flex; flex-direction: column; gap: 0.6rem; min-height: 0; margin: 0; }
+  .sbx-prev-plate figcaption { color: rgb(255 255 255 / 0.62); }
+  .sbx-prev-plate .sbs-screen { flex: 1; aspect-ratio: auto; background: #fff; }
+  @keyframes sbx-fade { from { opacity: 0; } }
+  @keyframes sbx-rise { from { opacity: 0; translate: 0 18px; scale: 0.98; } }
+  @media (max-width: 899.98px) {
+    .sbx-prev-wide { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+    .sbx-prev-hint { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sbx-explore-wheel, .sbx-prev-backdrop, .sbx-prev-frame { animation: none; }
+    .sbx-explore button, .sbx-explore button::before { transition: none; }
   }
 }

@@ -8,6 +8,8 @@ import { Footer } from "./footer";
 import { ProposalHost } from "./proposal-host";
 import { WorkTogether } from "./work-together";
 import { SbsIncluded, SbsLevels, SbsPersonal } from "./sbs-service";
+import { ExploreBar, PlateScreen, SbsPreview, useTapToTakeOver } from "./sbs-explore";
+import { usePlateScrub } from "./sbs-scrub";
 import { useSeen } from "./use-seen";
 import { useT } from "@/lib/use-lang";
 import { Ours, useFit } from "./sbs-pilar";
@@ -474,6 +476,19 @@ export function SideBySide() {
     if (seen && !reduce) setRunning(true);
   }, [seen, reduce]);
 
+  // By hand (user, 2026-11-17): the visitor scrolls the two pages, which
+  // stay together section for section (sbs-scrub.ts holds both at the same
+  // moment of their loop); from the call under them, a tap on either, or
+  // a larger window.
+  const [manual, setManual] = useState(false);
+  const [open, setOpen] = useState(false);
+  const pair = useRef<HTMLDivElement>(null);
+  usePlateScrub(pair, manual && !open);
+  const tap = useTapToTakeOver(manual, () => {
+    setRunning(true);
+    setManual(true);
+  });
+
   return (
     <ProposalHost>
       <FloatingNav />
@@ -509,7 +524,7 @@ export function SideBySide() {
           </h2>
 
           <div className="sbs-wide">
-            <div className="sbs-pair">
+            <div ref={pair} className="sbs-pair" {...tap}>
               <Plate
                 quiet
                 running={running}
@@ -535,6 +550,33 @@ export function SideBySide() {
                 <Ours t={t} />
               </Plate>
             </div>
+
+            {!reduce && (
+              <ExploreBar
+                t={t}
+                manual={manual}
+                setManual={(on) => {
+                  setRunning(true);
+                  setManual(on);
+                }}
+                onOpen={() => setOpen(true)}
+              />
+            )}
+
+            <SbsPreview t={t} open={open} onClose={() => setOpen(false)} label={t("Side by side", "Lado a lado")} wide>
+              <figure className="sbx-prev-plate">
+                <figcaption className="mono-label">{t("Designs from other professionals", "Design de outros profissionais")}</figcaption>
+                <PlateScreen running className="sbx-prev-screen">
+                  <Template t={t} />
+                </PlateScreen>
+              </figure>
+              <figure className="sbx-prev-plate">
+                <figcaption className="mono-label">{t("Nevima’s design", "Design da Nevima")}</figcaption>
+                <PlateScreen running className="sbx-prev-screen">
+                  <Ours t={t} />
+                </PlateScreen>
+              </figure>
+            </SbsPreview>
 
             <p className="sbs-note mono-label">
               {t(

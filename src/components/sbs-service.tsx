@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Switch, useInView, useScramble } from "./sbs-shared";
-import { Ours, useFit } from "./sbs-pilar";
+import { Ours } from "./sbs-pilar";
+import { ExploreBar, PlateScreen, SbsPreview, useTapToTakeOver } from "./sbs-explore";
+import { usePlateScrub } from "./sbs-scrub";
 import { Advanced } from "./sbs-advanced";
 import { useT } from "@/lib/use-lang";
 
@@ -32,82 +34,29 @@ export { SbsPersonal } from "./sbs-personal";
 
 type Level = "essential" | "advanced";
 
-/** One level's page in the plate, scaled to it and taken down the page by
-    the comparison's loop; `onLap` is told each time it is back at the top. */
-function LevelScreen({ running, onLap, children }: { running: boolean; onLap: () => void; children: React.ReactNode }) {
-  const screen = useFit();
-  return (
-    <div ref={screen} className="sbs-screen sbl-screen">
-      <div
-        className={running ? "sbs-run" : undefined}
-        onAnimationIteration={(e) => {
-          if (e.animationName === "sbs-scroll" || e.animationName === "sbs-a-scroll") onLap();
-        }}
-      >
-        {children}
-      </div>
-    </div>
-  );
-}
-
 export function SbsLevels() {
   const t = useT();
   const reduce = useReducedMotion() ?? false;
   const [level, setLevel] = useState<Level>("essential");
   const [taken, setTaken] = useState(false);
   const [plate, inView] = useInView<HTMLDivElement>(0.3);
-  const [paused, setPaused] = useState(false); // TEMPORARY, see seek below
-  const [at, setAt] = useState(0); // TEMPORARY
-  // TEMPORARY: once the pause has been used, the loop no longer waits on
-  // the plate being 30% in view, so Play always sets it going again (the
-  // site's off-screen pause still holds it when it is far off the screen).
-  const [handled, setHandled] = useState(false);
-  const running = (inView || paused || handled) && !reduce;
+  // By hand (user, 2026-11-17): the visitor scrolls the page in the plate,
+  // from the call under it or a tap on it; or opens it larger.
+  const [manual, setManual] = useState(false);
+  const [open, setOpen] = useState(false);
+  const running = (inView || manual) && !reduce;
+  const scrub = useRef<HTMLDivElement>(null);
+  usePlateScrub(scrub, manual && !open, level);
+  const takeOver = () => {
+    setTaken(true);
+    setManual(true);
+  };
+  const tap = useTapToTakeOver(manual, takeOver);
 
   // On its own, the plate shows one whole visit of a page and then the
   // other, until the switch is touched.
   const lap = () => {
-    if (!taken && !paused) setLevel((l) => (l === "essential" ? "advanced" : "essential"));
-  };
-
-  /* TEMPORARY (user, 2026-11-17: to look at the pages calmly and point
-     out what to change): a pause and a bar that moves the plate's loop
-     by hand. Every animation on the loop's clock is held and set to the
-     same moment, so the page and its effects stay in step. Remove both
-     before this goes live. */
-  // each level runs its own loop: the comparison's 18s, the Advanced page's 26s
-  const LOOP_MS = level === "advanced" ? 26000 : 18000;
-  const loopAnims = () =>
-    (plate.current?.getAnimations({ subtree: true }) ?? []).filter(
-      (a) => a.effect?.getComputedTiming().duration === LOOP_MS,
-    );
-  const seek = (p: number) => {
-    for (const a of loopAnims()) {
-      a.pause();
-      a.currentTime = p * LOOP_MS + (a.effect?.getTiming().delay as number ?? 0);
-    }
-  };
-  useEffect(() => {
-    if (!paused) {
-      for (const a of loopAnims()) a.play();
-      return;
-    }
-    // a page that has just come in (the switch) is set to the same moment
-    const id = window.setTimeout(() => seek(at), 60);
-    return () => window.clearTimeout(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paused, level, at]);
-  const pause = () => {
-    if (paused) {
-      setPaused(false);
-      return;
-    }
-    const first = loopAnims()[0];
-    const now = first ? ((Number(first.currentTime) - (first.effect?.getTiming().delay as number ?? 0)) % LOOP_MS) / LOOP_MS : 0;
-    setAt(Math.max(0, now));
-    setTaken(true);
-    setHandled(true);
-    setPaused(true);
+    if (!taken && !manual) setLevel((l) => (l === "essential" ? "advanced" : "essential"));
   };
 
   const levels = {
@@ -123,8 +72,8 @@ export function SbsLevels() {
       name: t("Advanced", "Avançado"),
       note: t("Richer layouts and animation, designed around your brand.", "Composições e animações mais ricas, desenhadas à volta da marca."),
       demo: t(
-        "In the demo: the same page and the same words, more refined. Pilar’s symbol, in depth, opens the visit and the view flies through it; the symbol then follows the five kinds of insurance one by one; the table of quotes settles out of depth; the four steps pass as a carousel over moving bars; slats carry each section in.",
-        "Na demonstração: a mesma página e as mesmas palavras, mais requintadas. O símbolo da Pilar, em volume, abre a visita e a vista atravessa-o; depois acompanha os cinco seguros um a um; o quadro de propostas assenta vindo da profundidade; os quatro passos passam num carrossel sobre barras em movimento; lâminas trazem cada secção.",
+        "In the demo: the same page and the same words, more refined. Pilar’s symbol, in metal, opens the visit and the view flies through it; the symbol then follows the five kinds of insurance one by one; the table of quotes settles out of depth; the four steps pass as a carousel over moving bars; each section rises over the last like a sheet.",
+        "Na demonstração: a mesma página e as mesmas palavras, mais requintadas. O símbolo da Pilar, em metal, abre a visita e a vista atravessa-o; depois acompanha os cinco seguros um a um; o quadro de propostas assenta vindo da profundidade; os quatro passos passam num carrossel sobre barras em movimento; cada secção sobe sobre a anterior como uma folha.",
       ),
     },
   } as const;
@@ -180,22 +129,24 @@ export function SbsLevels() {
         </div>
 
         <figure className="sbl-figure">
-          <div ref={plate} className="sbl-plate">
-            <AnimatePresence initial={false}>
-              <motion.div
-                key={level}
-                aria-hidden="true"
-                className="absolute inset-0"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: reduce ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <LevelScreen running={running} onLap={lap}>
-                  {level === "essential" ? <Ours t={t} /> : <Advanced t={t} />}
-                </LevelScreen>
-              </motion.div>
-            </AnimatePresence>
+          <div ref={plate} className="sbl-plate" {...tap}>
+            <div ref={scrub} className="absolute inset-0">
+              <AnimatePresence initial={false}>
+                <motion.div
+                  key={level}
+                  aria-hidden="true"
+                  className="absolute inset-0"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: reduce ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <PlateScreen running={running} onLap={lap} className="sbl-screen">
+                    {level === "essential" ? <Ours t={t} /> : <Advanced t={t} />}
+                  </PlateScreen>
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
           <figcaption className="sbl-caption mono-label">
             {t(
@@ -203,25 +154,32 @@ export function SbsLevels() {
               "A mesma mediadora inventada de cima, com a página inteira em cada nível.",
             )}
           </figcaption>
-          {/* TEMPORARY: the pause and the bar (see seek above). */}
           {!reduce && (
-            <div className="sbl-temp">
-              <button type="button" onClick={pause}>
-                {paused ? t("Play", "Retomar") : t("Pause", "Pausar")}
-              </button>
-              <input
-                type="range"
-                min={0}
-                max={1000}
-                value={Math.round(at * 1000)}
-                disabled={!paused}
-                aria-label={t("Moment in the visit", "Momento da visita")}
-                onChange={(e) => setAt(Number(e.target.value) / 1000)}
-              />
-              <span>{paused ? `${Math.round(at * 100)}%` : ""}</span>
-            </div>
+            <ExploreBar
+              t={t}
+              manual={manual}
+              setManual={(on) => {
+                setTaken(true);
+                setManual(on);
+              }}
+              onOpen={() => {
+                setTaken(true);
+                setOpen(true);
+              }}
+            />
           )}
         </figure>
+
+        <SbsPreview
+          t={t}
+          open={open}
+          onClose={() => setOpen(false)}
+          label={`${t("Design levels", "Níveis de design")} · ${levels[level].name}`}
+        >
+          <PlateScreen running className="sbx-prev-screen">
+            {level === "essential" ? <Ours t={t} /> : <Advanced t={t} />}
+          </PlateScreen>
+        </SbsPreview>
       </div>
     </section>
   );
