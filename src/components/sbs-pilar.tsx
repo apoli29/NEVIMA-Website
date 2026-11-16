@@ -246,26 +246,35 @@ export function PilarSteps({ t, steps }: { t: ReturnType<typeof useT>; steps: st
 }
 
 /** Which of the steps the page is on, read off the loop's own clock
-    (the lap of sbs-scroll on the page that holds `box`); a click (`go`)
-    takes over until the page goes back to the top. */
-export function useLapStep(count: number) {
+    (the lap of `lap.name` on the page that holds `box`); a click (`go`)
+    takes over until the page goes back to the top. By default the
+    comparison's lap, whose steps' stop is held from 47% to 80%; a page
+    on a clock of its own (the Advanced level) says its own hold, and the
+    count is spread evenly over it. */
+export function useLapStep(
+  count: number,
+  lap: { name: string; from: number; to: number; reset: number } = { name: "sbs-scroll", from: 0.47, to: 0.8, reset: 0.45 },
+) {
   const [at, setAt] = useState(0);
   const held = useRef(false);
   const box = useRef<HTMLDivElement>(null);
   const last = count - 1;
 
   useEffect(() => {
-    // Where the loop is, as a fraction of a lap: this section's stop is
-    // held from 47% to 80% (globals.css, sbs-scroll).
-    const marks = [0.55, 0.63, 0.71];
+    // Where the loop is, as a fraction of a lap. The comparison's marks
+    // are kept as they were (55%, 63%, 71%, in its 47-80% hold).
+    const marks =
+      lap.name === "sbs-scroll"
+        ? [0.55, 0.63, 0.71]
+        : Array.from({ length: count - 1 }, (_, i) => lap.from + ((lap.to - lap.from) * (i + 1)) / count);
     const id = window.setInterval(() => {
       const page = box.current?.closest<HTMLElement>(".sbs-mini");
-      const lap = page
+      const run = page
         ?.getAnimations()
-        .find((a) => (a as CSSAnimation).animationName === "sbs-scroll");
-      const p = lap?.effect?.getComputedTiming().progress;
+        .find((a) => (a as CSSAnimation).animationName === lap.name);
+      const p = run?.effect?.getComputedTiming().progress;
       if (p == null) return;
-      if (p < 0.45) {
+      if (p < lap.reset) {
         held.current = false;
         setAt(0);
         return;
@@ -274,7 +283,8 @@ export function useLapStep(count: number) {
       setAt(marks.filter((m) => p >= m).length);
     }, 150);
     return () => window.clearInterval(id);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [count, lap.name, lap.from, lap.to, lap.reset]);
 
   const go = (i: number) => {
     held.current = true;

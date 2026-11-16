@@ -640,3 +640,36 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   percentages as `sbs-scroll`, so it plays as its section arrives and is
   set back while the section is off the plate; less motion shows every
   section finished.
+
+## Advanced, second round (2026-11-17, user)
+
+- A loop of its own for the Advanced page: `sbs-a-scroll`, 26s, so the
+  opening has room (the opening 0-14%, the hero to 22%, the five kinds
+  26-46%, the table 50-60%, the steps 64-86%, the foot 89-96%). The
+  temporary pause bar and the lap switch know each level's length.
+- One colour of its own at this level: a deep violet (#2a1f4d to
+  #171230), the user's "a cor mais roxa" over the Noite of the palette,
+  used only for the opening.
+- The opening replaces the slats over the photograph: on the violet,
+  Pilar's symbol in depth turns to face the visitor and the view flies
+  through the square of the P (the eye is set on that square, the flight
+  eases out because depth already speeds the growth), then a fade
+  reveals the website; the violet comes back over the hero as the page
+  returns to the top.
+- The five kinds of insurance, after Palais de Tokyo (Inspo): the list
+  on the right, each with a line of its own (written here, in both
+  languages), the symbol in depth on the left travelling to the one
+  being read, which lights and opens its line; read off the loop's clock
+  (`useLapStep`, now able to read any loop).
+- The four steps: a carousel, one card at a time with the next one
+  showing and a line of four ticks, over the user's sliding-ease bars
+  (`src/components/ui/sliding-ease.tsx`, the first file in
+  `components/ui`; the site has no shadcn, and the component needed none
+  of it). Adapted to fill its own box, read the pointer in the box's own
+  pixels, work its patterns out once per size, draw only while seen, and
+  hold one frame for less motion; Pilar's Noite, a darker Grafite and
+  Grafite. The 3D symbol left this section for the opening.
+- Between sections: each section is revealed through widening slats
+  over the page's own Noite.
+- The table of quotes stays as it was; the Novu reference (three cards
+  in perspective) was turned down and two others were put to the user.

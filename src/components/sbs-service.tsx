@@ -41,7 +41,7 @@ function LevelScreen({ running, onLap, children }: { running: boolean; onLap: ()
       <div
         className={running ? "sbs-run" : undefined}
         onAnimationIteration={(e) => {
-          if (e.animationName === "sbs-scroll") onLap();
+          if (e.animationName === "sbs-scroll" || e.animationName === "sbs-a-scroll") onLap();
         }}
       >
         {children}
@@ -75,7 +75,8 @@ export function SbsLevels() {
      by hand. Every animation on the loop's clock is held and set to the
      same moment, so the page and its effects stay in step. Remove both
      before this goes live. */
-  const LOOP_MS = 18000;
+  // each level runs its own loop: the comparison's 18s, the Advanced page's 26s
+  const LOOP_MS = level === "advanced" ? 26000 : 18000;
   const loopAnims = () =>
     (plate.current?.getAnimations({ subtree: true }) ?? []).filter(
       (a) => a.effect?.getComputedTiming().duration === LOOP_MS,
@@ -122,8 +123,8 @@ export function SbsLevels() {
       name: t("Advanced", "Avançado"),
       note: t("Richer layouts and animation, designed around your brand.", "Composições e animações mais ricas, desenhadas à volta da marca."),
       demo: t(
-        "In the demo: the same page and the same words, more refined. The photograph opens through slats and contour lines rise from the pillar; the ground turns dark under the five kinds of insurance; the table of quotes settles out of depth and Pilar’s pick lifts; the symbol, in depth, turns at each step.",
-        "Na demonstração: a mesma página e as mesmas palavras, mais requintadas. A fotografia abre-se em lâminas e sobem linhas de contorno do pilar; o fundo escurece sob os cinco seguros; o quadro de propostas assenta vindo da profundidade e a escolha da Pilar destaca-se; o símbolo, em volume, roda a cada passo.",
+        "In the demo: the same page and the same words, more refined. Pilar’s symbol, in depth, opens the visit and the view flies through it; the symbol then follows the five kinds of insurance one by one; the table of quotes settles out of depth; the four steps pass as a carousel over moving bars; slats carry each section in.",
+        "Na demonstração: a mesma página e as mesmas palavras, mais requintadas. O símbolo da Pilar, em volume, abre a visita e a vista atravessa-o; depois acompanha os cinco seguros um a um; o quadro de propostas assenta vindo da profundidade; os quatro passos passam num carrossel sobre barras em movimento; lâminas trazem cada secção.",
       ),
     },
   } as const;

@@ -1,36 +1,47 @@
 "use client";
 
 import { PilarLogo, PilarReviews, pilarCopy, pilarDisplay, pilarMono, pilarSans, useLapStep } from "./sbs-pilar";
+import SlidingEaseVerticalBars from "./ui/sliding-ease";
 import { useT } from "@/lib/use-lang";
 
 /* ==================================================================
    Pilar Seguros at the Advanced level (design levels, sbs-service.tsx).
 
    The same page as the Essential+ one (Ours, sbs-pilar.tsx): the same
-   five sections in the same order, the same words, Pilar's own four
-   colours and type. What it adds is the finish (user, 2026-11-17: keep
-   the identity, make the website more refined; "sobriedade e
-   maturidade"), after two references the user approved:
+   five sections in the same order, the same words, Pilar's own type and
+   colours, with one colour added for this level only: a deep violet,
+   the opening's ground and the slats that pass between sections (user,
+   2026-11-17, "a cor mais roxa").
 
-   - Lithic (lithic.com): fine contour lines and a matte object in
-     depth, a card in perspective that settles flat.
-   - Evolve Private Wealth (Awwwards honorable mention): the mark built
-     from horizontal slats, the ground changing colour between sections,
-     a hairline grid with numbers, a comparison table with its own column
-     lit, the steps held on screen one at a time, a large mark in the
-     footer.
+   Second round (user, 2026-11-17):
+   - The opening: on the violet, Pilar's symbol in depth turns to face
+     the visitor and the view flies through the square of the P; the
+     website is then revealed under a fade. It replaces the slats that
+     opened the photograph.
+   - The five kinds of insurance, after Palais de Tokyo (Inspo): the list
+     on the right, each with a line of its own, and the symbol in depth
+     on the left travelling to the one being read, which lights up.
+   - The table of quotes is kept as it was until a new reference is
+     agreed for it.
+   - The four steps as a carousel, one card at a time with the next one
+     showing, over the user's sliding-ease bars in Pilar's colours.
+   - Between sections, violet slats wipe each one in as it arrives.
 
-   Every effect is a CSS animation on the plate's own loop (--sbs-loop,
-   the same keyframe percentages as sbs-scroll), so each plays as its
-   section arrives and is set back while it is off the plate. Without
-   the loop (less motion) every section is simply shown finished.
+   Every effect runs on this page's own loop (sbs-a-scroll, --sbs-loop
+   26s; globals.css), longer than the comparison's so the opening has
+   room: the opening 0-14%, the hero held to 22%, the five kinds 26-46%,
+   the table 50-60%, the steps 64-86%, the foot 89-96%, back to the top
+   by 100%, everything set back from 97%. Without the loop (less motion)
+   every section is simply shown finished.
    ================================================================== */
 
 type T = ReturnType<typeof useT>;
 
-/** Pilar's symbol in depth: a stack of the same shape, Grafite going to
-    Noite behind, and a face in front built of horizontal slats, which
-    close into the solid face as --slat grows. --ry and --rx turn it. */
+/** The loop's own name and its holds, as globals.css sets them. */
+const LAP = "sbs-a-scroll";
+
+/** Pilar's symbol in depth: a stack of the same shape behind a face of
+    slats, which close into a solid face as --slat grows. */
 function Solid({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
     <div className={`sbs-a-solid ${className ?? ""}`} style={style} aria-hidden="true">
@@ -44,8 +55,7 @@ function Solid({ className, style }: { className?: string; style?: React.CSSProp
   );
 }
 
-/** Contour lines, after Lithic: arcs of one family, each a little wider
-    than the last, drawn in one after another. */
+/** Contour lines, after Lithic: arcs of one family, drawn one after another. */
 function Rings({ className, count, cx, cy, r0, step, w, h }: {
   className: string;
   count: number;
@@ -59,15 +69,7 @@ function Rings({ className, count, cx, cy, r0, step, w, h }: {
   return (
     <svg className={className} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       {Array.from({ length: count }, (_, i) => (
-        <ellipse
-          key={i}
-          cx={cx}
-          cy={cy}
-          rx={r0 + i * step}
-          ry={(r0 + i * step) * 0.82}
-          pathLength={1}
-          style={{ ["--i" as string]: i }}
-        />
+        <ellipse key={i} cx={cx} cy={cy} rx={r0 + i * step} ry={(r0 + i * step) * 0.82} pathLength={1} style={{ ["--i" as string]: i }} />
       ))}
     </svg>
   );
@@ -75,29 +77,31 @@ function Rings({ className, count, cx, cy, r0, step, w, h }: {
 
 export function Advanced({ t }: { t: T }) {
   const { lines, steps } = pilarCopy(t);
-  const { at, go, box } = useLapStep(steps.length);
+  const kinds = useLapStep(lines.length, { name: LAP, from: 0.27, to: 0.46, reset: 0.2 });
+  const walk = useLapStep(steps.length, { name: LAP, from: 0.64, to: 0.86, reset: 0.58 });
+
+  const about = [
+    t("Contents, building and liability, for owners and tenants.", "Recheio, edifício e responsabilidade civil, para proprietários e inquilinos."),
+    t("From compulsory third-party cover to own damage.", "Da responsabilidade civil obrigatória aos danos próprios."),
+    t("Individual and family plans, each insurer’s network side by side.", "Planos individuais e de família, com a rede de cada seguradora lado a lado."),
+    t("Linked to a mortgage, or on its own.", "Associado ao crédito à habitação, ou independente."),
+    t("Fleet, property and workers’ compensation, in one place.", "Frota, multirriscos e acidentes de trabalho, num só sítio."),
+  ];
 
   const rows = [
     [t("Price a year", "Preço por ano"), t("€286.40", "286,40 €"), t("€312.90", "312,90 €"), t("€259.00", "259,00 €")],
     [t("Excess", "Franquia"), t("€250", "250 €"), t("€150", "150 €"), t("€500", "500 €")],
     [t("Earthquakes", "Fenómenos sísmicos"), t("Not covered", "Não cobre"), t("Covered", "Cobre"), t("Not covered", "Não cobre")],
-    [
-      t("Water damage", "Danos por água"),
-      t("Covered", "Cobre"),
-      t("Covered, leak found", "Cobre, com pesquisa da avaria"),
-      t("Covered", "Cobre"),
-    ],
+    [t("Water damage", "Danos por água"), t("Covered", "Cobre"), t("Covered, leak found", "Cobre, com pesquisa da avaria"), t("Covered", "Cobre")],
   ];
 
   return (
     <div className={`sbs-mini sbs-p-page sbs-a-page ${pilarDisplay.variable} ${pilarSans.variable} ${pilarMono.variable}`}>
-      {/* 1 · The hero: the photograph opens through slats (Evolve), contour
-          lines rise from the pillar (Lithic), the line rises into place. */}
+      {/* 1 · The hero, behind the opening: the photograph, contour lines
+          rising from the pillar, the line rising into place. */}
       <div className="sbs-p-hero sbs-a-hero">
-        <div className="sbs-a-blinds">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/side-by-side/pilar-hero.webp" alt="" draggable={false} className="sbs-p-sky" />
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/side-by-side/pilar-hero.webp" alt="" draggable={false} className="sbs-p-sky" />
         <Rings className="sbs-a-rings" count={11} cx={450} cy={980} r0={300} step={44} w={900} h={700} />
 
         <div className="sbs-p-bar">
@@ -139,28 +143,42 @@ export function Advanced({ t }: { t: T }) {
         </div>
 
         <PilarReviews t={t} />
+
+        {/* The opening, over the hero: the symbol on the violet, turning
+            to face the visitor, then the view through the square of the P. */}
+        <div className="sbs-a-intro" aria-hidden="true">
+          <Solid className="sbs-a-intro-solid" />
+        </div>
       </div>
 
-      {/* 2 · The five kinds of insurance: the ground turns to Noite as the
-          section arrives (Evolve), each word numbered on a hairline and
-          rising into place, contour lines in a corner (Lithic). */}
-      <div className="sbs-a-index" data-stop>
+      {/* 2 · The five kinds of insurance, after Palais de Tokyo: the list
+          on the right, the symbol in depth travelling to the one read. */}
+      <div ref={kinds.box} className="sbs-a-index sbs-a-wipe" data-stop style={{ ["--at" as string]: kinds.at }}>
         <Rings className="sbs-a-contour" count={16} cx={900} cy={0} r0={120} step={26} w={900} h={560} />
-        <p className="sbs-a-kicker">{t("Insurance", "Seguros")}</p>
-        {lines.map((line, i) => (
-          <div key={line} className="sbs-a-row" style={{ ["--i" as string]: i }}>
-            <span>{String(i + 1).padStart(2, "0")}</span>
-            <b>
-              <span>{line}</span>
-            </b>
-          </div>
-        ))}
+        <div className="sbs-a-kinds-mark">
+          <Solid className="sbs-a-kinds-solid" style={{ ["--ry" as string]: `${-38 + kinds.at * 14}deg` }} />
+        </div>
+        <div className="sbs-a-kinds">
+          <p className="sbs-a-kicker">{t("Insurance", "Seguros")}</p>
+          {lines.map((line, i) => (
+            <div key={line} className="sbs-a-kind" data-on={i === kinds.at || undefined} style={{ ["--i" as string]: i }}>
+              <span className="sbs-a-num">{String(i + 1).padStart(2, "0")}</span>
+              <div>
+                <b>
+                  <span>{line}</span>
+                </b>
+                <div className="sbs-a-about">
+                  <p>{about[i]}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* 3 · The three quotes as a comparison table, Pilar's pick its lit
-          column (Evolve); the table comes in tilted in depth and settles
-          flat (Lithic), then its column lifts. */}
-      <div className="sbs-a-sheet" data-stop>
+      {/* 3 · The three quotes as a comparison table (kept as it was until
+          a new reference is agreed). */}
+      <div className="sbs-a-sheet sbs-a-wipe" data-stop>
         <div className="sbs-a-sheet-head">
           <h4>{t("Three quotes. One page. One recommendation.", "Três propostas. Uma folha. Uma recomendação.")}</h4>
           <p>
@@ -207,10 +225,16 @@ export function Advanced({ t }: { t: T }) {
         </div>
       </div>
 
-      {/* 4 · The four steps, held on screen one at a time (Evolve): the
-          symbol in depth turns a little further and its slats close a
-          little more at each, the step itself large beside it. */}
-      <div ref={box} className="sbs-a-how" data-stop>
+      {/* 4 · The four steps: a carousel, one card at a time with the next
+          showing, over the sliding-ease bars in Pilar's colours. */}
+      <div ref={walk.box} className="sbs-a-how sbs-a-wipe" data-stop style={{ ["--at" as string]: walk.at }}>
+        <SlidingEaseVerticalBars
+          className="sbs-a-bars"
+          backgroundColor="#111525"
+          lineColor="#262a3b"
+          barColor="#434655"
+          animationSpeed={0.004}
+        />
         <div className="sbs-a-how-head">
           <h4>
             <span>{t("Four steps.", "Quatro passos.")}</span>{" "}
@@ -227,50 +251,38 @@ export function Advanced({ t }: { t: T }) {
           </div>
         </div>
 
-        <div className="sbs-a-how-stage">
-          <div className="sbs-a-how-mark">
-            <Solid
-              className="sbs-a-how-solid"
-              style={{
-                ["--ry" as string]: `${-34 + at * 16}deg`,
-                ["--slat-to" as string]: `${4 + at * 3}px`,
-              }}
-            />
-            <span className="sbs-a-count">
-              {String(at + 1).padStart(2, "0")} / {String(steps.length).padStart(2, "0")}
-            </span>
+        <div className="sbs-a-rail">
+          <div className="sbs-a-track">
+            {steps.map(([name, text], i) => (
+              <button
+                key={name}
+                type="button"
+                tabIndex={-1}
+                className="sbs-a-card"
+                data-on={i === walk.at || undefined}
+                data-past={i < walk.at || undefined}
+                onClick={() => walk.go(i)}
+              >
+                <span className="sbs-a-card-num">
+                  {String(i + 1).padStart(2, "0")} <i>/ {String(steps.length).padStart(2, "0")}</i>
+                </span>
+                <b>{name}</b>
+                <span className="sbs-a-card-text">{text}</span>
+              </button>
+            ))}
           </div>
+        </div>
 
-          <div className="sbs-a-how-text">
-            <div key={at} className="sbs-a-step">
-              <span className="sbs-a-kicker">{t("How it works", "Como funciona")}</span>
-              <h5>{steps[at][0]}</h5>
-              <p>{steps[at][1]}</p>
-            </div>
-            <ol className="sbs-a-names">
-              {steps.map(([name], i) => (
-                <li key={name}>
-                  <button
-                    type="button"
-                    tabIndex={-1}
-                    onClick={() => go(i)}
-                    aria-current={i === at ? "step" : undefined}
-                    data-past={i < at ? "" : undefined}
-                  >
-                    <span>{String(i + 1).padStart(2, "0")}</span>
-                    {name}
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </div>
+        <div className="sbs-a-ticks">
+          {steps.map(([name], i) => (
+            <span key={name} data-on={i === walk.at || undefined} data-past={i < walk.at || undefined} />
+          ))}
         </div>
       </div>
 
-      {/* 5 · The foot: the closing line on contour rings opening slowly
-          (Lithic), then Pilar's symbol large and in depth beside the
-          links set large (Evolve), and the legal row. */}
-      <div className="sbs-p-foot sbs-a-foot" data-stop>
+      {/* 5 · The foot: the closing band on rings, the symbol large in depth
+          beside the links set large, and the legal row. */}
+      <div className="sbs-p-foot sbs-a-foot sbs-a-wipe" data-stop>
         <div className="sbs-a-band">
           <Rings className="sbs-a-band-rings" count={12} cx={700} cy={110} r0={40} step={30} w={900} h={220} />
           <h4>{t("One broker. Every insurer.", "Um mediador. Todas as seguradoras.")}</h4>

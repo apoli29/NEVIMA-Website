@@ -4374,25 +4374,38 @@
 
 /* ---- Pilar at the Advanced level (sbs-advanced.tsx) -----------------
    The design levels' second page: the same five sections and words as
-   the Essential+ page (.sbs-p-*), in Pilar's own four colours and type,
-   with the finish of two references the user approved (2026-11-17):
-   Lithic's contour lines and matte object in depth, Evolve Private
-   Wealth's slats, ground turning colour, hairline grid, lit column, held
-   steps and large footer mark.
+   the Essential+ page (.sbs-p-*), in Pilar's own type and colours, with
+   one colour of its own, a deep violet, for the opening and the slats
+   that pass between sections (user, 2026-11-17). References: Lithic and
+   Evolve Private Wealth (first round), Palais de Tokyo for the five
+   kinds of insurance, the user's sliding-ease bars under the steps.
 
-   Every effect runs on the plate's own loop (--sbs-loop, the same
-   percentages as sbs-scroll: the hero 0-13%, the five words from 17%,
-   the table from 32%, the steps 47-80%, the foot 84-94%, back to the top
-   by 100%), so it plays as its section arrives and is set back at 90%,
-   while that section is off the plate. Only under .sbs-run: without the
-   loop (less motion, or not yet seen) every section is shown finished. */
+   It runs on a loop of its own, longer than the comparison's so the
+   opening has room: sbs-a-scroll, 26s (--sbs-loop on its screen). The
+   opening 0-14%, the hero held to 22%, the five kinds 26-46%, the table
+   50-60%, the steps 64-86%, the foot 89-96%, back to the top by 100%;
+   every section is set back from 97%. sbs-advanced.tsx reads the same
+   holds for the kinds and the steps (keep them in step). Only under
+   .sbs-run: without the loop (less motion) every section is finished. */
 @property --slat { syntax: "<length>"; inherits: false; initial-value: 9px; }
-@property --blind { syntax: "<length>"; inherits: false; initial-value: 28px; }
+@property --wipe { syntax: "<length>"; inherits: false; initial-value: 0px; }
 
 @layer components {
   .sbs-a-page {
     --sym: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='30' height='100' rx='8'/%3E%3Cpath fill-rule='evenodd' d='M44 0H76A24 24 0 0 1 100 24V42A24 24 0 0 1 76 66H44A6 6 0 0 1 38 60V6A6 6 0 0 1 44 0Z M59 23H79V43H59Z'/%3E%3C/svg%3E");
     --a-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --a-violet: #2a1f4d;
+    --a-violet-deep: #171230;
+    --sbs-loop: 26s;
+  }
+  .sbs-run .sbs-a-page { animation-name: sbs-a-scroll; }
+  @keyframes sbs-a-scroll {
+    0%, 22% { translate: 0 0; }
+    26%, 46% { translate: 0 calc(var(--sbs-stop-1) * var(--sbs-k)); }
+    50%, 60% { translate: 0 calc(var(--sbs-stop-2) * var(--sbs-k)); }
+    64%, 86% { translate: 0 calc(var(--sbs-stop-3) * var(--sbs-k)); }
+    89%, 96% { translate: 0 calc(var(--sbs-stop-4) * var(--sbs-k)); }
+    100% { translate: 0 0; }
   }
 
   /* The symbol in depth: fourteen layers of the shape behind a face of
@@ -4423,7 +4436,6 @@
     -webkit-mask-composite: source-in;
     mask: var(--sym) center / contain no-repeat, repeating-linear-gradient(to bottom, #000 0 var(--slat), transparent var(--slat) 9px);
     mask-composite: intersect;
-    transition: --slat 1.1s var(--a-ease);
   }
 
   /* contour lines, Lithic's: hairlines, drawn one after another */
@@ -4436,34 +4448,87 @@
     stroke-dashoffset: 0;
   }
 
-  /* 1 · hero: on Noite, the photograph opening through slats */
-  .sbs-a-hero { background: var(--p-noite); }
-  .sbs-a-blinds {
-    position: absolute;
-    inset: 0;
-    -webkit-mask: repeating-linear-gradient(to bottom, #000 0 var(--blind), transparent var(--blind) 28px);
-    mask: repeating-linear-gradient(to bottom, #000 0 var(--blind), transparent var(--blind) 28px);
+  /* Between sections: each section comes in through slats (Evolve's),
+     widening as it arrives; between them the page's own ground, Noite,
+     so a section waiting below another reads as dark space, not a block. */
+  .sbs-a-page { background: var(--p-noite); }
+  .sbs-a-wipe {
+    position: relative;
+    isolation: isolate;
+    -webkit-mask: repeating-linear-gradient(to bottom, #000 0 calc(30px - var(--wipe)), transparent calc(30px - var(--wipe)) 30px);
+    mask: repeating-linear-gradient(to bottom, #000 0 calc(30px - var(--wipe)), transparent calc(30px - var(--wipe)) 30px);
   }
+
+  /* 1 · the opening and the hero ---------------------------------------- */
   .sbs-a-rings ellipse { stroke: rgb(255 255 255 / 0.42); }
   .sbs-a-lead h3 .sbs-a-line { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
   .sbs-a-lead h3 .sbs-a-line > span { display: block; }
-
-  /* 2 · the five words, on Noite, numbered on hairlines */
-  .sbs-a-index { position: relative; overflow: hidden; padding: 54px 60px 62px; background-color: var(--p-noite); color: #fff; }
-  .sbs-a-contour ellipse { stroke: rgb(168 170 188 / 0.3); }
-  .sbs-a-kicker { position: relative; display: block; margin: 0 0 18px; font-family: var(--p-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--p-nevoa); }
-  .sbs-a-row {
-    position: relative;
+  .sbs-a-intro {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
     display: grid;
-    grid-template-columns: 84px 1fr;
-    align-items: baseline;
-    padding: 4px 0 2px;
-    border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+    place-items: center;
+    background: radial-gradient(110% 90% at 50% 42%, var(--a-violet), var(--a-violet-deep) 72%);
+    opacity: 0;
+    visibility: hidden;
   }
-  .sbs-a-row:last-child { border-bottom: 1px solid color-mix(in srgb, currentColor 18%, transparent); }
-  .sbs-a-row > span { font-family: var(--p-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--p-nevoa); }
-  .sbs-a-row b { display: block; overflow: hidden; font-family: var(--p-display); font-weight: 400; font-size: 64px; line-height: 1.14; letter-spacing: -0.025em; }
-  .sbs-a-row b > span { display: block; }
+  /* the symbol faces the visitor before the flight, so the square of the P
+     is straight on; the eye is set at that square (69% 33% of the symbol) */
+  .sbs-a-intro-solid {
+    width: 180px;
+    height: 180px;
+    perspective: 600px;
+    perspective-origin: 69% 33%;
+    --face: linear-gradient(180deg, #fff, var(--p-nevoa));
+    --side-a: #4b3f80;
+    --side-b: #120e26;
+  }
+  .sbs-a-intro-solid .sbs-a-turn { transition: none; }
+
+  /* 2 · the five kinds of insurance (after Palais de Tokyo) -------------- */
+  .sbs-a-index {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 30px;
+    overflow: hidden;
+    padding: 56px 60px 60px;
+    background-color: var(--p-noite);
+    color: #fff;
+  }
+  .sbs-a-contour ellipse { stroke: rgb(168 170 188 / 0.24); }
+  .sbs-a-kinds-mark { position: relative; }
+  /* the symbol travels to the row being read: rows are ~78px apart */
+  .sbs-a-kinds-solid {
+    position: absolute;
+    top: 30px;
+    left: 40px;
+    width: 150px;
+    height: 150px;
+    --face: linear-gradient(180deg, #fff, var(--p-nevoa));
+    --side-a: var(--p-grafite);
+    --side-b: #0a0d18;
+    translate: 0 calc(var(--at, 0) * 76px);
+    transition: translate 0.9s var(--a-ease);
+  }
+  .sbs-a-kicker { position: relative; display: block; margin: 0 0 14px; font-family: var(--p-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--p-nevoa); }
+  .sbs-a-kinds { position: relative; }
+  .sbs-a-kind {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    align-items: baseline;
+    padding: 6px 0 8px;
+    border-top: 1px solid rgb(255 255 255 / 0.12);
+  }
+  .sbs-a-kind:last-child { border-bottom: 1px solid rgb(255 255 255 / 0.12); }
+  .sbs-a-num { font-family: var(--p-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--p-nevoa); }
+  .sbs-a-kind b { display: block; overflow: hidden; font-family: var(--p-display); font-weight: 400; font-size: 52px; line-height: 1.12; letter-spacing: -0.025em; }
+  .sbs-a-kind b > span { display: block; color: rgb(255 255 255 / 0.32); transition: color 0.6s var(--a-ease); }
+  .sbs-a-kind[data-on] b > span { color: #fff; }
+  .sbs-a-about { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.7s var(--a-ease); }
+  .sbs-a-about > p { overflow: hidden; margin: 0; max-width: 40ch; font-size: 14px; line-height: 1.5; color: rgb(255 255 255 / 0.7); }
+  .sbs-a-kind[data-on] .sbs-a-about { grid-template-rows: 1fr; }
+  .sbs-a-kind[data-on] .sbs-a-about > p { padding: 4px 0 6px; }
 
   /* 3 · the quotes as a comparison table, Pilar's pick its lit column */
   .sbs-a-sheet { padding: 64px 60px 66px; background: #fff; }
@@ -4512,48 +4577,58 @@
   .sbs-a-foot-cell .sbs-p-wide { display: inline-block; margin: 0; padding: 12px 22px; }
   .sbs-a-why { grid-column: 3; grid-row: 6; text-align: left; font-size: 12.5px; line-height: 1.45; color: #dcdde5; }
 
-  /* 4 · the steps, held one at a time beside the symbol in depth */
-  .sbs-a-how { padding: 60px 60px 58px; border-top: 1px solid #ececf1; background: #fff; }
-  .sbs-a-how-head { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: end; padding-bottom: 30px; border-bottom: 1px solid #ececf1; }
+  /* 4 · the steps: a carousel over the sliding-ease bars ----------------- */
+  .sbs-a-how { overflow: hidden; padding: 60px 0 46px; color: #fff; background: var(--p-noite); }
+  .sbs-a-bars { position: absolute; inset: 0; z-index: -1; opacity: 0.85; }
+  .sbs-a-bars::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgb(17 21 37 / 0.88) 0%, rgb(17 21 37 / 0.15) 40%, rgb(17 21 37 / 0.15) 70%, rgb(17 21 37 / 0.8) 100%);
+  }
+  .sbs-a-how-head { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: end; padding: 0 60px 34px; }
   .sbs-a-how-head h4 { margin: 0; font-family: var(--p-display); font-weight: 400; font-size: 40px; line-height: 1.04; letter-spacing: -0.015em; }
   .sbs-a-how-head h4 span { display: block; }
-  .sbs-a-how-head p { margin: 0; font-size: 14.5px; line-height: 1.6; }
-  .sbs-a-how-stage { display: grid; grid-template-columns: 290px 1fr; gap: 40px; align-items: center; padding-top: 32px; }
-  .sbs-a-how-mark {
-    position: relative;
-    display: grid;
-    place-items: center;
-    height: 290px;
-    border-radius: 14px;
-    background: radial-gradient(120% 90% at 50% 30%, #f6f6f9, #e8e9ef);
-  }
-  .sbs-a-how-solid { width: 140px; height: 140px; --side-a: var(--p-nevoa); --side-b: var(--p-grafite); }
-  .sbs-a-how-solid .sbs-a-turn > b { --slat: var(--slat-to, 9px); }
-  .sbs-a-count { position: absolute; left: 16px; bottom: 14px; font-family: var(--p-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--p-grafite); }
-  .sbs-a-step { min-height: 156px; animation: sbs-a-step 0.6s var(--a-ease); }
-  @keyframes sbs-a-step { from { opacity: 0; translate: 0 10px; } }
-  .sbs-a-step h5 { margin: 10px 0 12px; font-family: var(--p-display); font-weight: 400; font-size: 42px; line-height: 1.04; letter-spacing: -0.02em; }
-  .sbs-a-step p { margin: 0; max-width: 38ch; font-size: 15px; line-height: 1.55; color: var(--p-grafite); }
-  .sbs-a-names { margin: 18px 0 0; padding: 0; list-style: none; }
-  .sbs-a-names li { border-top: 1px solid #ececf1; }
-  .sbs-a-names button {
+  .sbs-a-how-head p { margin: 0; font-size: 14.5px; line-height: 1.6; color: rgb(255 255 255 / 0.78); }
+  .sbs-a-how .sbs-p-go { border-bottom-color: #fff; color: #fff; }
+  .sbs-a-rail { padding-left: 60px; }
+  /* one card at a time, the next one showing on the right */
+  .sbs-a-track {
     display: flex;
-    gap: 14px;
-    width: 100%;
-    padding: 9px 0;
-    border: 0;
-    background: none;
+    gap: 20px;
+    translate: calc(var(--at, 0) * -420px) 0;
+    transition: translate 0.9s var(--a-ease);
+  }
+  .sbs-a-card {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 400px;
+    min-height: 230px;
+    padding: 26px 28px 28px;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: 14px;
+    background: rgb(17 21 37 / 0.78);
     font: inherit;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--p-grafite);
+    color: #fff;
     text-align: left;
     cursor: pointer;
-    transition: color 0.4s ease;
+    opacity: 0.4;
+    scale: 0.94;
+    transform-origin: 0 50%;
+    transition: opacity 0.7s var(--a-ease), scale 0.9s var(--a-ease), border-color 0.7s ease;
   }
-  .sbs-a-names button span { font-family: var(--p-mono); font-size: 11px; letter-spacing: 0.06em; }
-  .sbs-a-names button[data-past] { color: var(--p-noite); }
-  .sbs-a-names button[aria-current] { color: var(--p-noite); font-weight: 600; }
+  .sbs-a-card[data-on] { opacity: 1; scale: 1; border-color: rgb(168 170 188 / 0.45); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08); }
+  .sbs-a-card[data-past] { opacity: 0; }
+  .sbs-a-card-num { font-family: var(--p-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--p-nevoa); }
+  .sbs-a-card-num i { font-style: normal; opacity: 0.6; }
+  .sbs-a-card b { margin-top: auto; font-family: var(--p-display); font-weight: 400; font-size: 40px; line-height: 1.04; letter-spacing: -0.02em; }
+  .sbs-a-card-text { max-width: 32ch; font-size: 14.5px; line-height: 1.5; color: rgb(255 255 255 / 0.74); }
+  .sbs-a-ticks { display: flex; gap: 8px; padding: 26px 60px 0; }
+  .sbs-a-ticks span { position: relative; flex: 1; height: 2px; overflow: hidden; background: rgb(255 255 255 / 0.14); }
+  .sbs-a-ticks span::after { content: ""; position: absolute; inset: 0; background: #fff; scale: 0 1; transform-origin: 0 50%; transition: scale 0.9s var(--a-ease); }
+  .sbs-a-ticks span[data-past]::after, .sbs-a-ticks span[data-on]::after { scale: 1 1; }
 
   /* 5 · the foot: the closing band on rings, the symbol large in depth */
   .sbs-a-foot { padding-top: 40px; }
@@ -4581,76 +4656,124 @@
   .sbs-a-foot-small small { display: block; font-size: 12.5px; line-height: 1.55; color: rgb(255 255 255 / 0.74); }
 
   /* ---- the loop: each section's finish played as it arrives -------- */
-  .sbs-run .sbs-a-blinds { animation: sbs-a-blinds var(--sbs-loop) linear infinite; }
-  @keyframes sbs-a-blinds {
-    0% { --blind: 0px; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-    6%, 90% { --blind: 28px; }
-    91%, 100% { --blind: 0px; }
+  /* the opening: the violet and the symbol, the turn to face, the flight
+     through the square of the P (the eye moves to within 2px of it), the
+     fade that reveals the website; it comes back over the hero while the
+     page returns to the top */
+  .sbs-run .sbs-a-intro { animation: sbs-a-intro var(--sbs-loop) linear infinite; }
+  @keyframes sbs-a-intro {
+    0%, 11.5% { opacity: 1; visibility: visible; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+    15%, 96% { opacity: 0; visibility: hidden; }
+    99%, 100% { opacity: 1; visibility: visible; }
+  }
+  .sbs-run .sbs-a-intro-solid .sbs-a-turn { animation: sbs-a-fly var(--sbs-loop) linear infinite; }
+  @keyframes sbs-a-fly {
+    0% { opacity: 0; transform: translateZ(-260px) rotateX(18deg) rotateY(-48deg); animation-timing-function: var(--a-ease); }
+    3% { opacity: 1; }
+    5% { transform: translateZ(0) rotateX(14deg) rotateY(-30deg); animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+    /* depth already speeds the growth up (1 / (600 - z)), so the flight
+       eases out: the square widens at a steady rate rather than at once */
+    7% { transform: translateZ(0) rotateX(0deg) rotateY(0deg); animation-timing-function: cubic-bezier(0.5, 0, 0.12, 1); }
+    12.5%, 96% { opacity: 1; transform: translateZ(599.7px) rotateX(0deg) rotateY(0deg); }
+    97%, 100% { opacity: 0; transform: translateZ(-260px) rotateX(18deg) rotateY(-48deg); }
   }
   .sbs-run .sbs-a-lead h3 .sbs-a-line > span { animation: sbs-a-line var(--sbs-loop) linear infinite both; }
   .sbs-run .sbs-a-lead h3 .sbs-a-line + .sbs-a-line > span { animation-delay: 0.14s; }
   @keyframes sbs-a-line {
-    0%, 2% { translate: 0 110%; animation-timing-function: var(--a-ease); }
-    8%, 90% { translate: 0 0; }
-    91%, 100% { translate: 0 110%; }
+    0%, 12% { translate: 0 110%; animation-timing-function: var(--a-ease); }
+    17%, 96% { translate: 0 0; }
+    97%, 100% { translate: 0 110%; }
   }
   .sbs-run .sbs-a-lead p, .sbs-run .sbs-a-lead .sbs-p-pill, .sbs-run .sbs-a-hero .sbs-p-reviews { animation: sbs-a-fade var(--sbs-loop) linear infinite both; }
   @keyframes sbs-a-fade {
-    0%, 5% { opacity: 0; translate: 0 10px; animation-timing-function: var(--a-ease); }
-    10%, 90% { opacity: 1; translate: 0 0; }
-    91%, 100% { opacity: 0; }
+    0%, 14% { opacity: 0; translate: 0 10px; animation-timing-function: var(--a-ease); }
+    18%, 96% { opacity: 1; translate: 0 0; }
+    97%, 100% { opacity: 0; }
+  }
+  .sbs-run .sbs-a-hero .sbs-p-sky { animation: sbs-a-sky var(--sbs-loop) linear infinite both; }
+  @keyframes sbs-a-sky {
+    0%, 10% { scale: 1.12; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+    20%, 96% { scale: 1; }
+    97%, 100% { scale: 1.12; }
   }
   .sbs-run .sbs-a-rings ellipse { animation: sbs-a-draw-hero var(--sbs-loop) linear infinite both; animation-delay: calc(var(--i) * 0.09s); }
   @keyframes sbs-a-draw-hero {
-    0%, 3% { stroke-dashoffset: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
-    11%, 90% { stroke-dashoffset: 0; }
-    91%, 100% { stroke-dashoffset: 1; }
+    0%, 12% { stroke-dashoffset: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+    20%, 96% { stroke-dashoffset: 0; }
+    97%, 100% { stroke-dashoffset: 1; }
   }
 
-  .sbs-run .sbs-a-index { animation: sbs-a-ground var(--sbs-loop) linear infinite; }
-  @keyframes sbs-a-ground {
-    0%, 14% { background-color: #fff; color: var(--p-noite); animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-    19%, 90% { background-color: var(--p-noite); color: #fff; }
-    91%, 100% { background-color: #fff; color: var(--p-noite); }
+  /* the slats between sections, each widening as its section arrives */
+  .sbs-run .sbs-a-index { animation: sbs-a-wipe-1 var(--sbs-loop) linear infinite; }
+  .sbs-run .sbs-a-sheet { animation: sbs-a-wipe-2 var(--sbs-loop) linear infinite; }
+  .sbs-run .sbs-a-how { animation: sbs-a-wipe-3 var(--sbs-loop) linear infinite; }
+  .sbs-run .sbs-a-foot { animation: sbs-a-wipe-4 var(--sbs-loop) linear infinite; }
+  @keyframes sbs-a-wipe-1 {
+    0%, 22% { --wipe: 30px; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+    27%, 97% { --wipe: 0px; }
+    98%, 100% { --wipe: 30px; }
   }
-  .sbs-run .sbs-a-row b > span { animation: sbs-a-rise var(--sbs-loop) linear infinite both; animation-delay: calc(var(--i) * 0.11s); }
+  @keyframes sbs-a-wipe-2 {
+    0%, 46% { --wipe: 30px; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+    51%, 97% { --wipe: 0px; }
+    98%, 100% { --wipe: 30px; }
+  }
+  @keyframes sbs-a-wipe-3 {
+    0%, 60% { --wipe: 30px; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+    65%, 97% { --wipe: 0px; }
+    98%, 100% { --wipe: 30px; }
+  }
+  @keyframes sbs-a-wipe-4 {
+    0%, 86% { --wipe: 30px; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+    90%, 98% { --wipe: 0px; }
+    99%, 100% { --wipe: 30px; }
+  }
+
+  .sbs-run .sbs-a-kind b > span { animation: sbs-a-rise var(--sbs-loop) linear infinite both; animation-delay: calc(var(--i) * 0.11s); }
   @keyframes sbs-a-rise {
-    0%, 16% { translate: 0 110%; animation-timing-function: var(--a-ease); }
-    22%, 90% { translate: 0 0; }
-    91%, 100% { translate: 0 110%; }
+    0%, 24% { translate: 0 110%; animation-timing-function: var(--a-ease); }
+    30%, 97% { translate: 0 0; }
+    98%, 100% { translate: 0 110%; }
   }
   .sbs-run .sbs-a-contour ellipse { animation: sbs-a-draw-index var(--sbs-loop) linear infinite both; animation-delay: calc(var(--i) * 0.06s); }
   @keyframes sbs-a-draw-index {
-    0%, 17% { stroke-dashoffset: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
-    26%, 90% { stroke-dashoffset: 0; }
-    91%, 100% { stroke-dashoffset: 1; }
+    0%, 25% { stroke-dashoffset: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+    33%, 97% { stroke-dashoffset: 0; }
+    98%, 100% { stroke-dashoffset: 1; }
+  }
+  .sbs-run .sbs-a-kinds-mark { animation: sbs-a-mark var(--sbs-loop) linear infinite both; }
+  @keyframes sbs-a-mark {
+    0%, 25% { opacity: 0; scale: 0.8; animation-timing-function: var(--a-ease); }
+    31%, 97% { opacity: 1; scale: 1; }
+    98%, 100% { opacity: 0; scale: 0.8; }
   }
 
   .sbs-run .sbs-a-table { animation: sbs-a-settle var(--sbs-loop) linear infinite both; }
   @keyframes sbs-a-settle {
-    0%, 30% { opacity: 0; transform: translateY(56px) rotateX(38deg) rotateZ(-4deg) scale(0.92); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
-    32% { opacity: 1; }
-    41%, 90% { opacity: 1; transform: none; }
-    91%, 100% { opacity: 0; transform: translateY(56px) rotateX(38deg) rotateZ(-4deg) scale(0.92); }
+    0%, 48% { opacity: 0; transform: translateY(56px) rotateX(38deg) rotateZ(-4deg) scale(0.92); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+    50% { opacity: 1; }
+    56%, 97% { opacity: 1; transform: none; }
+    98%, 100% { opacity: 0; transform: translateY(56px) rotateX(38deg) rotateZ(-4deg) scale(0.92); }
   }
   .sbs-run .sbs-a-col { animation: sbs-a-lift var(--sbs-loop) linear infinite both; }
   @keyframes sbs-a-lift {
-    0%, 37% { box-shadow: 0 0 0 0 rgb(17 21 37 / 0); animation-timing-function: var(--a-ease); }
-    42%, 90% { box-shadow: 0 30px 50px -26px rgb(17 21 37 / 0.6); }
-    91%, 100% { box-shadow: 0 0 0 0 rgb(17 21 37 / 0); }
+    0%, 54% { box-shadow: 0 0 0 0 rgb(17 21 37 / 0); animation-timing-function: var(--a-ease); }
+    58%, 97% { box-shadow: 0 30px 50px -26px rgb(17 21 37 / 0.6); }
+    98%, 100% { box-shadow: 0 0 0 0 rgb(17 21 37 / 0); }
   }
   .sbs-run .sbs-a-col::after { animation: sbs-a-sheen var(--sbs-loop) linear infinite both; }
   @keyframes sbs-a-sheen {
-    0%, 38% { translate: -120% 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
-    43%, 100% { translate: 120% 0; }
+    0%, 55% { translate: -120% 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+    59%, 100% { translate: 120% 0; }
   }
 
   .sbs-run .sbs-a-how-head > * { animation: sbs-a-how var(--sbs-loop) linear infinite both; }
   .sbs-run .sbs-a-how-head > * + * { animation-delay: 0.1s; }
+  .sbs-run .sbs-a-rail { animation: sbs-a-how var(--sbs-loop) linear infinite both; animation-delay: 0.2s; }
   @keyframes sbs-a-how {
-    0%, 44% { opacity: 0; translate: 0 14px; animation-timing-function: var(--a-ease); }
-    50%, 90% { opacity: 1; translate: 0 0; }
-    91%, 100% { opacity: 0; }
+    0%, 62% { opacity: 0; translate: 0 18px; animation-timing-function: var(--a-ease); }
+    67%, 97% { opacity: 1; translate: 0 0; }
+    98%, 100% { opacity: 0; }
   }
 
   .sbs-run .sbs-a-band-rings { animation: sbs-a-breathe 9s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate; }
@@ -4662,15 +4785,15 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .sbs-a-step { animation: none; }
-    .sbs-a-turn, .sbs-a-turn > b { transition: none; }
+    .sbs-a-turn, .sbs-a-kinds-solid, .sbs-a-track, .sbs-a-card, .sbs-a-about, .sbs-a-ticks span::after { transition: none; }
   }
 
   /* the narrow page, on a phone (620px, as the comparison's) */
   @media (max-width: 899.98px) {
-    .sbs-a-index { padding: 48px 36px 56px; }
-    .sbs-a-row { grid-template-columns: 56px 1fr; }
-    .sbs-a-row b { font-size: 52px; }
+    .sbs-a-index { grid-template-columns: 150px 1fr; gap: 14px; padding: 48px 36px 52px; }
+    .sbs-a-kinds-solid { left: 10px; width: 110px; height: 110px; translate: 0 calc(var(--at, 0) * 66px); }
+    .sbs-a-kind { grid-template-columns: 40px 1fr; }
+    .sbs-a-kind b { font-size: 42px; }
     .sbs-a-sheet { padding: 48px 36px 52px; }
     .sbs-a-sheet-head { grid-template-columns: 1fr; gap: 16px; }
     .sbs-a-table { grid-template-columns: 1.05fr 1fr 1.15fr 1fr; }
@@ -4679,12 +4802,12 @@
     .sbs-a-tr[data-first] .sbs-a-cell:not(.sbs-a-th) { font-size: 18px; }
     .sbs-a-tr[data-first] .sbs-a-cell[data-pick] { font-size: 22px; }
     .sbs-a-foot-cell .sbs-p-wide { padding: 10px 12px; font-size: 11.5px; white-space: nowrap; }
-    .sbs-a-how { padding: 48px 36px 50px; }
-    .sbs-a-how-head { grid-template-columns: 1fr; gap: 16px; }
-    .sbs-a-how-stage { grid-template-columns: 190px 1fr; gap: 24px; }
-    .sbs-a-how-mark { height: 220px; }
-    .sbs-a-how-solid { width: 104px; height: 104px; }
-    .sbs-a-step h5 { font-size: 32px; }
+    .sbs-a-how { padding: 48px 0 40px; }
+    .sbs-a-how-head { grid-template-columns: 1fr; gap: 16px; padding: 0 36px 28px; }
+    .sbs-a-rail { padding-left: 36px; }
+    .sbs-a-track { translate: calc(var(--at, 0) * -380px) 0; }
+    .sbs-a-card { width: 360px; }
+    .sbs-a-ticks { padding: 22px 36px 0; }
     .sbs-a-foot { padding: 32px 36px 0; }
     .sbs-a-band { flex-direction: column; align-items: flex-start; gap: 22px; padding: 40px 28px; }
     .sbs-a-band h4 { font-size: 30px; }
