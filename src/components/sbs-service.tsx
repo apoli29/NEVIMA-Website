@@ -58,7 +58,11 @@ export function SbsLevels() {
   const [plate, inView] = useInView<HTMLDivElement>(0.3);
   const [paused, setPaused] = useState(false); // TEMPORARY, see seek below
   const [at, setAt] = useState(0); // TEMPORARY
-  const running = (inView || paused) && !reduce;
+  // TEMPORARY: once the pause has been used, the loop no longer waits on
+  // the plate being 30% in view, so Play always sets it going again (the
+  // site's off-screen pause still holds it when it is far off the screen).
+  const [handled, setHandled] = useState(false);
+  const running = (inView || paused || handled) && !reduce;
 
   // On its own, the plate shows one whole visit of a page and then the
   // other, until the switch is touched.
@@ -101,6 +105,7 @@ export function SbsLevels() {
     const now = first ? ((Number(first.currentTime) - (first.effect?.getTiming().delay as number ?? 0)) % LOOP_MS) / LOOP_MS : 0;
     setAt(Math.max(0, now));
     setTaken(true);
+    setHandled(true);
     setPaused(true);
   };
 
