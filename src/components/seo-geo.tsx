@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type RefObject } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { SlideIn } from "./enter";
 import { ProposalAsk } from "./about-faq";
@@ -215,8 +215,7 @@ function SearchMachine({ t, on, setOn }: { t: T; on: boolean; setOn: (on: boolea
 function SeoHero({ t }: { t: T }) {
   const [on, setOn] = useState(false);
   return (
-    <section aria-labelledby="sg-title" className="sg-dark relative isolate text-paper">
-      <div aria-hidden="true" className="sbs-ground" />
+    <section aria-labelledby="sg-title" data-tone="dark" className="relative text-paper">
       <div className="shell sg-hero">
         <div className="sg-hero-copy">
           <SlideIn ready>
@@ -357,7 +356,7 @@ function Assistant({ t }: { t: T }) {
 
 function GeoSection({ t }: { t: T }) {
   return (
-    <section aria-labelledby="sg-geo" className="sg-geo">
+    <section aria-labelledby="sg-geo" data-tone="light" className="sg-geo relative">
       <div className="shell sg-geo-grid">
         <div>
           <SlideIn ready>
@@ -504,8 +503,7 @@ function Levels({ t }: { t: T }) {
   const order: Level[] = ["basic", "once", "monthly"];
 
   return (
-    <section aria-labelledby="sg-levels" className="sg-dark relative isolate text-paper">
-      <div aria-hidden="true" className="sbs-ground" />
+    <section aria-labelledby="sg-levels" data-tone="dark" className="relative text-paper">
       <div className="shell sg-levels">
         <SlideIn ready>
           <p className="mono-label text-paper/55">{t("The impact of each level", "O impacto de cada nível")}</p>
@@ -656,7 +654,7 @@ function Price({ t, table }: { t: T; table: SeoPrice[] }) {
   const sizeShown = useScramble(size, reduce);
 
   return (
-    <section aria-labelledby="sg-price" className="sg-price">
+    <section aria-labelledby="sg-price" data-tone="light" className="sg-price relative">
       <div className="shell sg-price-grid">
         <div>
           <SlideIn ready>
@@ -749,15 +747,125 @@ function Price({ t, table }: { t: T; table: SeoPrice[] }) {
   );
 }
 
+/* ---------------------------------------------------------------- */
+/* Between the sections: a tonal veil                                */
+/* ---------------------------------------------------------------- */
+
+/* The sections have no ground of their own. One ground lies behind the
+   whole page, held to the screen, and its tone follows the scroll: as a
+   section's head comes up the screen, the ground passes from black to
+   white (or back) over half a screen of scroll, with no line anywhere,
+   and the section going out dims and settles back a little while the
+   one coming in takes its place. It runs both ways and nothing moves
+   while the page is still. The same idea as the about page's water,
+   which turns the screen from white to water on the scroll (the
+   references, through Inspo: Audo and Chloé's veils).
+
+   The last turn is to the black of Let's work together, under the
+   page: the ground goes dark as that section comes up, so the white
+   ends in it rather than against it. */
+
+const INK = 11; // #0b0b0b, the dark sections' ground
+/** Where a turn starts and how long it lasts, as shares of the screen:
+    it starts when the next section's top is 75% down the screen and is
+    done when it is 33% down: short enough that the grey between the two
+    is passed through, not dwelt in. */
+const TURN_FROM = 0.75;
+const TURN_SPAN = 0.42;
+const smooth = (x: number) => x * x * (3 - 2 * x);
+
+function useToneVeil(room: RefObject<HTMLDivElement | null>, ground: RefObject<HTMLDivElement | null>, grain: RefObject<HTMLDivElement | null>) {
+  const reduce = useReducedMotion() ?? false;
+  useEffect(() => {
+    const r = room.current;
+    const g = ground.current;
+    if (!r || !g) return;
+    const stops = Array.from(r.querySelectorAll<HTMLElement>(":scope > [data-tone]")).map((el) => ({
+      el,
+      tone: el.dataset.tone === "light" ? 1 : 0,
+      body: el.querySelector<HTMLElement>(":scope > .shell"),
+      last: "",
+    }));
+    const after = r.closest("main")?.nextElementSibling;
+    // Let's work together turns the ground only: the prices above it keep
+    // their full strength while they can still be read.
+    const sections = stops.length;
+    if (after instanceof HTMLElement) stops.push({ el: after, tone: 0, body: null, last: "" });
+    if (!stops.length) return;
+
+    let lastTone = -1;
+    let queued = 0;
+    const update = () => {
+      queued = 0;
+      const vh = window.innerHeight || 1;
+      let tone = stops[0]!.tone;
+      let own = tone;
+      for (let k = 1; k < stops.length; k++) {
+        const top = stops[k]!.el.getBoundingClientRect().top;
+        const p = Math.min(Math.max((vh * TURN_FROM - top) / (vh * TURN_SPAN), 0), 1);
+        tone += (stops[k]!.tone - tone) * smooth(p);
+        if (k < sections) own = tone;
+      }
+      const key = Math.round(tone * 1000);
+      if (key !== lastTone) {
+        lastTone = key;
+        const c = Math.round(INK + (255 - INK) * tone);
+        g.style.backgroundColor = `rgb(${c} ${c} ${c})`;
+        // The corner light and the grain belong to the dark: they go with it.
+        if (grain.current) grain.current.style.opacity = (1 - tone).toFixed(3);
+      }
+      for (const stop of stops) {
+        if (!stop.body) continue;
+        // How much the ground is this section's own: 1 on its tone, 0 on
+        // the other. Below 1 it dims and settles back.
+        const v = smooth(1 - Math.abs(own - stop.tone));
+        const opacity = v > 0.999 ? "" : (0.42 + 0.58 * v).toFixed(3);
+        const scale = reduce || v > 0.999 ? "" : `scale(${(0.97 + 0.03 * v).toFixed(4)})`;
+        const next = opacity + "|" + scale;
+        if (next === stop.last) continue;
+        stop.last = next;
+        stop.body.style.opacity = opacity;
+        stop.body.style.transform = scale;
+        stop.body.style.transformOrigin = scale ? "50% 40%" : "";
+      }
+    };
+    const queue = () => {
+      if (!queued) queued = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", queue, { passive: true });
+    window.addEventListener("resize", queue);
+    // The page settling (fonts, the results page) moves the sections
+    // without a scroll.
+    const settle = new ResizeObserver(queue);
+    settle.observe(document.body);
+    return () => {
+      cancelAnimationFrame(queued);
+      settle.disconnect();
+      window.removeEventListener("scroll", queue);
+      window.removeEventListener("resize", queue);
+    };
+  }, [room, ground, grain, reduce]);
+}
+
 /** The page's three sections, between the bar and Let's work together. */
 export function SeoGeo({ prices }: { prices: SeoPrice[] }) {
   const t = useT();
+  const room = useRef<HTMLDivElement>(null);
+  const ground = useRef<HTMLDivElement>(null);
+  const grain = useRef<HTMLDivElement>(null);
+  useToneVeil(room, ground, grain);
   return (
-    <>
+    <div ref={room} className="sg-room">
+      <div ref={ground} aria-hidden="true" className="sg-ground">
+        <div ref={grain} className="sg-ground-dusk">
+          <div className="sg-ground-grain" />
+        </div>
+      </div>
       <SeoHero t={t} />
       <GeoSection t={t} />
       <Levels t={t} />
       <Price t={t} table={prices} />
-    </>
+    </div>
   );
 }

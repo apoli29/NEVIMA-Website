@@ -12,6 +12,11 @@ References found through Inspo: Aspen Search (Swiss grid, dithered texture for w
 3. **Price** (white). A calculator: the size of the website (a landing page to 10 pages) gives the one-off work and the monthly service, then the free-proposal button.
    - Worked out on the server (`src/lib/proposal/seo-table.ts`) from `PRICING`, by the form's own rule (one-off 22.5% of the website, monthly 30% of the one-off, lowest end down to 5, highest up). A size is Home, About and Contact plus the average of the usual pages (services, testimonials, FAQ, gallery, team, process, prices, portfolio), in Portugal with Essential+. It reads "Estimativa para Portugal, com o design Essencial+. O valor final fica definido na proposta gratuita."
 
+## Between the sections (2026-11-16)
+
+- A pixel dissolve was built first (after Locomotive's pixel mosaic) and turned down by the user: "demasiado tecnológico", no pixels or squares of any kind; the most refined result possible, choice left to me.
+- Chosen: a **tonal veil**. The sections have no ground of their own; one ground lies behind the page, held to the screen and clipped to it (`.sg-room`, `.sg-ground`), and its tone follows the scroll both ways: as a section's top goes from 75% to 33% down the screen, the ground passes from `#0b0b0b` to white or back (smoothstep), with no line anywhere. The section going out dims to 42% and settles back to 97% scale; the one coming in takes its place. The corner light and grain of the dark ground fade with it. The last turn darkens the ground into Let's work together without dimming the prices. Reduced motion keeps the tone and the dimming, not the scale. The same idea as the about page's water (references through Inspo: Audo and Chloé's veils). `useToneVeil` in `seo-geo.tsx`.
+
 ## Copy
 
 - The monthly maintenance text was not written; the user approved this draft: "Todos os meses, acompanhamos as mudanças nas pesquisas e no comportamento dos utilizadores e ajustamos o SEO e o GEO do website, para manter e fazer crescer os resultados do trabalho pontual."
