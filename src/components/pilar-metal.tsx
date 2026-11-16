@@ -18,7 +18,8 @@ import * as THREE from "three";
    across the metal while the symbol stays face on.
 
    It plays on the page's own loop (sbs-a-scroll), read every frame: the
-   symbol held face on with the light moving (0-6.5%), then the camera
+   symbol held face on, floating and swaying a little, with the light
+   moving (0-6.5%), then the camera
    flies into the square of the P and through it (6.5-12.5%); the CSS
    fade over it reveals the website. It draws only while the opening can
    be seen (before 16% and after 96% of a lap) and only on screen; a
@@ -263,6 +264,12 @@ export function PilarMetal({ className }: { className?: string }) {
       // the flight: 6.5% to 12.5% of the lap, into the square and through
       const f = p > 0.96 ? 0 : Math.min(1, Math.max(0, (p - 0.065) / 0.06));
       const k = inOut(f);
+      // a slow float and a slight sway while it is held, eased back to
+      // face on as the flight begins, so the camera goes straight through
+      const still = 1 - inOut(Math.min(1, f * 2.5));
+      symbol.rotation.y = 0.12 * Math.sin(time * 0.5) * still;
+      symbol.rotation.x = 0.05 * Math.sin(time * 0.37 + 1.2) * still;
+      symbol.position.y = 1.8 * Math.sin(time * 0.62) * still;
       const aim = HOLE.clone().multiplyScalar(ease(Math.min(1, f * 1.6)));
       camera.position.set(aim.x, aim.y, START - (START + 40) * k);
       camera.lookAt(aim.x, aim.y, -100);

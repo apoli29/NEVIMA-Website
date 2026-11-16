@@ -710,3 +710,8 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   the square of the P is the camera's, read off the page's loop every
   frame; it draws only while the opening can be seen. The CSS stack of
   layers stays for the symbols beside the kinds and in the foot.
+- 2026-11-17 (user: "o realismo agora está bom"): no shadow under the
+  symbol; the ground moves, two soft pools (a deeper violet, a light)
+  drifting slowly across it out of step (11s and 15s); the symbol floats
+  and sways a little while it is held, easing back to face on as the
+  flight begins so the camera goes straight through the square.

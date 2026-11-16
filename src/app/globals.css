@@ -4475,18 +4475,18 @@
     opacity: 0;
     visibility: hidden;
   }
-  /* a soft shadow under the symbol, so the metal sits on the light */
-  .sbs-a-intro::before {
+  /* the ground moves: two soft pools of a deeper violet and of light
+     drift across it, slowly and never in step (user, 2026-11-17) */
+  .sbs-a-intro::before,
+  .sbs-a-intro::after {
     content: "";
     position: absolute;
-    left: 50%;
-    top: calc(50% + 96px);
-    width: 190px;
-    height: 26px;
-    translate: -50% 0;
-    border-radius: 50%;
-    background: radial-gradient(closest-side, rgb(46 40 84 / 0.28), transparent);
+    inset: -20%;
+    pointer-events: none;
   }
+  .sbs-a-intro::before { background: radial-gradient(38% 42% at 30% 70%, rgb(124 114 178 / 0.55), transparent 70%); }
+  .sbs-a-intro::after { background: radial-gradient(34% 38% at 72% 28%, rgb(244 242 252 / 0.7), transparent 70%); }
+  .sbs-a-metal { z-index: 1; }
   /* The symbol in white metal, rendered in WebGL (pilar-metal.tsx): it
      fills the opening, drawn at the size it is seen; the flight through
      the square of the P is its camera's, on this page's loop. */
@@ -4682,11 +4682,15 @@
     1.5%, 96% { opacity: 1; }
     97%, 100% { opacity: 0; }
   }
-  .sbs-run .sbs-a-intro::before { animation: sbs-a-shadow var(--sbs-loop) linear infinite; }
-  @keyframes sbs-a-shadow {
-    0%, 6.5% { opacity: 1; }
-    8.5%, 96% { opacity: 0; }
-    97%, 100% { opacity: 1; }
+  .sbs-run .sbs-a-intro::before { animation: sbs-a-pool-a 11s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate; }
+  .sbs-run .sbs-a-intro::after { animation: sbs-a-pool-b 15s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate; }
+  @keyframes sbs-a-pool-a {
+    from { translate: -6% 4%; scale: 1; }
+    to { translate: 10% -8%; scale: 1.15; }
+  }
+  @keyframes sbs-a-pool-b {
+    from { translate: 8% -2%; scale: 1.1; }
+    to { translate: -10% 9%; scale: 0.95; }
   }
   .sbs-run .sbs-a-lead h3 .sbs-a-line > span { animation: sbs-a-line var(--sbs-loop) linear infinite both; }
   .sbs-run .sbs-a-lead h3 .sbs-a-line + .sbs-a-line > span { animation-delay: 0.14s; }
