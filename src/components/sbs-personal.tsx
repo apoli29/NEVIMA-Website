@@ -1,216 +1,380 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useReducedMotion } from "motion/react";
 import { Glass } from "./cta-glass";
 import { useOriginFade, useProposal } from "./proposal-flow";
 import { useInView, type T } from "./sbs-shared";
-import { useSeen } from "./use-seen";
-import { useHref, useT } from "@/lib/use-lang";
+import { SECTORS } from "@/lib/proposal/questions";
+import { useHref, useLang, useT } from "@/lib/use-lang";
 
 /* ==================================================================
    Personalization
 
-   One card that plays a website being put together, and is not to be
-   touched: on the left the choice of a website or a landing page and
-   the pages ticked one by one; on the right the skeleton taking shape,
-   a sheet for each page, until the switch to a landing page draws the
-   sheets together into one long page, their addresses turned into
-   anchors. A line under the choices counts the pages as they come.
+   One card, on the page's own white, ruled by hairlines, that is played
+   and not touched. The kinds of business the proposal form asks about
+   (SECTORS, questions.ts) float about it; after two seconds one of them
+   is chosen (it fills with ink, as the bar's button fills, takes a tick,
+   the others fall away and it goes up to the card's corner); the switch
+   beside it settles on a website or a landing page; and only then does
+   the frame come in and the website put itself together, laid out as
+   that kind of business usually lays its website out: a restaurant's
+   photograph, menu and table booking; a clinic's one long page with its
+   treatments and a button to book; an estate agent's search and the
+   houses under it. Titles and buttons are real words; the body is a
+   doctor's hand, scrawled on and illegible, or plain empty lines.
 
-   When it has played through, it does not start again. A white sheet
-   set to invert what is under it wipes across the card, as the bar's
-   proposal button fills on hover, and the whole thing plays backwards
-   in negative, taking the website apart again; at its start the sheet
-   wipes off and it plays forwards. One clock for all of it: every part
-   is a CSS animation of the same length, run back and forth, and the
-   inverting sheet is one of twice that length, so nothing can drift.
+   It does not loop: when one business is done, a white sheet set to
+   invert what is under it wipes across the card and the next one plays
+   in negative; at the end of that one the sheet wipes off. Under the
+   card, the three steps it plays, each lit while it happens.
 
-   Below, a client's doubts typed and cleared in a prompt (Typeform's),
-   over a field of small square points lit by lights that drift, as
-   FURO's dot-matrix lettering and the speaker grille in Drams are lit
-   (both through Inspo): the mosaic's glow, set in the site's own pixels.
+   Below, the doubt and the call: a drawing of a video call, António and
+   Emanuel on one side, the client on the other, a line between them. Each
+   time one of them speaks a cloud rises over them and the line fills
+   from the one speaking to the one listening, who answers, and the line
+   fills back. Drawn as by hand (a slight tremor on every stroke), in ink
+   on the page's white.
 
-   For anyone who has asked for less motion the card shows where it ends
-   (every page chosen, folded into one), the points are lit once and
-   still, and the prompt shows the first doubt.
+   Nothing here runs off the screen, and for anyone who has asked for
+   less motion the card shows its first website built and the call its
+   last answer.
    ================================================================== */
 
-/** One run of the card, forwards; the way back takes as long again. */
-const RUN_S = 12;
+type Mode = "website" | "landing";
+type Kind = "restaurant" | "clinic" | "estate";
+type Phase = "float" | "pick" | "build" | "out";
+type SectorId = (typeof SECTORS)[number]["id"];
 
-/** Percentages of the run. */
-const TICKS = [10, 17, 24, 31, 38];
-const MODE: [number, number] = [50, 56];
-function MOVE(i: number): [number, number] {
-  return [56 + i * 2, 66 + i * 2];
-}
-const FRAME: [number, number] = [70, 78];
-const FADE = 1.6;
+/** The businesses the card builds for, in order, and what each becomes. */
+const RUNS: { sector: SectorId; kind: Kind; mode: Mode }[] = [
+  { sector: "hospitality", kind: "restaurant", mode: "website" },
+  { sector: "health", kind: "clinic", mode: "landing" },
+  { sector: "realestate", kind: "estate", mode: "website" },
+];
 
-type Win = [number, number];
+/** Where the floating businesses rest, in percentages of the board. */
+const DRIFT: { id: SectorId; x: number; y: number }[] = [
+  { id: "health", x: 6, y: 8 },
+  { id: "beauty", x: 38, y: 4 },
+  { id: "realestate", x: 70, y: 12 },
+  { id: "hospitality", x: 16, y: 32 },
+  { id: "lodging", x: 50, y: 28 },
+  { id: "retail", x: 78, y: 40 },
+  { id: "professional", x: 4, y: 58 },
+  { id: "sport", x: 34, y: 54 },
+  { id: "education", x: 60, y: 64 },
+  { id: "events", x: 18, y: 82 },
+  { id: "creative", x: 46, y: 86 },
+  { id: "trades", x: 70, y: 82 },
+];
 
-/** Opacity keyframes for the windows a thing is shown in. */
-function windows(name: string, wins: Win[], lo = 0, hi = 1) {
-  const pts: [number, number][] = [];
-  wins.forEach(([a, b]) => {
-    if (a <= 0) pts.push([0, hi]);
-    else pts.push([a, lo], [Math.min(100, a + FADE), hi]);
-    if (b >= 100) pts.push([100, hi]);
-    else pts.push([b, hi], [Math.min(100, b + FADE), lo]);
-  });
-  if (pts[0]![0] > 0) pts.unshift([0, lo]);
-  if (pts[pts.length - 1]![0] < 100) pts.push([100, lo]);
-  return `@keyframes ${name}{${pts.map(([p, v]) => `${p.toFixed(2)}%{opacity:${v}}`).join("")}}`;
-}
+/** How long each phase lasts, in milliseconds. */
+const PHASE_MS: Record<Phase, number> = { float: 2200, pick: 1600, build: 7200, out: 700 };
+const WIPE_MS = 900;
 
-/** Everything the card does, written once for both languages. */
-const CARD_CSS = (() => {
-  const css: string[] = [];
-  const ease = "animation-timing-function:cubic-bezier(0.65,0,0.35,1)";
-  TICKS.forEach((p, i) => {
-    css.push(
-      `@keyframes sbp-box-${i}{0%,${p}%{background:transparent;border-color:rgb(0 0 0 / 0.28)}${p + 1.2}%,100%{background:#000;border-color:#000}}`,
-      `@keyframes sbp-check-${i}{0%,${p + 0.6}%{stroke-dashoffset:14}${p + 2.4}%,100%{stroke-dashoffset:0}}`,
-      `@keyframes sbp-opt-${i}{0%,${p}%{color:#75726e}${p + 1.2}%,100%{color:#000}}`,
-    );
-    const [m0, m1] = MOVE(i);
-    css.push(
-      `@keyframes sbp-sheet-${i}{` +
-        `0%,${p}%{opacity:0;translate:0 8%;left:var(--wx);top:var(--wy);width:var(--ww);height:var(--wh)}` +
-        `${p + 4}%{opacity:1;translate:0 0;left:var(--wx);top:var(--wy);width:var(--ww);height:var(--wh)}` +
-        `${m0}%{opacity:1;translate:0 0;left:var(--wx);top:var(--wy);width:var(--ww);height:var(--wh);${ease}}` +
-        `${m1}%,100%{opacity:1;translate:0 0;left:var(--lx);top:var(--ly);width:var(--lw);height:var(--lh)}}`,
-    );
-    css.push(`.sbp-run .sbp-sheet[data-i="${i}"]{animation-name:sbp-sheet-${i}}`);
-    css.push(`.sbp-run .sbp-opt[data-i="${i}"]{animation-name:sbp-opt-${i}}`);
-    css.push(`.sbp-run .sbp-opt[data-i="${i}"] .sbp-box{animation-name:sbp-box-${i}}`);
-    css.push(`.sbp-run .sbp-opt[data-i="${i}"] .sbp-box path{animation-name:sbp-check-${i}}`);
-  });
-  // the count under the choices: one page, two, … five, then one with everything
-  const counts: Win[] = TICKS.map((p, i) => [p, i < TICKS.length - 1 ? TICKS[i + 1]! - FADE : MODE[0]]);
-  counts.forEach((w, i) => {
-    css.push(windows(`sbp-count-${i}`, [w]));
-    css.push(`.sbp-run .sbp-count[data-i="${i}"]{animation-name:sbp-count-${i}}`);
-  });
-  css.push(windows("sbp-count-all", [[MODE[1], 100]]));
-  css.push(`.sbp-run .sbp-count[data-i="all"]{animation-name:sbp-count-all}`);
-  // the switch, the addresses, the frame round the one long page
-  css.push(`@keyframes sbp-mode{0%,${MODE[0]}%{translate:0 0;${ease}}${MODE[1]}%,100%{translate:100% 0}}`);
-  css.push(windows("sbp-path", [[0, 52]]));
-  css.push(windows("sbp-anchor", [[72, 100]]));
-  css.push(windows("sbp-frame", [FRAME]));
-  // the three steps under the card, each lit while it happens
-  css.push(windows("sbp-step-0", [[0, 8], [46, 58]], 0.32));
-  css.push(windows("sbp-step-1", [[8, 46]], 0.32));
-  css.push(windows("sbp-step-2", [[58, 100]], 0.32));
-  // the inverting sheet: on at the end of the run forwards, off at the end of the way back
-  css.push(
-    `@keyframes sbp-invert{0%,46%{clip-path:inset(0 100% 0 0)}50%,96%{clip-path:inset(0 0 0 0)}100%{clip-path:inset(0 0 0 100%)}}`,
-  );
-  return css.join("\n");
-})();
+/* ---------------------------------------------------------------- */
+/* The doctor's hand                                                 */
+/* ---------------------------------------------------------------- */
 
-type Page = { id: string; label: string; slug: string; chosen: number | null };
-
-/** The pages the card offers, as the proposal form does (questions.ts),
-    with home and contact; five of them are chosen, in this order. */
-function cardPages(t: T): Page[] {
-  return [
-    { id: "home", label: t("Home", "Início"), slug: "", chosen: 0 },
-    { id: "services", label: t("Services", "Serviços"), slug: t("services", "servicos"), chosen: 1 },
-    { id: "team", label: t("Team", "Equipa"), slug: t("team", "equipa"), chosen: 2 },
-    { id: "prices", label: t("Prices", "Preços"), slug: t("prices", "precos"), chosen: null },
-    { id: "gallery", label: t("Gallery", "Galeria"), slug: t("gallery", "galeria"), chosen: 3 },
-    { id: "testimonials", label: t("Testimonials", "Testemunhos"), slug: t("testimonials", "testemunhos"), chosen: null },
-    { id: "faq", label: t("FAQ", "Perguntas frequentes"), slug: t("faq", "perguntas"), chosen: null },
-    { id: "contact", label: t("Contact", "Contactos"), slug: t("contact", "contactos"), chosen: 4 },
-  ];
+/** A scrawl: a run of loops of uneven size, as a hurried hand writes,
+    in a box `width` wide and 10 tall. The same seed always gives the
+    same line. */
+function scrawl(seed: number, width = 100) {
+  let s = seed * 9301 + 49297;
+  const rand = () => {
+    s = (s * 9301 + 49297) % 233280;
+    return s / 233280;
+  };
+  let d = "M0 6";
+  let x = 0;
+  while (x < width - 4) {
+    const w = 2.2 + rand() * 3.4;
+    const h = 2.5 + rand() * 3.5;
+    if (rand() < 0.55) {
+      d += ` C${(x + w * 0.9).toFixed(1)} ${(6 - h).toFixed(1)} ${(x + w * 0.1).toFixed(1)} ${(6 - h).toFixed(1)} ${(x + w * 0.6).toFixed(1)} 6.4`;
+    } else {
+      d += ` Q${(x + w * 0.5).toFixed(1)} ${(6 - h * 0.6).toFixed(1)} ${(x + w).toFixed(1)} 6`;
+    }
+    x += w;
+    if (rand() < 0.14) {
+      x += 2.5;
+      d += ` M${x.toFixed(1)} 6`;
+    }
+  }
+  return d;
 }
 
-/** Where each sheet stands as a page of its own, and as a section of the
-    one long page, in percentages of the stage. */
-function sheetPlace(i: number) {
-  const ww = 16.4;
-  return {
-    "--wx": `${3.5 + i * 19}%`,
-    "--wy": "20%",
-    "--ww": `${ww}%`,
-    "--wh": "52%",
-    "--lx": "33%",
-    "--ly": `${8 + i * 16.8}%`,
-    "--lw": "34%",
-    "--lh": "16.8%",
-  } as React.CSSProperties;
-}
+const delay = (d: number) => ({ ["--d" as string]: d }) as CSSProperties;
 
-function SitemapCard({ t, run }: { t: T; run: boolean }) {
-  const all = useMemo(() => cardPages(t), [t]);
-  const chosen = all.filter((p) => p.chosen !== null).sort((a, b) => a.chosen! - b.chosen!);
-  const counts = [
-    t("One page.", "Uma página."),
-    t("Two pages.", "Duas páginas."),
-    t("Three pages.", "Três páginas."),
-    t("Four pages.", "Quatro páginas."),
-    t("Five pages.", "Cinco páginas."),
-  ];
+function Scrawl({ seed, width = 100, d = 0 }: { seed: number; width?: number; d?: number }) {
+  const path = useMemo(() => scrawl(seed, width), [seed, width]);
   return (
-    <div className={`sbp-card ${run ? "sbp-run" : ""}`} aria-hidden="true" style={{ ["--run" as string]: `${RUN_S}s` }}>
-      <style dangerouslySetInnerHTML={{ __html: CARD_CSS }} />
+    <svg viewBox={`0 0 ${width} 10`} preserveAspectRatio="none" className="sbp-scrawl" style={{ ...delay(d), width: `${width}%` }}>
+      <path d={path} pathLength={1} />
+    </svg>
+  );
+}
 
-      <div className="sbp-card-side">
-        <div className="sbp-modes">
-          <span className="sbp-modes-thumb" />
-          <span className="sbp-modes-cell">
-            <span className="sbp-modes-n">01</span>
-            {t("Website", "Website")}
-          </span>
-          <span className="sbp-modes-cell">
-            <span className="sbp-modes-n">02</span>
-            {t("Landing page", "Landing page")}
+/** Empty lines, for the rest of the body. */
+function Lines({ n, d = 0 }: { n: number; d?: number }) {
+  return (
+    <span className="sbp-lines" style={delay(d)}>
+      {Array.from({ length: n }, (_, i) => (
+        <span key={i} style={{ width: `${[92, 70, 84, 62][i % 4]}%` }} />
+      ))}
+    </span>
+  );
+}
+
+/** A photograph's place: a grey plate with a mountain and a sun drawn
+    on it, as a layout marks where a picture will go. */
+function Picture({ dark, d = 0, className = "" }: { dark?: boolean; d?: number; className?: string }) {
+  return (
+    <span className={`sbp-pic ${dark ? "sbp-pic-dark" : ""} ${className}`} style={delay(d)}>
+      <svg viewBox="0 0 40 30" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <circle cx="29" cy="9" r="3.2" />
+        <path d="M4 25 15 13l7 7 5-4 9 9" />
+      </svg>
+    </span>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* The three websites                                                */
+/* ---------------------------------------------------------------- */
+
+function Restaurant({ t }: { t: T }) {
+  return (
+    <div className="sbp-site">
+      <div className="sbp-nav sbp-in" style={delay(0)}>
+        <b>Maré</b>
+        <span>{t("Menu", "Menu")}</span>
+        <span>{t("Bookings", "Reservas")}</span>
+        <span>{t("Contact", "Contactos")}</span>
+      </div>
+      <div className="sbp-hero-photo">
+        <Picture dark d={1} className="sbp-fill" />
+        <div className="sbp-hero-over">
+          <h4 className="sbp-in" style={delay(2)}>
+            {t("Market cooking, by the river.", "Cozinha de mercado, à beira-rio.")}
+          </h4>
+          <Scrawl seed={3} width={55} d={2.6} />
+          <span className="sbp-btn sbp-btn-light sbp-in" style={delay(3.4)}>
+            {t("Book a table", "Reservar mesa")}
           </span>
         </div>
-
-        <ul className="sbp-opts">
-          {all.map((p) => (
-            <li key={p.id} className="sbp-opt" data-i={p.chosen ?? undefined} data-off={p.chosen === null || undefined}>
-              <span className="sbp-box">
-                <svg viewBox="0 0 12 12" fill="none" stroke="#fff" strokeWidth="1.6">
-                  <path d="M2.5 6.2 5 8.6l4.6-5" pathLength={14} />
-                </svg>
-              </span>
-              {p.label}
-            </li>
-          ))}
-        </ul>
-
-        <p className="sbp-counts">
-          {counts.map((c, i) => (
-            <span key={i} className="sbp-count" data-i={i}>
-              {c}
-            </span>
-          ))}
-          <span className="sbp-count" data-i="all">
-            {t("One page, with everything.", "Uma só página, com tudo.")}
-          </span>
-        </p>
       </div>
+      <div className="sbp-row">
+        <div className="sbp-col">
+          <h5 className="sbp-in" style={delay(4.2)}>
+            {t("The menu", "O menu")}
+          </h5>
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="sbp-item sbp-in" style={delay(4.6 + i * 0.4)}>
+              <Scrawl seed={10 + i} width={62} d={4.8 + i * 0.4} />
+              <span>{["14 €", "18 €", "9 €"][i]}</span>
+            </div>
+          ))}
+        </div>
+        <Picture d={5} className="sbp-square" />
+        <Picture d={5.4} className="sbp-square" />
+      </div>
+    </div>
+  );
+}
 
-      <div className="sbp-stage">
-        <span className="sbp-frame" />
-        {chosen.map((p, i) => (
-          <div key={p.id} className="sbp-sheet" data-i={i} data-home={i === 0 || undefined} style={sheetPlace(i)}>
-            <span className="sbp-sk">
-              <span className="sbp-sk-nav" />
-              <span className="sbp-sk-h" />
-              <span className="sbp-sk-l" />
-              <span className="sbp-sk-l sbp-sk-short" />
-              <span className="sbp-sk-b" />
-            </span>
-            <span className="sbp-path">/{p.slug}</span>
-            <span className="sbp-anchor">#{p.slug || t("top", "inicio")}</span>
+function Clinic({ t }: { t: T }) {
+  return (
+    <div className="sbp-site">
+      <div className="sbp-nav sbp-in" style={delay(0)}>
+        <b>Alvor</b>
+        <span className="sbp-btn sbp-btn-ink">{t("Book an appointment", "Marcar consulta")}</span>
+      </div>
+      <div className="sbp-split">
+        <div className="sbp-col">
+          <h4 className="sbp-in" style={delay(1)}>
+            {t("Dentistry, with time for it.", "Medicina dentária, sem pressas.")}
+          </h4>
+          <Scrawl seed={21} width={90} d={1.8} />
+          <Scrawl seed={22} width={66} d={2.3} />
+          <span className="sbp-btn sbp-btn-ink sbp-in" style={delay(3)}>
+            {t("Book an appointment", "Marcar consulta")}
+          </span>
+        </div>
+        <Picture d={1.6} className="sbp-portrait" />
+      </div>
+      <div className="sbp-tiles">
+        {[t("Implants", "Implantes"), t("Orthodontics", "Ortodontia"), t("Hygiene", "Higiene")].map((name, i) => (
+          <div key={name} className="sbp-tile sbp-in" style={delay(3.8 + i * 0.4)}>
+            <span className="sbp-tile-mark" />
+            <h6>{name}</h6>
+            <Lines n={2} d={4.2 + i * 0.4} />
           </div>
         ))}
+      </div>
+      <div className="sbp-band sbp-in" style={delay(5.4)}>
+        <Scrawl seed={31} width={46} d={5.7} />
+        <span className="sbp-btn sbp-btn-light">{t("Book an appointment", "Marcar consulta")}</span>
+      </div>
+    </div>
+  );
+}
+
+function Estate({ t }: { t: T }) {
+  return (
+    <div className="sbp-site">
+      <div className="sbp-nav sbp-in" style={delay(0)}>
+        <b>Casa Norte</b>
+        <span>{t("Homes", "Imóveis")}</span>
+        <span>{t("Sell", "Vender")}</span>
+        <span>{t("About", "Sobre")}</span>
+        <span>{t("Contact", "Contactos")}</span>
+      </div>
+      <div className="sbp-search-hero">
+        <h4 className="sbp-in" style={delay(1)}>
+          {t("Homes with a history, in Porto.", "Casas com história, no Porto.")}
+        </h4>
+        <div className="sbp-search sbp-in" style={delay(1.8)}>
+          <span>{t("Type", "Tipologia")}</span>
+          <span>{t("Area", "Zona")}</span>
+          <span className="sbp-btn sbp-btn-ink">{t("Search", "Procurar")}</span>
+        </div>
+      </div>
+      <div className="sbp-cards">
+        {["385 000 €", "240 000 €", "512 000 €"].map((price, i) => (
+          <div key={price} className="sbp-house">
+            <Picture d={2.8 + i * 0.5} className="sbp-house-pic" />
+            <b className="sbp-in" style={delay(3.4 + i * 0.5)}>
+              {price}
+            </b>
+            <Scrawl seed={41 + i} width={80} d={3.8 + i * 0.5} />
+            <small className="sbp-in" style={delay(4.2 + i * 0.5)}>
+              {["T3 · 120 m²", "T2 · 84 m²", "T4 · 168 m²"][i]}
+            </small>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
+/* The card                                                          */
+/* ---------------------------------------------------------------- */
+
+function BuildCard({ t, still, onStep }: { t: T; still: boolean; onStep: (step: number) => void }) {
+  const lang = useLang();
+  const [card, inView] = useInView<HTMLDivElement>(0.35);
+  const [run, setRun] = useState(0);
+  const [phase, setPhase] = useState<Phase>(still ? "build" : "float");
+  /** The inverting sheet: off to the left, across, or off to the right. */
+  const [sheet, setSheet] = useState<"left" | "on" | "right">("left");
+  const [snap, setSnap] = useState(false);
+
+  useEffect(() => {
+    if (still) setPhase("build");
+  }, [still]);
+
+  const current = RUNS[run % RUNS.length]!;
+  const label = (id: SectorId) => {
+    const s = SECTORS.find((x) => x.id === id)!;
+    return lang === "pt" ? s.pt : s.label;
+  };
+
+  // The one clock: each phase schedules the next while the card is seen.
+  useEffect(() => {
+    if (still || !inView) return;
+    const next: Record<Phase, () => void> = {
+      float: () => setPhase("pick"),
+      pick: () => setPhase("build"),
+      build: () => setPhase("out"),
+      // the sheet crosses, and the next business plays on the other side
+      // of it, all in one step, so nothing can be left half done
+      out: () => {
+        setSheet((s) => (s === "on" ? "right" : "on"));
+        setRun((r) => r + 1);
+        setPhase("float");
+      },
+    };
+    const id = window.setTimeout(next[phase], PHASE_MS[phase]);
+    return () => window.clearTimeout(id);
+  }, [phase, inView, still]);
+
+  // Once off to the right, the sheet goes back to the left unseen.
+  useEffect(() => {
+    if (sheet !== "right") return;
+    const id = window.setTimeout(() => {
+      setSnap(true);
+      setSheet("left");
+      requestAnimationFrame(() => requestAnimationFrame(() => setSnap(false)));
+    }, WIPE_MS + 50);
+    return () => window.clearTimeout(id);
+  }, [sheet]);
+
+  useEffect(() => {
+    onStep(phase === "float" ? 0 : phase === "pick" ? 1 : 2);
+  }, [phase, onStep]);
+
+  const picked = phase !== "float";
+  const modes = [
+    { id: "website", label: t("Website", "Website") },
+    { id: "landing", label: t("Landing page", "Landing page") },
+  ];
+  const modeAt = picked ? (current.mode === "website" ? 0 : 1) : -1;
+
+  return (
+    <div ref={card} className="sbp-card" data-phase={phase} data-sheet={sheet} data-snap={snap || undefined} aria-hidden="true">
+      <div className="sbp-card-head">
+        <span className="sbp-slot mono-label">{t("Business", "Negócio")}</span>
+        <div
+          className="sbx-switch sbp-modes"
+          data-on={modeAt >= 0 || undefined}
+          style={{ ["--at" as string]: Math.max(0, modeAt), ["--n" as string]: 2 } as CSSProperties}
+        >
+          <span className="sbx-switch-thumb" />
+          {modes.map((m, i) => (
+            <span key={m.id} className="sbx-switch-opt" aria-checked={i === modeAt}>
+              <span className="sbx-switch-n">{String(i + 1).padStart(2, "0")}</span>
+              {m.label}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="sbp-board">
+        {DRIFT.map((b, i) => {
+          const chosen = b.id === current.sector;
+          return (
+            <span
+              key={`${run}-${b.id}`}
+              className="sbp-biz"
+              data-chosen={chosen || undefined}
+              style={{ ["--x" as string]: `${b.x}%`, ["--y" as string]: `${b.y}%`, ["--i" as string]: i } as CSSProperties}
+            >
+              <span className="sbp-biz-fill" />
+              <span className="sbp-biz-label">
+                <span className="sbp-biz-tick">
+                  <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6">
+                    <path d="M2.5 6.2 5 8.6l4.6-5" />
+                  </svg>
+                </span>
+                {label(b.id)}
+              </span>
+            </span>
+          );
+        })}
+
+        <div className="sbp-frame" key={`frame-${run}`}>
+          <span className="sbp-frame-bar">
+            <i />
+            <i />
+            <i />
+          </span>
+          <div className="sbp-frame-page">
+            {current.kind === "restaurant" ? <Restaurant t={t} /> : current.kind === "clinic" ? <Clinic t={t} /> : <Estate t={t} />}
+          </div>
+        </div>
       </div>
 
       <span className="sbp-invert" />
@@ -218,127 +382,162 @@ function SitemapCard({ t, run }: { t: T; run: boolean }) {
   );
 }
 
-/** A client's doubts, in the client's own voice (as the about page's
-    questions are), typed and cleared one after another. */
-function doubts(t: T) {
+/* ---------------------------------------------------------------- */
+/* The call                                                          */
+/* ---------------------------------------------------------------- */
+
+type Who = "antonio" | "emanuel" | "client";
+
+/** Where each of them sits in the drawing (its own 1000 by 420). */
+const SEAT: Record<Who, number> = { antonio: 150, emanuel: 310, client: 830 };
+
+function dialogue(t: T): { who: Who; text: string }[] {
   return [
-    t("A landing page or a website?", "Landing page ou website?"),
-    t("How many pages do I need?", "Quantas páginas são precisas?"),
-    t("A page for each service?", "Uma página para cada serviço?"),
-    t("Do I need a gallery?", "Preciso de uma galeria?"),
+    { who: "client", text: t("A landing page or a website?", "Landing page ou website?") },
+    { who: "antonio", text: t("How many services are there to show?", "Quantos serviços há para mostrar?") },
+    { who: "client", text: t("Five, each with its own prices.", "Cinco, cada um com os seus preços.") },
+    { who: "emanuel", text: t("Then a website, with a page for each service.", "Então um website, com uma página para cada serviço.") },
   ];
 }
 
-function useTyping(lines: string[], run: boolean, still: boolean) {
-  const [text, setText] = useState(still ? lines[0]! : "");
-  const state = useRef({ line: 0, len: 0, back: false });
-  useEffect(() => {
-    if (still) {
-      setText(lines[0]!);
-      return;
+/** A cloud's outline round a box of w by h, bumps all the way round. */
+function cloudPath(w: number, h: number) {
+  const out: string[] = [];
+  const side = (from: [number, number], to: [number, number], n: number, push: [number, number]) => {
+    for (let i = 0; i < n; i++) {
+      const bx = from[0] + ((to[0] - from[0]) * (i + 1)) / n;
+      const by = from[1] + ((to[1] - from[1]) * (i + 1)) / n;
+      const mx = from[0] + ((to[0] - from[0]) * (i + 0.5)) / n + push[0];
+      const my = from[1] + ((to[1] - from[1]) * (i + 0.5)) / n + push[1];
+      out.push(`Q${mx.toFixed(1)} ${my.toFixed(1)} ${bx.toFixed(1)} ${by.toFixed(1)}`);
     }
-    if (!run) return;
-    let id = 0;
-    const step = () => {
-      const s = state.current;
-      const full = lines[s.line % lines.length]!;
-      if (!s.back) {
-        s.len += 1;
-        setText(full.slice(0, s.len));
-        if (s.len >= full.length) {
-          s.back = true;
-          id = window.setTimeout(step, 1600);
-          return;
-        }
-        id = window.setTimeout(step, 48 + Math.random() * 40);
-      } else {
-        s.len -= 1;
-        setText(full.slice(0, Math.max(0, s.len)));
-        if (s.len <= 0) {
-          s.back = false;
-          s.line += 1;
-          id = window.setTimeout(step, 420);
-          return;
-        }
-        id = window.setTimeout(step, 22);
-      }
-    };
-    id = window.setTimeout(step, 500);
-    return () => window.clearTimeout(id);
-  }, [lines, run, still]);
-  return text;
+  };
+  const b = 11;
+  side([0, 0], [w, 0], 6, [0, -b]);
+  side([w, 0], [w, h], 2, [b, 0]);
+  side([w, h], [0, h], 6, [0, b]);
+  side([0, h], [0, 0], 2, [-b, 0]);
+  return `M0 0 ${out.join(" ")} Z`;
+}
+const CLOUD = cloudPath(200, 70);
+
+function Cloud({ text, side, on }: { text: string; side: "left" | "right"; on: boolean }) {
+  return (
+    <span className="sbp-cloud" data-side={side} data-on={on || undefined}>
+      <svg className="sbp-cloud-shape" viewBox="-14 -14 228 98" preserveAspectRatio="none" aria-hidden="true">
+        <path d={CLOUD} filter="url(#sbp-hand)" />
+      </svg>
+      <span className="sbp-cloud-text">{text}</span>
+      <svg className="sbp-cloud-tail" viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="14" cy="9" r="6" />
+        <circle cx="24" cy="27" r="3.5" />
+      </svg>
+    </span>
+  );
 }
 
-/** The field behind the prompt: square points on a fine grid, each as
-    bright and as large as the light falling on it. One light rests
-    behind the prompt; two more drift across, slowly, never in step. */
-function PointField({ run, still }: { run: boolean; still: boolean }) {
-  const canvas = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    const el = canvas.current;
-    if (!el) return;
-    const ctx = el.getContext("2d");
-    if (!ctx) return;
-    let w = 0;
-    let h = 0;
-    let dpr = 1;
-    const size = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = el.clientWidth;
-      h = el.clientHeight;
-      el.width = Math.round(w * dpr);
-      el.height = Math.round(h * dpr);
-    };
-    const STEP = 10;
-    const draw = (time: number) => {
-      const s = time / 1000;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, w, h);
-      const lights = [
-        { x: w * 0.5, y: h * 0.24, r: Math.max(w, h) * 0.26, k: 0.75 },
-        { x: w * (0.5 + 0.36 * Math.sin(s * 0.11)), y: h * (0.55 + 0.3 * Math.sin(s * 0.083 + 1.3)), r: Math.max(w, h) * 0.24, k: 0.75 },
-        { x: w * (0.5 + 0.4 * Math.sin(s * 0.067 + 2.4)), y: h * (0.5 + 0.34 * Math.cos(s * 0.097 + 0.4)), r: Math.max(w, h) * 0.2, k: 0.6 },
-      ];
-      ctx.fillStyle = "#fff";
-      for (let y = STEP / 2; y < h; y += STEP) {
-        for (let x = STEP / 2; x < w; x += STEP) {
-          let lit = 0;
-          for (const l of lights) {
-            const dx = x - l.x;
-            const dy = y - l.y;
-            lit += l.k * Math.exp(-(dx * dx + dy * dy) / (l.r * l.r));
-          }
-          if (lit > 1) lit = 1;
-          const side = 0.9 + lit * 2.2;
-          ctx.globalAlpha = 0.06 + lit * 0.42;
-          ctx.fillRect(x - side / 2, y - side / 2, side, side);
-        }
-      }
-      ctx.globalAlpha = 1;
-    };
-    size();
-    let raf = 0;
-    let last = 0;
-    const loop = (time: number) => {
-      raf = requestAnimationFrame(loop);
-      if (time - last < 1000 / 30) return;
-      last = time;
-      draw(time);
-    };
-    if (run && !still) raf = requestAnimationFrame(loop);
-    else draw(still ? 0 : performance.now());
-    const watch = new ResizeObserver(() => {
-      size();
-      draw(performance.now());
-    });
-    watch.observe(el);
-    return () => {
-      cancelAnimationFrame(raf);
-      watch.disconnect();
-    };
-  }, [run, still]);
-  return <canvas ref={canvas} aria-hidden="true" className="sbp-field" />;
+/** A person, drawn as a quick sketch: head, neck, shoulders, and the
+    hair that tells them apart. */
+function Person({ x, hair }: { x: number; hair: "short" | "swept" | "long" }) {
+  const hairs = {
+    short: `M${x - 30} 176 Q${x - 26} 140 ${x} 138 Q${x + 28} 140 ${x + 31} 174 Q${x + 18} 156 ${x} 156 Q${x - 16} 155 ${x - 30} 176`,
+    swept: `M${x - 32} 180 Q${x - 34} 138 ${x + 4} 136 Q${x + 36} 138 ${x + 32} 168 Q${x + 10} 146 ${x - 18} 158 Q${x - 26} 166 ${x - 32} 180`,
+    long: `M${x - 34} 222 Q${x - 42} 140 ${x} 136 Q${x + 42} 140 ${x + 34} 222 Q${x + 30} 180 ${x + 22} 162 Q${x} 150 ${x - 22} 162 Q${x - 30} 180 ${x - 34} 222`,
+  };
+  return (
+    <g>
+      <path d={hairs[hair]} className="sbp-hair" />
+      <ellipse cx={x} cy={178} rx={31} ry={36} />
+      <path d={`M${x - 14} 180 q3 -3 6 0 M${x + 8} 180 q3 -3 6 0 M${x - 7} 197 q7 5 14 0`} className="sbp-face" />
+      <path d={`M${x - 10} 212 L${x - 12} 228 M${x + 10} 212 L${x + 12} 228`} />
+      <path d={`M${x - 72} 300 Q${x - 66} 238 ${x - 12} 228 Q${x} 236 ${x + 12} 228 Q${x + 66} 238 ${x + 72} 300`} />
+    </g>
+  );
 }
+
+const WIRE = "M452 240 Q576 226 698 240";
+const WIRE_BACK = "M698 240 Q576 226 452 240";
+
+function CallSketch({ t, still }: { t: T; still: boolean }) {
+  const lines = useMemo(() => dialogue(t), [t]);
+  const [wrap, inView] = useInView<HTMLDivElement>(0.4);
+  const [step, setStep] = useState(still ? lines.length - 1 : -1);
+
+  useEffect(() => {
+    if (still) setStep(lines.length - 1);
+  }, [still, lines.length]);
+
+  useEffect(() => {
+    if (still || !inView) return;
+    const last = step >= lines.length - 1;
+    const id = window.setTimeout(() => setStep(last ? -1 : step + 1), step < 0 ? 900 : last ? 4400 : 3400);
+    return () => window.clearTimeout(id);
+  }, [step, inView, still, lines.length]);
+
+  const now = step >= 0 ? lines[step]! : null;
+  const fromLeft = now ? now.who !== "client" : true;
+
+  return (
+    <div ref={wrap} className="sbp-call">
+      <svg viewBox="0 0 1000 420" className="sbp-call-svg" aria-hidden="true">
+        <defs>
+          <filter id="sbp-hand" x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" />
+            <feDisplacementMap in="SourceGraphic" scale="3.2" />
+          </filter>
+        </defs>
+        <g filter="url(#sbp-hand)" className="sbp-ink">
+          {/* the two windows of the call */}
+          <path d="M40 104 L450 102 L452 330 L38 332 Z" />
+          <path d="M698 104 L960 106 L958 330 L700 328 Z" />
+          <path d="M40 128 L450 126 M698 128 L960 130" className="sbp-ink-thin" />
+          <circle cx="58" cy="115" r="4" className="sbp-ink-thin" />
+          <circle cx="716" cy="117" r="4" className="sbp-ink-thin" />
+          <Person x={SEAT.antonio} hair="short" />
+          <Person x={SEAT.emanuel} hair="swept" />
+          <Person x={SEAT.client} hair="long" />
+          <path d={WIRE} className="sbp-wire" />
+        </g>
+        <g filter="url(#sbp-hand)">
+          <path key={`l-${step}`} d={WIRE} className="sbp-wire-fill" pathLength={1} data-on={(now && fromLeft) || undefined} />
+          <path key={`r-${step}`} d={WIRE_BACK} className="sbp-wire-fill" pathLength={1} data-on={(now && !fromLeft) || undefined} />
+        </g>
+        <text x={SEAT.antonio} y={368} className="sbp-name">
+          António
+        </text>
+        <text x={SEAT.emanuel} y={368} className="sbp-name">
+          Emanuel
+        </text>
+        <text x={SEAT.client} y={368} className="sbp-name">
+          {t("Client", "Cliente")}
+        </text>
+      </svg>
+
+      {(["antonio", "emanuel", "client"] as Who[]).map((who) => {
+        const said = now && now.who === who ? now.text : null;
+        const lastSaid = lines
+          .slice(0, Math.max(0, step + 1))
+          .reverse()
+          .find((l) => l.who === who);
+        return (
+          <span key={who} className="sbp-seat" style={{ ["--x" as string]: `${SEAT[who] / 10}%` } as CSSProperties}>
+            <Cloud text={said ?? lastSaid?.text ?? ""} side={who === "client" ? "right" : "left"} on={!!said} />
+          </span>
+        );
+      })}
+
+      <ol className="sr-only">
+        {lines.map((l, i) => (
+          <li key={i}>
+            {l.who === "client" ? t("Client", "Cliente") : l.who === "antonio" ? "António" : "Emanuel"}: {l.text}
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------- */
 
 function ProposalAsk({ label }: { label: string }) {
   const proposal = useProposal();
@@ -350,7 +549,7 @@ function ProposalAsk({ label }: { label: string }) {
     if (!present) setLaunched(false);
   }, [present]);
   useOriginFade(button, proposal?.progress, launched && present);
-  const look = "cta-drop cta-drop-light relative isolate inline-flex items-center justify-center text-[0.9375rem] leading-none whitespace-nowrap";
+  const look = "cta-drop relative isolate inline-flex items-center justify-center text-[0.9375rem] leading-none whitespace-nowrap";
   const face = (
     <span className="btn-neu-face">
       <span>
@@ -391,22 +590,16 @@ function ProposalAsk({ label }: { label: string }) {
 export function SbsPersonal() {
   const t = useT();
   const reduce = useReducedMotion() ?? false;
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const [step, setStep] = useState(0);
 
   const steps = [
-    { n: "01", name: t("A website or a landing page", "Website ou landing page"), text: t("Several pages, or one with everything.", "Várias páginas, ou uma só com tudo.") },
-    { n: "02", name: t("The pages and the sections", "As páginas e as secções"), text: t("Chosen by you, one by one.", "Escolhidas pelo cliente, uma a uma.") },
+    { n: "01", name: t("The business", "O negócio"), text: t("Every website starts from the business it shows.", "Cada website parte do negócio que apresenta.") },
+    { n: "02", name: t("A website or a landing page", "Website ou landing page"), text: t("Several pages, or one with everything.", "Várias páginas, ou uma só com tudo.") },
     { n: "03", name: t("The website", "O website"), text: t("Designed around those choices.", "Desenhado à volta dessas escolhas.") },
   ];
 
-  const [ask, askInView] = useInView<HTMLDivElement>(0.3);
-  const lines = useMemo(() => doubts(t), [t]);
-  const typed = useTyping(lines, askInView, reduce);
-  const askSeen = useSeen(ask, { threshold: 0.45 });
-
   return (
-    <section aria-labelledby="sbp-title" className="sbp relative bg-paper pt-(--section-gap) pb-[clamp(1rem,2vw,1.5rem)]">
+    <section aria-labelledby="sbp-title" className="sbp relative bg-paper pt-(--section-gap) pb-(--section-gap)">
       <div className="shell">
         <div className="sbp-head">
           <div>
@@ -425,11 +618,11 @@ export function SbsPersonal() {
         </div>
 
         <figure className="sbp-figure">
-          <SitemapCard t={t} run={mounted && !reduce} />
+          <BuildCard t={t} still={reduce} onStep={setStep} />
           <figcaption>
-            <ol className={`sbp-steps ${mounted && !reduce ? "sbp-run" : ""}`} style={{ ["--run" as string]: `${RUN_S}s` }}>
+            <ol className="sbp-steps">
               {steps.map((s, i) => (
-                <li key={s.n} className="sbp-step" data-i={i}>
+                <li key={s.n} className="sbp-step" data-on={reduce || i === step || undefined}>
                   <span className="sbp-step-n mono-label" aria-hidden="true">
                     <span className="sbp-step-rule" />
                     {s.n}
@@ -442,40 +635,15 @@ export function SbsPersonal() {
             </ol>
           </figcaption>
         </figure>
-      </div>
 
-      <div className="shell mt-[clamp(4rem,9vw,7.5rem)]">
-        <div ref={ask} className="sbp-ask relative isolate overflow-hidden bg-ink text-paper">
-          <PointField run={askInView} still={reduce} />
-
-          <div className="sbp-ask-inner">
-            <div className="sbp-prompt" aria-hidden="true">
-              <span className="sbp-prompt-text">
-                {typed}
-                <span className="sbp-caret" />
-              </span>
-              <span className="sbp-prompt-foot">
-                <span className="mono-label text-paper/45">{t("A client’s doubt", "Dúvida do cliente")}</span>
-                <span className="sbp-send">
-                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M3 8h10M9 4l4 4-4 4" />
-                  </svg>
-                </span>
-              </span>
-            </div>
-            <ul className="sr-only">
-              {lines.map((l) => (
-                <li key={l}>{l}</li>
-              ))}
-            </ul>
-
-            <h3 className="sbp-answer display" data-seen={askSeen || reduce || undefined}>
+        <div className="sbp-ask">
+          <CallSketch t={t} still={reduce} />
+          <div className="sbp-ask-foot">
+            <h3 className="sbp-answer display">
               <span className="font-light sm:block">{t("Not sure what to choose? Don’t worry.", "Sem saber o que escolher? Não há problema.")}</span>{" "}
               <span className="font-medium sm:block">{t("When we meet, we’ll help you choose.", "Na reunião que marcamos, ajudamos a escolher.")}</span>
             </h3>
-            <div className="sbp-cta" data-seen={askSeen || reduce || undefined}>
-              <ProposalAsk label={t("Get your free proposal", "Pedir proposta gratuita")} />
-            </div>
+            <ProposalAsk label={t("Get your free proposal", "Pedir proposta gratuita")} />
           </div>
         </div>
       </div>
