@@ -4383,15 +4383,13 @@
    It runs on a loop of its own, longer than the comparison's so the
    opening has room: sbs-a-scroll, 26s (--sbs-loop on its screen). The
    opening 0-8.75% (twice as fast, user 2026-11-18), the hero held to 22%, the five kinds 26-46%, the table
-   50-60%, the steps 64-86%, the foot 89-96%; the foot then dissolves
+   50-60%, the steps 64-86%, the foot 90-96% (its move as long as the others); the foot then dissolves
    into the opening's ground (96-97%) and the page is set back at the top
    under it; every section is set back from 97%, unseen. Each section's
    entrance plays over the second half of the move that brings it in. sbs-advanced.tsx reads the same
    holds for the kinds and the steps (keep them in step). Only under
    .sbs-run: without the loop (less motion) every section is finished. */
 @property --slat { syntax: "<length>"; inherits: false; initial-value: 9px; }
-@property --glow-x { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
-@property --glow-y { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
 
 @layer components {
   .sbs-a-page {
@@ -4411,7 +4409,7 @@
     26%, 46% { translate: 0 calc(var(--sbs-stop-1) * var(--sbs-k)); }
     50%, 60% { translate: 0 calc(var(--sbs-stop-2) * var(--sbs-k)); }
     64%, 86% { translate: 0 calc(var(--sbs-stop-3) * var(--sbs-k)); }
-    89%, 98.5% { translate: 0 calc(var(--sbs-stop-4) * var(--sbs-k)); }
+    90%, 98.5% { translate: 0 calc(var(--sbs-stop-4) * var(--sbs-k)); }
     98.6%, 100% { translate: 0 0; }
   }
 
@@ -4689,8 +4687,8 @@
   .sbs-a-foot .sbs-p-foot-legal::before { top: 0; }
   .sbs-a-foot .sbs-p-foot-top h4 .sbs-a-line { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
   .sbs-a-foot .sbs-p-foot-top h4 .sbs-a-line > span { display: block; }
-  /* the matte glow of Grafite, its centre drifting slowly */
-  .sbs-a-foot { background: radial-gradient(140% 110% at var(--glow-x) var(--glow-y), rgb(67 70 85 / 0.38), rgb(67 70 85 / 0) 65%), var(--p-noite); }
+  /* the matte glow of Grafite, still (it drifted, repainting the foot on every frame) */
+  .sbs-a-foot { background: radial-gradient(140% 110% at 30% 20%, rgb(67 70 85 / 0.38), rgb(67 70 85 / 0) 65%), var(--p-noite); }
 
   /* ---- the loop: each section's finish played as it arrives -------- */
   /* the opening: the violet and the symbol, the turn to face, the flight
@@ -4765,17 +4763,17 @@
   @keyframes sbs-a-out-1 { 0%, 22% { scale: 1; clip-path: inset(0 round 0); animation-timing-function: var(--a-move); } 26%, 97% { scale: 0.94; clip-path: inset(0 round 22px); } 98%, 100% { scale: 1; clip-path: inset(0 round 0); } }
   @keyframes sbs-a-out-2 { 0%, 46% { scale: 1; animation-timing-function: var(--a-move); } 50%, 97% { scale: 0.94; } 98%, 100% { scale: 1; } }
   @keyframes sbs-a-out-3 { 0%, 60% { scale: 1; animation-timing-function: var(--a-move); } 64%, 97% { scale: 0.94; } 98%, 100% { scale: 1; } }
-  @keyframes sbs-a-out-4 { 0%, 86% { scale: 1; animation-timing-function: var(--a-move); } 89%, 97% { scale: 0.94; } 98%, 100% { scale: 1; } }
+  @keyframes sbs-a-out-4 { 0%, 86% { scale: 1; animation-timing-function: var(--a-move); } 90%, 97% { scale: 0.94; } 98%, 100% { scale: 1; } }
   @keyframes sbs-a-veil-1 { 0%, 22% { opacity: 0; animation-timing-function: var(--a-move); } 26%, 97% { opacity: 0.5; } 98%, 100% { opacity: 0; } }
   @keyframes sbs-a-veil-2 { 0%, 46% { opacity: 0; animation-timing-function: var(--a-move); } 50%, 97% { opacity: 0.5; } 98%, 100% { opacity: 0; } }
   @keyframes sbs-a-veil-3 { 0%, 60% { opacity: 0; animation-timing-function: var(--a-move); } 64%, 97% { opacity: 0.5; } 98%, 100% { opacity: 0; } }
-  @keyframes sbs-a-veil-4 { 0%, 86% { opacity: 0; animation-timing-function: var(--a-move); } 89%, 97% { opacity: 0.5; } 98%, 100% { opacity: 0; } }
+  @keyframes sbs-a-veil-4 { 0%, 86% { opacity: 0; animation-timing-function: var(--a-move); } 90%, 97% { opacity: 0.5; } 98%, 100% { opacity: 0; } }
 
   /* incoming: the rounded sheet widening to the page */
   @keyframes sbs-a-in-1 { 0%, 22% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 26%, 97% { clip-path: inset(0 0 0 0 round 0); } 98%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
   @keyframes sbs-a-in-2 { 0%, 46% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 50%, 97% { clip-path: inset(0 0 0 0 round 0); } 98%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
   @keyframes sbs-a-in-3 { 0%, 60% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 64%, 97% { clip-path: inset(0 0 0 0 round 0); } 98%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
-  @keyframes sbs-a-in-4 { 0%, 86% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 89%, 98% { clip-path: inset(0 0 0 0 round 0); } 99%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
+  @keyframes sbs-a-in-4 { 0%, 86% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 90%, 98% { clip-path: inset(0 0 0 0 round 0); } 99%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
 
   .sbs-run .sbs-a-kind b > span { animation: sbs-a-rise var(--sbs-loop) linear infinite both; animation-delay: calc(var(--i) * 0.11s); }
   @keyframes sbs-a-rise {
@@ -4828,35 +4826,21 @@
     98%, 100% { opacity: 0; }
   }
 
-  /* the foot, on arrival (86-89%): the rules drawn across, the line
-     rising, the way in and the columns following; the glow drifts all
-     the while, on a slow loop of its own */
-  .sbs-run .sbs-a-foot .sbs-p-foot-top::after,
-  .sbs-run .sbs-a-foot .sbs-p-foot-legal::before { animation: sbs-a-rule var(--sbs-loop) linear infinite both; }
-  .sbs-run .sbs-a-foot .sbs-p-foot-legal::before { animation-delay: 0.35s; }
-  @keyframes sbs-a-rule {
-    0%, 87.5% { scale: 0 1; animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1); }
-    89%, 98% { scale: 1 1; }
-    99%, 100% { scale: 0 1; }
+  /* the foot, on arrival: one light entrance, its three blocks rising
+     together over the second half of the move (88-90%) and still the
+     moment the page stops; the rules are simply there and the glow holds
+     still (user, 2026-11-18: the foot's entrance was heavy, "o mais leve e
+     previsível possível"; it had seven staggered entrances running on
+     past the stop and a glow repainting the foot on every frame) */
+  .sbs-run .sbs-a-foot .sbs-p-foot-top,
+  .sbs-run .sbs-a-foot .sbs-p-foot-cols,
+  .sbs-run .sbs-a-foot .sbs-p-foot-legal { animation: sbs-a-foot-in var(--sbs-loop) linear infinite both; }
+  @keyframes sbs-a-foot-in {
+    0%, 88% { opacity: 0; translate: 0 12px; animation-timing-function: var(--a-ease); }
+    90%, 98% { opacity: 1; translate: 0 0; }
+    99%, 100% { opacity: 0; translate: 0 12px; }
   }
-  .sbs-run .sbs-a-foot .sbs-p-foot-top h4 .sbs-a-line > span { animation: sbs-a-foot-line var(--sbs-loop) linear infinite both; }
-  @keyframes sbs-a-foot-line {
-    0%, 87.5% { translate: 0 110%; animation-timing-function: var(--a-ease); }
-    89%, 98% { translate: 0 0; }
-    99%, 100% { translate: 0 110%; }
-  }
-  .sbs-run .sbs-a-foot .sbs-p-foot-cta,
-  .sbs-run .sbs-a-foot .sbs-p-foot-cols > div,
-  .sbs-run .sbs-a-foot .sbs-p-foot-legal > span { animation: sbs-a-foot-up var(--sbs-loop) linear infinite both; }
-  .sbs-run .sbs-a-foot .sbs-p-foot-cta { animation-delay: 0.15s; }
-  .sbs-run .sbs-a-foot .sbs-p-foot-cols > div { animation-delay: calc(0.25s + var(--i) * 0.08s); }
-  .sbs-run .sbs-a-foot .sbs-p-foot-legal > span { animation-delay: 0.6s; }
-  @keyframes sbs-a-foot-up {
-    0%, 87.5% { opacity: 0; translate: 0 14px; animation-timing-function: var(--a-ease); }
-    89%, 98% { opacity: 1; translate: 0 0; }
-    99%, 100% { opacity: 0; translate: 0 14px; }
-  }
-  .sbs-run .sbs-a-foot { animation: sbs-a-in-4 var(--sbs-loop) linear infinite, sbs-a-glow 18s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate; }
+  .sbs-run .sbs-a-foot { animation: sbs-a-in-4 var(--sbs-loop) linear infinite; }
   /* the end of the visit: the foot dissolves into the opening's ground
      (96-97%) and the page is set back at the top under it, where the
      opening is waiting; it used to race back up through every section
@@ -4868,10 +4852,6 @@
     0%, 96% { opacity: 0; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
     97%, 98.5% { opacity: 1; }
     98.6%, 100% { opacity: 0; }
-  }
-  @keyframes sbs-a-glow {
-    from { --glow-x: 0%; --glow-y: 0%; }
-    to { --glow-x: 70%; --glow-y: 40%; }
   }
 
   @media (prefers-reduced-motion: reduce) {

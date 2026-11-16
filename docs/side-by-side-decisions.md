@@ -887,3 +887,12 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   slight turn, no rotateX, no perspective): Chrome draws a flat animated
   layer at its largest scale, so the table is sharp throughout.
   useSharpAtRest removed.
+- 2026-11-18: the Advanced foot's entrance was heavy (user: "o mais leve e
+  previsível possível"). Its move was the shortest (86-89%, 0.78s), it had
+  seven staggered entrances (rules, line, way in, four columns, legal)
+  running up to 0.6s past the stop, and its glow drifted on registered
+  custom properties, repainting the whole foot on every frame. Now: its
+  move is as long as the others (86-90%; the scrub's points follow), its
+  three blocks rise together once over the second half of the move and
+  are still when the page stops, the rules are simply there and the glow
+  holds still.
