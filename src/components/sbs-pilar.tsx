@@ -184,7 +184,7 @@ export function PilarReviews({ t }: { t: ReturnType<typeof useT> }) {
     to the top. The plate is hidden from assistive technology, so its
     buttons are kept out of the tab order. */
 export function PilarSteps({ t, steps }: { t: ReturnType<typeof useT>; steps: string[][] }) {
-  const { at, go, box } = useLapStep(steps.length);
+  const { at, go, box } = useLapStep(steps.length, undefined, 2400);
   const last = steps.length - 1;
 
   return (
@@ -256,11 +256,17 @@ export function PilarSteps({ t, steps }: { t: ReturnType<typeof useT>; steps: st
 export function useLapStep(
   count: number,
   lap: { name: string; from: number; to: number; reset: number } = { name: "sbs-scroll", from: 0.47, to: 0.8, reset: 0.45 },
+  /** By hand (the loop held at the visitor's scroll), walk on a clock of
+      its own, a step every `own` ms from the moment the section is
+      reached, instead of following the scroll (user, 2026-11-17: the
+      Essential+ steps raced with the wheel). 0 follows the scroll. */
+  own = 0,
 ) {
   const [at, setAt] = useState(0);
   const held = useRef(false);
   const box = useRef<HTMLDivElement>(null);
   const last = count - 1;
+  const reachedAt = useRef(0);
 
   useEffect(() => {
     // Where the loop is, as a fraction of a lap. The comparison's marks
@@ -278,15 +284,23 @@ export function useLapStep(
       if (p == null) return;
       if (p < lap.reset) {
         held.current = false;
+        reachedAt.current = 0;
         setAt(0);
         return;
       }
       if (held.current) return;
+      if (own && run?.playState === "paused") {
+        // by hand: once reached, the steps walk on by themselves
+        if (!reachedAt.current) reachedAt.current = performance.now();
+        setAt(Math.min(last, Math.floor((performance.now() - reachedAt.current) / own)));
+        return;
+      }
+      reachedAt.current = 0;
       setAt(marks.filter((m) => p >= m).length);
     }, 60);
     return () => window.clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [count, lap.name, lap.from, lap.to, lap.reset]);
+  }, [count, lap.name, lap.from, lap.to, lap.reset, own]);
 
   const go = (i: number) => {
     held.current = true;

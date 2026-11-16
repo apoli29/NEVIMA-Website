@@ -4771,8 +4771,8 @@
 
   .sbs-run .sbs-a-kind b > span { animation: sbs-a-rise var(--sbs-loop) linear infinite both; animation-delay: calc(var(--i) * 0.11s); }
   @keyframes sbs-a-rise {
-    0%, 24% { translate: 0 110%; animation-timing-function: var(--a-ease); }
-    30%, 97% { translate: 0 0; }
+    0%, 22% { translate: 0 110%; animation-timing-function: var(--a-ease); }
+    26%, 97% { translate: 0 0; }
     98%, 100% { translate: 0 110%; }
   }
   .sbs-run .sbs-a-contour ellipse { animation: sbs-a-draw-index var(--sbs-loop) linear infinite both; animation-delay: calc(var(--i) * 0.06s); }
@@ -4783,16 +4783,16 @@
   }
   .sbs-run .sbs-a-kinds-mark { animation: sbs-a-mark var(--sbs-loop) linear infinite both; }
   @keyframes sbs-a-mark {
-    0%, 25% { opacity: 0; scale: 0.8; animation-timing-function: var(--a-ease); }
-    31%, 97% { opacity: 1; scale: 1; }
+    0%, 22% { opacity: 0; scale: 0.8; animation-timing-function: var(--a-ease); }
+    26%, 97% { opacity: 1; scale: 1; }
     98%, 100% { opacity: 0; scale: 0.8; }
   }
 
   .sbs-run .sbs-a-table { animation: sbs-a-settle var(--sbs-loop) linear infinite both; }
   @keyframes sbs-a-settle {
-    0%, 48% { opacity: 0; transform: translateY(56px) rotateX(38deg) rotateZ(-4deg) scale(0.92); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
-    50% { opacity: 1; }
-    56%, 97% { opacity: 1; transform: none; }
+    0%, 46% { opacity: 0; transform: translateY(56px) rotateX(38deg) rotateZ(-4deg) scale(0.92); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+    48% { opacity: 1; }
+    52%, 97% { opacity: 1; transform: none; }
     98%, 100% { opacity: 0; transform: translateY(56px) rotateX(38deg) rotateZ(-4deg) scale(0.92); }
   }
   .sbs-run .sbs-a-col { animation: sbs-a-lift var(--sbs-loop) linear infinite both; }
@@ -4811,8 +4811,8 @@
   .sbs-run .sbs-a-how-head > * + * { animation-delay: 0.1s; }
   .sbs-run .sbs-a-carousel { animation: sbs-a-how var(--sbs-loop) linear infinite both; animation-delay: 0.2s; }
   @keyframes sbs-a-how {
-    0%, 62% { opacity: 0; translate: 0 18px; animation-timing-function: var(--a-ease); }
-    67%, 97% { opacity: 1; translate: 0 0; }
+    0%, 60% { opacity: 0; translate: 0 18px; animation-timing-function: var(--a-ease); }
+    64%, 97% { opacity: 1; translate: 0 0; }
     98%, 100% { opacity: 0; }
   }
 
@@ -4823,14 +4823,14 @@
   .sbs-run .sbs-a-foot .sbs-p-foot-legal::before { animation: sbs-a-rule var(--sbs-loop) linear infinite both; }
   .sbs-run .sbs-a-foot .sbs-p-foot-legal::before { animation-delay: 0.35s; }
   @keyframes sbs-a-rule {
-    0%, 87% { scale: 0 1; animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1); }
-    91.5%, 98% { scale: 1 1; }
+    0%, 86% { scale: 0 1; animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1); }
+    89%, 98% { scale: 1 1; }
     99%, 100% { scale: 0 1; }
   }
   .sbs-run .sbs-a-foot .sbs-p-foot-top h4 .sbs-a-line > span { animation: sbs-a-foot-line var(--sbs-loop) linear infinite both; }
   @keyframes sbs-a-foot-line {
-    0%, 87% { translate: 0 110%; animation-timing-function: var(--a-ease); }
-    91%, 98% { translate: 0 0; }
+    0%, 86% { translate: 0 110%; animation-timing-function: var(--a-ease); }
+    89%, 98% { translate: 0 0; }
     99%, 100% { translate: 0 110%; }
   }
   .sbs-run .sbs-a-foot .sbs-p-foot-cta,
@@ -4840,8 +4840,8 @@
   .sbs-run .sbs-a-foot .sbs-p-foot-cols > div { animation-delay: calc(0.25s + var(--i) * 0.08s); }
   .sbs-run .sbs-a-foot .sbs-p-foot-legal > span { animation-delay: 0.6s; }
   @keyframes sbs-a-foot-up {
-    0%, 87.5% { opacity: 0; translate: 0 14px; animation-timing-function: var(--a-ease); }
-    91.5%, 98% { opacity: 1; translate: 0 0; }
+    0%, 86% { opacity: 0; translate: 0 14px; animation-timing-function: var(--a-ease); }
+    89%, 98% { opacity: 1; translate: 0 0; }
     99%, 100% { opacity: 0; translate: 0 14px; }
   }
   .sbs-run .sbs-a-foot { animation: sbs-a-in-4 var(--sbs-loop) linear infinite, sbs-a-glow 18s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate; }

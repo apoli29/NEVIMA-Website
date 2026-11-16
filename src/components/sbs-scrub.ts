@@ -88,8 +88,9 @@ function plan(page: HTMLElement) {
   const segments: Segment[] = [];
   let v = 0;
   // An even loop (Advanced) is given its own course for the page: during a
-  // hold the section in view drifts on slowly (DRIFT of the scroll), so it
-  // never stops and stays in view while its effects play; during a move,
+  // hold the section in view drifts on only a little (DRIFT of the scroll,
+  // capped at an eighth of the way), so it stays in place while its
+  // effects play; during a move,
   // the page crosses to the next section one for one with the scroll, so
   // each transition between sections plays exactly while the next section
   // comes up into the frame.
@@ -111,7 +112,10 @@ function plan(page: HTMLElement) {
         // the part of an opening that plays on its own does not move the page
         const own = lap.auto && t0 < lap.auto ? Math.max(0, Math.min(t1, lap.auto) - t0) / (t1 - t0) : 0;
         const next = lap.points[i + 1] ? stop(lap.points[i + 1][1]) : y;
-        const room = Math.max(0, next - y) * 0.5;
+        // a section whose effects are playing stays put in the frame: it may
+        // drift by no more than an eighth of the way to the next (user,
+        // 2026-11-17: the kinds' view slid down while they were read)
+        const room = Math.max(0, next - y) * 0.12;
         const y1 = y + Math.min(room, len * (1 - own) * DRIFT);
         segments.push({ t0, t1, v0: v, len, move, stop: s1, y0: y, y1 });
         v += len;

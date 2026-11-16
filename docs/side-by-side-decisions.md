@@ -814,3 +814,16 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
     holds the website still;
   - the steps and the kinds follow the loop every 60ms (they lagged by
     up to 150ms).
+- 2026-11-17 (user, with two pictures):
+  - the steps' section looked washed out when centred: its title, text
+    and carousel faded in from 62% to 67% of the loop, while the section
+    arrives at 64%. Every Advanced entrance now ends as its section
+    arrives (the kinds and their symbol 22-26%, the table tilted from
+    46% and flat by 52%, the steps 60-64%, the foot 86-89%);
+  - by hand, the kinds' view slid down while they were read: a section
+    whose effects play now drifts by no more than an eighth of the way
+    to the next, so it stays in the frame;
+  - by hand, the Essential+ stepper no longer follows the wheel (it
+    raced with it): once its section is reached it walks on by itself, a
+    step every 2.4 seconds; the loop on its own still drives it as
+    before, and a click still takes over.
