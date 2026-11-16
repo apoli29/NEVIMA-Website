@@ -15,6 +15,12 @@
       "port": 3000
     },
     {
+      "name": "nevima-dev-sbs",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "../NEVIMA-Website-sbs", "run", "dev", "--", "-p", "3005"],
+      "port": 3005
+    },
+    {
       "name": "nevima-dev-emails",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
