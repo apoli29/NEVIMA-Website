@@ -8,6 +8,7 @@ import { JsonLd } from "./json-ld";
 import { Footer } from "./footer";
 import { ProposalHost } from "./proposal-host";
 import { Included } from "./services";
+import { ServiceDepth } from "./service-depth";
 import { WorkTogether } from "./work-together";
 
 /* ==================================================================
@@ -102,6 +103,11 @@ export function ServicePage({ slug, lang }: { slug: string; lang: Lang }) {
           {service.included && (
             <Included included={service.included} play={false} className="mt-10 max-w-[54ch] md:mt-12" />
           )}
+
+          {/* What the studio has to say about this service, in full
+              (service-depth.tsx). Only the services it has written for
+              carry one. */}
+          <ServiceDepth slug={service.slug} />
 
           <div className="mt-11 flex flex-wrap items-center gap-3 md:mt-14">
             <a

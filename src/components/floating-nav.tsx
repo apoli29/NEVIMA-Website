@@ -10,8 +10,9 @@ import {
   useScroll,
   type MotionValue,
 } from "motion/react";
-import { basePath, type Copy } from "@/lib/i18n";
-import { useHref, useT } from "@/lib/use-lang";
+import { basePath, type Copy, type Lang } from "@/lib/i18n";
+import { servicePath, servicesIn } from "@/lib/services";
+import { useHref, useLang, useT } from "@/lib/use-lang";
 import { useOriginFade, useProposal } from "./proposal-flow";
 import { Glass } from "./cta-glass";
 import { STILL_KEY } from "./footer";
@@ -32,11 +33,22 @@ const NAV: { label: Copy; href: string }[] = [
   { label: { en: "Home", pt: "Início" }, href: "#top" },
   { label: { en: "Portfolio", pt: "Portefólio" }, href: "/portfolio" },
   { label: { en: "About nevima", pt: "Sobre a nevima" }, href: "/about" },
-  // The side-by-side page, on the bar at the user's word (2026-11-11):
-  // it was reachable only from the foot of the comparison, which is a
-  // long way down the home page.
-  { label: { en: "Side by side", pt: "Lado a lado" }, href: "/side-by-side" },
 ];
+
+/** What the Services menu holds (user, 2026-11-16): the side-by-side
+    page and every service with a page of its own. The services are read
+    from the record they are written in once (lib/services.ts), so the
+    menu cannot drift from the pages it points at. Web design has no page
+    of its own, so it is not here. */
+const SERVICES_LABEL: Copy = { en: "Services", pt: "Serviços" };
+function servicesMenu(lang: Lang): { label: string; href: string }[] {
+  return [
+    { label: lang === "pt" ? "Lado a lado" : "Side by side", href: "/side-by-side" },
+    ...servicesIn(lang)
+      .filter((service) => service.slug !== "web-design")
+      .map((service) => ({ label: service.title, href: servicePath(service.slug) })),
+  ];
+}
 
 /** A link to a section of the home page, from wherever the bar is: off the
     home page it has to go there first. Anything else is left as it is. */
@@ -212,6 +224,78 @@ function useMenu(tucked: boolean) {
   return [open, setOpen] as const;
 }
 
+/* The Services menu on the bar (user, 2026-11-16): a cell set like the
+   links beside it, which drops a panel under the bar holding the
+   side-by-side page and every service with a page of its own. It opens
+   to the hand and to the keyboard; it closes on Escape, on a press
+   outside it, and as focus leaves it. Under the fold the bar has no
+   links at all, so the same list is written into the menu's panel. */
+function ServicesMenu() {
+  const t = useT();
+  const href = useHref();
+  const lang = useLang();
+  const id = useId();
+  const [open, setOpen] = useState(false);
+  const wrap = useRef<HTMLSpanElement>(null);
+  const button = useRef<HTMLButtonElement>(null);
+  const items = servicesMenu(lang);
+
+  useEffect(() => {
+    if (!open) return;
+    const away = (event: PointerEvent) => {
+      if (!wrap.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const key = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      button.current?.focus();
+    };
+    document.addEventListener("pointerdown", away);
+    document.addEventListener("keydown", key);
+    return () => {
+      document.removeEventListener("pointerdown", away);
+      document.removeEventListener("keydown", key);
+    };
+  }, [open]);
+
+  return (
+    <span
+      ref={wrap}
+      className="nav-svc relative hidden md:inline-flex"
+      onPointerEnter={() => setOpen(true)}
+      onPointerLeave={() => setOpen(false)}
+      onBlur={(event) => {
+        if (!wrap.current?.contains(event.relatedTarget as Node)) setOpen(false);
+      }}
+    >
+      <button
+        ref={button}
+        type="button"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => setOpen(!open)}
+        className="nav-link inline-flex items-center border-l border-paper/15 px-2.5 text-[0.9375rem] text-paper lg:px-6"
+      >
+        <span className="mr-2 hidden align-[0.12em] font-mono text-[0.625rem] tracking-[0.06em] text-paper/45 tabular-nums lg:inline">
+          04
+        </span>
+        <span className="nav-link-label">{t(SERVICES_LABEL)}</span>
+        <span aria-hidden="true" className="nav-svc-caret" data-open={open || undefined} />
+      </button>
+      <span id={id} role="menu" aria-label={t(SERVICES_LABEL)} className="nav-svc-panel" data-open={open || undefined}>
+        {items.map((item, i) => (
+          <a key={item.href} role="menuitem" tabIndex={open ? 0 : -1} href={href(item.href)} className="nav-svc-item">
+            <span aria-hidden="true" className="nav-svc-n">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            {item.label}
+          </a>
+        ))}
+      </span>
+    </span>
+  );
+}
+
 function MenuButton({ open, panel, onToggle }: { open: boolean; panel: string; onToggle: () => void }) {
   const t = useT();
   return (
@@ -250,6 +334,7 @@ function MenuPanel({
   const reduce = useReducedMotion() ?? false;
   const href = useHref();
   const t = useT();
+  const lang = useLang();
   const items = [...NAV, MENU_EXTRA];
   // The foot's light behind the links (user, 2026-10-20: in place of the
   // wordmark), held still if the visitor asked for it to be in the foot.
@@ -337,6 +422,35 @@ function MenuPanel({
           })}
         </ul>
       </nav>
+
+      {/* The same list the bar's Services menu holds; under the fold the
+          bar has no links, so it is written here (user, 2026-11-16). */}
+      <nav aria-label={t(SERVICES_LABEL)} data-calm className="mt-10">
+        <p className="ftr-label">{t(SERVICES_LABEL)}</p>
+        <ul className="mt-4 border-t border-white/10">
+          {servicesMenu(lang).map((item, i) => (
+            <motion.li
+              key={item.href}
+              initial={reduce ? false : { opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: reduce ? 0 : 0.3 + i * 0.04, ease: [0.22, 1, 0.36, 1] }}
+              className="border-b border-white/10"
+            >
+              <a
+                href={href(item.href)}
+                onClick={() => onClose(false)}
+                className="ftr-menu-item flex items-center justify-between py-3 text-[clamp(1.125rem,5vw,1.5rem)]"
+              >
+                <span className="ftr-link">{item.label}</span>
+                <span aria-hidden="true" className="text-[1.125rem] text-paper/45">
+                  &rarr;
+                </span>
+              </a>
+            </motion.li>
+          ))}
+        </ul>
+      </nav>
+
       {/* The foot's signature, across the whole width at the bottom, on
           the foot's light, as the foot itself has it (user, 2026-10-20);
           the bar's own mark steps aside while the menu is open. */}
@@ -498,6 +612,7 @@ export function FloatingNav({
                 className="nav-link hidden border-l border-paper/15 px-2.5 text-[0.9375rem] text-paper md:inline-flex lg:px-6"
               />
             ))}
+            <ServicesMenu />
             {/* The one thing to press: a white drop (see .cta-drop), in a cell
                 of its own. The cell is padded by what the row took from the
                 bar, so the drop, taller than the words beside it, sets the

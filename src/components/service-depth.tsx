@@ -8,14 +8,18 @@ import { useInView, type T } from "./sbs-shared";
 import { useHref, useT } from "@/lib/use-lang";
 
 /* ==================================================================
-   The other three services, and the one sold inside this one
+   What a service has to say, on its own page
 
-   After personalization, the services the web design does not already
-   carry: the visual identity sold with it, the back-end features, SEO
-   and GEO, and the photo shoot. The studio wrote what each had to say
-   (the brief of 2026-11-11); the user asked for them here, one after
-   another, and for the look of a photographic landing page he sent,
-   "about 60%", without letting go of the site's own.
+   The visual identity sold inside the web design, the back-end
+   features, SEO and GEO, and the photo shoot. The studio wrote what
+   each had to say (the brief of 2026-11-11), and asked for the look of
+   a photographic landing page it sent, "about 60%", without letting go
+   of the site's own.
+
+   Built first as one section of the side-by-side page and moved here on
+   2026-11-16, at the user's word: each service's own page carries its
+   own plate, and the bar's new Services menu is the way to all of
+   them.
 
    What is taken from that reference: the plate is a photograph with a
    rounded corner, the service's name laid over it in the dark at its
@@ -23,8 +27,7 @@ import { useHref, useT } from "@/lib/use-lang";
    to say, and a row of three facts under it, set as that page sets its
    figures. What is not taken: its colour, its type and its glass. The
    photographs are the only colour; everything on them and under them is
-   the site's black, white, Satoshi and Geist Mono. The plates alternate
-   sides, so four of them do not read as a list.
+   the site's black, white, Satoshi and Geist Mono.
 
    Nothing here is a figure nobody can stand behind: the row under each
    plate carries facts the site already states, not invented numbers.
@@ -63,7 +66,7 @@ type Service = {
 function services(t: T): Service[] {
   return [
     {
-      id: "identity",
+      id: "visual-identity",
       kicker: t("Sold with the web design", "Vendido com o web design"),
       title: [t("An outdated logo", "Um logótipo antiquado"), t("undoes a first-rate website.", "desfaz um website de topo.")],
       lede: t(
@@ -103,7 +106,7 @@ function services(t: T): Service[] {
       ],
     },
     {
-      id: "back-end",
+      id: "back-end-features",
       kicker: t("Additional service", "Serviço adicional"),
       title: [t("Even the smallest business", "Até o negócio mais pequeno"), t("gains from this.", "ganha com isto.")],
       lede: t(
@@ -176,7 +179,7 @@ function services(t: T): Service[] {
       ],
     },
     {
-      id: "photo",
+      id: "photo-shoot",
       kicker: t("Additional service", "Serviço adicional"),
       title: [t("With no visual content worth the name,", "Sem conteúdo visual de qualidade,"), t("a website is better left unmade.", "mais vale não ter website.")],
       lede: t(
@@ -263,49 +266,49 @@ function ProposalAsk({ label }: { label: string }) {
 
 /** One service: the photograph, its name laid in the dark at its foot,
     the card over its edge, the three facts, and what there is to say. */
-function Plate({ s, index, ask, reduce }: { s: Service; index: number; ask: string; reduce: boolean }) {
+function Plate({ s, ask, reduce }: { s: Service; ask: string; reduce: boolean }) {
   const [ref, inView] = useInView<HTMLElement>(0.18);
   const shown = inView || reduce;
 
   return (
-    <article ref={ref} className="sbm-plate" data-side={index % 2 ? "right" : "left"} data-in={shown || undefined}>
-      <div className="sbm-shot">
+    <article ref={ref} className="svd-plate" data-in={shown || undefined}>
+      <div className="svd-shot">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={s.photo} alt={s.alt} draggable={false} loading="lazy" />
-        <span aria-hidden="true" className="sbm-scrim" />
-        <div className="sbm-name">
-          <p className="mono-label sbm-kicker">{s.kicker}</p>
-          <h3 id={`sbm-${s.id}`} className="display sbm-title">
+        <span aria-hidden="true" className="svd-scrim" />
+        <div className="svd-name">
+          <p className="mono-label svd-kicker">{s.kicker}</p>
+          <h3 id={`svd-${s.id}`} className="display svd-title">
             <span className="font-light">{s.title[0]}</span>{" "}
             <span className="font-medium sm:block">{s.title[1]}</span>
           </h3>
         </div>
-        <p className="sbm-credit mono-label" aria-hidden="true">
+        <p className="svd-credit mono-label" aria-hidden="true">
           {s.credit}
         </p>
       </div>
 
-      <div className="sbm-card">
-        <p className="sbm-lede">{s.lede}</p>
-        <div className="sbm-ask">
+      <div className="svd-card">
+        <p className="svd-lede">{s.lede}</p>
+        <div className="svd-ask">
           <ProposalAsk label={ask} />
         </div>
       </div>
 
-      <dl className="sbm-facts">
+      <dl className="svd-facts">
         {s.facts.map((f) => (
           <div key={f.label}>
-            <dt className="sbm-fact-value">{f.value}</dt>
-            <dd className="sbm-fact-label mono-label">{f.label}</dd>
+            <dt className="svd-fact-value">{f.value}</dt>
+            <dd className="svd-fact-label mono-label">{f.label}</dd>
           </div>
         ))}
       </dl>
 
-      <div className="sbm-parts">
+      <div className="svd-parts">
         {s.parts.map((p) => (
-          <section key={p.head} className="sbm-part">
-            <h4 className="sbm-part-head">{p.head}</h4>
-            <p className="sbm-part-body">{p.body}</p>
+          <section key={p.head} className="svd-part">
+            <h4 className="svd-part-head">{p.head}</h4>
+            <p className="svd-part-body">{p.body}</p>
           </section>
         ))}
       </div>
@@ -313,36 +316,15 @@ function Plate({ s, index, ask, reduce }: { s: Service; index: number; ask: stri
   );
 }
 
-export function SbsMore() {
+/** The plate of the service a page is for, under its description. */
+export function ServiceDepth({ slug }: { slug: string }) {
   const t = useT();
   const reduce = useReducedMotion() ?? false;
-  const list = services(t);
-
+  const s = services(t).find((one) => one.id === slug);
+  if (!s) return null;
   return (
-    <section aria-labelledby="sbm-title" className="sbm relative bg-paper py-(--section-gap)">
-      <div className="shell">
-        <div className="sbm-head">
-          <div>
-            <p className="mono-label text-ash-2">{t("The other services", "Os outros serviços")}</p>
-            <h2 id="sbm-title" className="display mt-6 text-balance text-[clamp(2rem,4.6vw,3.75rem)] leading-[1.02]">
-              <span className="font-light sm:block">{t("A website is where it starts.", "O website é por onde se começa.")}</span>{" "}
-              <span className="font-medium sm:block">{t("It is not where it ends.", "Não é onde se acaba.")}</span>
-            </h2>
-          </div>
-          <p className="sbm-lede-head">
-            {t(
-              "Four services around the web design: the identity sold inside it, and three that are added when the project asks for them.",
-              "Quatro serviços à volta do web design: a identidade que se vende dentro dele, e três que se acrescentam quando o projeto o pede.",
-            )}
-          </p>
-        </div>
-
-        <div className="sbm-plates">
-          {list.map((s, i) => (
-            <Plate key={s.id} s={s} index={i} reduce={reduce} ask={t("Get your free proposal", "Pedir proposta gratuita")} />
-          ))}
-        </div>
-      </div>
+    <section aria-labelledby={`svd-${s.id}`} className="svd">
+      <Plate s={s} ask={t("Get your free proposal", "Pedir proposta gratuita")} reduce={reduce} />
     </section>
   );
 }

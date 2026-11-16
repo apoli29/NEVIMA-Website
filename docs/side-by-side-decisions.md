@@ -404,13 +404,17 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
 
 ## Sixth pass (2026-11-16, user): the other services
 
-- A fifth section under personalization, `sbs-more.tsx`, styled under
-  `.sbm-*`: the three additional services and the one sold inside the
-  web design, written from the studio's brief of 2026-11-11 (the
-  WhatsApp text the user pasted). The user asked for them here rather
-  than on the `/services/…` pages, which stay as they are.
-- Shape: the four one after another ("os quatro em sequência", the
-  user's pick over an index with a way back). Each is a plate taken
+- Built first as a fifth section here and **moved out the same day**, at
+  the user's word: each service's own page carries its own plate
+  (`service-depth.tsx`, styled `.svd-*`), and the bar's new Services
+  menu is the way to all of them. What follows describes the plate as
+  it now stands on those pages.
+- The three additional services and the one sold inside the web design,
+  written from the studio's brief of 2026-11-11 (the WhatsApp text the
+  user pasted).
+- Shape: one plate per page (first built as four in sequence, "os
+  quatro em sequência", the user's pick over an index with a way back).
+  Each is a plate taken
   about 60% from a photographic landing page the user sent: the
   photograph with a rounded corner (18px, the bar's radius), the
   service's name laid in the dark at its foot, a white card that
@@ -418,8 +422,7 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   free-proposal button, and a row of three facts set as that page sets
   its figures. Its colour, type and glass are not taken: the
   photographs are the only colour, and everything on and under them is
-  the site's black, white, Satoshi and Geist Mono. The plates alternate
-  sides so four do not read as a list.
+  the site's black, white, Satoshi and Geist Mono.
 - No figures anybody would have to invent: the row under each plate
   carries facts the site already states (Logo / Included, 30 km of Gaia
   / Travel included within), never a number.
@@ -441,3 +444,12 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
 - Still missing from the studio: the back end's tools, how they are
   interlinked, and the prices. The section says what the brief says and
   nothing more — no tool was named that the studio has not named.
+- The bar's Services menu (user, 2026-11-16): a cell on the bar in
+  place of the Side by side link, dropping a panel in the bar's own
+  black with the side-by-side page and the four services that have a
+  page. Read from `SERVICES`, so the menu cannot drift from the pages.
+  It opens to the hand and to the keyboard, and closes on Escape, on a
+  press outside and as focus leaves. Under the fold the bar has no
+  links, so the same list is a second block inside the "Menu" panel.
+  The service pages keep their own small header, so the menu is not on
+  them; their way back is the "All services" button they already had.

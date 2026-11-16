@@ -8,7 +8,6 @@ import { useT } from "@/lib/use-lang";
 
 export { SbsIncluded } from "./sbs-included";
 export { SbsPersonal } from "./sbs-personal";
-export { SbsMore } from "./sbs-more";
 
 /* ==================================================================
    Side by side, after the comparison: the web design service itself.
