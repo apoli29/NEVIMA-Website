@@ -507,3 +507,5 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
 - The personalization card's Website / Landing page switch now fills the side's width in two equal halves and can no longer run past the side's rule on narrower screens.
 - The card opens with the areas a business can be in (clinic, restaurant, estate agent, law firm, gym…) floating at three depths on a plain gradient, without the card's patterns. The current business's area is chosen: it turns white and comes to the middle, the others blur away, and the pages are built as before. After one run there and back, the next business's area is chosen. The order is the card's three businesses: dental clinic, restaurant, estate agent.
 - The card does nothing until it is at least 30% on screen, so the story is seen from its start; the call card already waited for 40% of itself.
+
+- 2026-11-17 (user): the areas lost their boxes, plain words only (the chosen one brightens and grows a little), and they float closer to the middle of the card, still spread out.
