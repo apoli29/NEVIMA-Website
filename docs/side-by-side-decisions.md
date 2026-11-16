@@ -673,3 +673,8 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   over the page's own Noite.
 - The table of quotes stays as it was; the Novu reference (three cards
   in perspective) was turned down and two others were put to the user.
+- 2026-11-17 (user): the opening uses exactly the symbol the steps had in
+  the first round (140px, a Noite face of slats over Névoa going to
+  Grafite); its slats close as it turns to face. It had rendered flat:
+  its fade was on the turning stack itself, and opacity on a
+  preserve-3d element flattens it; the fade is now on the symbol's box.

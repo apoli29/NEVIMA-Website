@@ -4473,17 +4473,19 @@
     opacity: 0;
     visibility: hidden;
   }
-  /* the symbol faces the visitor before the flight, so the square of the P
-     is straight on; the eye is set at that square (69% 33% of the symbol) */
+  /* The symbol of the steps' first round, exactly (user, 2026-11-17): a
+     Noite face of slats over Névoa going to Grafite, 140px. It faces the
+     visitor before the flight, so the square of the P is straight on; the
+     eye is set at that square (69% 33% of the symbol). */
   .sbs-a-intro-solid {
-    width: 180px;
-    height: 180px;
+    width: 140px;
+    height: 140px;
     perspective: 600px;
     perspective-origin: 69% 33%;
-    --face: linear-gradient(180deg, #fff, var(--p-nevoa));
-    --side-a: #4b3f80;
-    --side-b: #120e26;
+    --side-a: var(--p-nevoa);
+    --side-b: var(--p-grafite);
   }
+  .sbs-a-intro-solid .sbs-a-turn > b { --slat: 4px; }
   .sbs-a-intro-solid .sbs-a-turn { transition: none; }
 
   /* 2 · the five kinds of insurance (after Palais de Tokyo) -------------- */
@@ -4666,16 +4668,30 @@
     15%, 96% { opacity: 0; visibility: hidden; }
     99%, 100% { opacity: 1; visibility: visible; }
   }
+  /* the fade in is on the symbol's box, never on the turning stack:
+     opacity on a preserve-3d element flattens it */
+  .sbs-run .sbs-a-intro-solid { animation: sbs-a-intro-in var(--sbs-loop) linear infinite; }
+  @keyframes sbs-a-intro-in {
+    0% { opacity: 0; animation-timing-function: var(--a-ease); }
+    3%, 96% { opacity: 1; }
+    97%, 100% { opacity: 0; }
+  }
   .sbs-run .sbs-a-intro-solid .sbs-a-turn { animation: sbs-a-fly var(--sbs-loop) linear infinite; }
   @keyframes sbs-a-fly {
-    0% { opacity: 0; transform: translateZ(-260px) rotateX(18deg) rotateY(-48deg); animation-timing-function: var(--a-ease); }
-    3% { opacity: 1; }
+    0% { transform: translateZ(-260px) rotateX(18deg) rotateY(-48deg); animation-timing-function: var(--a-ease); }
     5% { transform: translateZ(0) rotateX(14deg) rotateY(-30deg); animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
     /* depth already speeds the growth up (1 / (600 - z)), so the flight
        eases out: the square widens at a steady rate rather than at once */
     7% { transform: translateZ(0) rotateX(0deg) rotateY(0deg); animation-timing-function: cubic-bezier(0.5, 0, 0.12, 1); }
-    12.5%, 96% { opacity: 1; transform: translateZ(599.7px) rotateX(0deg) rotateY(0deg); }
-    97%, 100% { opacity: 0; transform: translateZ(-260px) rotateX(18deg) rotateY(-48deg); }
+    12.5%, 96% { transform: translateZ(599.7px) rotateX(0deg) rotateY(0deg); }
+    97%, 100% { transform: translateZ(-260px) rotateX(18deg) rotateY(-48deg); }
+  }
+  /* its slats close as it turns to face, as they closed step by step */
+  .sbs-run .sbs-a-intro-solid .sbs-a-turn > b { animation: sbs-a-close var(--sbs-loop) linear infinite; }
+  @keyframes sbs-a-close {
+    0%, 4% { --slat: 4px; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+    7%, 96% { --slat: 9px; }
+    97%, 100% { --slat: 4px; }
   }
   .sbs-run .sbs-a-lead h3 .sbs-a-line > span { animation: sbs-a-line var(--sbs-loop) linear infinite both; }
   .sbs-run .sbs-a-lead h3 .sbs-a-line + .sbs-a-line > span { animation-delay: 0.14s; }
