@@ -344,7 +344,11 @@ export function usePlateScrub(
         drag.on = true;
         drag.screen.setPointerCapture(e.pointerId);
       }
-      nudge((drag.y - e.clientY) / drag.k);
+      const by = drag.y - e.clientY;
+      // at either end, once the second's hold is over, the finger goes
+      // on scrolling the website: on a phone the plate is most of the
+      // screen and touch-action is off on it, so the visitor was stuck
+      if (!nudge(by / drag.k) && barrier && e.pointerType !== "mouse") window.scrollBy(0, by);
       drag.y = e.clientY;
     };
     const up = (e: PointerEvent) => {

@@ -855,3 +855,19 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
     takes the same room (two lines), so as one opens and another closes,
     on the same curve, the list keeps its height and the section, centred
     in the frame, holds still; the line's spacing no longer jumps on.
+- 2026-11-18, audit of the display plates (user: "o display automático não
+  acompanha a animação do website"). Every plate was sampled through its
+  whole loop at 1440x900 and 390x844: no gap above or below a page, no
+  clipped text, every stop on its section's top. What was wrong, fixed:
+  - Advanced: the page moves on a slow in-out, but each section's entrance
+    (the kinds' titles and symbol, the table, the steps, the foot) ran on a
+    fast ease-out over the whole move, so it was over while the section
+    was still mostly below the frame. The entrances now play over the
+    second half of each move and land as the section arrives;
+  - Advanced, end of the visit: the page raced back up through every
+    section while they were being undone. Now the foot dissolves into the
+    opening's lavender (96-97%), the page is set back at the top under it
+    and the opening is waiting there;
+  - by hand on a phone, a finger on the plate (most of the screen, with
+    touch scrolling off on it) could not carry on down the website. At
+    either end, after the one-second hold, the finger scrolls the website.
