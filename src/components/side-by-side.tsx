@@ -269,11 +269,6 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
       t("THE 5 MOST COMMON MISTAKES WHEN CHOOSING HOME INSURANCE", "OS 5 ERROS MAIS COMUNS AO ESCOLHER UM SEGURO DE CASA"),
     ],
   ];
-  const offices = [
-    [t("Lisbon", "Lisboa"), "Av. da República, 00, 1.º Esq.", "1050-000 Lisboa", "+351 210 000 000", "+351 910 000 000", "lisboa@pilarseguros.example"],
-    ["Almada", "Rua Cândido dos Reis, 00", "2800-000 Almada", "+351 212 000 000", "+351 920 000 000", "almada@pilarseguros.example"],
-    ["Oeiras", "Av. Dom João I, 00, Loja B", "2780-000 Oeiras", "+351 214 000 000", "+351 930 000 000", "oeiras@pilarseguros.example"],
-  ];
   const fixed = t("(call to a national landline)", "(chamada para rede fixa nacional)");
   const mobile = t("(call to a national mobile network)", "(chamada para rede móvel nacional)");
 
@@ -471,7 +466,7 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
         </span>
       </div>
 
-      <div className="sbs-c-news">
+      <div className="sbs-c-news" data-stop>
         <h4 className="sbs-c-title">{t("LATEST NEWS", "ÚLTIMAS NOTÍCIAS")}</h4>
         <div className="sbs-c-cards">
           {news.map(([id, title]) => (
@@ -488,24 +483,58 @@ function Template({ t }: { t: ReturnType<typeof useT> }) {
         </span>
       </div>
 
-      <div className="sbs-c-visit" data-stop>
-        <h4 className="sbs-c-title">{t("WHERE TO FIND US", "ONDE NOS ENCONTRAR")}</h4>
-        <div className="sbs-c-offices">
-          {offices.map(([town, street, code, tel, cell, mail]) => (
-            <div key={town}>
-              <span className="sbs-c-ico">
-                <CIcon name="pin" />
-              </span>
-              <b>{town}</b>
-              <span>{street}</span>
-              <span>{code}</span>
-              <span className="sbs-c-a">{tel}</span>
-              <em>{fixed}</em>
-              <span className="sbs-c-a">{cell}</span>
-              <em>{mobile}</em>
-              <span className="sbs-c-a">{mail}</span>
-            </div>
+      {/* The footer, as such websites have it: four columns on navy, each
+          under the same title as the page's own, the contacts among them. */}
+      <div className="sbs-c-foot">
+        <div>
+          <h6>{t("PILAR INSURANCE", "PILAR SEGUROS")}</h6>
+          <p>
+            {t(
+              "Insurance brokerage since 2009. Personal and business insurance, with rigour, transparency and proximity.",
+              "Mediação de seguros desde 2009. Seguros particulares e empresas, com rigor, transparência e proximidade.",
+            )}
+          </p>
+          <span className="sbs-c-social">
+            <b>f</b>
+            <b>in</b>
+            <b className="sbs-c-ig" />
+          </span>
+        </div>
+        <div>
+          <h6>{t("USEFUL LINKS", "LINKS ÚTEIS")}</h6>
+          {[
+            t("About Us", "Quem Somos"),
+            t("Personal Insurance", "Seguros Particulares"),
+            t("Business Insurance", "Seguros Empresas"),
+            t("Claims", "Sinistros"),
+            t("News", "Notícias"),
+          ].map((link) => (
+            <span key={link}>» {link}</span>
           ))}
+        </div>
+        <div>
+          <h6>{t("CONTACTS", "CONTACTOS")}</h6>
+          <span className="sbs-c-line">
+            <CIcon name="pin" /> Av. da República, 00, 1.º Esq., 1050-000 Lisboa
+          </span>
+          <span className="sbs-c-line">
+            <CIcon name="phone" fill /> +351 210 000 000
+          </span>
+          <em>{fixed}</em>
+          <span className="sbs-c-line">
+            <CIcon name="phone" fill /> +351 910 000 000
+          </span>
+          <em>{mobile}</em>
+          <span className="sbs-c-line">
+            <CIcon name="mail" /> geral@pilarseguros.example
+          </span>
+        </div>
+        <div>
+          <h6>{t("OPENING HOURS", "HORÁRIO")}</h6>
+          <span>{t("Monday to Friday", "Segunda a Sexta")}</span>
+          <span>9h00 – 13h00</span>
+          <span>14h30 – 18h30</span>
+          <span>{t("Saturdays, Sundays and holidays: closed", "Sábados, Domingos e Feriados: encerrado")}</span>
         </div>
       </div>
 
@@ -981,8 +1010,8 @@ export function SideBySide() {
                 label={t("Designs from other professionals", "Design de outros profissionais")}
                 address={t("pilar-insurance.example/home", "pilar-seguros.example/inicio")}
                 says={t(
-                  "The same insurance broker as many web designers deliver it: a home-made logo, a seven-item menu in capitals, a stock photograph of a padlock, three blue boxes of contacts before anything is said, insurance and services as line icons, a long text on what to do after a car accident, stock photographs of news, and the offices' addresses above a grey footer.",
-                  "A mesma mediadora de seguros como muitos a entregam: um logótipo caseiro, um menu de sete itens em maiúsculas, a fotografia de stock de um cadeado, três caixas azuis de contactos antes de se dizer o que quer que seja, seguros e serviços em ícones de linha, um texto longo sobre o que fazer num acidente de automóvel, notícias com fotografias de stock e as moradas dos escritórios sobre um rodapé cinzento.",
+                  "The same insurance broker as many web designers deliver it: a home-made logo, a seven-item menu in capitals, a stock photograph of a padlock, three blue boxes of contacts before anything is said, insurance and services as line icons, a long text on what to do after a car accident, and news with stock photographs above a navy footer with the contacts and opening hours.",
+                  "A mesma mediadora de seguros como muitos a entregam: um logótipo caseiro, um menu de sete itens em maiúsculas, a fotografia de stock de um cadeado, três caixas azuis de contactos antes de se dizer o que quer que seja, seguros e serviços em ícones de linha, um texto longo sobre o que fazer num acidente de automóvel, notícias com fotografias de stock sobre um rodapé azul-escuro com os contactos e o horário.",
                 )}
               >
                 <Template t={t} />

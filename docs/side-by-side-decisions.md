@@ -574,3 +574,13 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   grounds in turn; navy at the top strip and both footer bars. The
   spaced thin capitals, the grey icons, the large light sentence and the
   grey footer are gone; the slider's word is bold and its button blue.
+
+- 2026-11-17 (user, third round): "Onde nos encontrar" (the three
+  offices) is gone; "Últimas notícias" takes its place as the last stop,
+  with a footer under it. The footer is in the page's own idiom: four
+  columns on navy, each under a small white title with the blue rule
+  (Pilar Seguros with a line and round social icons; Links úteis with »
+  bullets; Contactos with the Lisbon office, both numbers and their
+  "(chamada para rede …)" notes, the e-mail; Horário), then the ASF and
+  copyright bars. The news and the footer were tightened so the last
+  stop shows both whole at 900px, as ours shows its own foot.
