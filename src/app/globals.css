@@ -2222,11 +2222,14 @@
     z-index: -2;
     pointer-events: none;
     /* Its top is the edge's own plain black: the corner light and the
-       grain come in under it. */
+       grain come in under it. The home page's table is set in white, so
+       this ground stays black; the side-by-side page's own ground went
+       grey on 2026-11-16 and took this one with it by mistake, which
+       left white type on a light ground (user). */
     background:
       linear-gradient(to bottom, #0b0b0b 0, rgb(11 11 11 / 0) 30svh),
-      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0) 46%),
-      #e1e1de;
+      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0) 42%),
+      #0b0b0b;
   }
   .cmp-ground::after {
     content: "";
@@ -5299,21 +5302,10 @@
    so four of them do not read as a list.                              */
 @layer components {
   .svd { margin-top: clamp(3rem, 6vw, 4.5rem); }
+  .svd-plate { display: block; }
 
-  /* One plate. On a wide screen the photograph and the card share a
-     grid, the card set a third of the way down and over the edge; the
-     facts and the words run under both. */
-  .svd-plate { display: grid; gap: 1.5rem; }
-  @media (min-width: 900px) {
-    .svd-plate {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 20.5rem);
-      column-gap: 0;
-      align-items: start;
-    }
-  }
-
-  /* The photograph. The one rounded corner on the page, taken from the
-     reference and kept to the same radius as the bar's. */
+  /* The photograph, with the one rounded corner on the page, taken from
+     the page the user sent and kept to the bar's own radius. */
   .svd-shot {
     position: relative;
     overflow: hidden;
@@ -5321,14 +5313,14 @@
     background: var(--color-ink);
     aspect-ratio: 4 / 5;
   }
-  @media (min-width: 640px) { .svd-shot { aspect-ratio: 16 / 10; } }
+  @media (min-width: 640px) { .svd-shot { aspect-ratio: 16 / 9; } }
   .svd-shot img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
     transform: scale(1.04);
-    transition: transform 1.6s cubic-bezier(0.22, 1, 0.36, 1), filter 1.2s ease;
+    transition: transform 1.6s cubic-bezier(0.22, 1, 0.36, 1);
     filter: saturate(0.92);
   }
   .svd-plate[data-in] .svd-shot img { transform: scale(1); }
@@ -5342,16 +5334,17 @@
   }
   .svd-name {
     position: absolute;
-    left: clamp(1.25rem, 3vw, 2.5rem);
-    right: clamp(1.25rem, 3vw, 2.5rem);
-    bottom: clamp(1.25rem, 3vw, 2.25rem);
+    left: clamp(1.25rem, 3.2vw, 3rem);
+    right: clamp(1.25rem, 3.2vw, 3rem);
+    bottom: clamp(1.5rem, 3.6vw, 3rem);
     color: var(--color-paper);
   }
+  @media (min-width: 900px) { .svd-name { right: 42%; } }
   .svd-kicker { color: rgb(255 255 255 / 0.72); }
   .svd-title {
-    margin-top: 0.75rem;
-    max-width: 24ch;
-    font-size: clamp(1.75rem, 3.6vw, 3.25rem);
+    margin-top: 0.9rem;
+    max-width: 20ch;
+    font-size: clamp(1.75rem, 4.2vw, 3.75rem);
     line-height: 1.02;
     text-wrap: balance;
   }
@@ -5366,50 +5359,54 @@
     text-shadow: 0 1px 6px rgb(0 0 0 / 0.5);
   }
 
-  /* The card over the photograph's edge: white, a hairline, the first
-     thing to say and the way in. */
-  .svd-card {
+  /* The facts in a white card that comes over the photograph's foot on
+     the right, where that page carries its figures, and the way in with
+     them, on white, where a black drop can be read. */
+  .svd-sheet {
     position: relative;
     z-index: 1;
     display: grid;
     gap: 1.5rem;
-    align-content: start;
-    padding: clamp(1.35rem, 2.6vw, 1.9rem);
+    padding: clamp(1.35rem, 2.6vw, 2rem);
     background: var(--color-paper);
     border: 1px solid var(--color-hair-strong);
-    border-radius: 14px;
-    box-shadow: 0 1.5rem 3rem -1.75rem rgb(0 0 0 / 0.35);
+    border-radius: 16px;
+    box-shadow: 0 1.5rem 3rem -1.75rem rgb(0 0 0 / 0.4);
   }
   @media (min-width: 900px) {
-    .svd-card { margin-top: 4.5rem; margin-left: -3.5rem; }
+    .svd-sheet {
+      width: min(34rem, 58%);
+      margin-left: auto;
+      margin-top: clamp(-5rem, -4vw, -3rem);
+      margin-right: clamp(0rem, 2vw, 2rem);
+    }
   }
-  .svd-lede { font-size: 1rem; line-height: 1.6; color: var(--color-ink); }
-  .svd-ask { display: flex; }
-
-  /* The three facts, set as the reference sets its figures: the thing
-     itself large, what it is under it in the gallery's label. */
-  .svd-facts {
-    grid-column: 1 / -1;
-    display: grid;
-    gap: 1.25rem 2rem;
-    margin-top: 0.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--color-hair);
-  }
-  @media (min-width: 640px) { .svd-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .svd-facts { display: grid; gap: 1.25rem 1.75rem; }
+  @media (min-width: 420px) { .svd-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   .svd-fact-value {
     font-family: var(--font-title);
     font-weight: 300;
-    font-size: clamp(1.375rem, 2.2vw, 1.875rem);
-    line-height: 1.1;
+    font-size: clamp(1.25rem, 1.9vw, 1.6rem);
+    line-height: 1.12;
     letter-spacing: -0.02em;
     text-wrap: balance;
   }
-  .svd-fact-label { margin-top: 0.5rem; color: var(--color-ash-2); }
+  .svd-fact-label { margin-top: 0.45rem; color: var(--color-ash-2); }
+  .svd-ask { display: flex; }
 
-  /* What there is to say, in columns under the plate. */
+  /* What there is to say, under the plate. */
+  .svd-lede {
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+    max-width: 44ch;
+    font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+    line-height: 1.5;
+    color: var(--color-ink);
+    text-wrap: pretty;
+  }
   .svd-parts {
-    grid-column: 1 / -1;
+    margin-top: clamp(2rem, 4vw, 3rem);
+    padding-top: clamp(1.5rem, 3vw, 2rem);
+    border-top: 1px solid var(--color-hair);
     display: grid;
     gap: 1.75rem 2.5rem;
   }
@@ -5420,25 +5417,25 @@
 
   /* The plate arrives once, as everything else on the page does. */
   .svd-plate .svd-shot,
-  .svd-plate .svd-card,
-  .svd-plate .svd-facts,
+  .svd-plate .svd-sheet,
+  .svd-plate .svd-lede,
   .svd-plate .svd-parts {
     opacity: 0;
     translate: 0 1.25rem;
     transition: opacity 0.7s ease, translate 0.9s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .svd-plate[data-in] .svd-shot,
-  .svd-plate[data-in] .svd-card,
-  .svd-plate[data-in] .svd-facts,
+  .svd-plate[data-in] .svd-sheet,
+  .svd-plate[data-in] .svd-lede,
   .svd-plate[data-in] .svd-parts { opacity: 1; translate: 0 0; }
-  .svd-plate[data-in] .svd-card { transition-delay: 0.1s; }
-  .svd-plate[data-in] .svd-facts { transition-delay: 0.18s; }
-  .svd-plate[data-in] .svd-parts { transition-delay: 0.24s; }
+  .svd-plate[data-in] .svd-sheet { transition-delay: 0.12s; }
+  .svd-plate[data-in] .svd-lede { transition-delay: 0.2s; }
+  .svd-plate[data-in] .svd-parts { transition-delay: 0.26s; }
 
   @media (prefers-reduced-motion: reduce) {
     .svd-plate .svd-shot,
-    .svd-plate .svd-card,
-    .svd-plate .svd-facts,
+    .svd-plate .svd-sheet,
+    .svd-plate .svd-lede,
     .svd-plate .svd-parts { opacity: 1; translate: none; transition: none; }
     .svd-shot img { transform: none; transition: none; }
   }
