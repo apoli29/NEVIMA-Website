@@ -767,3 +767,10 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   plates are held at the same moment of their loop, whichever is
   scrolled.
 - The temporary pause and bar under the levels' plate are gone.
+- 2026-11-17 (user: the larger window's scroll felt stuck): by hand, each
+  hold of the loop had taken 2600px of scroll per lap with the section
+  pinned, so the comparison's hero, which has nothing to play, ate about
+  340px of scroll and its steps nearly 860px before anything moved. Holds
+  are now short: 700px per lap for the comparison and Essential+ (the
+  hero about 90px), 1500px for Advanced, whose holds are where its
+  effects play.

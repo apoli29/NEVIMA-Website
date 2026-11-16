@@ -25,19 +25,23 @@ type Point = [time: number, stop: number];
 /** Each loop's stops in time, to the end of the visit (not the way back
     up): the comparison's (globals.css, sbs-scroll) and Advanced's
     (sbs-a-scroll). */
-const LAPS: Record<string, { points: Point[]; ease: [number, number, number, number] }> = {
+/* `hold` is the scroll given to a hold, in the page's own pixels per
+   whole loop. By hand the scroll is continuous (user, 2026-11-17: a hold
+   that took several hundred pixels with nothing moving read as stuck), so
+   holds are short; Advanced keeps more, as its holds are where its
+   effects play (the flight through the P, the kinds, the steps). */
+const LAPS: Record<string, { points: Point[]; ease: [number, number, number, number]; hold: number }> = {
   "sbs-scroll": {
     points: [[0, 0], [0.13, 0], [0.17, 1], [0.28, 1], [0.32, 2], [0.43, 2], [0.47, 3], [0.8, 3], [0.84, 4], [0.94, 4]],
     ease: [0.22, 1, 0.36, 1],
+    hold: 700,
   },
   "sbs-a-scroll": {
     points: [[0, 0], [0.22, 0], [0.26, 1], [0.46, 1], [0.5, 2], [0.6, 2], [0.64, 3], [0.86, 3], [0.89, 4], [0.96, 4]],
     ease: [0.65, 0, 0.35, 1],
+    hold: 1500,
   },
 };
-
-/** Scroll given to a hold, in the page's own pixels per whole loop. */
-const HOLD = 2600;
 
 /** A cubic-bezier as two functions of its parameter. */
 function bezier([x1, y1, x2, y2]: [number, number, number, number]) {
@@ -76,7 +80,7 @@ function plan(page: HTMLElement) {
     const [t0, s0] = lap.points[i - 1];
     const [t1, s1] = lap.points[i];
     const move = s0 !== s1;
-    const len = move ? Math.abs(stop(s1) - stop(s0)) : (t1 - t0) * HOLD;
+    const len = move ? Math.abs(stop(s1) - stop(s0)) : (t1 - t0) * lap.hold;
     segments.push({ t0, t1, v0: v, len, move });
     v += len;
   }
