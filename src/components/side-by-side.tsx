@@ -701,6 +701,9 @@ export function SideBySide() {
     <ProposalHost>
       <FloatingNav />
       <main id="top" className="relative bg-paper">
+        {/* The comparison, from its title to the note under the two pages, on one grey ground (user, 2026-11-16). */}
+        <div className="sbs-top relative isolate">
+          <div aria-hidden="true" className="sbs-ground" />
         <header className="shell pt-[calc(var(--section-gap)+2rem)] pb-[clamp(2.5rem,5vw,4rem)]">
           <SlideIn ready>
             <p className="mono-label text-ash-2">{t("Side by side", "Lado a lado")}</p>
@@ -722,19 +725,18 @@ export function SideBySide() {
         <section
           ref={stage}
           aria-labelledby="side-by-side-title"
-          className="sbs-stage relative isolate pt-[clamp(3rem,6vw,5rem)] pb-(--section-gap) text-paper"
+          className="sbs-stage relative isolate pt-[clamp(3rem,6vw,5rem)] pb-(--section-gap) text-ink"
         >
           <h2 id="side-by-side-title" className="sr-only">
             {t("The same insurance broker, as two websites", "A mesma mediadora de seguros, em dois websites")}
           </h2>
-          <div aria-hidden="true" className="sbs-ground" />
 
           <div className="sbs-wide">
             <div className="sbs-pair">
               <Plate
                 quiet
                 running={running}
-                label={t("Off-the-shelf template", "Modelo pré-feito")}
+                label={t("Designs from other professionals", "Design de outros profissionais")}
                 address={t("pilar-insurance.example/home", "pilar-seguros.example/inicio")}
                 says={t(
                   "A website from an off-the-shelf template: a loading bar still running, a seven-item menu, a banner image that lands late and pushes the page down, stock photography, a carousel, three identical cards and a cookie wall over the foot of it.",
@@ -746,7 +748,7 @@ export function SideBySide() {
 
               <Plate
                 running={running}
-                label="nevima"
+                label={t("Nevima’s design", "Design da Nevima")}
                 address={t("pilarinsurance.example", "pilarseguros.example")}
                 says={t(
                   "The same insurance broker as we would build it: one line over a photograph of a pillar says what the broker does, with a few of its clients' reviews across the foot, its five kinds of insurance in very large type, a table of three quotes with Pilar's pick and the reason for it, and the four steps of working with it, walked through one at a time, at no cost to the client, above a dark footer.",
@@ -765,6 +767,7 @@ export function SideBySide() {
             </p>
           </div>
         </section>
+        </div>
 
         <SbsIncluded />
         <SbsLevels />

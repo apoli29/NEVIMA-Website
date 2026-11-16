@@ -381,6 +381,23 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   below; the lit work's frame turns white, their few hung works are
   dimmed.
 
+## The comparison in grey (2026-11-16, user)
+
+- The comparison, from its title down to the note under the two pages,
+  is on one grey ground (#e1e1de, the light from the top left and the
+  grain kept), instead of the black stage under a white header: the
+  ground now sits on a wrapper round the header and the stage
+  (`.sbs-top`), so there is no seam. Its type is ink.
+- The two plates are labelled "Designs from other professionals" /
+  "Design de outros profissionais" and "Nevima's design" / "Design da
+  Nevima" (user's words), in place of "Off-the-shelf template" and
+  "nevima". The intro paragraph still speaks of a template; it is the
+  user's to change.
+- Open: the user found the cards' backgrounds (the black metal) too
+  straight and square for a site whose own surfaces are gradients and
+  curves; three alternatives were shown as prints (liquid light,
+  contour lines, a bent sheet of metal) before anything is applied.
+
 ## Open
 
 - Nothing open from the clinic version; Pilar settles both questions.
