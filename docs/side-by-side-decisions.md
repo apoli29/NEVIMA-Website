@@ -597,3 +597,7 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   cards, each with the pin icon, are the last stop, above the footer.
   The news and their three stock photographs are gone; only the padlock
   in the slider is still from Unsplash. Both show whole at the last stop.
+
+- 2026-11-17 (user): our hero gains a second outlined pill, "Where to
+  find us" / "Onde nos encontrar", beside "Pedir simulação" (8px apart),
+  answering the competitors' last section from the first screen.
