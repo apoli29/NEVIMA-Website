@@ -1557,8 +1557,8 @@
     --pad-x: calc(var(--pad) * 2);
     min-height: calc(var(--ph) + var(--pad) * 2 + 1.25rem);
     background:
-      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0) 42%),
-      #0b0b0b;
+      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0) 46%),
+      #e1e1de;
   }
   @media (min-width: 768px) {
     .svc-card { --ph: 3.5rem; --pad: 1.25rem; --gap: 1.25rem; --pad-x: calc(var(--pad) * 3); }
@@ -2225,8 +2225,8 @@
        grain come in under it. */
     background:
       linear-gradient(to bottom, #0b0b0b 0, rgb(11 11 11 / 0) 30svh),
-      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0) 42%),
-      #0b0b0b;
+      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0) 46%),
+      #e1e1de;
   }
   .cmp-ground::after {
     content: "";
@@ -3896,8 +3896,8 @@
     z-index: -1;
     pointer-events: none;
     background:
-      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0) 42%),
-      #0b0b0b;
+      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0) 46%),
+      #e1e1de;
   }
   .sbs-ground::after {
     content: "";
@@ -3916,8 +3916,8 @@
 
   .sbs-cap { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.75rem; }
   /* The template's name is held back a tone, so ours reads as the answer. */
-  .sbs-cap .mono-label { color: var(--color-paper); }
-  .sbs-cap .mono-label[data-quiet] { color: rgb(255 255 255 / 0.62); }
+  .sbs-cap .mono-label { color: var(--color-ink); }
+  .sbs-cap .mono-label[data-quiet] { color: var(--color-ash); }
 
   .sbs-sheet { background: var(--color-paper); }
   /* The address a browser would carry, in the gallery's own label. */
@@ -4308,7 +4308,7 @@
   .sbs-p-foot-legal { display: flex; justify-content: space-between; gap: 16px; padding: 18px 0 24px; border-top: 1px solid rgb(255 255 255 / 0.14); font-size: 12px; color: rgb(255 255 255 / 0.74); }
   .sbs-p-foot-legal > span > span + span { margin-left: 18px; }
 
-  .sbs-note { margin-top: clamp(1.5rem, 3vw, 2.25rem); color: rgb(255 255 255 / 0.62); text-transform: none; letter-spacing: 0.02em; }
+  .sbs-note { margin-top: clamp(1.5rem, 3vw, 2.25rem); color: var(--color-ash); text-transform: none; letter-spacing: 0.02em; }
 
   /* Held still: both pages as they end up, the template's mess included. */
   @media (prefers-reduced-motion: reduce) {
