@@ -4463,29 +4463,52 @@
   .sbs-a-rings ellipse { stroke: rgb(255 255 255 / 0.42); }
   .sbs-a-lead h3 .sbs-a-line { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
   .sbs-a-lead h3 .sbs-a-line > span { display: block; }
+  /* the opening's ground: the photograph's own sky (#abadbf to #bfc0cd),
+     taken a little further to violet (user, 2026-11-17) */
   .sbs-a-intro {
     position: absolute;
     inset: 0;
     z-index: 30;
     display: grid;
     place-items: center;
-    background: radial-gradient(110% 90% at 50% 42%, var(--a-violet), var(--a-violet-deep) 72%);
+    background: radial-gradient(110% 90% at 50% 42%, #d0cee2, #aeabc8 78%);
     opacity: 0;
     visibility: hidden;
   }
-  /* The symbol of the steps' first round, exactly (user, 2026-11-17): a
-     Noite face of slats over Névoa going to Grafite, 140px. It faces the
-     visitor before the flight, so the square of the P is straight on; the
-     eye is set at that square (69% 33% of the symbol). */
+  /* a soft shadow under the symbol, so the metal sits on the light */
+  .sbs-a-intro::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: calc(50% + 96px);
+    width: 190px;
+    height: 26px;
+    translate: -50% 0;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(46 40 84 / 0.28), transparent);
+  }
+  /* The symbol in white metal, whole (no slats), shown face on from the
+     start (user, 2026-11-17): a brushed white-to-silver face with a light
+     across it, deeper sides of silver going to a violet grey. The eye is
+     set at the square of the P (69% 33%), so the flight goes through it
+     and the sides show as a bevel around the face. */
   .sbs-a-intro-solid {
-    width: 140px;
-    height: 140px;
+    width: 160px;
+    height: 160px;
     perspective: 600px;
     perspective-origin: 69% 33%;
-    --side-a: var(--p-nevoa);
-    --side-b: var(--p-grafite);
+    --side-a: #e4e5ee;
+    --side-b: #6f7088;
   }
-  .sbs-a-intro-solid .sbs-a-turn > b { --slat: 4px; }
+  .sbs-a-intro-solid .sbs-a-turn { transform: none; }
+  .sbs-a-intro-solid .sbs-a-turn > i { transform: translateZ(calc(var(--z) * -2.6px)); }
+  .sbs-a-intro-solid .sbs-a-turn > b {
+    --slat: 9px;
+    background:
+      linear-gradient(112deg, transparent 38%, rgb(255 255 255 / 0.95) 48%, transparent 58%) 130% 0 / 260% 100% no-repeat,
+      repeating-linear-gradient(90deg, rgb(255 255 255 / 0) 0 2px, rgb(255 255 255 / 0.22) 2px 3px),
+      linear-gradient(160deg, #ffffff 0%, #eceef4 30%, #c9ccd9 52%, #f3f4f8 70%, #b3b6c6 100%);
+  }
   .sbs-a-intro-solid .sbs-a-turn { transition: none; }
 
   /* 2 · the five kinds of insurance (after Palais de Tokyo) -------------- */
@@ -4673,25 +4696,29 @@
   .sbs-run .sbs-a-intro-solid { animation: sbs-a-intro-in var(--sbs-loop) linear infinite; }
   @keyframes sbs-a-intro-in {
     0% { opacity: 0; animation-timing-function: var(--a-ease); }
-    3%, 96% { opacity: 1; }
+    1.5%, 96% { opacity: 1; }
     97%, 100% { opacity: 0; }
   }
+  /* face on from the start: it stands still while a light crosses the
+     metal, then the view flies through the square of the P */
   .sbs-run .sbs-a-intro-solid .sbs-a-turn { animation: sbs-a-fly var(--sbs-loop) linear infinite; }
   @keyframes sbs-a-fly {
-    0% { transform: translateZ(-260px) rotateX(18deg) rotateY(-48deg); animation-timing-function: var(--a-ease); }
-    5% { transform: translateZ(0) rotateX(14deg) rotateY(-30deg); animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
     /* depth already speeds the growth up (1 / (600 - z)), so the flight
        eases out: the square widens at a steady rate rather than at once */
-    7% { transform: translateZ(0) rotateX(0deg) rotateY(0deg); animation-timing-function: cubic-bezier(0.5, 0, 0.12, 1); }
-    12.5%, 96% { transform: translateZ(599.7px) rotateX(0deg) rotateY(0deg); }
-    97%, 100% { transform: translateZ(-260px) rotateX(18deg) rotateY(-48deg); }
+    0%, 6.5% { transform: translateZ(0); animation-timing-function: cubic-bezier(0.5, 0, 0.12, 1); }
+    12.5%, 96% { transform: translateZ(599.7px); }
+    97%, 100% { transform: translateZ(0); }
   }
-  /* its slats close as it turns to face, as they closed step by step */
-  .sbs-run .sbs-a-intro-solid .sbs-a-turn > b { animation: sbs-a-close var(--sbs-loop) linear infinite; }
-  @keyframes sbs-a-close {
-    0%, 4% { --slat: 4px; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-    7%, 96% { --slat: 9px; }
-    97%, 100% { --slat: 4px; }
+  .sbs-run .sbs-a-intro-solid .sbs-a-turn > b { animation: sbs-a-gleam var(--sbs-loop) linear infinite; }
+  @keyframes sbs-a-gleam {
+    0%, 1.5% { background-position: 130% 0, 0 0, 0 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+    5.5%, 100% { background-position: -30% 0, 0 0, 0 0; }
+  }
+  .sbs-run .sbs-a-intro::before { animation: sbs-a-shadow var(--sbs-loop) linear infinite; }
+  @keyframes sbs-a-shadow {
+    0%, 6.5% { opacity: 1; }
+    8.5%, 96% { opacity: 0; }
+    97%, 100% { opacity: 1; }
   }
   .sbs-run .sbs-a-lead h3 .sbs-a-line > span { animation: sbs-a-line var(--sbs-loop) linear infinite both; }
   .sbs-run .sbs-a-lead h3 .sbs-a-line + .sbs-a-line > span { animation-delay: 0.14s; }

@@ -678,3 +678,11 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   Grafite); its slats close as it turns to face. It had rendered flat:
   its fade was on the turning stack itself, and opacity on a
   preserve-3d element flattens it; the fade is now on the symbol's box.
+- 2026-11-17 (user): the opening's symbol is now white metal, whole (no
+  slats): a brushed white-to-silver face with a light crossing it, sides
+  of silver going to a violet grey, deeper than elsewhere so it reads in
+  depth face on. It is shown face on from the start, with no turn; after
+  the light has crossed it the view flies through the square of the P
+  and the fade reveals the website. The ground is the hero photograph's
+  own sky (#abadbf to #bfc0cd) taken a little towards violet (#d0cee2 to
+  #aeabc8), with a soft shadow under the symbol.
