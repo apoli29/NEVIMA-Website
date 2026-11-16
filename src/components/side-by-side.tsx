@@ -128,6 +128,8 @@ function Plate({
   children: React.ReactNode;
 }) {
   const screen = useFit();
+  // The address bar is gone (user, 2026-11-16); the address is kept for whoever reads the page aloud.
+  void address;
 
   return (
     <figure className="sbs-plate">
@@ -138,9 +140,6 @@ function Plate({
       </figcaption>
 
       <div className="sbs-sheet">
-        <div className="sbs-bar mono-label" aria-hidden="true">
-          {address}
-        </div>
         <div ref={screen} className="sbs-screen">
           <p className="sr-only">{says}</p>
           <div aria-hidden="true" className={running ? "sbs-run" : undefined}>

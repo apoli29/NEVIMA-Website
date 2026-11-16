@@ -3914,7 +3914,7 @@
      side on one screen, and every pixel taken off them is type nobody
      can read. */
   .sbs-wide { width: 100%; max-width: 102rem; margin-inline: auto; padding-inline: var(--gutter); }
-  .sbs-pair { display: grid; gap: clamp(1.75rem, 3.5vw, 3rem); }
+  .sbs-pair { display: grid; gap: clamp(1.25rem, 2.5vw, 2rem); }
   @media (min-width: 900px) { .sbs-pair { grid-template-columns: 1fr 1fr; } }
 
   .sbs-cap { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.75rem; }
@@ -3935,7 +3935,8 @@
     text-transform: none;
     letter-spacing: 0.02em;
   }
-  .sbs-screen { position: relative; aspect-ratio: 9 / 7; overflow: hidden; --sbs-k: 0.5; }
+  /* taller by what the address bar used to take (user, 2026-11-16) */
+  .sbs-screen { position: relative; aspect-ratio: 9 / 7.45; overflow: hidden; --sbs-k: 0.5; }
   /* The page itself, at its own size, shrunk into the plate. */
   .sbs-mini {
     position: absolute;
@@ -3973,7 +3974,7 @@
   /* ================= the off-the-shelf template ==================== */
   /* The stops are each side's own, so each page ends on its own
      foot: the moments are shared, the distances are not. */
-  .sbs-t-page { --sbs-stop-1: -260px; --sbs-stop-2: -520px; --sbs-stop-3: -780px; --sbs-stop-4: -1039px; background: #fff; }
+  .sbs-t-page { --sbs-stop-1: -260px; --sbs-stop-2: -520px; --sbs-stop-3: -780px; --sbs-stop-4: -994px; background: #fff; }
 
   /* The bar that never gets there: it crawls, stalls, and starts again. */
   .sbs-load {
@@ -4099,7 +4100,7 @@
     --sbs-stop-1: -700px;
     --sbs-stop-2: -1190px;
     --sbs-stop-3: -1670px;
-    --sbs-stop-4: -2100px;
+    --sbs-stop-4: -2055px;
     --p-noite: #111525;
     --p-grafite: #434655;
     --p-nevoa: #a8aabc;
