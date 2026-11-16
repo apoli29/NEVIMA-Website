@@ -881,3 +881,9 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   loop instead of 0-17.5% (turn 0-3.5%, flight 3.5-7.25%, fade
   6.75-8.75%); the hero's reveal moved up with it, the hero held to 22%
   as before; by hand the opening plays on its own to 11%.
+- 2026-11-18, later: still blurred, on and off (user: it must be sharp from
+  the moment it comes in). Taking the animation off at rest left it blurred
+  while it came in and settled. The settle is now flat (slide, scale and a
+  slight turn, no rotateX, no perspective): Chrome draws a flat animated
+  layer at its largest scale, so the table is sharp throughout.
+  useSharpAtRest removed.

@@ -78,49 +78,9 @@ function Rings({ className, count, cx, cy, r0, step, w, h }: {
   );
 }
 
-/** The table settles out of depth on a 3D move that, the loop being
-    endless, never ends: Chrome keeps it as a 3D layer drawn once at a
-    fixed resolution, and the table stayed blurred where it lay (user,
-    2026-11-18). While it lies still (53-97% of the loop) its animation is
-    taken off, so it is drawn sharp; it is put back, at the loop's own
-    moment, before it is needed again. By hand the same: the scrub holds
-    the loop at a moment and this reads it. */
-function useSharpAtRest(ref: React.RefObject<HTMLElement | null>, from = 0.53, to = 0.97) {
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const id = window.setInterval(() => {
-      const page = el.closest<HTMLElement>(".sbs-mini");
-      const run = page?.getAnimations().find((a) => (a as CSSAnimation).animationName === LAP);
-      if (!run) {
-        el.removeAttribute("data-rest");
-        return;
-      }
-      const ms = (run.effect?.getComputedTiming().duration as number) || 1;
-      const delay = (run.effect?.getTiming().delay as number) || 0;
-      const p = (((((Number(run.currentTime) || 0) - delay) % ms) + ms) % ms) / ms;
-      const rest = p >= from && p < to;
-      if (rest === el.hasAttribute("data-rest")) return;
-      if (rest) {
-        el.setAttribute("data-rest", "");
-        return;
-      }
-      el.removeAttribute("data-rest");
-      // the animation comes back in step with the loop, and held if it is
-      for (const a of el.getAnimations()) {
-        a.currentTime = run.currentTime;
-        if (run.playState === "paused") a.pause();
-      }
-    }, 60);
-    return () => window.clearInterval(id);
-  }, [ref, from, to]);
-}
-
 export function Advanced({ t }: { t: T }) {
   const { lines, steps } = pilarCopy(t);
   const kinds = useLapStep(lines.length, { name: LAP, from: 0.27, to: 0.46, reset: 0.2 });
-  const table = useRef<HTMLDivElement>(null);
-  useSharpAtRest(table);
 
   /* The symbol beside the kinds sits level with the top of the one being
      read: its place is read off the rows themselves (their tops, all
@@ -261,7 +221,7 @@ export function Advanced({ t }: { t: T }) {
         </div>
 
         <div className="sbs-a-stage">
-          <div ref={table} className="sbs-a-table">
+          <div className="sbs-a-table">
             <span className="sbs-a-col" />
             <div className="sbs-a-cell sbs-a-cap">
               <b>{t("Home insurance · 3-bed flat, Lisbon", "Seguro Casa · T3, Lisboa")}</b>

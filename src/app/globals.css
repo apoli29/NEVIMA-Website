@@ -4575,7 +4575,6 @@
   .sbs-a-sheet-head { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: end; margin-bottom: 30px; }
   .sbs-a-sheet-head h4 { margin: 0; font-family: var(--p-display); font-weight: 400; font-size: 40px; line-height: 1.02; letter-spacing: -0.02em; }
   .sbs-a-sheet-head p { margin: 0; font-size: 14.5px; line-height: 1.55; }
-  .sbs-a-stage { perspective: 1600px; }
   .sbs-a-table {
     position: relative;
     display: grid;
@@ -4797,15 +4796,16 @@
     98%, 100% { opacity: 0; scale: 0.8; }
   }
 
+  /* the table settles flat, no 3D tilt: a 3D move on an endless loop
+     is drawn once at a fixed resolution and the table was blurred, on and
+     off (user, 2026-11-18); a flat one is drawn at its full size, so the
+     table is sharp from the moment it comes in */
   .sbs-run .sbs-a-table { animation: sbs-a-settle var(--sbs-loop) linear infinite both; }
-  /* at rest the 3D move is taken off, so the table is drawn sharp
-     (useSharpAtRest in sbs-advanced.tsx) */
-  .sbs-run .sbs-a-table[data-rest] { animation: none; }
   @keyframes sbs-a-settle {
-    0%, 48% { opacity: 0; transform: translateY(56px) rotateX(38deg) rotateZ(-4deg) scale(0.92); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+    0%, 48% { opacity: 0; transform: translateY(64px) rotate(-3deg) scale(0.9); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
     49.5% { opacity: 1; }
     52%, 97% { opacity: 1; transform: none; }
-    98%, 100% { opacity: 0; transform: translateY(56px) rotateX(38deg) rotateZ(-4deg) scale(0.92); }
+    98%, 100% { opacity: 0; transform: translateY(64px) rotate(-3deg) scale(0.9); }
   }
   .sbs-run .sbs-a-col { animation: sbs-a-lift var(--sbs-loop) linear infinite both; }
   @keyframes sbs-a-lift {
