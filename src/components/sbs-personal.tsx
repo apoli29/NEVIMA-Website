@@ -1,85 +1,124 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useReducedMotion } from "motion/react";
 import { Glass } from "./cta-glass";
 import { useOriginFade, useProposal } from "./proposal-flow";
 import { useInView, type T } from "./sbs-shared";
-import { SECTORS } from "@/lib/proposal/questions";
-import { useHref, useLang, useT } from "@/lib/use-lang";
+import { useHref, useT } from "@/lib/use-lang";
 
 /* ==================================================================
    Personalization
 
-   One card, on the page's own white, ruled by hairlines, that is played
-   and not touched. The kinds of business the proposal form asks about
-   (SECTORS, questions.ts) float about it; after two seconds one of them
-   is chosen (it fills with ink, as the bar's button fills, takes a tick,
-   the others fall away and it goes up to the card's corner); the switch
-   beside it settles on a website or a landing page; and only then does
-   the frame come in and the website put itself together, laid out as
-   that kind of business usually lays its website out: a restaurant's
-   photograph, menu and table booking; a clinic's one long page with its
-   treatments and a button to book; an estate agent's search and the
-   houses under it. Titles and buttons are real words; the body is a
-   doctor's hand, scrawled on and illegible, or plain empty lines.
+   One card in black metal, played and not touched. On its left the
+   choice of a website or a landing page, and the pages the proposal form
+   offers ticked one by one (no boxes round them: a tick, and the name
+   lit). On its right a sheet for each page ticked, side by side, and
+   each sheet laid out as that page usually is: the home page's bar, its
+   photograph and its title; the services listed with a mark each; the
+   team in portraits; the gallery as a wall of pictures; the contact form
+   and its map. Titles and buttons are real words; the body is a doctor's
+   hand (a scrawl, drawn on) or empty lines. Then the switch moves to a
+   landing page and the sheets draw together into one long page, each now
+   a section of it, laid out as a section is (wide rather than tall), and
+   their addresses turn into anchors.
 
-   It does not loop: when one business is done, a white sheet set to
-   invert what is under it wipes across the card and the next one plays
-   in negative; at the end of that one the sheet wipes off. Under the
-   card, the three steps it plays, each lit while it happens.
+   It does not loop: it plays forwards, then backwards, taking the
+   website apart, then forwards again. One clock for all of it: every
+   part is a CSS animation of the same length, run back and forth, so
+   nothing can drift. The sheets' two layouts are chosen by the sheet's
+   own proportions (a container query), so a page becomes a section as
+   it changes shape.
 
-   Below, the doubt and the call: a drawing of a video call, António and
-   Emanuel on one side, the client on the other, a line between them. Each
-   time one of them speaks a cloud rises over them and the line fills
-   from the one speaking to the one listening, who answers, and the line
-   fills back. Drawn as by hand (a slight tremor on every stroke), in ink
-   on the page's white.
+   Below, in a black card of the same metal: the doubt and the call. Two
+   tiles for António and Emanuel, one for the client, a line between
+   them. Whoever speaks lights up, their words are typed in a panel over
+   them, and the line fills from them to the one listening, a point of
+   light running ahead of it; the other answers and it fills back.
 
-   Nothing here runs off the screen, and for anyone who has asked for
-   less motion the card shows its first website built and the call its
-   last answer.
+   For anyone who has asked for less motion, the card shows where it
+   ends (every page chosen, folded into one) and the call its last
+   answer.
    ================================================================== */
 
-type Mode = "website" | "landing";
-type Kind = "restaurant" | "clinic" | "estate";
-type Phase = "float" | "pick" | "build" | "out";
-type SectorId = (typeof SECTORS)[number]["id"];
+/** One run of the card, forwards; the way back takes as long again. */
+const RUN_S = 13;
 
-/** The businesses the card builds for, in order, and what each becomes. */
-const RUNS: { sector: SectorId; kind: Kind; mode: Mode }[] = [
-  { sector: "hospitality", kind: "restaurant", mode: "website" },
-  { sector: "health", kind: "clinic", mode: "landing" },
-  { sector: "realestate", kind: "estate", mode: "website" },
-];
+/** Percentages of the run. */
+const TICKS = [9, 16, 23, 30, 37];
+const MODE: [number, number] = [52, 58];
+function MOVE(i: number): [number, number] {
+  return [58 + i * 2, 70 + i * 2];
+}
+const FRAME: [number, number] = [74, 82];
+const FADE = 1.6;
 
-/** Where the floating businesses rest, in percentages of the board. */
-const DRIFT: { id: SectorId; x: number; y: number }[] = [
-  { id: "health", x: 6, y: 8 },
-  { id: "beauty", x: 38, y: 4 },
-  { id: "realestate", x: 70, y: 12 },
-  { id: "hospitality", x: 16, y: 32 },
-  { id: "lodging", x: 50, y: 28 },
-  { id: "retail", x: 78, y: 40 },
-  { id: "professional", x: 4, y: 58 },
-  { id: "sport", x: 34, y: 54 },
-  { id: "education", x: 60, y: 64 },
-  { id: "events", x: 18, y: 82 },
-  { id: "creative", x: 46, y: 86 },
-  { id: "trades", x: 70, y: 82 },
-];
+type Win = [number, number];
 
-/** How long each phase lasts, in milliseconds. */
-const PHASE_MS: Record<Phase, number> = { float: 2200, pick: 1600, build: 7200, out: 700 };
-const WIPE_MS = 900;
+/** Opacity keyframes for the windows a thing is shown in. */
+function windows(name: string, wins: Win[], lo = 0, hi = 1) {
+  const pts: [number, number][] = [];
+  wins.forEach(([a, b]) => {
+    if (a <= 0) pts.push([0, hi]);
+    else pts.push([a, lo], [Math.min(100, a + FADE), hi]);
+    if (b >= 100) pts.push([100, hi]);
+    else pts.push([b, hi], [Math.min(100, b + FADE), lo]);
+  });
+  if (pts[0]![0] > 0) pts.unshift([0, lo]);
+  if (pts[pts.length - 1]![0] < 100) pts.push([100, lo]);
+  return `@keyframes ${name}{${pts.map(([p, v]) => `${p.toFixed(2)}%{opacity:${v}}`).join("")}}`;
+}
+
+/** Everything the card does, written once for both languages. */
+const CARD_CSS = (() => {
+  const css: string[] = [];
+  const ease = "animation-timing-function:cubic-bezier(0.65,0,0.35,1)";
+  TICKS.forEach((p, i) => {
+    css.push(
+      `@keyframes sbp-tick-${i}{0%,${p + 0.4}%{stroke-dashoffset:14}${p + 2.2}%,100%{stroke-dashoffset:0}}`,
+      `@keyframes sbp-opt-${i}{0%,${p}%{color:rgb(255 255 255 / 0.38)}${p + 1.2}%,100%{color:#fff}}`,
+    );
+    const [m0, m1] = MOVE(i);
+    css.push(
+      `@keyframes sbp-sheet-${i}{` +
+        `0%,${p}%{opacity:0;translate:0 6%;left:var(--wx);top:var(--wy);width:var(--ww);height:var(--wh)}` +
+        `${p + 4}%{opacity:1;translate:0 0;left:var(--wx);top:var(--wy);width:var(--ww);height:var(--wh)}` +
+        `${m0}%{opacity:1;translate:0 0;left:var(--wx);top:var(--wy);width:var(--ww);height:var(--wh);${ease}}` +
+        `${m1}%,100%{opacity:1;translate:0 0;left:var(--lx);top:var(--ly);width:var(--lw);height:var(--lh)}}`,
+    );
+    css.push(`.sbp-run .sbp-sheet[data-i="${i}"]{animation-name:sbp-sheet-${i}}`);
+    css.push(`.sbp-run .sbp-opt[data-i="${i}"]{animation-name:sbp-opt-${i}}`);
+    css.push(`.sbp-run .sbp-opt[data-i="${i}"] .sbp-tick path{animation-name:sbp-tick-${i}}`);
+    // the sheet's doctor's hand is written as it arrives
+    css.push(`@keyframes sbp-ink-${i}{0%,${p + 2}%{stroke-dashoffset:1}${p + 10}%,100%{stroke-dashoffset:0}}`);
+    css.push(`.sbp-run .sbp-sheet[data-i="${i}"] .pg-scrawl path{animation-name:sbp-ink-${i}}`);
+  });
+  // the count under the choices: one page, two, … five, then one with everything
+  const counts: Win[] = TICKS.map((p, i) => [p, i < TICKS.length - 1 ? TICKS[i + 1]! - FADE : MODE[0]]);
+  counts.forEach((w, i) => {
+    css.push(windows(`sbp-count-${i}`, [w]));
+    css.push(`.sbp-run .sbp-count[data-i="${i}"]{animation-name:sbp-count-${i}}`);
+  });
+  css.push(windows("sbp-count-all", [[MODE[1], 100]]));
+  css.push(`.sbp-run .sbp-count[data-i="all"]{animation-name:sbp-count-all}`);
+  // the switch, the addresses, the frame round the one long page
+  css.push(`@keyframes sbp-mode{0%,${MODE[0]}%{translate:0 0;${ease}}${MODE[1]}%,100%{translate:100% 0}}`);
+  css.push(windows("sbp-path", [[0, 54]]));
+  css.push(windows("sbp-anchor", [[76, 100]]));
+  css.push(windows("sbp-frame", [FRAME]));
+  // the three steps under the card, each lit while it happens
+  css.push(windows("sbp-step-0", [[0, 7], [50, 60]], 0.32));
+  css.push(windows("sbp-step-1", [[7, 50]], 0.32));
+  css.push(windows("sbp-step-2", [[60, 100]], 0.32));
+  return css.join("\n");
+})();
 
 /* ---------------------------------------------------------------- */
-/* The doctor's hand                                                 */
+/* The pieces a page is drawn with                                    */
 /* ---------------------------------------------------------------- */
 
-/** A scrawl: a run of loops of uneven size, as a hurried hand writes,
-    in a box `width` wide and 10 tall. The same seed always gives the
-    same line. */
+/** A scrawl: a run of loops of uneven size, as a hurried hand writes, in
+    a box `width` wide and 10 tall. The same seed gives the same line. */
 function scrawl(seed: number, width = 100) {
   let s = seed * 9301 + 49297;
   const rand = () => {
@@ -105,279 +144,269 @@ function scrawl(seed: number, width = 100) {
   return d;
 }
 
-const delay = (d: number) => ({ ["--d" as string]: d }) as CSSProperties;
-
-function Scrawl({ seed, width = 100, d = 0 }: { seed: number; width?: number; d?: number }) {
-  const path = useMemo(() => scrawl(seed, width), [seed, width]);
+function Scrawl({ seed, w = 100 }: { seed: number; w?: number }) {
+  const path = useMemo(() => scrawl(seed, 100), [seed]);
   return (
-    <svg viewBox={`0 0 ${width} 10`} preserveAspectRatio="none" className="sbp-scrawl" style={{ ...delay(d), width: `${width}%` }}>
+    <svg viewBox="0 0 100 10" preserveAspectRatio="none" className="pg-scrawl" style={{ width: `${w}%` }} aria-hidden="true">
       <path d={path} pathLength={1} />
     </svg>
   );
 }
 
-/** Empty lines, for the rest of the body. */
-function Lines({ n, d = 0 }: { n: number; d?: number }) {
+/** Empty lines, for the rest of a body. */
+function Lines({ n }: { n: number }) {
   return (
-    <span className="sbp-lines" style={delay(d)}>
+    <span className="pg-lines">
       {Array.from({ length: n }, (_, i) => (
-        <span key={i} style={{ width: `${[92, 70, 84, 62][i % 4]}%` }} />
+        <i key={i} style={{ width: `${[94, 72, 86, 58][i % 4]}%` }} />
       ))}
     </span>
   );
 }
 
-/** A photograph's place: a grey plate with a mountain and a sun drawn
-    on it, as a layout marks where a picture will go. */
-function Picture({ dark, d = 0, className = "" }: { dark?: boolean; d?: number; className?: string }) {
+/** A photograph's place: a plate with a mountain and a sun drawn on it,
+    or a portrait's head and shoulders. */
+function Pic({ kind = "land", dark, className = "" }: { kind?: "land" | "person"; dark?: boolean; className?: string }) {
   return (
-    <span className={`sbp-pic ${dark ? "sbp-pic-dark" : ""} ${className}`} style={delay(d)}>
-      <svg viewBox="0 0 40 30" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-        <circle cx="29" cy="9" r="3.2" />
-        <path d="M4 25 15 13l7 7 5-4 9 9" />
-      </svg>
+    <span className={`pg-pic ${dark ? "pg-pic-dark" : ""} ${className}`}>
+      {kind === "land" ? (
+        <svg viewBox="0 0 40 30" aria-hidden="true">
+          <circle cx="29" cy="9" r="3.2" />
+          <path d="M4 25 15 13l7 7 5-4 9 9" />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 40 40" aria-hidden="true">
+          <circle cx="20" cy="16" r="7" />
+          <path d="M6 40c1-9 7-13 14-13s13 4 14 13" />
+        </svg>
+      )}
+    </span>
+  );
+}
+
+function Nav({ t }: { t: T }) {
+  return (
+    <span className="pg-nav">
+      <b>Alvor</b>
+      <i>{t("Services", "Serviços")}</i>
+      <i>{t("Team", "Equipa")}</i>
+      <i>{t("Contact", "Contactos")}</i>
     </span>
   );
 }
 
 /* ---------------------------------------------------------------- */
-/* The three websites                                                */
+/* The five pages, each as that page usually is                      */
 /* ---------------------------------------------------------------- */
 
-function Restaurant({ t }: { t: T }) {
+function HomePage({ t }: { t: T }) {
   return (
-    <div className="sbp-site">
-      <div className="sbp-nav sbp-in" style={delay(0)}>
-        <b>Maré</b>
-        <span>{t("Menu", "Menu")}</span>
-        <span>{t("Bookings", "Reservas")}</span>
-        <span>{t("Contact", "Contactos")}</span>
-      </div>
-      <div className="sbp-hero-photo">
-        <Picture dark d={1} className="sbp-fill" />
-        <div className="sbp-hero-over">
-          <h4 className="sbp-in" style={delay(2)}>
-            {t("Market cooking, by the river.", "Cozinha de mercado, à beira-rio.")}
-          </h4>
-          <Scrawl seed={3} width={55} d={2.6} />
-          <span className="sbp-btn sbp-btn-light sbp-in" style={delay(3.4)}>
-            {t("Book a table", "Reservar mesa")}
+    <>
+      <Nav t={t} />
+      <span className="pg-hero">
+        <Pic dark className="pg-hero-pic" />
+        <span className="pg-hero-copy">
+          <b className="pg-h">{t("Dentistry, with time for it.", "Medicina dentária, sem pressas.")}</b>
+          <Scrawl seed={2} w={80} />
+          <span className="pg-btn">{t("Book a visit", "Marcar consulta")}</span>
+        </span>
+      </span>
+      <span className="pg-trio">
+        {[0, 1, 2].map((i) => (
+          <span key={i} className="pg-trio-item">
+            <Pic />
+            <Scrawl seed={5 + i} w={90} />
           </span>
-        </div>
-      </div>
-      <div className="sbp-row">
-        <div className="sbp-col">
-          <h5 className="sbp-in" style={delay(4.2)}>
-            {t("The menu", "O menu")}
-          </h5>
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="sbp-item sbp-in" style={delay(4.6 + i * 0.4)}>
-              <Scrawl seed={10 + i} width={62} d={4.8 + i * 0.4} />
-              <span>{["14 €", "18 €", "9 €"][i]}</span>
-            </div>
+        ))}
+      </span>
+      <span className="pg-more">
+        <b className="pg-h">{t("Why Alvor", "Porquê a Alvor")}</b>
+        <Scrawl seed={8} w={96} />
+        <Lines n={3} />
+      </span>
+    </>
+  );
+}
+
+function ServicesPage({ t }: { t: T }) {
+  const items = [t("Implants", "Implantes"), t("Orthodontics", "Ortodontia"), t("Hygiene", "Higiene")];
+  return (
+    <>
+      <Nav t={t} />
+      <b className="pg-h pg-title">{t("Services", "Serviços")}</b>
+      <span className="pg-list">
+        {items.map((name, i) => (
+          <span key={name} className="pg-row">
+            <span className="pg-mark" />
+            <span className="pg-row-copy">
+              <b>{name}</b>
+              <Scrawl seed={11 + i} w={92} />
+              <Lines n={1} />
+            </span>
+          </span>
+        ))}
+      </span>
+      <span className="pg-more">
+        <span className="pg-btn">{t("Book a visit", "Marcar consulta")}</span>
+      </span>
+    </>
+  );
+}
+
+function TeamPage({ t }: { t: T }) {
+  return (
+    <>
+      <Nav t={t} />
+      <b className="pg-h pg-title">{t("Team", "Equipa")}</b>
+      <span className="pg-people">
+        {[0, 1, 2, 3].map((i) => (
+          <span key={i} className="pg-person">
+            <Pic kind="person" />
+            <Scrawl seed={21 + i} w={70} />
+            <Lines n={1} />
+          </span>
+        ))}
+      </span>
+    </>
+  );
+}
+
+function GalleryPage({ t }: { t: T }) {
+  return (
+    <>
+      <Nav t={t} />
+      <b className="pg-h pg-title">{t("Gallery", "Galeria")}</b>
+      <span className="pg-wall">
+        {[0, 1, 2, 3, 4].map((i) => (
+          <Pic key={i} dark={i === 1 || i === 4} className={`pg-wall-${i}`} />
+        ))}
+      </span>
+    </>
+  );
+}
+
+function ContactPage({ t }: { t: T }) {
+  return (
+    <>
+      <Nav t={t} />
+      <b className="pg-h pg-title">{t("Contact", "Contactos")}</b>
+      <span className="pg-contact">
+        <span className="pg-form">
+          {[t("Name", "Nome"), t("Email", "E-mail")].map((l) => (
+            <span key={l} className="pg-field">
+              <small>{l}</small>
+              <i />
+            </span>
           ))}
-        </div>
-        <Picture d={5} className="sbp-square" />
-        <Picture d={5.4} className="sbp-square" />
-      </div>
-    </div>
-  );
-}
-
-function Clinic({ t }: { t: T }) {
-  return (
-    <div className="sbp-site">
-      <div className="sbp-nav sbp-in" style={delay(0)}>
-        <b>Alvor</b>
-        <span className="sbp-btn sbp-btn-ink">{t("Book an appointment", "Marcar consulta")}</span>
-      </div>
-      <div className="sbp-split">
-        <div className="sbp-col">
-          <h4 className="sbp-in" style={delay(1)}>
-            {t("Dentistry, with time for it.", "Medicina dentária, sem pressas.")}
-          </h4>
-          <Scrawl seed={21} width={90} d={1.8} />
-          <Scrawl seed={22} width={66} d={2.3} />
-          <span className="sbp-btn sbp-btn-ink sbp-in" style={delay(3)}>
-            {t("Book an appointment", "Marcar consulta")}
+          <span className="pg-field pg-field-tall">
+            <small>{t("Message", "Mensagem")}</small>
+            <i />
           </span>
-        </div>
-        <Picture d={1.6} className="sbp-portrait" />
-      </div>
-      <div className="sbp-tiles">
-        {[t("Implants", "Implantes"), t("Orthodontics", "Ortodontia"), t("Hygiene", "Higiene")].map((name, i) => (
-          <div key={name} className="sbp-tile sbp-in" style={delay(3.8 + i * 0.4)}>
-            <span className="sbp-tile-mark" />
-            <h6>{name}</h6>
-            <Lines n={2} d={4.2 + i * 0.4} />
-          </div>
-        ))}
-      </div>
-      <div className="sbp-band sbp-in" style={delay(5.4)}>
-        <Scrawl seed={31} width={46} d={5.7} />
-        <span className="sbp-btn sbp-btn-light">{t("Book an appointment", "Marcar consulta")}</span>
-      </div>
-    </div>
+          <span className="pg-btn">{t("Send", "Enviar")}</span>
+        </span>
+        <span className="pg-map">
+          <span className="pg-pin" />
+          <Scrawl seed={31} w={70} />
+        </span>
+      </span>
+    </>
   );
 }
 
-function Estate({ t }: { t: T }) {
-  return (
-    <div className="sbp-site">
-      <div className="sbp-nav sbp-in" style={delay(0)}>
-        <b>Casa Norte</b>
-        <span>{t("Homes", "Imóveis")}</span>
-        <span>{t("Sell", "Vender")}</span>
-        <span>{t("About", "Sobre")}</span>
-        <span>{t("Contact", "Contactos")}</span>
-      </div>
-      <div className="sbp-search-hero">
-        <h4 className="sbp-in" style={delay(1)}>
-          {t("Homes with a history, in Porto.", "Casas com história, no Porto.")}
-        </h4>
-        <div className="sbp-search sbp-in" style={delay(1.8)}>
-          <span>{t("Type", "Tipologia")}</span>
-          <span>{t("Area", "Zona")}</span>
-          <span className="sbp-btn sbp-btn-ink">{t("Search", "Procurar")}</span>
-        </div>
-      </div>
-      <div className="sbp-cards">
-        {["385 000 €", "240 000 €", "512 000 €"].map((price, i) => (
-          <div key={price} className="sbp-house">
-            <Picture d={2.8 + i * 0.5} className="sbp-house-pic" />
-            <b className="sbp-in" style={delay(3.4 + i * 0.5)}>
-              {price}
-            </b>
-            <Scrawl seed={41 + i} width={80} d={3.8 + i * 0.5} />
-            <small className="sbp-in" style={delay(4.2 + i * 0.5)}>
-              {["T3 · 120 m²", "T2 · 84 m²", "T4 · 168 m²"][i]}
-            </small>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+type Page = { id: string; label: string; slug: string; chosen: number | null; draw?: (t: T) => ReactNode };
 
-/* ---------------------------------------------------------------- */
-/* The card                                                          */
-/* ---------------------------------------------------------------- */
-
-function BuildCard({ t, still, onStep }: { t: T; still: boolean; onStep: (step: number) => void }) {
-  const lang = useLang();
-  const [card, inView] = useInView<HTMLDivElement>(0.35);
-  const [run, setRun] = useState(0);
-  const [phase, setPhase] = useState<Phase>(still ? "build" : "float");
-  /** The inverting sheet: off to the left, across, or off to the right. */
-  const [sheet, setSheet] = useState<"left" | "on" | "right">("left");
-  const [snap, setSnap] = useState(false);
-
-  useEffect(() => {
-    if (still) setPhase("build");
-  }, [still]);
-
-  const current = RUNS[run % RUNS.length]!;
-  const label = (id: SectorId) => {
-    const s = SECTORS.find((x) => x.id === id)!;
-    return lang === "pt" ? s.pt : s.label;
-  };
-
-  // The one clock: each phase schedules the next while the card is seen.
-  useEffect(() => {
-    if (still || !inView) return;
-    const next: Record<Phase, () => void> = {
-      float: () => setPhase("pick"),
-      pick: () => setPhase("build"),
-      build: () => setPhase("out"),
-      // the sheet crosses, and the next business plays on the other side
-      // of it, all in one step, so nothing can be left half done
-      out: () => {
-        setSheet((s) => (s === "on" ? "right" : "on"));
-        setRun((r) => r + 1);
-        setPhase("float");
-      },
-    };
-    const id = window.setTimeout(next[phase], PHASE_MS[phase]);
-    return () => window.clearTimeout(id);
-  }, [phase, inView, still]);
-
-  // Once off to the right, the sheet goes back to the left unseen.
-  useEffect(() => {
-    if (sheet !== "right") return;
-    const id = window.setTimeout(() => {
-      setSnap(true);
-      setSheet("left");
-      requestAnimationFrame(() => requestAnimationFrame(() => setSnap(false)));
-    }, WIPE_MS + 50);
-    return () => window.clearTimeout(id);
-  }, [sheet]);
-
-  useEffect(() => {
-    onStep(phase === "float" ? 0 : phase === "pick" ? 1 : 2);
-  }, [phase, onStep]);
-
-  const picked = phase !== "float";
-  const modes = [
-    { id: "website", label: t("Website", "Website") },
-    { id: "landing", label: t("Landing page", "Landing page") },
+/** The pages the card offers, as the proposal form does (questions.ts),
+    with home and contact; five of them are chosen, in this order. */
+function cardPages(t: T): Page[] {
+  return [
+    { id: "home", label: t("Home", "Início"), slug: "", chosen: 0, draw: (t) => <HomePage t={t} /> },
+    { id: "services", label: t("Services", "Serviços"), slug: t("services", "servicos"), chosen: 1, draw: (t) => <ServicesPage t={t} /> },
+    { id: "team", label: t("Team", "Equipa"), slug: t("team", "equipa"), chosen: 2, draw: (t) => <TeamPage t={t} /> },
+    { id: "prices", label: t("Prices", "Preços"), slug: t("prices", "precos"), chosen: null },
+    { id: "gallery", label: t("Gallery", "Galeria"), slug: t("gallery", "galeria"), chosen: 3, draw: (t) => <GalleryPage t={t} /> },
+    { id: "testimonials", label: t("Testimonials", "Testemunhos"), slug: t("testimonials", "testemunhos"), chosen: null },
+    { id: "faq", label: t("FAQ", "Perguntas frequentes"), slug: t("faq", "perguntas"), chosen: null },
+    { id: "contact", label: t("Contact", "Contactos"), slug: t("contact", "contactos"), chosen: 4, draw: (t) => <ContactPage t={t} /> },
   ];
-  const modeAt = picked ? (current.mode === "website" ? 0 : 1) : -1;
+}
 
+/** Where each sheet stands as a page of its own, and as a section of the
+    one long page, in percentages of the stage. */
+function sheetPlace(i: number) {
+  return {
+    "--wx": `${2.5 + i * 19.4}%`,
+    "--wy": "12%",
+    "--ww": "17.6%",
+    "--wh": "66%",
+    "--lx": "27%",
+    "--ly": `${5 + i * 18}%`,
+    "--lw": "46%",
+    "--lh": "18%",
+  } as CSSProperties;
+}
+
+function SitemapCard({ t, run }: { t: T; run: boolean }) {
+  const all = useMemo(() => cardPages(t), [t]);
+  const chosen = all.filter((p) => p.chosen !== null).sort((a, b) => a.chosen! - b.chosen!);
+  const counts = [
+    t("One page.", "Uma página."),
+    t("Two pages.", "Duas páginas."),
+    t("Three pages.", "Três páginas."),
+    t("Four pages.", "Quatro páginas."),
+    t("Five pages.", "Cinco páginas."),
+  ];
   return (
-    <div ref={card} className="sbp-card" data-phase={phase} data-sheet={sheet} data-snap={snap || undefined} aria-hidden="true">
-      <div className="sbp-card-head">
-        <span className="sbp-slot mono-label">{t("Business", "Negócio")}</span>
-        <div
-          className="sbx-switch sbp-modes"
-          data-on={modeAt >= 0 || undefined}
-          style={{ ["--at" as string]: Math.max(0, modeAt), ["--n" as string]: 2 } as CSSProperties}
-        >
-          <span className="sbx-switch-thumb" />
-          {modes.map((m, i) => (
-            <span key={m.id} className="sbx-switch-opt" aria-checked={i === modeAt}>
-              <span className="sbx-switch-n">{String(i + 1).padStart(2, "0")}</span>
-              {m.label}
+    <div className={`sbp-card sbx-metal ${run ? "sbp-run" : ""}`} aria-hidden="true" style={{ ["--run" as string]: `${RUN_S}s` }}>
+      <style dangerouslySetInnerHTML={{ __html: CARD_CSS }} />
+
+      <div className="sbp-card-side">
+        <div className="sbx-switch sbx-switch-dark sbp-modes" style={{ ["--n" as string]: 2 } as CSSProperties}>
+          <span className="sbp-modes-thumb" />
+          <span className="sbx-switch-opt">
+            <span className="sbx-switch-n">01</span>
+            {t("Website", "Website")}
+          </span>
+          <span className="sbx-switch-opt">
+            <span className="sbx-switch-n">02</span>
+            {t("Landing page", "Landing page")}
+          </span>
+        </div>
+
+        <ul className="sbp-opts">
+          {all.map((p) => (
+            <li key={p.id} className="sbp-opt" data-i={p.chosen ?? undefined} data-off={p.chosen === null || undefined}>
+              <span className="sbp-tick">
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6">
+                  <path d="M2.5 6.2 5 8.6l4.6-5" pathLength={14} />
+                </svg>
+              </span>
+              {p.label}
+            </li>
+          ))}
+        </ul>
+
+        <p className="sbp-counts">
+          {counts.map((c, i) => (
+            <span key={i} className="sbp-count" data-i={i}>
+              {c}
             </span>
           ))}
-        </div>
-      </div>
-
-      <div className="sbp-board">
-        {DRIFT.map((b, i) => {
-          const chosen = b.id === current.sector;
-          return (
-            <span
-              key={`${run}-${b.id}`}
-              className="sbp-biz"
-              data-chosen={chosen || undefined}
-              style={{ ["--x" as string]: `${b.x}%`, ["--y" as string]: `${b.y}%`, ["--i" as string]: i } as CSSProperties}
-            >
-              <span className="sbp-biz-fill" />
-              <span className="sbp-biz-label">
-                <span className="sbp-biz-tick">
-                  <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6">
-                    <path d="M2.5 6.2 5 8.6l4.6-5" />
-                  </svg>
-                </span>
-                {label(b.id)}
-              </span>
-            </span>
-          );
-        })}
-
-        <div className="sbp-frame" key={`frame-${run}`}>
-          <span className="sbp-frame-bar">
-            <i />
-            <i />
-            <i />
+          <span className="sbp-count" data-i="all">
+            {t("One page, with everything.", "Uma só página, com tudo.")}
           </span>
-          <div className="sbp-frame-page">
-            {current.kind === "restaurant" ? <Restaurant t={t} /> : current.kind === "clinic" ? <Clinic t={t} /> : <Estate t={t} />}
-          </div>
-        </div>
+        </p>
       </div>
 
-      <span className="sbp-invert" />
+      <div className="sbp-stage">
+        <span className="sbp-frame" />
+        {chosen.map((p, i) => (
+          <div key={p.id} className="sbp-sheet" data-i={i} data-page={p.id} style={sheetPlace(i)}>
+            <span className="pg">{p.draw?.(t)}</span>
+            <span className="sbp-path">/{p.slug}</span>
+            <span className="sbp-anchor">#{p.slug || t("top", "inicio")}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -388,9 +417,6 @@ function BuildCard({ t, still, onStep }: { t: T; still: boolean; onStep: (step: 
 
 type Who = "antonio" | "emanuel" | "client";
 
-/** Where each of them sits in the drawing (its own 1000 by 420). */
-const SEAT: Record<Who, number> = { antonio: 150, emanuel: 310, client: 830 };
-
 function dialogue(t: T): { who: Who; text: string }[] {
   return [
     { who: "client", text: t("A landing page or a website?", "Landing page ou website?") },
@@ -400,65 +426,62 @@ function dialogue(t: T): { who: Who; text: string }[] {
   ];
 }
 
-/** A cloud's outline round a box of w by h, bumps all the way round. */
-function cloudPath(w: number, h: number) {
-  const out: string[] = [];
-  const side = (from: [number, number], to: [number, number], n: number, push: [number, number]) => {
-    for (let i = 0; i < n; i++) {
-      const bx = from[0] + ((to[0] - from[0]) * (i + 1)) / n;
-      const by = from[1] + ((to[1] - from[1]) * (i + 1)) / n;
-      const mx = from[0] + ((to[0] - from[0]) * (i + 0.5)) / n + push[0];
-      const my = from[1] + ((to[1] - from[1]) * (i + 0.5)) / n + push[1];
-      out.push(`Q${mx.toFixed(1)} ${my.toFixed(1)} ${bx.toFixed(1)} ${by.toFixed(1)}`);
+/** The words, typed in as they are said. */
+function useTyped(text: string, on: boolean, still: boolean) {
+  const [n, setN] = useState(still ? text.length : 0);
+  useEffect(() => {
+    if (still) {
+      setN(text.length);
+      return;
     }
-  };
-  const b = 11;
-  side([0, 0], [w, 0], 6, [0, -b]);
-  side([w, 0], [w, h], 2, [b, 0]);
-  side([w, h], [0, h], 6, [0, b]);
-  side([0, h], [0, 0], 2, [-b, 0]);
-  return `M0 0 ${out.join(" ")} Z`;
+    if (!on) return;
+    setN(0);
+    let i = 0;
+    const id = window.setInterval(() => {
+      i += 1;
+      setN(i);
+      if (i >= text.length) window.clearInterval(id);
+    }, 34);
+    return () => window.clearInterval(id);
+  }, [text, on, still]);
+  return text.slice(0, n);
 }
-const CLOUD = cloudPath(200, 70);
 
-function Cloud({ text, side, on }: { text: string; side: "left" | "right"; on: boolean }) {
+function Tile({ who, name, speaking, heard }: { who: Who; name: string; speaking: boolean; heard: boolean }) {
   return (
-    <span className="sbp-cloud" data-side={side} data-on={on || undefined}>
-      <svg className="sbp-cloud-shape" viewBox="-14 -14 228 98" preserveAspectRatio="none" aria-hidden="true">
-        <path d={CLOUD} filter="url(#sbp-hand)" />
-      </svg>
-      <span className="sbp-cloud-text">{text}</span>
-      <svg className="sbp-cloud-tail" viewBox="0 0 40 40" aria-hidden="true">
-        <circle cx="14" cy="9" r="6" />
-        <circle cx="24" cy="27" r="3.5" />
-      </svg>
+    <span className="sbc-tile" data-who={who} data-speaking={speaking || undefined} data-heard={heard || undefined}>
+      <span className="sbc-ring" />
+      <span className="sbc-face">
+        <svg viewBox="0 0 40 40" aria-hidden="true">
+          <circle cx="20" cy="15" r="6.5" />
+          <path d="M7 36c1.5-8 6.5-12 13-12s11.5 4 13 12" />
+        </svg>
+        <span className="sbc-wave" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+          <i />
+          <i />
+        </span>
+      </span>
+      <span className="sbc-name mono-label">{name}</span>
     </span>
   );
 }
 
-/** A person, drawn as a quick sketch: head, neck, shoulders, and the
-    hair that tells them apart. */
-function Person({ x, hair }: { x: number; hair: "short" | "swept" | "long" }) {
-  const hairs = {
-    short: `M${x - 30} 176 Q${x - 26} 140 ${x} 138 Q${x + 28} 140 ${x + 31} 174 Q${x + 18} 156 ${x} 156 Q${x - 16} 155 ${x - 30} 176`,
-    swept: `M${x - 32} 180 Q${x - 34} 138 ${x + 4} 136 Q${x + 36} 138 ${x + 32} 168 Q${x + 10} 146 ${x - 18} 158 Q${x - 26} 166 ${x - 32} 180`,
-    long: `M${x - 34} 222 Q${x - 42} 140 ${x} 136 Q${x + 42} 140 ${x + 34} 222 Q${x + 30} 180 ${x + 22} 162 Q${x} 150 ${x - 22} 162 Q${x - 30} 180 ${x - 34} 222`,
-  };
+function Panel({ who, text, on, still }: { who: Who; text: string; on: boolean; still: boolean }) {
+  const typed = useTyped(text, on, still);
   return (
-    <g>
-      <path d={hairs[hair]} className="sbp-hair" />
-      <ellipse cx={x} cy={178} rx={31} ry={36} />
-      <path d={`M${x - 14} 180 q3 -3 6 0 M${x + 8} 180 q3 -3 6 0 M${x - 7} 197 q7 5 14 0`} className="sbp-face" />
-      <path d={`M${x - 10} 212 L${x - 12} 228 M${x + 10} 212 L${x + 12} 228`} />
-      <path d={`M${x - 72} 300 Q${x - 66} 238 ${x - 12} 228 Q${x} 236 ${x + 12} 228 Q${x + 66} 238 ${x + 72} 300`} />
-    </g>
+    <span className="sbc-panel" data-who={who} data-on={on || undefined}>
+      <span className="sbc-panel-text">
+        {typed}
+        {on && !still && typed.length < text.length && <span className="sbc-caret" />}
+      </span>
+    </span>
   );
 }
 
-const WIRE = "M452 240 Q576 226 698 240";
-const WIRE_BACK = "M698 240 Q576 226 452 240";
-
-function CallSketch({ t, still }: { t: T; still: boolean }) {
+function CallGraph({ t, still }: { t: T; still: boolean }) {
   const lines = useMemo(() => dialogue(t), [t]);
   const [wrap, inView] = useInView<HTMLDivElement>(0.4);
   const [step, setStep] = useState(still ? lines.length - 1 : -1);
@@ -470,66 +493,43 @@ function CallSketch({ t, still }: { t: T; still: boolean }) {
   useEffect(() => {
     if (still || !inView) return;
     const last = step >= lines.length - 1;
-    const id = window.setTimeout(() => setStep(last ? -1 : step + 1), step < 0 ? 900 : last ? 4400 : 3400);
+    const id = window.setTimeout(() => setStep(last ? -1 : step + 1), step < 0 ? 900 : last ? 4600 : 3600);
     return () => window.clearTimeout(id);
   }, [step, inView, still, lines.length]);
 
   const now = step >= 0 ? lines[step]! : null;
-  const fromLeft = now ? now.who !== "client" : true;
+  const dir = now ? (now.who === "client" ? "rtl" : "ltr") : "none";
+  const names: Record<Who, string> = { antonio: "António", emanuel: "Emanuel", client: t("Client", "Cliente") };
 
   return (
-    <div ref={wrap} className="sbp-call">
-      <svg viewBox="0 0 1000 420" className="sbp-call-svg" aria-hidden="true">
-        <defs>
-          <filter id="sbp-hand" x="-5%" y="-5%" width="110%" height="110%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" />
-            <feDisplacementMap in="SourceGraphic" scale="3.2" />
-          </filter>
-        </defs>
-        <g filter="url(#sbp-hand)" className="sbp-ink">
-          {/* the two windows of the call */}
-          <path d="M40 104 L450 102 L452 330 L38 332 Z" />
-          <path d="M698 104 L960 106 L958 330 L700 328 Z" />
-          <path d="M40 128 L450 126 M698 128 L960 130" className="sbp-ink-thin" />
-          <circle cx="58" cy="115" r="4" className="sbp-ink-thin" />
-          <circle cx="716" cy="117" r="4" className="sbp-ink-thin" />
-          <Person x={SEAT.antonio} hair="short" />
-          <Person x={SEAT.emanuel} hair="swept" />
-          <Person x={SEAT.client} hair="long" />
-          <path d={WIRE} className="sbp-wire" />
-        </g>
-        <g filter="url(#sbp-hand)">
-          <path key={`l-${step}`} d={WIRE} className="sbp-wire-fill" pathLength={1} data-on={(now && fromLeft) || undefined} />
-          <path key={`r-${step}`} d={WIRE_BACK} className="sbp-wire-fill" pathLength={1} data-on={(now && !fromLeft) || undefined} />
-        </g>
-        <text x={SEAT.antonio} y={368} className="sbp-name">
-          António
-        </text>
-        <text x={SEAT.emanuel} y={368} className="sbp-name">
-          Emanuel
-        </text>
-        <text x={SEAT.client} y={368} className="sbp-name">
-          {t("Client", "Cliente")}
-        </text>
-      </svg>
+    <div ref={wrap} className="sbc">
+      <div className="sbc-row">
+        <div className="sbc-side sbc-us">
+          {(["antonio", "emanuel"] as Who[]).map((who) => (
+            <span key={who} className="sbc-seat">
+              <Panel who={who} text={now?.who === who ? now.text : ""} on={now?.who === who} still={still} />
+              <Tile who={who} name={names[who]} speaking={now?.who === who} heard={dir === "rtl"} />
+            </span>
+          ))}
+        </div>
 
-      {(["antonio", "emanuel", "client"] as Who[]).map((who) => {
-        const said = now && now.who === who ? now.text : null;
-        const lastSaid = lines
-          .slice(0, Math.max(0, step + 1))
-          .reverse()
-          .find((l) => l.who === who);
-        return (
-          <span key={who} className="sbp-seat" style={{ ["--x" as string]: `${SEAT[who] / 10}%` } as CSSProperties}>
-            <Cloud text={said ?? lastSaid?.text ?? ""} side={who === "client" ? "right" : "left"} on={!!said} />
+        <div className="sbc-line" data-dir={dir} key={`line-${step}`}>
+          <span className="sbc-line-fill" />
+          <span className="sbc-line-head" />
+        </div>
+
+        <div className="sbc-side sbc-them">
+          <span className="sbc-seat">
+            <Panel who="client" text={now?.who === "client" ? now.text : ""} on={now?.who === "client"} still={still} />
+            <Tile who="client" name={names.client} speaking={now?.who === "client"} heard={dir === "ltr"} />
           </span>
-        );
-      })}
+        </div>
+      </div>
 
       <ol className="sr-only">
         {lines.map((l, i) => (
           <li key={i}>
-            {l.who === "client" ? t("Client", "Cliente") : l.who === "antonio" ? "António" : "Emanuel"}: {l.text}
+            {names[l.who]}: {l.text}
           </li>
         ))}
       </ol>
@@ -549,7 +549,7 @@ function ProposalAsk({ label }: { label: string }) {
     if (!present) setLaunched(false);
   }, [present]);
   useOriginFade(button, proposal?.progress, launched && present);
-  const look = "cta-drop relative isolate inline-flex items-center justify-center text-[0.9375rem] leading-none whitespace-nowrap";
+  const look = "cta-drop cta-drop-light relative isolate inline-flex items-center justify-center text-[0.9375rem] leading-none whitespace-nowrap";
   const face = (
     <span className="btn-neu-face">
       <span>
@@ -590,11 +590,13 @@ function ProposalAsk({ label }: { label: string }) {
 export function SbsPersonal() {
   const t = useT();
   const reduce = useReducedMotion() ?? false;
-  const [step, setStep] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const run = mounted && !reduce;
 
   const steps = [
-    { n: "01", name: t("The business", "O negócio"), text: t("Every website starts from the business it shows.", "Cada website parte do negócio que apresenta.") },
-    { n: "02", name: t("A website or a landing page", "Website ou landing page"), text: t("Several pages, or one with everything.", "Várias páginas, ou uma só com tudo.") },
+    { n: "01", name: t("A website or a landing page", "Website ou landing page"), text: t("Several pages, or one with everything.", "Várias páginas, ou uma só com tudo.") },
+    { n: "02", name: t("The pages and the sections", "As páginas e as secções"), text: t("Chosen by you, one by one.", "Escolhidas pelo cliente, uma a uma.") },
     { n: "03", name: t("The website", "O website"), text: t("Designed around those choices.", "Desenhado à volta dessas escolhas.") },
   ];
 
@@ -618,11 +620,11 @@ export function SbsPersonal() {
         </div>
 
         <figure className="sbp-figure">
-          <BuildCard t={t} still={reduce} onStep={setStep} />
+          <SitemapCard t={t} run={run} />
           <figcaption>
-            <ol className="sbp-steps">
+            <ol className={`sbp-steps ${run ? "sbp-run" : ""}`} style={{ ["--run" as string]: `${RUN_S}s` }}>
               {steps.map((s, i) => (
-                <li key={s.n} className="sbp-step" data-on={reduce || i === step || undefined}>
+                <li key={s.n} className="sbp-step" data-i={i}>
                   <span className="sbp-step-n mono-label" aria-hidden="true">
                     <span className="sbp-step-rule" />
                     {s.n}
@@ -636,8 +638,8 @@ export function SbsPersonal() {
           </figcaption>
         </figure>
 
-        <div className="sbp-ask">
-          <CallSketch t={t} still={reduce} />
+        <div className="sbp-ask sbx-metal">
+          <CallGraph t={t} still={reduce} />
           <div className="sbp-ask-foot">
             <h3 className="sbp-answer display">
               <span className="font-light sm:block">{t("Not sure what to choose? Don’t worry.", "Sem saber o que escolher? Não há problema.")}</span>{" "}

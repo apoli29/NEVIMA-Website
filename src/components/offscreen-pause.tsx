@@ -33,7 +33,8 @@ const LOOPS = [
   ".rp-ba",
   ".sbs-run",
   ".sbl-kb",
-  ".sbp-card",
+  ".sbp-figure",
+  ".sbp-ask",
 ].join(",");
 
 /** Let go this far ahead of the screen's edges, so a loop is already
