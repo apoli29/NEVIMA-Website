@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Switch, useInView, useScramble } from "./sbs-shared";
 import { Ours, useFit } from "./sbs-pilar";
@@ -56,12 +56,52 @@ export function SbsLevels() {
   const [level, setLevel] = useState<Level>("essential");
   const [taken, setTaken] = useState(false);
   const [plate, inView] = useInView<HTMLDivElement>(0.3);
-  const running = inView && !reduce;
+  const [paused, setPaused] = useState(false); // TEMPORARY, see seek below
+  const [at, setAt] = useState(0); // TEMPORARY
+  const running = (inView || paused) && !reduce;
 
   // On its own, the plate shows one whole visit of a page and then the
   // other, until the switch is touched.
   const lap = () => {
-    if (!taken) setLevel((l) => (l === "essential" ? "advanced" : "essential"));
+    if (!taken && !paused) setLevel((l) => (l === "essential" ? "advanced" : "essential"));
+  };
+
+  /* TEMPORARY (user, 2026-11-17: to look at the pages calmly and point
+     out what to change): a pause and a bar that moves the plate's loop
+     by hand. Every animation on the loop's clock is held and set to the
+     same moment, so the page and its effects stay in step. Remove both
+     before this goes live. */
+  const LOOP_MS = 18000;
+  const loopAnims = () =>
+    (plate.current?.getAnimations({ subtree: true }) ?? []).filter(
+      (a) => a.effect?.getComputedTiming().duration === LOOP_MS,
+    );
+  const seek = (p: number) => {
+    for (const a of loopAnims()) {
+      a.pause();
+      a.currentTime = p * LOOP_MS + (a.effect?.getTiming().delay as number ?? 0);
+    }
+  };
+  useEffect(() => {
+    if (!paused) {
+      for (const a of loopAnims()) a.play();
+      return;
+    }
+    // a page that has just come in (the switch) is set to the same moment
+    const id = window.setTimeout(() => seek(at), 60);
+    return () => window.clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paused, level, at]);
+  const pause = () => {
+    if (paused) {
+      setPaused(false);
+      return;
+    }
+    const first = loopAnims()[0];
+    const now = first ? ((Number(first.currentTime) - (first.effect?.getTiming().delay as number ?? 0)) % LOOP_MS) / LOOP_MS : 0;
+    setAt(Math.max(0, now));
+    setTaken(true);
+    setPaused(true);
   };
 
   const levels = {
@@ -157,6 +197,24 @@ export function SbsLevels() {
               "A mesma mediadora inventada de cima, com a página inteira em cada nível.",
             )}
           </figcaption>
+          {/* TEMPORARY: the pause and the bar (see seek above). */}
+          {!reduce && (
+            <div className="sbl-temp">
+              <button type="button" onClick={pause}>
+                {paused ? t("Play", "Retomar") : t("Pause", "Pausar")}
+              </button>
+              <input
+                type="range"
+                min={0}
+                max={1000}
+                value={Math.round(at * 1000)}
+                disabled={!paused}
+                aria-label={t("Moment in the visit", "Momento da visita")}
+                onChange={(e) => setAt(Number(e.target.value) / 1000)}
+              />
+              <span>{paused ? `${Math.round(at * 100)}%` : ""}</span>
+            </div>
+          )}
         </figure>
       </div>
     </section>

@@ -5080,6 +5080,12 @@
   .sbl-plate .sbl-screen { position: absolute; inset: 0; aspect-ratio: auto; }
   @media (max-width: 899.98px) { .sbl-plate { aspect-ratio: 3 / 4; } }
   .sbl-caption { margin-top: 1rem; color: rgb(255 255 255 / 0.45); }
+  /* TEMPORARY (2026-11-17): the pause and the bar under the plate */
+  .sbl-temp { display: flex; align-items: center; gap: 0.9rem; margin-top: 1rem; }
+  .sbl-temp button { flex: none; padding: 0.5rem 0.9rem; background: var(--color-paper); color: var(--color-ink); font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; }
+  .sbl-temp input { flex: 1; accent-color: var(--color-paper); cursor: pointer; }
+  .sbl-temp input:disabled { opacity: 0.35; cursor: default; }
+  .sbl-temp span { flex: none; width: 3ch; font-family: var(--font-mono); font-size: 0.75rem; color: rgb(255 255 255 / 0.6); }
 
   /* ---- black metal: the personalization card and the call's card --- */
   .sbx-metal {
