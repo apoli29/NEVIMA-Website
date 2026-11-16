@@ -601,3 +601,42 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
 - 2026-11-17 (user): our hero gains a second outlined pill, "Where to
   find us" / "Onde nos encontrar", beside "Pedir simulação" (8px apart),
   answering the competitors' last section from the first screen.
+
+## Design levels: the whole page at each level (2026-11-17, user)
+
+- The plate showed one section (the hero) at each level; the user asked
+  for the whole page of each. Essential+ is now the very page of the
+  comparison (`Ours`, moved with its pieces to `sbs-pilar.tsx` so both
+  sections share it); Advanced is a new page (`sbs-advanced.tsx`, styled
+  `.sbs-a-*`) with the same five sections, the same words and Pilar's
+  own four colours and type, made more refined. Both go down the plate
+  on the comparison's own loop (`sbs-scroll`, 18s, stops read off
+  `data-stop`); on its own the plate shows one whole visit of a page and
+  then the other, until the switch is touched.
+- References: a first round (Nopan, Copilot Money, Lithic, Spline) was
+  turned down as not sober or mature enough for Pilar; only Lithic came
+  close. The second round, approved: Lithic (contour lines, a matte
+  object in depth, a card in perspective settling flat) and Evolve
+  Private Wealth, an Awwwards honorable mention (the mark built from
+  slats, the ground changing colour between sections, a hairline grid
+  with numbers, a comparison table with its own column lit, steps held
+  one at a time, a large mark in the footer). Neither's colours or type
+  are taken.
+- What Advanced does, section by section: the photograph opens through
+  slats over Noite and contour lines rise from the pillar while the line
+  rises into place; the ground turns to Noite under the five words,
+  numbered on hairlines, with contour lines in a corner; the three
+  quotes become a comparison table (price, excess, earthquakes, water
+  damage) that comes in tilted in depth and settles flat, Pilar's pick
+  its lit column with a sheen; the four steps are held one at a time
+  beside Pilar's symbol in depth (fourteen layers behind a face of
+  slats), which turns and closes its slats a little more at each step;
+  the foot closes on a band of rings and sets the symbol large in depth
+  beside the links. All the information of the Essential+ page is kept.
+- 3D is CSS (perspective, preserve-3d, masked layers), not WebGL: the
+  plate is a scaled miniature page, and WebGL would weigh more than the
+  section and pixelate at that scale.
+- Every effect is a CSS animation on the loop's own clock, with the same
+  percentages as `sbs-scroll`, so it plays as its section arrives and is
+  set back while the section is off the plate; less motion shows every
+  section finished.

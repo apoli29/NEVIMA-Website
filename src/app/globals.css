@@ -4678,7 +4678,7 @@
     .sbs-a-th { font-size: 14px; }
     .sbs-a-tr[data-first] .sbs-a-cell:not(.sbs-a-th) { font-size: 18px; }
     .sbs-a-tr[data-first] .sbs-a-cell[data-pick] { font-size: 22px; }
-    .sbs-a-foot-cell .sbs-p-wide { padding: 10px 14px; font-size: 12px; }
+    .sbs-a-foot-cell .sbs-p-wide { padding: 10px 12px; font-size: 11.5px; white-space: nowrap; }
     .sbs-a-how { padding: 48px 36px 50px; }
     .sbs-a-how-head { grid-template-columns: 1fr; gap: 16px; }
     .sbs-a-how-stage { grid-template-columns: 190px 1fr; gap: 24px; }

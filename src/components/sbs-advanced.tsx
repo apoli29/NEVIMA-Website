@@ -79,7 +79,7 @@ export function Advanced({ t }: { t: T }) {
 
   const rows = [
     [t("Price a year", "Preço por ano"), t("€286.40", "286,40 €"), t("€312.90", "312,90 €"), t("€259.00", "259,00 €")],
-    [t("Excess", "Franquia"), "250 €", "150 €", "500 €"],
+    [t("Excess", "Franquia"), t("€250", "250 €"), t("€150", "150 €"), t("€500", "500 €")],
     [t("Earthquakes", "Fenómenos sísmicos"), t("Not covered", "Não cobre"), t("Covered", "Cobre"), t("Not covered", "Não cobre")],
     [
       t("Water damage", "Danos por água"),
