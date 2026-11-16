@@ -11,10 +11,9 @@ import { useEffect } from "react";
    on it is keyed to that loop's time. By hand, nothing new is animated:
    the visitor's scroll is turned into a moment of the loop and every
    animation on the page is held at that moment. Where the loop moves the
-   page, the scroll moves it one for one (the move's own easing is undone,
-   so the page follows the wheel or the finger exactly); where the loop
-   holds a section, the scroll goes on through the hold with the section
-   pinned while its effects play (the steps, the kinds, the opening).
+   page, its effects follow the scroll; where the loop holds a section,
+   the scroll plays the hold's effects (the steps, the kinds, the opening)
+   while the page goes on moving (placeAt): the page never stops.
 
    Every plate inside the container is held at the same moment, so the
    two pages of the comparison stay together, section for section.
@@ -66,7 +65,7 @@ function bezier([x1, y1, x2, y2]: [number, number, number, number]) {
   };
 }
 
-type Segment = { t0: number; t1: number; v0: number; len: number; move: boolean };
+type Segment = { t0: number; t1: number; v0: number; len: number; move: boolean; stop: number };
 
 /** The page's loop and its segments, in scroll (the page's pixels). */
 function plan(page: HTMLElement) {
@@ -81,7 +80,7 @@ function plan(page: HTMLElement) {
     const [t1, s1] = lap.points[i];
     const move = s0 !== s1;
     const len = move ? Math.abs(stop(s1) - stop(s0)) : (t1 - t0) * lap.hold;
-    segments.push({ t0, t1, v0: v, len, move });
+    segments.push({ t0, t1, v0: v, len, move, stop: s1 });
     v += len;
   }
   return { segments, length: v, ease: bezier(lap.ease), end: lap.points[lap.points.length - 1][0] };
@@ -100,6 +99,27 @@ function scrollAt(p: ReturnType<typeof plan>, t: number) {
   const seg = p.segments.find((s) => t <= s.t1) ?? p.segments[p.segments.length - 1];
   const x = (t - seg.t0) / (seg.t1 - seg.t0);
   return seg.v0 + (seg.move ? p.ease.out(x) : x) * seg.len;
+}
+
+/** Where a page stands for a given scroll, in its own pixels: it never
+    stops (user, 2026-11-17: by hand the scroll is continuous, and a
+    section held still while the scroll went on read as stuck). It passes
+    each of its sections at the middle of that section's hold, so the
+    hold's effects play while the section is in view, and moves evenly in
+    between. Each page uses its own stops, so the two pages of the
+    comparison reach the same section together. */
+function placeAt(p: ReturnType<typeof plan>, page: HTMLElement, v: number) {
+  const stop = (n: number) => (n === 0 ? 0 : Math.abs(parseFloat(getComputedStyle(page).getPropertyValue(`--sbs-stop-${n}`)) || 0));
+  const knots: [number, number][] = [[0, 0]];
+  for (const seg of p.segments) if (!seg.move) knots.push([seg.v0 + seg.len / 2, stop(seg.stop)]);
+  knots.push([p.length, knots[knots.length - 1][1]]);
+  const at = Math.max(0, Math.min(p.length, v));
+  for (let i = 1; i < knots.length; i++) {
+    const [v0, y0] = knots[i - 1];
+    const [v1, y1] = knots[i];
+    if (at <= v1) return v1 === v0 ? y1 : y0 + ((at - v0) / (v1 - v0)) * (y1 - y0);
+  }
+  return knots[knots.length - 1][1];
 }
 
 /** Every loop animation of a screen's page, with its loop's length. */
@@ -127,13 +147,23 @@ export function usePlateScrub(container: React.RefObject<HTMLElement | null>, ma
     let frame = 0;
     let started = false;
 
-    const seekAll = (t: number) => {
+    // Every effect is held at the loop's moment for this scroll; the page
+    // itself is then put where the continuous scroll wants it, by moving
+    // the box it sits in by the difference from where the loop has it.
+    const seekAll = (v: number) => {
+      if (!measured) return;
+      const t = timeAt(measured, v);
       for (const screen of screens()) {
-        const { anims, ms } = loopsOf(screen);
+        const { page, anims, ms } = loopsOf(screen);
         for (const a of anims) {
           a.pause();
           a.currentTime = t * ms + ((a.effect?.getTiming().delay as number) || 0);
         }
+        if (!page || !page.parentElement) continue;
+        const kk = parseFloat(getComputedStyle(screen).getPropertyValue("--sbs-k")) || 0.5;
+        const looped = parseFloat(getComputedStyle(page).translate.split(" ")[1] ?? "0") || 0;
+        const wanted = -placeAt(measured, page, v) * kk;
+        page.parentElement.style.transform = `translate3d(0, ${wanted - looped}px, 0)`;
       }
     };
 
@@ -150,7 +180,7 @@ export function usePlateScrub(container: React.RefObject<HTMLElement | null>, ma
       const delay = (run.effect?.getTiming().delay as number) || 0;
       const t = ((((Number(run.currentTime) || 0) - delay) % ms) + ms) % ms / ms;
       target = current = scrollAt(measured, t);
-      seekAll(timeAt(measured, current));
+      seekAll(current);
       return true;
     };
 
@@ -164,7 +194,7 @@ export function usePlateScrub(container: React.RefObject<HTMLElement | null>, ma
       const gap = target - current;
       if (Math.abs(gap) < 0.2) return;
       current += gap * 0.14;
-      seekAll(timeAt(measured, current));
+      seekAll(current);
     };
     frame = requestAnimationFrame(tick);
 
@@ -225,8 +255,13 @@ export function usePlateScrub(container: React.RefObject<HTMLElement | null>, ma
         s.removeAttribute("data-lenis-prevent");
         s.removeAttribute("data-manual");
       }
-      // the loops run on from where the visitor left them
-      for (const screen of screens()) for (const a of loopsOf(screen).anims) a.play();
+      // the loops run on from where the visitor left them, the page back
+      // in the loop's own place
+      for (const screen of screens()) {
+        const { page, anims } = loopsOf(screen);
+        if (page?.parentElement) page.parentElement.style.transform = "";
+        for (const a of anims) a.play();
+      }
     };
   }, [container, manual, key]);
 }

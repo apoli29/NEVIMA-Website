@@ -128,21 +128,26 @@ export function SbsPreview({
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
+  // onClose is read through a ref, so a new function from the parent on
+  // each render does not run this again (which moved the focus, and with
+  // it the page, on every render)
+  const shut = useRef(onClose);
+  shut.current = onClose;
   useEffect(() => {
     holdScroll("sbs-preview", open);
     if (!open) return;
     const back = document.activeElement as HTMLElement | null;
-    close.current?.focus();
+    close.current?.focus({ preventScroll: true });
     const key = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") shut.current();
     };
     window.addEventListener("keydown", key);
     return () => {
       window.removeEventListener("keydown", key);
       holdScroll("sbs-preview", false);
-      back?.focus?.();
+      back?.focus?.({ preventScroll: true });
     };
-  }, [open, onClose]);
+  }, [open]);
 
   usePlateScrub(box, open);
 

@@ -774,3 +774,11 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   are now short: 700px per lap for the comparison and Essential+ (the
   hero about 90px), 1500px for Advanced, whose holds are where its
   effects play.
+- 2026-11-17 (user: still stuck): by hand the page no longer stops at
+  all. The scroll still plays each hold's effects (it is turned into a
+  moment of the loop as before), but the page is placed on its own
+  continuous course (`placeAt` in `sbs-scrub.ts`): it passes each section
+  at the middle of that section's hold and moves evenly in between, by
+  moving the box the page sits in by the difference from where the loop
+  has it. The larger window also stopped moving the focus (and with it
+  the page) on every render of its parent.
