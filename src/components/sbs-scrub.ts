@@ -87,14 +87,17 @@ function plan(page: HTMLElement) {
   const stop = (n: number) => (n === 0 ? 0 : Math.abs(parseFloat(getComputedStyle(page).getPropertyValue(`--sbs-stop-${n}`)) || 0));
   const segments: Segment[] = [];
   let v = 0;
-  // An even loop (Advanced) is given its own course for the page: during a
-  // hold the section in view drifts on only a little (DRIFT of the scroll,
-  // capped at an eighth of the way), so it stays in place while its
-  // effects play; during a move,
-  // the page crosses to the next section one for one with the scroll, so
-  // each transition between sections plays exactly while the next section
-  // comes up into the frame.
-  const DRIFT = 0.3;
+  // An even loop (Advanced) is given its own course for the page, one for
+  // one with the scroll everywhere, as a website scrolls: a hold is a
+  // short stretch (HOLD of the page's pixels) over which the page goes on
+  // moving while the hold's moment passes; a move crosses to the next
+  // section, so each transition between sections plays exactly while the
+  // next section comes up into the frame. (User, 2026-11-18: the scroll
+  // "trava muitas vezes desnecessariamente": a hold took 500-1100px of
+  // wheel for an eighth of a section; the effects that played in it, the
+  // kinds, now walk on their own clock by hand.) The last hold, with no
+  // section after it, is a short rest at the foot.
+  const HOLD = 220;
   let y = 0;
   for (let i = 1; i < lap.points.length; i++) {
     const [t0, s0] = lap.points[i - 1];
@@ -108,15 +111,13 @@ function plan(page: HTMLElement) {
         v += len;
         y = y1;
       } else {
-        const len = (t1 - t0) * lap.even;
         // the part of an opening that plays on its own does not move the page
         const own = lap.auto && t0 < lap.auto ? Math.max(0, Math.min(t1, lap.auto) - t0) / (t1 - t0) : 0;
         const next = lap.points[i + 1] ? stop(lap.points[i + 1][1]) : y;
-        // a section whose effects are playing stays put in the frame: it may
-        // drift by no more than an eighth of the way to the next (user,
-        // 2026-11-17: the kinds' view slid down while they were read)
-        const room = Math.max(0, next - y) * 0.12;
-        const y1 = y + Math.min(room, len * (1 - own) * DRIFT);
+        const room = Math.max(0, next - y - 80);
+        const walk = room ? Math.min(HOLD, room) : 60;
+        const len = walk / (1 - Math.min(0.9, own));
+        const y1 = y + (room ? walk : 0);
         segments.push({ t0, t1, v0: v, len, move, stop: s1, y0: y, y1 });
         v += len;
         y = y1;
@@ -193,6 +194,32 @@ function loopsOf(screen: HTMLElement) {
   return { page, anims, ms };
 }
 
+/** The stretches of an animation (fractions of its loop) over which it
+    holds one value: between two keyframes that say the same thing. */
+const still = new WeakMap<Animation, [number, number][]>();
+function stillOf(a: Animation) {
+  let spans = still.get(a);
+  if (spans) return spans;
+  spans = [];
+  const frames = (a.effect as KeyframeEffect | null)?.getKeyframes?.() ?? [];
+  const said = (f: ComputedKeyframe) =>
+    JSON.stringify(Object.entries(f).filter(([k]) => !["offset", "computedOffset", "easing", "composite"].includes(k)));
+  for (let i = 1; i < frames.length; i++) {
+    const f0 = frames[i - 1];
+    const f1 = frames[i];
+    if (said(f0) === said(f1)) spans.push([f0.computedOffset, f1.computedOffset]);
+  }
+  still.set(a, spans);
+  return spans;
+}
+/** Whether moving an animation from one moment to another changes nothing
+    on screen: both in the same still stretch. Leaving such an animation
+    alone spares the browser a new style and a new paint of what it moves
+    (the kinds' symbol in depth, the contour lines) on every frame. */
+function unchanged(a: Animation, from: number, to: number) {
+  return stillOf(a).some(([s0, s1]) => from >= s0 && from <= s1 && to >= s0 && to <= s1);
+}
+
 /** Holds every plate in `container` at the moment the visitor scrolls to
     while `manual` is on, and lets the loops run again when it goes off.
     The newest plate's page measures the scroll (the others follow it to
@@ -219,6 +246,8 @@ export function usePlateScrub(
     // the opening playing on its own (Advanced), the scroll held meanwhile
     let opening = false;
     let floor = 0;
+    // the moment last shown, so what did not change is left alone
+    let lastT = -1;
 
     // Every effect is held at the loop's moment for this scroll; the page
     // itself is then put where the continuous scroll wants it, by moving
@@ -226,9 +255,15 @@ export function usePlateScrub(
     const seekAll = (v: number) => {
       if (!measured) return;
       const t = timeAt(measured, v);
+      const was = lastT;
+      lastT = t;
       for (const screen of screens()) {
         const { page, anims, ms } = loopsOf(screen);
         for (const a of anims) {
+          // the page's own loop is always set: the steps, the kinds and the
+          // metal symbol read the moment off it
+          const clock = (a as CSSAnimation).animationName in LAPS;
+          if (!clock && a.playState === "paused" && was >= 0 && unchanged(a, was, t)) continue;
           a.pause();
           a.currentTime = t * ms + ((a.effect?.getTiming().delay as number) || 0);
         }

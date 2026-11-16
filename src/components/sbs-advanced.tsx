@@ -80,7 +80,9 @@ function Rings({ className, count, cx, cy, r0, step, w, h }: {
 
 export function Advanced({ t }: { t: T }) {
   const { lines, steps } = pilarCopy(t);
-  const kinds = useLapStep(lines.length, { name: LAP, from: 0.27, to: 0.46, reset: 0.2 });
+  // by hand the kinds walk on by themselves, one every 1.4s, as the
+  // scroll no longer lingers on them (user, 2026-11-18)
+  const kinds = useLapStep(lines.length, { name: LAP, from: 0.27, to: 0.46, reset: 0.2 }, 1400);
 
   /* The symbol beside the kinds sits level with the top of the one being
      read: its place is read off the rows themselves (their tops, all

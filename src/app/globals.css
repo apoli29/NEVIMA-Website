@@ -4544,7 +4544,12 @@
     --side-b: #0a0d18;
     translate: 0 var(--y, 0px);
     transition: translate 0.9s var(--a-ease);
+    /* kept on a layer of its own, with its turn: promoted afresh at each
+       move, its fifteen masked layers were drawn again as it set off and
+       the move started with a jolt (user, 2026-11-18: "muito travada") */
+    will-change: translate;
   }
+  .sbs-a-kinds-solid .sbs-a-turn { will-change: transform; }
   .sbs-a-kicker { position: relative; display: block; margin: 0 0 14px; font-family: var(--p-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--p-nevoa); }
   .sbs-a-kinds { position: relative; }
   .sbs-a-kind {

@@ -896,3 +896,18 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   three blocks rise together once over the second half of the move and
   are still when the page stops, the rules are simply there and the glow
   holds still.
+- 2026-11-18: by hand the Advanced scroll stalled (user: "trava muitas
+  vezes desnecessariamente"). Each hold took 500-1100px of wheel while the
+  page moved an eighth of a section, as the kinds' walk was tied to the
+  scroll. Now the page moves one for one with the scroll everywhere; a
+  hold is a 220px stretch over which the page keeps moving (60px at the
+  foot); the kinds walk on their own clock by hand (1.4s each). The scrub
+  measured about 1ms of script per frame, so that was not the cause; it
+  now also leaves alone every animation whose value does not change
+  between two moments (it repainted the kinds' symbol and the contour
+  lines on every frame), the page's own loop excepted, as the steps, the
+  kinds and the metal symbol read the moment off it.
+- 2026-11-18: the kinds' symbol in depth moved with a jolt (user: "muito
+  travada"): it was promoted to a layer of its own at each move, so its
+  fifteen masked layers were drawn again as it set off. It is now kept on
+  its layer (will-change on it and on its turn).
