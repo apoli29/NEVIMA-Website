@@ -29,7 +29,12 @@ type Point = [time: number, stop: number];
    that took several hundred pixels with nothing moving read as stuck), so
    holds are short; Advanced keeps more, as its holds are where its
    effects play (the flight through the P, the kinds, the steps). */
-const LAPS: Record<string, { points: Point[]; ease: [number, number, number, number]; hold: number }> = {
+/* `even`, when set, gives every part of the loop the same scroll per unit
+   of time, moves and holds alike, so no effect plays faster than another
+   (user, 2026-11-17: on the Advanced page the holds' effects, the flight
+   and the kinds, raced by in a few pixels of scroll); the page itself
+   still moves on its own continuous course (placeAt). */
+const LAPS: Record<string, { points: Point[]; ease: [number, number, number, number]; hold: number; even?: number }> = {
   "sbs-scroll": {
     points: [[0, 0], [0.13, 0], [0.17, 1], [0.28, 1], [0.32, 2], [0.43, 2], [0.47, 3], [0.8, 3], [0.84, 4], [0.94, 4]],
     ease: [0.22, 1, 0.36, 1],
@@ -39,6 +44,7 @@ const LAPS: Record<string, { points: Point[]; ease: [number, number, number, num
     points: [[0, 0], [0.22, 0], [0.26, 1], [0.46, 1], [0.5, 2], [0.6, 2], [0.64, 3], [0.86, 3], [0.89, 4], [0.96, 4]],
     ease: [0.65, 0, 0.35, 1],
     hold: 1500,
+    even: 5200,
   },
 };
 
@@ -79,18 +85,18 @@ function plan(page: HTMLElement) {
     const [t0, s0] = lap.points[i - 1];
     const [t1, s1] = lap.points[i];
     const move = s0 !== s1;
-    const len = move ? Math.abs(stop(s1) - stop(s0)) : (t1 - t0) * lap.hold;
+    const len = lap.even ? (t1 - t0) * lap.even : move ? Math.abs(stop(s1) - stop(s0)) : (t1 - t0) * lap.hold;
     segments.push({ t0, t1, v0: v, len, move, stop: s1 });
     v += len;
   }
-  return { segments, length: v, ease: bezier(lap.ease), end: lap.points[lap.points.length - 1][0] };
+  return { segments, length: v, ease: bezier(lap.ease), even: !!lap.even, end: lap.points[lap.points.length - 1][0] };
 }
 
 function timeAt(p: ReturnType<typeof plan>, v: number) {
   const at = Math.max(0, Math.min(p.length, v));
   const seg = p.segments.find((s) => at <= s.v0 + s.len) ?? p.segments[p.segments.length - 1];
   const u = seg.len ? (at - seg.v0) / seg.len : 0;
-  const x = seg.move ? p.ease.in(u) : u;
+  const x = seg.move && !p.even ? p.ease.in(u) : u;
   return seg.t0 + x * (seg.t1 - seg.t0);
 }
 
@@ -98,7 +104,7 @@ function scrollAt(p: ReturnType<typeof plan>, t: number) {
   if (t >= p.end) return p.length;
   const seg = p.segments.find((s) => t <= s.t1) ?? p.segments[p.segments.length - 1];
   const x = (t - seg.t0) / (seg.t1 - seg.t0);
-  return seg.v0 + (seg.move ? p.ease.out(x) : x) * seg.len;
+  return seg.v0 + (seg.move && !p.even ? p.ease.out(x) : x) * seg.len;
 }
 
 /** Where a page stands for a given scroll, in its own pixels: it never
@@ -135,7 +141,13 @@ function loopsOf(screen: HTMLElement) {
     while `manual` is on, and lets the loops run again when it goes off.
     The newest plate's page measures the scroll (the others follow it to
     the same moment). */
-export function usePlateScrub(container: React.RefObject<HTMLElement | null>, manual: boolean, key?: unknown) {
+export function usePlateScrub(
+  container: React.RefObject<HTMLElement | null>,
+  manual: boolean,
+  key?: unknown,
+  /** share of the wheel or the drag taken (the larger window: 0.85) */
+  speed = 1,
+) {
   useEffect(() => {
     const box = container.current;
     if (!box || !manual) return;
@@ -193,7 +205,8 @@ export function usePlateScrub(container: React.RefObject<HTMLElement | null>, ma
       if (!measured) return;
       const gap = target - current;
       if (Math.abs(gap) < 0.2) return;
-      current += gap * 0.14;
+      // a soft follow, so the page glides after the wheel
+      current += gap * 0.1;
       seekAll(current);
     };
     frame = requestAnimationFrame(tick);
@@ -201,7 +214,7 @@ export function usePlateScrub(container: React.RefObject<HTMLElement | null>, ma
     const k = (el: HTMLElement) => parseFloat(getComputedStyle(el).getPropertyValue("--sbs-k")) || 0.5;
     const nudge = (by: number) => {
       if (!measured) return false;
-      const next = Math.max(0, Math.min(measured.length, target + by));
+      const next = Math.max(0, Math.min(measured.length, target + by * speed));
       const moved = next !== target;
       target = next;
       return moved;
@@ -263,5 +276,5 @@ export function usePlateScrub(container: React.RefObject<HTMLElement | null>, ma
         for (const a of anims) a.play();
       }
     };
-  }, [container, manual, key]);
+  }, [container, manual, key, speed]);
 }

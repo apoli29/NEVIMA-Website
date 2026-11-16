@@ -782,3 +782,10 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   moving the box the page sits in by the difference from where the loop
   has it. The larger window also stopped moving the focus (and with it
   the page) on every render of its parent.
+- 2026-11-17 (user: some Advanced animations ran far too fast by hand;
+  the windows' scroll 15% slower): on the Advanced page, by hand, every
+  part of the loop now takes the same scroll per unit of time (5200px of
+  the page's per lap), holds and moves alike, so the flight through the
+  P and the kinds no longer race by in a few pixels while the moves
+  crawl. The larger window takes 85% of the wheel or the drag, and the
+  page follows the input more softly (a tenth of the gap per frame).
