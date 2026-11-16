@@ -70,7 +70,7 @@ function symbolShapes() {
 /** The square of the P, its centre in the symbol's own units. */
 /** The symbol's size in the opening (user, 2026-11-17: twice as large,
     every part of the move in proportion). */
-const SIZE = 2;
+const SIZE = 0.6; // 70% smaller than it was (user, 2026-11-18)
 const HOLE = new THREE.Vector3(69 - 50, 50 - 33, 0).multiplyScalar(SIZE);
 
 /** A photographer's studio for the metal: a lavender room (the hero's
@@ -255,7 +255,7 @@ export function PilarMetal({ className }: { className?: string }) {
       frame = requestAnimationFrame(draw);
       if (!seen) return;
       const p = lapOf();
-      const live = p < 0.18 || p > 0.96;
+      const live = p < 0.1 || p > 0.96;
       if (!live && last >= 0) return;
       last = p;
 
@@ -269,7 +269,7 @@ export function PilarMetal({ className }: { className?: string }) {
       // in tilted and turns, without a pause or a change of pace, to face
       // on, arriving there as the flight begins (user, 2026-11-17: the
       // settling had been abrupt)
-      const turn = p > 0.96 ? 0 : 0.5 - 0.5 * Math.cos(Math.PI * Math.min(1, p / 0.07));
+      const turn = p > 0.96 ? 0 : 0.5 - 0.5 * Math.cos(Math.PI * Math.min(1, p / 0.035)); // twice as fast (user, 2026-11-18)
       symbol.rotation.y = 0.26 * (1 - turn);
       symbol.rotation.x = -0.08 * (1 - turn);
       symbol.position.y = 1.6 * SIZE * (1 - turn);
@@ -278,7 +278,7 @@ export function PilarMetal({ className }: { className?: string }) {
       // stands to the square of the P and on through it, still looking
       // straight ahead, so the symbol stays where it is and the square
       // grows in its own place until it fills the view
-      const f = p > 0.96 ? 0 : Math.min(1, Math.max(0, (p - 0.07) / 0.075));
+      const f = p > 0.96 ? 0 : Math.min(1, Math.max(0, (p - 0.035) / 0.0375));
       const along = inOut(f) * ((START + 40 * SIZE) / START);
       camera.position.set(HOLE.x * along, HOLE.y * along, START + (HOLE.z - START) * along);
       camera.lookAt(camera.position.x, camera.position.y, camera.position.z - 100);

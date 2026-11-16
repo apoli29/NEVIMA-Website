@@ -50,7 +50,7 @@ const LAPS: Record<string, { points: Point[]; ease: [number, number, number, num
     ease: [0.65, 0, 0.35, 1],
     hold: 1500,
     even: 5200,
-    auto: 0.2,
+    auto: 0.11,
   },
 };
 

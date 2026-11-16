@@ -871,3 +871,13 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   - by hand on a phone, a finger on the plate (most of the screen, with
     touch scrolling off on it) could not carry on down the website. At
     either end, after the one-second hold, the finger scrolls the website.
+- 2026-11-18: the Advanced table was blurred where it lay (user). Its
+  settle is a 3D move on an endless loop, so Chrome kept it as a 3D layer
+  drawn once at a fixed resolution. While it lies still (53-97%) its
+  animation is taken off (useSharpAtRest, `[data-rest]`), so it is drawn
+  sharp, and put back at the loop's own moment before it is needed.
+- 2026-11-18: the metal symbol of the opening 70% smaller (SIZE 2 -> 0.6,
+  the flight in proportion) and the opening twice as fast: 0-8.75% of the
+  loop instead of 0-17.5% (turn 0-3.5%, flight 3.5-7.25%, fade
+  6.75-8.75%); the hero's reveal moved up with it, the hero held to 22%
+  as before; by hand the opening plays on its own to 11%.

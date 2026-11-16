@@ -4382,7 +4382,7 @@
 
    It runs on a loop of its own, longer than the comparison's so the
    opening has room: sbs-a-scroll, 26s (--sbs-loop on its screen). The
-   opening 0-17.5%, the hero held to 22%, the five kinds 26-46%, the table
+   opening 0-8.75% (twice as fast, user 2026-11-18), the hero held to 22%, the five kinds 26-46%, the table
    50-60%, the steps 64-86%, the foot 89-96%; the foot then dissolves
    into the opening's ground (96-97%) and the page is set back at the top
    under it; every section is set back from 97%, unseen. Each section's
@@ -4700,8 +4700,8 @@
      page returns to the top */
   .sbs-run .sbs-a-intro { animation: sbs-a-intro var(--sbs-loop) linear infinite; }
   @keyframes sbs-a-intro {
-    0%, 13.5% { opacity: 1; visibility: visible; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-    17.5%, 97% { opacity: 0; visibility: hidden; }
+    0%, 6.75% { opacity: 1; visibility: visible; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+    8.75%, 97% { opacity: 0; visibility: hidden; }
     97.1%, 100% { opacity: 1; visibility: visible; }
   }
   /* the fade in is on the symbol's box, never on the turning stack:
@@ -4709,7 +4709,7 @@
   .sbs-run .sbs-a-metal { animation: sbs-a-intro-in var(--sbs-loop) linear infinite; }
   @keyframes sbs-a-intro-in {
     0% { opacity: 0; animation-timing-function: var(--a-ease); }
-    1.5%, 96% { opacity: 1; }
+    0.75%, 96% { opacity: 1; }
     97%, 100% { opacity: 0; }
   }
   .sbs-run .sbs-a-intro::before { animation: sbs-a-pool-a 11s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate; }
@@ -4727,27 +4727,27 @@
   /* each line rises from its mask with a slight turn that straightens as
      it lands, in about 0.6s (user, 2026-11-17: quicker, finer) */
   @keyframes sbs-a-line {
-    0%, 14% { translate: 0 105%; rotate: 4deg; opacity: 0; animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1); }
-    14.6% { opacity: 1; }
-    16.4%, 96% { translate: 0 0; rotate: 0deg; opacity: 1; }
+    0%, 7% { translate: 0 105%; rotate: 4deg; opacity: 0; animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1); }
+    7.6% { opacity: 1; }
+    9.4%, 96% { translate: 0 0; rotate: 0deg; opacity: 1; }
     97%, 100% { translate: 0 105%; rotate: 4deg; opacity: 0; }
   }
   .sbs-run .sbs-a-lead p, .sbs-run .sbs-a-lead .sbs-p-pill, .sbs-run .sbs-a-hero .sbs-p-reviews { animation: sbs-a-fade var(--sbs-loop) linear infinite both; }
   @keyframes sbs-a-fade {
-    0%, 15% { opacity: 0; translate: 0 10px; animation-timing-function: var(--a-ease); }
-    17.5%, 96% { opacity: 1; translate: 0 0; }
+    0%, 7.5% { opacity: 0; translate: 0 10px; animation-timing-function: var(--a-ease); }
+    10%, 96% { opacity: 1; translate: 0 0; }
     97%, 100% { opacity: 0; }
   }
   .sbs-run .sbs-a-hero .sbs-p-sky { animation: sbs-a-sky var(--sbs-loop) linear infinite both; }
   @keyframes sbs-a-sky {
-    0%, 12.5% { scale: 1.12; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
-    22%, 96% { scale: 1; }
+    0%, 6.25% { scale: 1.12; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+    15%, 96% { scale: 1; }
     97%, 100% { scale: 1.12; }
   }
   .sbs-run .sbs-a-rings ellipse { animation: sbs-a-draw-hero var(--sbs-loop) linear infinite both; animation-delay: calc(var(--i) * 0.09s); }
   @keyframes sbs-a-draw-hero {
-    0%, 14% { stroke-dashoffset: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
-    22%, 96% { stroke-dashoffset: 0; }
+    0%, 7% { stroke-dashoffset: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+    15%, 96% { stroke-dashoffset: 0; }
     97%, 100% { stroke-dashoffset: 1; }
   }
 
@@ -4798,6 +4798,9 @@
   }
 
   .sbs-run .sbs-a-table { animation: sbs-a-settle var(--sbs-loop) linear infinite both; }
+  /* at rest the 3D move is taken off, so the table is drawn sharp
+     (useSharpAtRest in sbs-advanced.tsx) */
+  .sbs-run .sbs-a-table[data-rest] { animation: none; }
   @keyframes sbs-a-settle {
     0%, 48% { opacity: 0; transform: translateY(56px) rotateX(38deg) rotateZ(-4deg) scale(0.92); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
     49.5% { opacity: 1; }
