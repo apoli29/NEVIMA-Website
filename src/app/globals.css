@@ -5298,40 +5298,31 @@
    own black, white, Satoshi and Geist Mono. The plates alternate sides
    so four of them do not read as a list.                              */
 @layer components {
-  .sbm-head { display: grid; gap: 1.5rem; align-items: end; }
-  @media (min-width: 1024px) {
-    .sbm-head { grid-template-columns: minmax(0, 1fr) minmax(0, 19rem); column-gap: 3rem; }
-  }
-  .sbm-lede-head { max-width: 38ch; font-size: 1rem; line-height: 1.55; color: var(--color-ash); }
-
-  .sbm-plates { margin-top: clamp(3rem, 6vw, 5rem); display: grid; gap: clamp(4rem, 9vw, 7.5rem); }
+  .svd { margin-top: clamp(3rem, 6vw, 4.5rem); }
 
   /* One plate. On a wide screen the photograph and the card share a
      grid, the card set a third of the way down and over the edge; the
      facts and the words run under both. */
-  .sbm-plate { display: grid; gap: 1.5rem; }
+  .svd-plate { display: grid; gap: 1.5rem; }
   @media (min-width: 900px) {
-    .sbm-plate {
+    .svd-plate {
       grid-template-columns: minmax(0, 1fr) minmax(0, 20.5rem);
       column-gap: 0;
       align-items: start;
     }
-    .sbm-plate[data-side="right"] { grid-template-columns: minmax(0, 20.5rem) minmax(0, 1fr); }
-    .sbm-plate[data-side="right"] .sbm-shot { grid-column: 2; }
-    .sbm-plate[data-side="right"] .sbm-card { grid-column: 1; grid-row: 1; justify-self: start; margin-right: -3.5rem; }
   }
 
   /* The photograph. The one rounded corner on the page, taken from the
      reference and kept to the same radius as the bar's. */
-  .sbm-shot {
+  .svd-shot {
     position: relative;
     overflow: hidden;
     border-radius: 18px;
     background: var(--color-ink);
     aspect-ratio: 4 / 5;
   }
-  @media (min-width: 640px) { .sbm-shot { aspect-ratio: 16 / 10; } }
-  .sbm-shot img {
+  @media (min-width: 640px) { .svd-shot { aspect-ratio: 16 / 10; } }
+  .svd-shot img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -5340,24 +5331,24 @@
     transition: transform 1.6s cubic-bezier(0.22, 1, 0.36, 1), filter 1.2s ease;
     filter: saturate(0.92);
   }
-  .sbm-plate[data-in] .sbm-shot img { transform: scale(1); }
+  .svd-plate[data-in] .svd-shot img { transform: scale(1); }
   /* The dark the name is laid in: nothing at the top, the photograph's
      own black at the foot. */
-  .sbm-scrim {
+  .svd-scrim {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background: linear-gradient(to top, rgb(0 0 0 / 0.86) 0%, rgb(0 0 0 / 0.62) 34%, rgb(0 0 0 / 0.2) 58%, rgb(0 0 0 / 0) 80%);
   }
-  .sbm-name {
+  .svd-name {
     position: absolute;
     left: clamp(1.25rem, 3vw, 2.5rem);
     right: clamp(1.25rem, 3vw, 2.5rem);
     bottom: clamp(1.25rem, 3vw, 2.25rem);
     color: var(--color-paper);
   }
-  .sbm-kicker { color: rgb(255 255 255 / 0.72); }
-  .sbm-title {
+  .svd-kicker { color: rgb(255 255 255 / 0.72); }
+  .svd-title {
     margin-top: 0.75rem;
     max-width: 24ch;
     font-size: clamp(1.75rem, 3.6vw, 3.25rem);
@@ -5365,7 +5356,7 @@
     text-wrap: balance;
   }
   /* The photographs are other people's work, and say so. */
-  .sbm-credit {
+  .svd-credit {
     position: absolute;
     top: clamp(0.85rem, 2vw, 1.25rem);
     right: clamp(0.85rem, 2vw, 1.25rem);
@@ -5377,7 +5368,7 @@
 
   /* The card over the photograph's edge: white, a hairline, the first
      thing to say and the way in. */
-  .sbm-card {
+  .svd-card {
     position: relative;
     z-index: 1;
     display: grid;
@@ -5390,14 +5381,14 @@
     box-shadow: 0 1.5rem 3rem -1.75rem rgb(0 0 0 / 0.35);
   }
   @media (min-width: 900px) {
-    .sbm-card { margin-top: 4.5rem; margin-left: -3.5rem; }
+    .svd-card { margin-top: 4.5rem; margin-left: -3.5rem; }
   }
-  .sbm-lede { font-size: 1rem; line-height: 1.6; color: var(--color-ink); }
-  .sbm-ask { display: flex; }
+  .svd-lede { font-size: 1rem; line-height: 1.6; color: var(--color-ink); }
+  .svd-ask { display: flex; }
 
   /* The three facts, set as the reference sets its figures: the thing
      itself large, what it is under it in the gallery's label. */
-  .sbm-facts {
+  .svd-facts {
     grid-column: 1 / -1;
     display: grid;
     gap: 1.25rem 2rem;
@@ -5405,8 +5396,8 @@
     padding-top: 1.5rem;
     border-top: 1px solid var(--color-hair);
   }
-  @media (min-width: 640px) { .sbm-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  .sbm-fact-value {
+  @media (min-width: 640px) { .svd-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .svd-fact-value {
     font-family: var(--font-title);
     font-weight: 300;
     font-size: clamp(1.375rem, 2.2vw, 1.875rem);
@@ -5414,41 +5405,109 @@
     letter-spacing: -0.02em;
     text-wrap: balance;
   }
-  .sbm-fact-label { margin-top: 0.5rem; color: var(--color-ash-2); }
+  .svd-fact-label { margin-top: 0.5rem; color: var(--color-ash-2); }
 
   /* What there is to say, in columns under the plate. */
-  .sbm-parts {
+  .svd-parts {
     grid-column: 1 / -1;
     display: grid;
     gap: 1.75rem 2.5rem;
   }
-  @media (min-width: 768px) { .sbm-parts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (min-width: 1200px) { .sbm-parts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  .sbm-part-head { font-size: 1rem; font-weight: 500; line-height: 1.35; }
-  .sbm-part-body { margin-top: 0.6rem; font-size: 0.9375rem; line-height: 1.6; color: var(--color-ash); }
+  @media (min-width: 768px) { .svd-parts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1200px) { .svd-parts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .svd-part-head { font-size: 1rem; font-weight: 500; line-height: 1.35; }
+  .svd-part-body { margin-top: 0.6rem; font-size: 0.9375rem; line-height: 1.6; color: var(--color-ash); }
 
   /* The plate arrives once, as everything else on the page does. */
-  .sbm-plate .sbm-shot,
-  .sbm-plate .sbm-card,
-  .sbm-plate .sbm-facts,
-  .sbm-plate .sbm-parts {
+  .svd-plate .svd-shot,
+  .svd-plate .svd-card,
+  .svd-plate .svd-facts,
+  .svd-plate .svd-parts {
     opacity: 0;
     translate: 0 1.25rem;
     transition: opacity 0.7s ease, translate 0.9s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .sbm-plate[data-in] .sbm-shot,
-  .sbm-plate[data-in] .sbm-card,
-  .sbm-plate[data-in] .sbm-facts,
-  .sbm-plate[data-in] .sbm-parts { opacity: 1; translate: 0 0; }
-  .sbm-plate[data-in] .sbm-card { transition-delay: 0.1s; }
-  .sbm-plate[data-in] .sbm-facts { transition-delay: 0.18s; }
-  .sbm-plate[data-in] .sbm-parts { transition-delay: 0.24s; }
+  .svd-plate[data-in] .svd-shot,
+  .svd-plate[data-in] .svd-card,
+  .svd-plate[data-in] .svd-facts,
+  .svd-plate[data-in] .svd-parts { opacity: 1; translate: 0 0; }
+  .svd-plate[data-in] .svd-card { transition-delay: 0.1s; }
+  .svd-plate[data-in] .svd-facts { transition-delay: 0.18s; }
+  .svd-plate[data-in] .svd-parts { transition-delay: 0.24s; }
 
   @media (prefers-reduced-motion: reduce) {
-    .sbm-plate .sbm-shot,
-    .sbm-plate .sbm-card,
-    .sbm-plate .sbm-facts,
-    .sbm-plate .sbm-parts { opacity: 1; translate: none; transition: none; }
-    .sbm-shot img { transform: none; transition: none; }
+    .svd-plate .svd-shot,
+    .svd-plate .svd-card,
+    .svd-plate .svd-facts,
+    .svd-plate .svd-parts { opacity: 1; translate: none; transition: none; }
+    .svd-shot img { transform: none; transition: none; }
+  }
+}
+
+/* ---- the Services menu on the bar (floating-nav.tsx) ----------------
+   A panel dropped from its cell, in the bar's own black, ruled the way
+   the bar is ruled and carrying the same mono numbers. It is drawn
+   whether it is open or not, so nothing is laid out as it opens; shut,
+   it is clipped to nothing above its own top edge and takes no pointer.
+   Under the fold the bar has no links, and the list is written into the
+   menu's panel instead.                                               */
+@layer components {
+  .nav-svc-caret {
+    margin-left: 0.5rem;
+    width: 0.3rem;
+    height: 0.3rem;
+    border-right: 1px solid currentColor;
+    border-bottom: 1px solid currentColor;
+    rotate: 45deg;
+    translate: 0 -0.08em;
+    opacity: 0.55;
+    transition: rotate 0.35s var(--ease-out-quint), opacity 0.35s ease;
+  }
+  .nav-svc-caret[data-open] { rotate: 225deg; translate: 0 0.08em; opacity: 1; }
+
+  .nav-svc-panel {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 20;
+    display: grid;
+    min-width: 15rem;
+    margin-top: 0.5rem;
+    padding: 0.35rem 0;
+    background: var(--color-ink);
+    border: 1px solid rgb(255 255 255 / 0.14);
+    border-radius: 12px;
+    box-shadow: 0 1.5rem 3rem -1.5rem rgb(0 0 0 / 0.8);
+    opacity: 0;
+    translate: 0 -0.4rem;
+    pointer-events: none;
+    transition: opacity 0.28s ease, translate 0.38s var(--ease-out-quint);
+  }
+  .nav-svc-panel[data-open] { opacity: 1; translate: 0 0; pointer-events: auto; }
+
+  .nav-svc-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    padding: 0.6rem 1.1rem;
+    font-size: 0.9375rem;
+    line-height: 1.3;
+    color: var(--color-paper);
+    white-space: nowrap;
+    transition: background-color 0.3s ease;
+  }
+  .nav-svc-item:hover,
+  .nav-svc-item:focus-visible { background-color: rgb(255 255 255 / 0.08); }
+  .nav-svc-item:focus-visible { outline: 1px solid var(--color-paper); outline-offset: -2px; }
+  .nav-svc-n {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.06em;
+    color: rgb(255 255 255 / 0.45);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-svc-panel, .nav-svc-caret { transition: none; }
   }
 }
