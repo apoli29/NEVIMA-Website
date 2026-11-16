@@ -139,7 +139,8 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   Krushna Behera was used in earlier rounds and removed.)
 - The template side is the same broker as a template would make it:
   "PILAR SEGUROS" in capitals, a seven-item menu with a simulator, three
-  identical insurance cards and the stock umbrella.
+  identical insurance cards and the stock umbrella. (Replaced on
+  2026-11-17 by the competitors' website, below.)
 - Indexed (`index: true` in `SEO_PAGES`), unlike the about page and the
   portfolio, which are still moulds.
 - On the bar, as its fourth link (user, 2026-11-11: "mete na navbar o
@@ -511,3 +512,49 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
 - 2026-11-17 (user): the areas lost their boxes, plain words only (the chosen one brightens and grows a little), and they float closer to the middle of the card, still spread out.
 
 - 2026-11-17 (user): the time bar moved over the two walls and made smaller; the three keys are one black block with no rules between them, and finer icons (thin long arrows that lean on hover, thin pause and an outlined play).
+
+## The competitors' website (2026-11-17, user)
+
+- The left plate is now the same Pilar as many web designers deliver it,
+  a joining of two real brokers' websites the user brought
+  (aoctavioseguros.pt and mcostaseguros.pt, photographed before
+  building): the first's royal blue, capitals, three blue contact boxes,
+  icon cards with Particulares / Empresas tabs and offices with
+  "(chamada para rede fixa nacional)"; the second's spaced-out titles
+  ("S E R V I Ç O S"), grey line icons, a wall of text on car accidents,
+  a large light sentence beside small columns, and Arial throughout.
+  `Template` in `side-by-side.tsx`, styled `.sbs-c-*`.
+- Its sections are its own, not ours, and the structure is reasonable
+  (user: "não deve ser perfeita, deve ser razoável"); the one flaw is the
+  contacts coming straight after the slider. Each section that starts a
+  stop carries `data-stop`, so its stops are read off the page as ours
+  are, and the two sides reach their sections at the same moments:
+  the slider and contacts / our hero; "O melhor aconselhamento" and the
+  insurance grid / our five words; services and the accident text / our
+  table; "Pilar" (about) and the news / our steps; the offices and grey
+  footer / our footer.
+- The brand (user: "uma nova versão mas antiquada, quase não
+  profissional"): a home-made logotype, not Pilar's guide: a gradient
+  badge with an orange ring and an umbrella, "Pilar" in italic Georgia
+  with a shadow, "SEGUROS" spaced in orange, "Mediação de Seguros, Lda."
+  under them. Royal blue and greys from the references.
+- Nothing moves on this side but the page going down (user: "não forces
+  defeitos de funcionamento ... sem animações"): the loading bar, the
+  late banner, the turning slider and the cookie wall are gone. The
+  slider sits on its first slide with its arrows and dots; the news
+  carousel's scrollbar is left showing, as on the reference.
+- Stock photographs, the user's pick from candidates (all free on
+  Unsplash, not Unsplash+), served from Unsplash's CDN: a padlock on a
+  blue door (Zaqy Al Fattah) in the slider; a hand holding a small house
+  (Jakub Żerdzicki), a magnifying glass over banknotes (Brecht Corbeel)
+  and a handshake in suits (Vitaly Gariev) in the news.
+- All copy is real, in both languages, no lorem ipsum. The Portuguese
+  still never addresses the reader: "Venha conhecer-nos" became "Onde
+  nos encontrar", "Consulte aqui" became "disponível aqui", the accident
+  text is impersonal. No real insurer is named; numbers, addresses and
+  the ASF registration are placeholders; the web agency in the footer is
+  a generic "Web Design Lda.".
+- On a phone the menu folds into a hamburger, the about and news columns
+  go to two, and the third news card is dropped.
+- The plates' labels and the intro paragraph are unchanged (the intro
+  still speaks of a template; the user's to change).
