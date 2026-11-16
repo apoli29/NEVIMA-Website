@@ -613,16 +613,16 @@ function sheetPlace(i: number) {
     businesses, in their order; where each floats is written beside it. */
 function sectors(t: T) {
   return [
-    { label: t("Dental clinic", "Clínica dentária"), x: 30, y: 30, d: 0 },
-    { label: t("Restaurant", "Restaurante"), x: 66, y: 64, d: 0 },
-    { label: t("Estate agent", "Imobiliária"), x: 72, y: 26, d: 1 },
-    { label: t("Law firm", "Escritório de advogados"), x: 18, y: 70, d: 1 },
-    { label: t("Gym", "Ginásio"), x: 48, y: 82, d: 2 },
-    { label: t("Architecture studio", "Atelier de arquitetura"), x: 50, y: 14, d: 2 },
-    { label: t("Beauty salon", "Salão de estética"), x: 86, y: 46, d: 1 },
-    { label: t("Physiotherapy", "Fisioterapia"), x: 12, y: 44, d: 2 },
-    { label: t("Hotel", "Hotel"), x: 36, y: 56, d: 2 },
-    { label: t("Bakery", "Pastelaria"), x: 88, y: 84, d: 2 },
+    { label: t("Dental clinic", "Clínica dentária"), x: 38, y: 38, d: 0 },
+    { label: t("Restaurant", "Restaurante"), x: 60, y: 59, d: 0 },
+    { label: t("Estate agent", "Imobiliária"), x: 64, y: 35, d: 1 },
+    { label: t("Law firm", "Escritório de advogados"), x: 30, y: 62, d: 1 },
+    { label: t("Gym", "Ginásio"), x: 49, y: 70, d: 2 },
+    { label: t("Architecture studio", "Atelier de arquitetura"), x: 50, y: 28, d: 2 },
+    { label: t("Beauty salon", "Salão de estética"), x: 72, y: 48, d: 1 },
+    { label: t("Physiotherapy", "Fisioterapia"), x: 26, y: 46, d: 2 },
+    { label: t("Hotel", "Hotel"), x: 41, y: 54, d: 2 },
+    { label: t("Bakery", "Pastelaria"), x: 74, y: 71, d: 2 },
   ];
 }
 

@@ -4973,8 +4973,6 @@
     letter-spacing: -0.01em;
     white-space: nowrap;
     color: #fff;
-    background: rgb(255 255 255 / 0.05);
-    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.28);
   }
   .sbp-chip[data-d="1"] .sbp-chip-in { scale: 0.86; filter: blur(1.5px); opacity: 0.7; }
   .sbp-chip[data-d="2"] .sbp-chip-in { scale: 0.74; filter: blur(3px); opacity: 0.45; }
@@ -4999,8 +4997,8 @@
     100% { opacity: 0; left: 50%; top: 50%; scale: 1.18; }
   }
   @keyframes sbp-lit {
-    0%, 46% { color: #fff; background: rgb(255 255 255 / 0.05); }
-    56%, 100% { color: #000; background: #fff; scale: 1; filter: blur(0); opacity: 1; }
+    0%, 46% { color: rgb(255 255 255 / 0.85); }
+    56%, 100% { color: #fff; scale: 1.08; filter: blur(0); opacity: 1; }
   }
   .sbp-steps[data-phase="wait"] .sbp-step,
   .sbp-steps[data-phase="intro"] .sbp-step { opacity: 0.32; transition: opacity 0.5s ease; }
