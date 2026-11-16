@@ -488,3 +488,10 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   since it only said again what its description says.
 - The hero is 2.1:1 from 1100px, 16:9 from 640px and 4:5 on a phone, and
   clears the bar by no more than it must.
+- The facts are not a card laid on the photograph but a bite taken out
+  of it (user, 2026-11-16: "como se não tivesse lá algo por cima"): the
+  page's own white, flush with the photograph's right and foot, rounded
+  where it cuts in and matching the photograph's own curve where it
+  leaves, with no border and no shadow. A pixel past the edge, so the
+  curve it is cut into never shows along the join. Under 900px there is
+  no room for it, and it simply follows the photograph.
