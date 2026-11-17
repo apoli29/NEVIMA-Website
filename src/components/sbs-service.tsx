@@ -81,7 +81,7 @@ export function SbsLevels() {
   const name = useScramble(levels[level].name, reduce);
 
   return (
-    <section aria-labelledby="sbl-title" className="sbl relative isolate bg-ink py-(--section-gap) text-paper">
+    <section aria-labelledby="sbl-title" data-tone="ink" className="sbl relative isolate py-(--section-gap) text-paper">
       <div className="shell sbl-grid">
         <div className="sbl-head">
           <SlideIn ready>

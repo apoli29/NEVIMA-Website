@@ -732,7 +732,7 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   across as the foot arrives, the line rises into place and the way in,
   the columns and the legal row follow. The ringed band and the large
   symbol in depth are gone.
-- 2026-11-17 (user, plan `plans/001-sheet-stack-section-transition.md`):
+- 2026-11-17 (user, plan `plans/002-sheet-stack-section-transition.md`):
   between sections, stacked sheets replace the slats. The section being
   left shrinks a little from its top (to 0.94), darkens under a veil and
   rounds its corners; the next rises over it as a sheet whose rounded top
@@ -912,7 +912,7 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   fifteen masked layers were drawn again as it set off. It is now kept on
   its layer (will-change on it and on its turn).
 - 2026-11-17: the page itself (not the plates) gets the site's entrance
-  throughout (plans/002): the heads of "Included", "Design levels" and
+  throughout (plans/003): the heads of "Included", "Design levels" and
   "Personalization" slide in as the page's header does (SlideIn), their
   lede 0.08s after; the plates rise 24px from 98% (the comparison's second
   plate 0.09s after the first), the level switch and note fade in 0.12s
@@ -924,3 +924,9 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   frame 0.26s), and the landing page held a third as long (0.95s at the
   turn instead of 2.9s). The timeline is now written in the seconds it is
   seen in (SEEN in sbs-personal.tsx); one run forward is 3.66s.
+
+## Between the sections: the tonal veil (2026-11-17, user)
+
+- Taken from the SEO & GEO page after an audit of which of its animations fit here (user: "há animações nesta página que também fariam sentido na página side by side"). Only the veil did: the page had four hard cuts (the comparison's dark ground, Included's white, the levels' black, personalization's white, Let's work together's black). The examples' keys, the live captions and the dark cards are particular to the SEO & GEO content and the page already has its own equivalents (the gallery's time, the levels' switch, the metal and liquid-light grounds).
+- The veil is now shared (`ToneRoom`, `tone-veil.tsx`), used by both pages. The sections lost their own grounds (`.sbs-ground` on the comparison, `bg-paper` on Included and personalization, `bg-ink` on the levels) and carry `data-tone` (dark #0b0b0b, ink #000, light).
+- Rule (user): Pilar Seguros' cards, in every version, are closed. They are not touched: neither the two plates nor the levels' pages dim or scale; only Included's and personalization's content does (`data-tone-body`).

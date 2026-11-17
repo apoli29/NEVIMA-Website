@@ -335,8 +335,8 @@ export function SbsIncluded() {
   const row = Math.floor(at / COLS);
 
   return (
-    <section aria-labelledby="sbi-title" className="sbi relative bg-paper py-(--section-gap)">
-      <div className="shell">
+    <section aria-labelledby="sbi-title" data-tone="light" className="sbi relative py-(--section-gap)">
+      <div className="shell" data-tone-body>
         <div className="sbi-head">
           <SlideIn ready>
             <p className="mono-label text-ash-2">{t("Included in the service", "Incluído no serviço")}</p>

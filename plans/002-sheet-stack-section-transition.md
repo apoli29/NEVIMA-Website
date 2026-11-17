@@ -1,4 +1,4 @@
-# 001 — Replace the slat wipe between sections with a stacked-sheet transition
+# 002 — Replace the slat wipe between sections with a stacked-sheet transition
 
 - **Status**: DONE (2026-11-17; the foot keeps its glow beside sbs-a-in-4)
 - **Commit**: ef1f852

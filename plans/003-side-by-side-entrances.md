@@ -1,4 +1,4 @@
-# 002 · Side by side: entrances for the section heads, the plates and their controls
+# 003 · Side by side: entrances for the section heads, the plates and their controls
 
 - Severity: LOW (missed opportunity: the page below its header appears still)
 - Status: DONE (2026-11-17)
