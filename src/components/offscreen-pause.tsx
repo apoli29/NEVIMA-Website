@@ -32,7 +32,6 @@ const LOOPS = [
   ".fo-drift",
   ".rp-ba",
   ".sbs-run",
-  ".sbl-kb",
   ".sbp-figure",
   ".sbp-ask",
 ].join(",");

@@ -139,7 +139,8 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   Krushna Behera was used in earlier rounds and removed.)
 - The template side is the same broker as a template would make it:
   "PILAR SEGUROS" in capitals, a seven-item menu with a simulator, three
-  identical insurance cards and the stock umbrella.
+  identical insurance cards and the stock umbrella. (Replaced on
+  2026-11-17 by the competitors' website, below.)
 - Indexed (`index: true` in `SEO_PAGES`), unlike the about page and the
   portfolio, which are still moulds.
 - On the bar, as its fourth link (user, 2026-11-11: "mete na navbar o
@@ -511,6 +512,418 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
 - 2026-11-17 (user): the areas lost their boxes, plain words only (the chosen one brightens and grows a little), and they float closer to the middle of the card, still spread out.
 
 - 2026-11-17 (user): the time bar moved over the two walls and made smaller; the three keys are one black block with no rules between them, and finer icons (thin long arrows that lean on hover, thin pause and an outlined play).
+
+## The competitors' website (2026-11-17, user)
+
+- The left plate is now the same Pilar as many web designers deliver it,
+  a joining of two real brokers' websites the user brought
+  (aoctavioseguros.pt and mcostaseguros.pt, photographed before
+  building): the first's royal blue, capitals, three blue contact boxes,
+  icon cards with Particulares / Empresas tabs and offices with
+  "(chamada para rede fixa nacional)"; the second's spaced-out titles
+  ("S E R V I Ç O S"), grey line icons, a wall of text on car accidents,
+  a large light sentence beside small columns, and Arial throughout.
+  `Template` in `side-by-side.tsx`, styled `.sbs-c-*`.
+- Its sections are its own, not ours, and the structure is reasonable
+  (user: "não deve ser perfeita, deve ser razoável"); the one flaw is the
+  contacts coming straight after the slider. Each section that starts a
+  stop carries `data-stop`, so its stops are read off the page as ours
+  are, and the two sides reach their sections at the same moments:
+  the slider and contacts / our hero; "O melhor aconselhamento" and the
+  insurance grid / our five words; services and the accident text / our
+  table; "Pilar" (about) and the news / our steps; the offices and grey
+  footer / our footer.
+- The brand (user: "uma nova versão mas antiquada, quase não
+  profissional"): a home-made logotype, not Pilar's guide: a gradient
+  badge with an orange ring and an umbrella, "Pilar" in italic Georgia
+  with a shadow, "SEGUROS" spaced in orange, "Mediação de Seguros, Lda."
+  under them. Royal blue and greys from the references.
+- Nothing moves on this side but the page going down (user: "não forces
+  defeitos de funcionamento ... sem animações"): the loading bar, the
+  late banner, the turning slider and the cookie wall are gone. The
+  slider sits on its first slide with its arrows and dots; the news
+  carousel's scrollbar is left showing, as on the reference.
+- Stock photographs, the user's pick from candidates (all free on
+  Unsplash, not Unsplash+), served from Unsplash's CDN: a padlock on a
+  blue door (Zaqy Al Fattah) in the slider; a hand holding a small house
+  (Jakub Żerdzicki), a magnifying glass over banknotes (Brecht Corbeel)
+  and a handshake in suits (Vitaly Gariev) in the news.
+- All copy is real, in both languages, no lorem ipsum. The Portuguese
+  still never addresses the reader: "Venha conhecer-nos" became "Onde
+  nos encontrar", "Consulte aqui" became "disponível aqui", the accident
+  text is impersonal. No real insurer is named; numbers, addresses and
+  the ASF registration are placeholders; the web agency in the footer is
+  a generic "Web Design Lda.".
+- On a phone the menu folds into a hamburger, the about and news columns
+  go to two, and the third news card is dropped.
+- The plates' labels and the intro paragraph are unchanged (the intro
+  still speaks of a template; the user's to change).
+
+- 2026-11-17 (user, second round): the first version read as two
+  websites, the A. Octávio's in the first two sections and the M.Costa's
+  in the last ones. What the user meant by "99,9%" was a homogeneous
+  result that captures the kind of design, not a faithful mix of both.
+  It is now one idiom from top to foot, the first half's: Arial
+  throughout (Georgia only in the logo); one title for every section
+  (navy bold capitals, centred, a short blue rule under it), so "O melhor
+  aconselhamento", "Os nossos serviços", "Acidente de automóvel", "Quem
+  somos" (was "Pilar"), "Últimas notícias" and "Onde nos encontrar" are
+  all set alike; one icon (blue line in a pale blue square) for the
+  insurance, the services and the offices; one card (white, a border, a
+  faint shadow) for each of them and the news; pale grey and white
+  grounds in turn; navy at the top strip and both footer bars. The
+  spaced thin capitals, the grey icons, the large light sentence and the
+  grey footer are gone; the slider's word is bold and its button blue.
+
+- 2026-11-17 (user, third round): "Onde nos encontrar" (the three
+  offices) is gone; "Últimas notícias" takes its place as the last stop,
+  with a footer under it. The footer is in the page's own idiom: four
+  columns on navy, each under a small white title with the blue rule
+  (Pilar Seguros with a line and round social icons; Links úteis with »
+  bullets; Contactos with the Lisbon office, both numbers and their
+  "(chamada para rede …)" notes, the e-mail; Horário), then the ASF and
+  copyright bars. The news and the footer were tightened so the last
+  stop shows both whole at 900px, as ours shows its own foot.
+
+- 2026-11-17 (user): the three blue contact boxes under the slider
+  ("Ligar Agora", "Enviar E-mail", "Visitar-nos") are gone, and with them
+  the one flaw of structure (contacts before anything is said). The
+  slider now leads straight into "O melhor aconselhamento"; the contacts
+  live only in the footer. The stops are read off the page, so they
+  moved up on their own.
+
+- 2026-11-17 (user): "Últimas notícias" became "Onde nos encontrar" (the
+  user's intent in the round before): the three offices in the page's
+  cards, each with the pin icon, are the last stop, above the footer.
+  The news and their three stock photographs are gone; only the padlock
+  in the slider is still from Unsplash. Both show whole at the last stop.
+
+- 2026-11-17 (user): our hero gains a second outlined pill, "Where to
+  find us" / "Onde nos encontrar", beside "Pedir simulação" (8px apart),
+  answering the competitors' last section from the first screen.
+
+## Design levels: the whole page at each level (2026-11-17, user)
+
+- The plate showed one section (the hero) at each level; the user asked
+  for the whole page of each. Essential+ is now the very page of the
+  comparison (`Ours`, moved with its pieces to `sbs-pilar.tsx` so both
+  sections share it); Advanced is a new page (`sbs-advanced.tsx`, styled
+  `.sbs-a-*`) with the same five sections, the same words and Pilar's
+  own four colours and type, made more refined. Both go down the plate
+  on the comparison's own loop (`sbs-scroll`, 18s, stops read off
+  `data-stop`); on its own the plate shows one whole visit of a page and
+  then the other, until the switch is touched.
+- References: a first round (Nopan, Copilot Money, Lithic, Spline) was
+  turned down as not sober or mature enough for Pilar; only Lithic came
+  close. The second round, approved: Lithic (contour lines, a matte
+  object in depth, a card in perspective settling flat) and Evolve
+  Private Wealth, an Awwwards honorable mention (the mark built from
+  slats, the ground changing colour between sections, a hairline grid
+  with numbers, a comparison table with its own column lit, steps held
+  one at a time, a large mark in the footer). Neither's colours or type
+  are taken.
+- What Advanced does, section by section: the photograph opens through
+  slats over Noite and contour lines rise from the pillar while the line
+  rises into place; the ground turns to Noite under the five words,
+  numbered on hairlines, with contour lines in a corner; the three
+  quotes become a comparison table (price, excess, earthquakes, water
+  damage) that comes in tilted in depth and settles flat, Pilar's pick
+  its lit column with a sheen; the four steps are held one at a time
+  beside Pilar's symbol in depth (fourteen layers behind a face of
+  slats), which turns and closes its slats a little more at each step;
+  the foot closes on a band of rings and sets the symbol large in depth
+  beside the links. All the information of the Essential+ page is kept.
+- 3D is CSS (perspective, preserve-3d, masked layers), not WebGL: the
+  plate is a scaled miniature page, and WebGL would weigh more than the
+  section and pixelate at that scale.
+- Every effect is a CSS animation on the loop's own clock, with the same
+  percentages as `sbs-scroll`, so it plays as its section arrives and is
+  set back while the section is off the plate; less motion shows every
+  section finished.
+
+## Advanced, second round (2026-11-17, user)
+
+- A loop of its own for the Advanced page: `sbs-a-scroll`, 26s, so the
+  opening has room (the opening 0-14%, the hero to 22%, the five kinds
+  26-46%, the table 50-60%, the steps 64-86%, the foot 89-96%). The
+  temporary pause bar and the lap switch know each level's length.
+- One colour of its own at this level: a deep violet (#2a1f4d to
+  #171230), the user's "a cor mais roxa" over the Noite of the palette,
+  used only for the opening.
+- The opening replaces the slats over the photograph: on the violet,
+  Pilar's symbol in depth turns to face the visitor and the view flies
+  through the square of the P (the eye is set on that square, the flight
+  eases out because depth already speeds the growth), then a fade
+  reveals the website; the violet comes back over the hero as the page
+  returns to the top.
+- The five kinds of insurance, after Palais de Tokyo (Inspo): the list
+  on the right, each with a line of its own (written here, in both
+  languages), the symbol in depth on the left travelling to the one
+  being read, which lights and opens its line; read off the loop's clock
+  (`useLapStep`, now able to read any loop).
+- The four steps: a carousel, one card at a time with the next one
+  showing and a line of four ticks, over the user's sliding-ease bars
+  (`src/components/ui/sliding-ease.tsx`, the first file in
+  `components/ui`; the site has no shadcn, and the component needed none
+  of it). Adapted to fill its own box, read the pointer in the box's own
+  pixels, work its patterns out once per size, draw only while seen, and
+  hold one frame for less motion; Pilar's Noite, a darker Grafite and
+  Grafite. The 3D symbol left this section for the opening.
+- Between sections: each section is revealed through widening slats
+  over the page's own Noite.
+- The table of quotes stays as it was; the Novu reference (three cards
+  in perspective) was turned down and two others were put to the user.
+- 2026-11-17 (user): the opening uses exactly the symbol the steps had in
+  the first round (140px, a Noite face of slats over Névoa going to
+  Grafite); its slats close as it turns to face. It had rendered flat:
+  its fade was on the turning stack itself, and opacity on a
+  preserve-3d element flattens it; the fade is now on the symbol's box.
+- 2026-11-17 (user): the opening's symbol is now white metal, whole (no
+  slats): a brushed white-to-silver face with a light crossing it, sides
+  of silver going to a violet grey, deeper than elsewhere so it reads in
+  depth face on. It is shown face on from the start, with no turn; after
+  the light has crossed it the view flies through the square of the P
+  and the fade reveals the website. The ground is the hero photograph's
+  own sky (#abadbf to #bfc0cd) taken a little towards violet (#d0cee2 to
+  #aeabc8), with a soft shadow under the symbol.
+- 2026-11-17 (user): the four steps are a carousel as the hero's reviews
+  are: a strip of the four cards, twice over so the lap has no seam,
+  sliding a lap every 40s and held under the pointer. The sliding-ease
+  bars are only the strip's band (Noite, rounded as the cards), not the
+  whole section, which is back on the page's white with its title,
+  cost and link.
+- 2026-11-17 (user): the symbol beside the five kinds stands level with
+  the top of the kind being read, starting with the first; its place is
+  read off the rows themselves (`--y`), so it follows the list down.
+- 2026-11-17 (user): the steps' band is lower (196px, cards 140px) and
+  runs the page's whole width, past the section's padding.
+- 2026-11-17 (user: the 3D read as "30%", a prototype): the opening's
+  symbol is now rendered in WebGL (`pilar-metal.tsx`, three.js 0.180,
+  the site's first 3D dependency). The guide's outline extruded with a
+  rounded bevel on every edge, a physical white metal (metalness 1, fine
+  roughness with a brushed grain, anisotropy, clear coat), lit by a
+  studio built for it and baked into an environment map: a room dark
+  below and lavender above (the hero's sky), long soft white panels
+  above and at each side, a strip behind for the rims and a large panel
+  in front so the face reads white. The studio turns a little, so light
+  moves on the metal while the symbol stays face on. The flight through
+  the square of the P is the camera's, read off the page's loop every
+  frame; it draws only while the opening can be seen. The CSS stack of
+  layers stays for the symbols beside the kinds and in the foot.
+- 2026-11-17 (user: "o realismo agora está bom"): no shadow under the
+  symbol; the ground moves, two soft pools (a deeper violet, a light)
+  drifting slowly across it out of step (11s and 15s); the symbol floats
+  and sways a little while it is held, easing back to face on as the
+  flight begins so the camera goes straight through the square.
+- 2026-11-17 (user): the symbol sways further (about 14° and 6°) and more
+  slowly, and settles to face on and centred before the flight, which
+  now runs along the line from the camera to the square of the P,
+  still looking straight ahead: the symbol stays where it is and the
+  square grows in its own place, so nothing is moved into position when
+  the flight begins. The opening is a little slower (flight 7-14.5%,
+  the fade to 17.5%, the hero's own entrances moved with it). The
+  exposure is lower (0.82), so the metal is less bright. The ground is
+  the hero's sky as it is, a grey lavender (#c8c9d6 to #a9abbe), and so
+  is the studio the metal reflects.
+- 2026-11-17 (user): the Advanced foot is the Essential+ foot (the
+  signature line and "Pedir simulação", the four columns, the legal row
+  with the complaints book, Noite with one matte glow of Grafite), set
+  in motion: the glow's centre drifts slowly, the two hairlines are drawn
+  across as the foot arrives, the line rises into place and the way in,
+  the columns and the legal row follow. The ringed band and the large
+  symbol in depth are gone.
+- 2026-11-17 (user, plan `plans/002-sheet-stack-section-transition.md`):
+  between sections, stacked sheets replace the slats. The section being
+  left shrinks a little from its top (to 0.94), darkens under a veil and
+  rounds its corners; the next rises over it as a sheet whose rounded top
+  (4% in from each side, 28px corners) widens to the page and squares
+  off. The push leads the rise by half a percent of the loop; strong
+  ease-in-out for the push, strong ease-out for the rise.
+
+## By hand, and the stepped loop's timing (2026-11-17, user)
+
+- The stepped loop hurt the Advanced page's timing: each move used the
+  comparison's fast ease-out, doing 80% of the distance in its first
+  quarter, while the effects used other curves and came after the page
+  had stopped. The Advanced page now moves on a smooth in-out, and the
+  sheets between sections use the same curve and the same windows as
+  the moves. The comparison and Essential+ keep their loop.
+- Two ways to see each plate (user: "2 versões"): the loop on its own,
+  in steps, and by hand, scrolled continuously by the visitor
+  (`sbs-scrub.ts`). By hand, the scroll is turned into a moment of the
+  plate's own loop and every animation on the page is held there: where
+  the loop moves the page, the page follows the wheel or the finger one
+  for one (the move's easing is undone); where it holds a section, the
+  section stays pinned while its effects play (the opening's flight, the
+  kinds, the steps). Nothing is animated twice.
+- How to get there (user: a touch, but with a call that says so): under
+  each plate, "Percorrer à vontade" / "Scroll through it yourself" (a
+  small mouse whose wheel rolls; "Reproduzir sozinho" to give it back),
+  a tap on a plate does the same, and "Abrir em grande" / "Open larger"
+  opens the plate in a window of its own over the website, by hand from
+  the start, as the proposal form opens (Escape or "Fechar" closes it,
+  the page behind is held still).
+- The comparison's two pages go together, section for section: both
+  plates are held at the same moment of their loop, whichever is
+  scrolled.
+- The temporary pause and bar under the levels' plate are gone.
+- 2026-11-17 (user: the larger window's scroll felt stuck): by hand, each
+  hold of the loop had taken 2600px of scroll per lap with the section
+  pinned, so the comparison's hero, which has nothing to play, ate about
+  340px of scroll and its steps nearly 860px before anything moved. Holds
+  are now short: 700px per lap for the comparison and Essential+ (the
+  hero about 90px), 1500px for Advanced, whose holds are where its
+  effects play.
+- 2026-11-17 (user: still stuck): by hand the page no longer stops at
+  all. The scroll still plays each hold's effects (it is turned into a
+  moment of the loop as before), but the page is placed on its own
+  continuous course (`placeAt` in `sbs-scrub.ts`): it passes each section
+  at the middle of that section's hold and moves evenly in between, by
+  moving the box the page sits in by the difference from where the loop
+  has it. The larger window also stopped moving the focus (and with it
+  the page) on every render of its parent.
+- 2026-11-17 (user: some Advanced animations ran far too fast by hand;
+  the windows' scroll 15% slower): on the Advanced page, by hand, every
+  part of the loop now takes the same scroll per unit of time (5200px of
+  the page's per lap), holds and moves alike, so the flight through the
+  P and the kinds no longer race by in a few pixels while the moves
+  crawl. The larger window takes 85% of the wheel or the drag, and the
+  page follows the input more softly (a tenth of the gap per frame).
+- 2026-11-17 (user): by hand, the Advanced opening plays on its own (the
+  metal symbol, the flight through the P, the fade: the first 20% of the
+  loop), the scroll held meanwhile; the scroll then takes over from the
+  top of the page, without a jump, and does not go back into it. The
+  symbol no longer sways and then settles: it comes in tilted and turns
+  to face on in one continuous move over the whole hold (an even ease),
+  read off the loop rather than the clock, so it is the same every time
+  and arrives face on as the flight begins.
+- 2026-11-17 (user, with a review of the motion):
+  - every Advanced section fills the plate's view (`--sbs-view`, written
+    by useFit), its content centred, so the next section no longer shows
+    under the one held;
+  - by hand, the Advanced page follows a course of its own: while a
+    section's effects play it drifts on slowly (30% of the scroll, never
+    more than half the way to the next), and between sections it moves
+    one for one with the scroll, so each sheet transition plays exactly
+    while the next section comes up into the frame (before, the
+    transitions often played while their section was still off the
+    plate);
+  - on a plate on the website, the wheel is held for a second at either
+    end before the website takes it, so a last flick does not carry the
+    visitor off up or down the page; not in the larger window, which
+    holds the website still;
+  - the steps and the kinds follow the loop every 60ms (they lagged by
+    up to 150ms).
+- 2026-11-17 (user, with two pictures):
+  - the steps' section looked washed out when centred: its title, text
+    and carousel faded in from 62% to 67% of the loop, while the section
+    arrives at 64%. Every Advanced entrance now ends as its section
+    arrives (the kinds and their symbol 22-26%, the table tilted from
+    46% and flat by 52%, the steps 60-64%, the foot 86-89%);
+  - by hand, the kinds' view slid down while they were read: a section
+    whose effects play now drifts by no more than an eighth of the way
+    to the next, so it stays in the frame;
+  - by hand, the Essential+ stepper no longer follows the wheel (it
+    raced with it): once its section is reached it walks on by itself, a
+    step every 2.4 seconds; the loop on its own still drives it as
+    before, and a click still takes over.
+- 2026-11-17 (user):
+  - the Essential+ steps card did not respond by hand: a press on a
+    plate took the pointer at once (for dragging), so its buttons never
+    got the click, and the tap that takes a plate over also pressed
+    whatever button lay under it, which held the steps. A press now only
+    becomes a drag once it moves (5px), and the click after the tap that
+    takes over is kept from the page;
+  - the Advanced hero's line is quicker (about 0.6s instead of 1.4s, the
+    second line 0.08s behind) and finer: each line rises from its mask
+    with a slight turn (4°) that straightens as it lands, and a short
+    fade; the text under it follows sooner;
+  - the metal symbol is twice the size, every part of its move in
+    proportion (the object, its float, the square the camera flies to
+    and how far past it the camera goes); none of the timing changes.
+- 2026-11-17 (user):
+  - by hand, the Essential+ steps take no notice of the scroll at all
+    (scrolling up had set them back to the first): they walk on by
+    themselves, a step every 2.4 seconds, round and round, unless a click
+    takes them over;
+  - every animation and transition in the personalization card and the
+    steps under it plays twice as fast, all in proportion, delays
+    included: set on the running animations (playbackRate 2) and picked
+    up again as the card changes, so the timings written in the code keep
+    their ratios and the phases, moved on by the animations' ends, follow;
+  - the kinds no longer tremble as they change: every line under a kind
+    takes the same room (two lines), so as one opens and another closes,
+    on the same curve, the list keeps its height and the section, centred
+    in the frame, holds still; the line's spacing no longer jumps on.
+- 2026-11-18, audit of the display plates (user: "o display automático não
+  acompanha a animação do website"). Every plate was sampled through its
+  whole loop at 1440x900 and 390x844: no gap above or below a page, no
+  clipped text, every stop on its section's top. What was wrong, fixed:
+  - Advanced: the page moves on a slow in-out, but each section's entrance
+    (the kinds' titles and symbol, the table, the steps, the foot) ran on a
+    fast ease-out over the whole move, so it was over while the section
+    was still mostly below the frame. The entrances now play over the
+    second half of each move and land as the section arrives;
+  - Advanced, end of the visit: the page raced back up through every
+    section while they were being undone. Now the foot dissolves into the
+    opening's lavender (96-97%), the page is set back at the top under it
+    and the opening is waiting there;
+  - by hand on a phone, a finger on the plate (most of the screen, with
+    touch scrolling off on it) could not carry on down the website. At
+    either end, after the one-second hold, the finger scrolls the website.
+- 2026-11-18: the Advanced table was blurred where it lay (user). Its
+  settle is a 3D move on an endless loop, so Chrome kept it as a 3D layer
+  drawn once at a fixed resolution. While it lies still (53-97%) its
+  animation is taken off (useSharpAtRest, `[data-rest]`), so it is drawn
+  sharp, and put back at the loop's own moment before it is needed.
+- 2026-11-18: the metal symbol of the opening 70% smaller (SIZE 2 -> 0.6,
+  the flight in proportion) and the opening twice as fast: 0-8.75% of the
+  loop instead of 0-17.5% (turn 0-3.5%, flight 3.5-7.25%, fade
+  6.75-8.75%); the hero's reveal moved up with it, the hero held to 22%
+  as before; by hand the opening plays on its own to 11%.
+- 2026-11-18, later: still blurred, on and off (user: it must be sharp from
+  the moment it comes in). Taking the animation off at rest left it blurred
+  while it came in and settled. The settle is now flat (slide, scale and a
+  slight turn, no rotateX, no perspective): Chrome draws a flat animated
+  layer at its largest scale, so the table is sharp throughout.
+  useSharpAtRest removed.
+- 2026-11-18: the Advanced foot's entrance was heavy (user: "o mais leve e
+  previsível possível"). Its move was the shortest (86-89%, 0.78s), it had
+  seven staggered entrances (rules, line, way in, four columns, legal)
+  running up to 0.6s past the stop, and its glow drifted on registered
+  custom properties, repainting the whole foot on every frame. Now: its
+  move is as long as the others (86-90%; the scrub's points follow), its
+  three blocks rise together once over the second half of the move and
+  are still when the page stops, the rules are simply there and the glow
+  holds still.
+- 2026-11-18: by hand the Advanced scroll stalled (user: "trava muitas
+  vezes desnecessariamente"). Each hold took 500-1100px of wheel while the
+  page moved an eighth of a section, as the kinds' walk was tied to the
+  scroll. Now the page moves one for one with the scroll everywhere; a
+  hold is a 220px stretch over which the page keeps moving (60px at the
+  foot); the kinds walk on their own clock by hand (1.4s each). The scrub
+  measured about 1ms of script per frame, so that was not the cause; it
+  now also leaves alone every animation whose value does not change
+  between two moments (it repainted the kinds' symbol and the contour
+  lines on every frame), the page's own loop excepted, as the steps, the
+  kinds and the metal symbol read the moment off it.
+- 2026-11-18: the kinds' symbol in depth moved with a jolt (user: "muito
+  travada"): it was promoted to a layer of its own at each move, so its
+  fifteen masked layers were drawn again as it set off. It is now kept on
+  its layer (will-change on it and on its turn).
+- 2026-11-17: the page itself (not the plates) gets the site's entrance
+  throughout (plans/003): the heads of "Included", "Design levels" and
+  "Personalization" slide in as the page's header does (SlideIn), their
+  lede 0.08s after; the plates rise 24px from 98% (the comparison's second
+  plate 0.09s after the first), the level switch and note fade in 0.12s
+  after, the buttons and notes under the plates rise 10px at 0.18s.
+  SlideIn learned `from="below"`. Once per visit; reduced motion shows all.
+- 2026-11-17: personalization, faster (user): the pages come and go twice
+  as fast (one every 0.23s, each in 0.13s), the moves between website and
+  landing page twice as fast (switch 0.2s, each page folding in 0.39s, the
+  frame 0.26s), and the landing page held a third as long (0.95s at the
+  turn instead of 2.9s). The timeline is now written in the seconds it is
+  seen in (SEEN in sbs-personal.tsx); one run forward is 3.66s.
 
 ## Between the sections: the tonal veil (2026-11-17, user)
 

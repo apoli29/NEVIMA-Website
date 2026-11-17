@@ -31,8 +31,9 @@ export function SlideIn({
   children,
 }: {
   ready: boolean;
-  /** the edge it comes in from */
-  from?: "left" | "right";
+  /** the edge it comes in from; "below" rises, settling from 98% (a
+      plate, a row of controls) */
+  from?: "left" | "right" | "below";
   /** how far out it starts. Zero is a fade on its own. */
   distance?: number;
   delay?: number;
@@ -59,6 +60,7 @@ export function SlideIn({
 
   const shown = seen || reduce;
   const out = reduce ? 0 : from === "right" ? distance : -distance;
+  const rise = from === "below";
 
   return (
     <motion.div
@@ -67,10 +69,16 @@ export function SlideIn({
       // Held at its starting mark rather than animated to it: there is no
       // entrance to play before the section has been seen.
       initial={false}
-      animate={{ opacity: shown ? 1 : 0, x: shown ? 0 : out }}
+      animate={
+        rise
+          ? { opacity: shown ? 1 : 0, y: shown || reduce ? 0 : distance, scale: shown || reduce ? 1 : 0.98 }
+          : { opacity: shown ? 1 : 0, x: shown ? 0 : out }
+      }
       transition={{
         opacity: { duration: FADE_S, delay, ease: "easeOut" },
         x: { duration: SLIDE_S, delay, ease: ENTER_EASE },
+        y: { duration: SLIDE_S, delay, ease: ENTER_EASE },
+        scale: { duration: SLIDE_S, delay, ease: ENTER_EASE },
       }}
     >
       {children}
