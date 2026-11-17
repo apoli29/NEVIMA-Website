@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<title>Cartões nevima — ficha para a gráfica</title>
+<!-- Impressa para ficha-grafica.pdf por gerar.cjs. É a folha que acompanha
+     os ficheiros quando se encomendam os cartões. -->
+<style>
+  @font-face { font-family: Satoshi; src: url(../fonts/Satoshi/Satoshi-Variable.woff2) format("woff2"); font-weight: 300 900; }
+  @font-face { font-family: "Geist Mono"; src: url(../fonts/GeistMono/GeistMono-Medium-latin.woff2) format("woff2"); font-weight: 500; }
+  @page { size: A4; margin: 14mm 15mm; }
+  html, body { margin: 0; background: #fff; color: #000; }
+  body { font: 400 9.4pt/1.42 Satoshi, sans-serif; letter-spacing: -0.003em; }
+  .mono { font: 500 6.6pt/1.4 "Geist Mono", monospace; letter-spacing: 0.06em; text-transform: uppercase; }
+  header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 0.3mm solid #000; padding-bottom: 3mm; }
+  h1 { font: 500 20pt/1 Satoshi; letter-spacing: -0.03em; margin: 0; }
+  h1 span { font-weight: 300; }
+  .ref { margin: 5mm 0 1.5mm; display: grid; grid-template-columns: 1fr 1fr; gap: 2mm; }
+  .ref div { height: 70mm; background: #2a2a2a url(mockups/cartao-antonio.jpg) no-repeat; background-size: 206% auto; }
+  .ref .f { background-position: 52.3% 1.9%; }
+  .ref .v { background-position: 52.3% 99.3%; }
+  .legenda { color: #6f6f6f; margin-bottom: 5mm; }
+  h2 { margin: 5mm 0 2mm; }
+  table { width: 100%; border-collapse: collapse; }
+  td { vertical-align: top; padding: 1.6mm 0; border-top: 0.2mm solid #d6d6d6; }
+  td:first-child { width: 36mm; padding-right: 4mm; }
+  td.mono { padding-top: 2.1mm; }
+  b { font-weight: 600; }
+  .campo { display: inline-block; min-width: 16mm; border-bottom: 0.2mm solid #000; }
+  footer { margin-top: 5mm; color: #6f6f6f; }
+</style>
+</head>
+<body>
+<header>
+  <h1><span>Cartões de visita</span> nevima</h1>
+  <div class="mono">Ficha para a gráfica</div>
+</header>
+
+<div class="ref" role="img" aria-label="Mockup do cartão: frente preta e verso branco"><div class="f"></div><div class="v"></div></div>
+<div class="mono legenda">Resultado pretendido (mockup). À esquerda, a frente; à direita, o verso.</div>
+
+<h2 class="mono">Especificações</h2>
+<table>
+  <tr><td class="mono">Formato</td><td>85 × 55 mm, cantos retos.</td></tr>
+  <tr><td class="mono">Quantidade</td><td><span class="campo"></span> cartões de António Policarpo &nbsp;·&nbsp; <span class="campo"></span> cartões de Emanuel Costa. A frente é igual nos dois; só o verso muda.</td></tr>
+  <tr><td class="mono">Papel</td><td>Cartão de <b>algodão mate</b>, grosso, em <b>duplex</b>: papel <b>preto</b> na frente colado a papel <b>branco</b> no verso, com cerca de 1 mm de espessura total. A gramagem fica a acertar com a gráfica, conforme os papéis que tiver.</td></tr>
+  <tr><td class="mono">Frente</td><td>Sem impressão de fundo: o preto é o do próprio papel. Tudo o que é branco (o logótipo, o ™, a seta e as duas notas do topo) leva <b>foil branco mate</b>, opaco (<b>branco-frente.pdf</b>). O logótipo, o ™ e a seta são, além disso, <b>prensados para dentro do papel (deboss)</b>, na mesma passagem do foil e em registo com ele (<b>chapa-deboss.pdf</b>). As notas do topo, pequenas, levam só o foil, sem relevo.</td></tr>
+  <tr><td class="mono">Verso</td><td>Impressão a <b>preto, só K</b> (sem preto composto), sobre o branco do papel. O grão é uma imagem a 600 ppp e deve sair fino e nítido. "nevima.studio" e "Portugal" vão em cinzento, cerca de 55–60% K.</td></tr>
+  <tr><td class="mono">Sangria e margens</td><td>Os PDFs têm 3 mm de sangria (91 × 61 mm por página) e não têm marcas de corte. Nada de importante fica a menos de 5 mm do corte.</td></tr>
+  <tr><td class="mono">Prova</td><td>Pedir uma <b>prova antes da tiragem</b>, de preferência física, para ver o branco, o relevo e o grão no papel.</td></tr>
+</table>
+
+<h2 class="mono">Ficheiros</h2>
+<table>
+  <tr><td class="mono">cartao-antonio.pdf</td><td>Duas páginas: a frente (para referência e posição) e o verso de António Policarpo.</td></tr>
+  <tr><td class="mono">cartao-emanuel.pdf</td><td>Duas páginas: a frente e o verso de Emanuel Costa.</td></tr>
+  <tr><td class="mono">branco-frente.pdf</td><td>A camada do branco da frente. O preto marca onde vai o foil branco.</td></tr>
+  <tr><td class="mono">chapa-deboss.pdf</td><td>O cunho do deboss. O preto marca o que é prensado: o logótipo, o ™ e a seta.</td></tr>
+  <tr><td class="mono">ficha-grafica.pdf</td><td>Esta folha.</td></tr>
+</table>
+
+<footer class="mono">nevima · ola@nevima.studio · nevima.studio</footer>
+<script>
+  const img = new Image();
+  img.onload = () => document.fonts.ready.then(() => { document.body.dataset.pronto = "1"; });
+  img.src = "mockups/cartao-antonio.jpg";
+</script>
+</body>
+</html>

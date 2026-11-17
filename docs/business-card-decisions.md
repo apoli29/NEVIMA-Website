@@ -44,11 +44,23 @@ Os cartões do António e do Emanuel. A fonte é `cartoes/` (`cartao.js` desenha
 
 ## Para a gráfica
 
-- `cartoes/cartao-antonio.pdf` e `cartoes/cartao-emanuel.pdf`: página 1 é a frente e página 2 é o verso.
-- `cartoes/chapa-deboss.pdf`: a chapa do deboss, ou seja, o logótipo a preto sobre branco, vetorial, na mesma posição. Serve para o cunho e também para a tinta branca ou o foil branco.
-- A frente imprime-se sobre o papel preto: o preto do PDF é o próprio papel e o branco é tinta branca opaca (ou foil branco), aplicada com o deboss. Na prova, o logótipo branco e a chapa coincidem.
-- O verso é impressão digital a preto (só K) sobre o branco. O grão vem em imagem a 600 ppp.
-- O texto vai incorporado no PDF (Satoshi, vetorial). Se a gráfica pedir o texto convertido em contornos, faz-se no Illustrator a partir do PDF.
+O pacote a entregar (2026-11-17) são os cinco PDFs de `cartoes/`, todos gerados por `gerar.cjs`:
+
+- **`ficha-grafica.pdf`:** uma página A4 com o mockup, as especificações e a lista de ficheiros. A fonte é `ficha-grafica.html`. As quantidades ficam em branco, para preencher.
+- **`cartao-antonio.pdf` e `cartao-emanuel.pdf`:** a página 1 é a frente (igual nas duas pessoas, para referência e posição) e a página 2 é o verso.
+- **`branco-frente.pdf`:** a camada do branco da frente, a preto sobre branco e vetorial: o logótipo, o ™, a seta e as notas. Serve para o foil branco.
+- **`chapa-deboss.pdf`:** o cunho do deboss, a preto sobre branco: só o logótipo, o ™ e a seta. As notas não levam relevo.
+
+O que a ficha pede:
+
+- **Frente:** o preto é o próprio papel. O branco é foil branco mate e opaco, com o deboss na mesma passagem e em registo.
+- **Verso:** preto só K. O cinzento fica a cerca de 55–60% K e o grão vem a 600 ppp.
+- **Prova:** pedir uma prova antes da tiragem.
+
+Sobre a fonte:
+
+- **Formato no PDF:** o Satoshi vai incorporado no PDF como "Type 3", porque o Chromium trata assim a fonte variável. A licença (FFL) permite incorporá-lo, mas proíbe convertê-lo noutros formatos (instâncias estáticas incluídas), por isso ficou assim.
+- **Se a gráfica pedir:** se pedir o texto em contornos ou em curvas, faz-se no Illustrator a partir do PDF, ou pede-se ao Claude que desenhe o texto em contornos.
 
 ## Os mockups
 

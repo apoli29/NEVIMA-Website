@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Cartões nevima — prova para a gráfica</title>
-<!-- Abre-se com ?quem=antonio, ?quem=emanuel ou ?quem=chapa; gerar.cjs
+<!-- Abre-se com ?quem=antonio, ?quem=emanuel, ?quem=chapa ou ?quem=branco; gerar.cjs
      imprime cada um para PDF. Cada página é o cartão com 3 mm de sangria
      (91 × 61 mm), sem marcas de corte. -->
 <style>
@@ -26,6 +26,8 @@
   const pag = (svg) => `<div class="pagina">${svg}</div>`;
   document.body.insertAdjacentHTML("beforeend", quem === "chapa"
     ? pag(CARTAO.frente({ bleed: B, chapa: true }))
+    : quem === "branco"
+    ? pag(CARTAO.frente({ bleed: B, branco: true }))
     : pag(CARTAO.frente({ bleed: B })) + pag(CARTAO.verso(quem, { bleed: B, pxPerMm: DPI / 25.4 })));
   Promise.all([document.fonts.load("500 10px 'Geist Mono'"), document.fonts.load("300 10px Satoshi"), document.fonts.load("500 10px Satoshi")]).then(() => document.fonts.ready).then(() => { document.body.dataset.pronto = "1"; });
 </script>
