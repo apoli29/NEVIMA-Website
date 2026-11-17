@@ -9,6 +9,7 @@ import { Illuminated } from "./services";
 import { useInView, type T } from "./sbs-shared";
 import { TO_FILL } from "@/lib/work";
 import { useT } from "@/lib/use-lang";
+import { CostBars, GrowthLines, HoursBars, MonthCards, SavedHours, ToolFlow, WeekDonut } from "./back-end-charts";
 
 /* ==================================================================
    Back-end features
@@ -206,6 +207,10 @@ function Why({ t }: { t: T }) {
             </p>
           </div>
         </div>
+
+        {/* And the same thing over two years: the two ways a business
+            grows, drawn. The numbers are illustrative and say so. */}
+        <GrowthLines t={t} />
       </div>
     </section>
   );
@@ -395,6 +400,10 @@ function What({ t }: { t: T }) {
           ))}
         </div>
 
+        <SlideIn ready distance={0} delay={0.28}>
+          <MonthCards t={t} />
+        </SlideIn>
+
         <SlideIn ready distance={0} delay={0.3}>
           <p className="be-others">
             {t(
@@ -451,6 +460,14 @@ function Gains({ t }: { t: T }) {
           ))}
         </dl>
       </div>
+
+      {/* The first of the nine, drawn: where the week goes by hand,
+          where it goes afterwards, and how much of it comes back. */}
+      <div className="shell be-figs" data-tone-body>
+        <HoursBars t={t} />
+        <WeekDonut t={t} />
+        <SavedHours t={t} />
+      </div>
     </section>
   );
 }
@@ -458,10 +475,6 @@ function Gains({ t }: { t: T }) {
 /* ---- 4. simple, efficient, made for small businesses ------------- */
 
 function Made({ t }: { t: T }) {
-  const reduce = useReducedMotion() ?? false;
-  const [ref, inView] = useInView<HTMLDivElement>(0.3);
-  const shown = inView || reduce;
-
   /* The tools, how they are tied and what the month costs are the
      studio's to give (asked for on 2026-11-16 and 2026-11-17). Until
      they come, they read as everything unfilled on this site does. */
@@ -487,25 +500,11 @@ function Made({ t }: { t: T }) {
           </p>
         </SlideIn>
 
-        {/* The tools as nodes on one line, tied by wires with the data
-            running along them (n8n's canvas, in our black and white). */}
-        <div ref={ref} className="be-wire" data-in={shown || undefined}>
-          <span className="be-wire-node be-wire-site" style={{ ["--n" as string]: 0 }}>
-            <span className="mono-label">{t("The website", "O website")}</span>
-          </span>
-          <span aria-hidden="true" className="be-wire-run" style={{ ["--i" as string]: 0 }} />
-          <span className="be-wire-node" style={{ ["--n" as string]: 1 }}>
-            <span className="mono-label">{tools[0]}</span>
-          </span>
-          <span aria-hidden="true" className="be-wire-run" style={{ ["--i" as string]: 1 }} />
-          <span className="be-wire-node" style={{ ["--n" as string]: 2 }}>
-            <span className="mono-label">{tools[1]}</span>
-          </span>
-          <span aria-hidden="true" className="be-wire-run" style={{ ["--i" as string]: 2 }} />
-          <span className="be-wire-node" style={{ ["--n" as string]: 3 }}>
-            <span className="mono-label">{tools[2]}</span>
-          </span>
-        </div>
+        {/* The tools tied to the website and to the client, with the
+            data running along the wires (n8n's canvas, in our black and
+            white). The names come from above, so they fill themselves
+            in when the studio gives them. */}
+        <ToolFlow t={t} names={tools} />
 
         <div className="be-made-rows">
           {[
@@ -527,6 +526,8 @@ function Made({ t }: { t: T }) {
             </SlideIn>
           ))}
         </div>
+
+        <CostBars t={t} />
 
         <SlideIn ready distance={0} delay={0.22}>
           <div className="be-made-foot">
