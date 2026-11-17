@@ -203,6 +203,7 @@ function Relief({ t, lit }: { t: T; lit: "near" | "far" | null }) {
         )}
       >
         <div ref={stage} className="psm-stage" style={{ width: BOX_W, height: BOX_H }}>
+          <div className="psm-float">
           <span aria-hidden="true" className="psm-shade" />
 
           {/* The land, slice by slice. */}
@@ -233,6 +234,7 @@ function Relief({ t, lit }: { t: T; lit: "near" | "far" | null }) {
             className="psm-ring"
             style={{ left: GX, top: GY }}
           />
+          </div>
         </div>
       </div>
 
