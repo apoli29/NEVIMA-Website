@@ -6,7 +6,7 @@ by any agent; run them in the order below.
 | # | Title | Severity | Status |
 | --- | --- | --- | --- |
 | 001 | [Replace the slat wipe between sections with a stacked-sheet transition](001-sheet-stack-section-transition.md) | MEDIUM | DONE |
-| 002 | [Side by side: entrances for the section heads, the plates and their controls](002-side-by-side-entrances.md) | LOW | TODO |
+| 002 | [Side by side: entrances for the section heads, the plates and their controls](002-side-by-side-entrances.md) | LOW | DONE |
 
 ## Order and dependencies
 

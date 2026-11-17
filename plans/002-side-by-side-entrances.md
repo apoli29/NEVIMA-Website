@@ -1,7 +1,7 @@
 # 002 · Side by side: entrances for the section heads, the plates and their controls
 
 - Severity: LOW (missed opportunity: the page below its header appears still)
-- Status: TODO
+- Status: DONE (2026-11-17)
 - Written at commit: f5c00d2 (branch design/sbs-levels-pages)
 - Chosen by the user on 2026-11-17: items 1 to 4 of the audit.
 

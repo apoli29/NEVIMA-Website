@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useReducedMotion } from "motion/react";
+import { SlideIn } from "./enter";
 import { Glass } from "./cta-glass";
 import { useOriginFade, useProposal } from "./proposal-flow";
 import { useInView, type T } from "./sbs-shared";
@@ -68,17 +69,42 @@ function useDoubleSpeed(box: React.RefObject<HTMLElement | null>) {
   }, [box]);
 }
 
-/** One run of the card, forwards; the way back takes as long again. */
-const RUN_S = 13;
+/** The card's timeline, written in the seconds it is seen in (the card
+    plays at twice its written speed, useDoubleSpeed). User, 2026-11-17:
+    the pages come and go twice as fast, the moves between website and
+    landing page are twice as fast, and the landing page is held a third
+    as long (0.95s, there and back, instead of 2.9s). */
+const SEEN = {
+  start: 0.585, // before the first page is chosen
+  tick: 0.2275, // from one page chosen to the next
+  appear: 0.13, // a page coming in (or going, on the way back)
+  rest: 0.715, // the five pages, before the switch to one page
+  mode: 0.195, // the switch to "landing page"
+  move: 0.39, // a page folding into the one long page
+  lag: 0.065, // between two pages folding
+  landing: 0.477, // the one long page, held (as long again on the way back)
+};
+const T_TICK = (i: number) => SEEN.start + i * SEEN.tick;
+const T_MODE = T_TICK(4) + SEEN.appear + SEEN.rest;
+const T_MOVE = T_MODE + SEEN.mode;
+const T_LAID = T_MOVE + 4 * SEEN.lag + SEEN.move;
+const T_END = T_LAID + SEEN.landing;
+/** A moment of the run, as a percentage of it. */
+const S = (sec: number) => (sec / T_END) * 100;
+
+/** One run of the card, forwards, as written (before it is doubled); the
+    way back takes as long again. */
+const RUN_S = T_END * 2;
 
 /** Percentages of the run. */
-const TICKS = [9, 16, 23, 30, 37];
-const MODE: [number, number] = [52, 58];
+const TICKS = [0, 1, 2, 3, 4].map((i) => S(T_TICK(i)));
+const MODE: [number, number] = [S(T_MODE), S(T_MOVE)];
 function MOVE(i: number): [number, number] {
-  return [58 + i * 2, 70 + i * 2];
+  return [S(T_MOVE + i * SEEN.lag), S(T_MOVE + i * SEEN.lag + SEEN.move)];
 }
-const FRAME: [number, number] = [74, 82];
-const FADE = 1.6;
+// the frame round the one long page, as the pages settle into it
+const FRAME: [number, number] = [S(T_MOVE + 0.52), S(T_MOVE + 0.78)];
+const FADE = S(0.052);
 
 type Win = [number, number];
 
@@ -102,14 +128,14 @@ const CARD_CSS = (() => {
   const ease = "animation-timing-function:cubic-bezier(0.65,0,0.35,1)";
   TICKS.forEach((p, i) => {
     css.push(
-      `@keyframes sbp-tick-${i}{0%,${p + 0.4}%{stroke-dashoffset:14}${p + 2.2}%,100%{stroke-dashoffset:0}}`,
-      `@keyframes sbp-opt-${i}{0%,${p}%{color:rgb(255 255 255 / 0.38)}${p + 1.2}%,100%{color:#fff}}`,
+      `@keyframes sbp-tick-${i}{0%,${p + S(0.013)}%{stroke-dashoffset:14}${p + S(0.0715)}%,100%{stroke-dashoffset:0}}`,
+      `@keyframes sbp-opt-${i}{0%,${p}%{color:rgb(255 255 255 / 0.38)}${p + S(0.039)}%,100%{color:#fff}}`,
     );
     const [m0, m1] = MOVE(i);
     css.push(
       `@keyframes sbp-sheet-${i}{` +
         `0%,${p}%{opacity:0;translate:0 6%;left:var(--wx);top:var(--wy);width:var(--ww);height:var(--wh)}` +
-        `${p + 4}%{opacity:1;translate:0 0;left:var(--wx);top:var(--wy);width:var(--ww);height:var(--wh)}` +
+        `${p + S(SEEN.appear)}%{opacity:1;translate:0 0;left:var(--wx);top:var(--wy);width:var(--ww);height:var(--wh)}` +
         `${m0}%{opacity:1;translate:0 0;left:var(--wx);top:var(--wy);width:var(--ww);height:var(--wh);${ease}}` +
         `${m1}%,100%{opacity:1;translate:0 0;left:var(--lx);top:var(--ly);width:var(--lw);height:var(--lh)}}`,
     );
@@ -117,7 +143,7 @@ const CARD_CSS = (() => {
     css.push(`.sbp-run .sbp-opt[data-i="${i}"]{animation-name:sbp-opt-${i}}`);
     css.push(`.sbp-run .sbp-opt[data-i="${i}"] .sbp-tick path{animation-name:sbp-tick-${i}}`);
     // the sheet's doctor's hand is written as it arrives
-    css.push(`@keyframes sbp-ink-${i}{0%,${p + 2}%{stroke-dashoffset:1}${p + 10}%,100%{stroke-dashoffset:0}}`);
+    css.push(`@keyframes sbp-ink-${i}{0%,${p + S(0.065)}%{stroke-dashoffset:1}${p + S(0.325)}%,100%{stroke-dashoffset:0}}`);
     css.push(`.sbp-run .sbp-sheet[data-i="${i}"] .pg-scrawl path{animation-name:sbp-ink-${i}}`);
   });
   // the count under the choices: one page, two, … five, then one with everything
@@ -130,13 +156,16 @@ const CARD_CSS = (() => {
   css.push(`.sbp-run .sbp-count[data-i="all"]{animation-name:sbp-count-all}`);
   // the switch, the addresses, the frame round the one long page
   css.push(`@keyframes sbp-mode{0%,${MODE[0]}%{translate:0 0;${ease}}${MODE[1]}%,100%{translate:100% 0}}`);
-  css.push(windows("sbp-path", [[0, 54]]));
-  css.push(windows("sbp-anchor", [[76, 100]]));
+  css.push(windows("sbp-path", [[0, S(T_MODE + 0.065)]]));
+  css.push(windows("sbp-anchor", [[S(T_MOVE + 0.585), 100]]));
   css.push(windows("sbp-frame", [FRAME]));
   // the three steps under the card, each lit while it happens
-  css.push(windows("sbp-step-0", [[0, 7], [50, 60]], 0.32));
-  css.push(windows("sbp-step-1", [[7, 50]], 0.32));
-  css.push(windows("sbp-step-2", [[60, 100]], 0.32));
+  const pick = S(SEEN.start - 0.13);
+  const ask = S(T_MODE - 0.065);
+  const built = S(T_MOVE + 0.065);
+  css.push(windows("sbp-step-0", [[0, pick], [ask, built]], 0.32));
+  css.push(windows("sbp-step-1", [[pick, ask]], 0.32));
+  css.push(windows("sbp-step-2", [[built, 100]], 0.32));
   return css.join("\n");
 })();
 
@@ -947,19 +976,21 @@ export function SbsPersonal() {
     <section aria-labelledby="sbp-title" className="sbp relative bg-paper pt-(--section-gap) pb-(--section-gap)">
       <div className="shell">
         <div className="sbp-head">
-          <div>
+          <SlideIn ready>
             <p className="mono-label text-ash-2">{t("Personalization", "Personalização")}</p>
             <h2 id="sbp-title" className="display mt-6 text-balance text-[clamp(2rem,4.6vw,3.75rem)] leading-[1.02]">
               <span className="font-light sm:block">{t("This service is built, above all,", "Este serviço tem foco máximo")}</span>{" "}
               <span className="font-medium sm:block">{t("around personalization.", "na personalização.")}</span>
             </h2>
-          </div>
-          <p className="sbp-lede">
-            {t(
-              "You choose your website’s pages, or just one page (a landing page) with everything on it.",
-              "O cliente escolhe as páginas do website, ou apenas uma página (landing page) com tudo.",
-            )}
-          </p>
+          </SlideIn>
+          <SlideIn ready distance={0} delay={0.08}>
+            <p className="sbp-lede">
+              {t(
+                "You choose your website’s pages, or just one page (a landing page) with everything on it.",
+                "O cliente escolhe as páginas do website, ou apenas uma página (landing page) com tudo.",
+              )}
+            </p>
+          </SlideIn>
         </div>
 
         <figure ref={figure} className="sbp-figure">

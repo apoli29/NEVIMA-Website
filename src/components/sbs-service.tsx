@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { SlideIn } from "./enter";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Switch, useInView, useScramble } from "./sbs-shared";
 import { Ours } from "./sbs-pilar";
@@ -83,20 +84,25 @@ export function SbsLevels() {
     <section aria-labelledby="sbl-title" className="sbl relative isolate bg-ink py-(--section-gap) text-paper">
       <div className="shell sbl-grid">
         <div className="sbl-head">
+          <SlideIn ready>
           <p className="mono-label text-paper/55">{t("Design levels", "Níveis de design")}</p>
           <h2 id="sbl-title" className="display mt-6 text-balance text-[clamp(2rem,4.6vw,3.75rem)] leading-[1.02]">
             <span className="font-light sm:block">{t("Two levels,", "Dois níveis,")}</span>{" "}
             <span className="font-medium sm:block">{t("the same care.", "o mesmo cuidado.")}</span>
           </h2>
+          </SlideIn>
+          <SlideIn ready distance={0} delay={0.08}>
           <p className="mt-7 max-w-[44ch] text-[1.0625rem] leading-[1.55] text-paper/70">
             {t(
               "An Essential+ website is designed with as much care as an Advanced one. Advanced adds complex design elements, which take longer to work on and give it a more premium look.",
               "Um website Essencial+ tem uma estética tão cuidada como um Avançado. O Avançado acrescenta elementos de design complexos, que levam mais tempo a trabalhar e lhe dão uma estética mais premium.",
             )}
           </p>
+          </SlideIn>
         </div>
 
         <div className="sbl-ctrl">
+          <SlideIn ready distance={0} delay={0.12}>
           <div>
             <Switch
               dark
@@ -126,9 +132,11 @@ export function SbsLevels() {
               ))}
             </div>
           </div>
+          </SlideIn>
         </div>
 
         <figure className="sbl-figure">
+          <SlideIn ready from="below" distance={24}>
           <div ref={plate} className="sbl-plate" {...tap}>
             <div ref={scrub} className="absolute inset-0">
               <AnimatePresence initial={false}>
@@ -148,13 +156,17 @@ export function SbsLevels() {
               </AnimatePresence>
             </div>
           </div>
+          </SlideIn>
           <figcaption className="sbl-caption mono-label">
+            <SlideIn ready from="below" distance={10} delay={0.18}>
             {t(
               "The same invented insurance broker as above, its whole page at each level.",
               "A mesma mediadora inventada de cima, com a página inteira em cada nível.",
             )}
+            </SlideIn>
           </figcaption>
           {!reduce && (
+            <SlideIn ready from="below" distance={10} delay={0.18}>
             <ExploreBar
               t={t}
               manual={manual}
@@ -167,6 +179,7 @@ export function SbsLevels() {
                 setOpen(true);
               }}
             />
+            </SlideIn>
           )}
         </figure>
 

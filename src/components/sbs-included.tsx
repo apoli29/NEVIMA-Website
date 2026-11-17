@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { useReducedMotion } from "motion/react";
+import { SlideIn } from "./enter";
 import { useInView, useScramble, type T } from "./sbs-shared";
 import { useT } from "@/lib/use-lang";
 
@@ -337,19 +338,21 @@ export function SbsIncluded() {
     <section aria-labelledby="sbi-title" className="sbi relative bg-paper py-(--section-gap)">
       <div className="shell">
         <div className="sbi-head">
-          <div>
+          <SlideIn ready>
             <p className="mono-label text-ash-2">{t("Included in the service", "Incluído no serviço")}</p>
             <h2 id="sbi-title" className="display mt-6 text-balance text-[clamp(2rem,4.6vw,3.75rem)] leading-[1.02]">
               <span className="font-light sm:block">{t("What many charge extra for", "O que muitos cobram à parte,")}</span>{" "}
               <span className="font-medium sm:block">{t("is included here.", "aqui está incluído.")}</span>
             </h2>
-          </div>
-          <p className="sbi-lede">
-            {t(
-              "Ten things that are part of the web design service.",
-              "Dez coisas que fazem parte do serviço de web design.",
-            )}
-          </p>
+          </SlideIn>
+          <SlideIn ready distance={0} delay={0.08}>
+            <p className="sbi-lede">
+              {t(
+                "Ten things that are part of the web design service.",
+                "Dez coisas que fazem parte do serviço de web design.",
+              )}
+            </p>
+          </SlideIn>
         </div>
 
         <div

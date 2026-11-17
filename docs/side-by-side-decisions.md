@@ -911,3 +911,16 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   travada"): it was promoted to a layer of its own at each move, so its
   fifteen masked layers were drawn again as it set off. It is now kept on
   its layer (will-change on it and on its turn).
+- 2026-11-17: the page itself (not the plates) gets the site's entrance
+  throughout (plans/002): the heads of "Included", "Design levels" and
+  "Personalization" slide in as the page's header does (SlideIn), their
+  lede 0.08s after; the plates rise 24px from 98% (the comparison's second
+  plate 0.09s after the first), the level switch and note fade in 0.12s
+  after, the buttons and notes under the plates rise 10px at 0.18s.
+  SlideIn learned `from="below"`. Once per visit; reduced motion shows all.
+- 2026-11-17: personalization, faster (user): the pages come and go twice
+  as fast (one every 0.23s, each in 0.13s), the moves between website and
+  landing page twice as fast (switch 0.2s, each page folding in 0.39s, the
+  frame 0.26s), and the landing page held a third as long (0.95s at the
+  turn instead of 2.9s). The timeline is now written in the seconds it is
+  seen in (SEEN in sbs-personal.tsx); one run forward is 3.66s.

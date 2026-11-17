@@ -525,6 +525,7 @@ export function SideBySide() {
 
           <div className="sbs-wide">
             <div ref={pair} className="sbs-pair" {...tap}>
+              <SlideIn ready from="below" distance={24}>
               <Plate
                 quiet
                 running={running}
@@ -537,7 +538,9 @@ export function SideBySide() {
               >
                 <Template t={t} />
               </Plate>
+              </SlideIn>
 
+              <SlideIn ready from="below" distance={24} delay={0.09}>
               <Plate
                 running={running}
                 label={t("Nevima’s design", "Design da Nevima")}
@@ -549,9 +552,11 @@ export function SideBySide() {
               >
                 <Ours t={t} />
               </Plate>
+              </SlideIn>
             </div>
 
             {!reduce && (
+              <SlideIn ready from="below" distance={10} delay={0.18}>
               <ExploreBar
                 t={t}
                 manual={manual}
@@ -561,6 +566,7 @@ export function SideBySide() {
                 }}
                 onOpen={() => setOpen(true)}
               />
+              </SlideIn>
             )}
 
             <SbsPreview t={t} open={open} onClose={() => setOpen(false)} label={t("Side by side", "Lado a lado")} wide>
@@ -578,12 +584,14 @@ export function SideBySide() {
               </figure>
             </SbsPreview>
 
+            <SlideIn ready from="below" distance={10} delay={0.18}>
             <p className="sbs-note mono-label">
               {t(
                 "Both pages are demonstrations built for this page, and the insurance broker is invented.",
                 "Ambas as páginas são demonstrações feitas para esta página, e a mediadora de seguros é inventada.",
               )}
             </p>
+            </SlideIn>
           </div>
         </section>
         </div>
