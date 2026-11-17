@@ -131,12 +131,16 @@
    * A frente.
    * o.bleed   mm de sangria (0 nos mockups, 3 na prova)
    * o.relevo  true desenha o deboss (mockups); false, a arte plana (prova)
-   * o.chapa   true dá a chapa do deboss: o logótipo a preto sobre branco
+   * o.chapa   true dá a chapa do deboss: o logótipo, o ™ e a seta a preto
+   *           sobre branco (o que é prensado)
+   * o.branco  true dá a camada do branco: tudo o que sai a branco na frente
+   *           (logótipo, ™, seta e notas), a preto sobre branco, para o foil
    */
   function frente(o = {}) {
     const b = o.bleed || 0;
-    const fundo = o.chapa ? "#fff" : o.relevo ? "#141414" : "#000";
-    const tinta = o.chapa ? "#000" : "#fff";
+    const mascara = o.chapa || o.branco;
+    const fundo = mascara ? "#fff" : o.relevo ? "#141414" : "#000";
+    const tinta = mascara ? "#000" : "#fff";
     const filtro = o.relevo ? `filter="url(#deboss)"` : "";
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-b} ${-b} ${W + 2 * b} ${H + 2 * b}" width="100%" height="100%" preserveAspectRatio="none">
       ${o.relevo ? `<defs>${DEBOSS_FILTER}</defs>` : ""}
