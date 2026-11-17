@@ -6751,6 +6751,11 @@
 /* ---- the photo shoot's header, as the side-by-side page's is -------- */
 @layer components {
   .ps-head { padding-top: calc(var(--section-gap) + 2rem); padding-bottom: clamp(2.5rem, 5vw, 4rem); }
+  /* The photo shoot's header sits in the middle of the page, but its
+     words stay ranged left as every other header's are (user,
+     2026-11-17: "a mesma, mas centrado comparado à página"). The block
+     is narrowed and centred; nothing inside it is centred. */
+  .ps-head-mid { width: min(100%, 58rem); margin-inline: auto; }
   .ps-head-say {
     margin-top: 2rem;
     max-width: 30ch;

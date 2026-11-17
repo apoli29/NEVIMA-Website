@@ -55,7 +55,10 @@ function Head({ t }: { t: T }) {
   ];
   return (
     <section data-tone="dark" className="relative isolate text-paper">
-      <header className="shell ps-head" data-tone-body>
+      {/* Centred, and with no button of its own (user, 2026-11-17): the
+          page ends on "Let's work together", and the bar carries the
+          proposal all the way down. */}
+      <header className="shell ps-head ps-head-mid" data-tone-body>
         <SlideIn ready>
           <p className="mono-label text-paper/55">{t("Additional service", "Serviço adicional")}</p>
           <h1 className="display mt-7 max-w-[18ch] text-[clamp(2.5rem,6vw,4.75rem)] leading-[0.98] font-light">
@@ -77,9 +80,6 @@ function Head({ t }: { t: T }) {
               </div>
             ))}
           </dl>
-        </SlideIn>
-        <SlideIn ready distance={0} delay={0.22} className="ps-head-ask">
-          <ProposalAsk label={t("Get your free proposal", "Pedir proposta gratuita")} />
         </SlideIn>
       </header>
     </section>
