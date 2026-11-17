@@ -5,7 +5,6 @@ import { useReducedMotion } from "motion/react";
 import { SlideIn } from "./enter";
 import { BeforeAfter } from "./project-report";
 import { ToneRoom } from "./tone-veil";
-import { ProposalAsk } from "./about-faq";
 import { useInView, type T } from "./sbs-shared";
 import { useT } from "@/lib/use-lang";
 
@@ -51,6 +50,8 @@ function Head({ t }: { t: T }) {
   ];
   return (
     <section data-tone="dark" className="relative isolate text-paper">
+      {/* No drop of its own (user, 2026-11-17): the bar carries one all
+          the way down and the page ends on "Let's work together". */}
       <header className="shell ps-head" data-tone-body>
         <SlideIn ready>
           <p className="mono-label text-paper/55">{t("Additional service", "Serviço adicional")}</p>
@@ -73,9 +74,6 @@ function Head({ t }: { t: T }) {
               </div>
             ))}
           </dl>
-        </SlideIn>
-        <SlideIn ready distance={0} delay={0.22} className="ps-head-ask">
-          <ProposalAsk label={t("Get your free proposal", "Pedir proposta gratuita")} />
         </SlideIn>
       </header>
     </section>
@@ -332,9 +330,6 @@ function Fits({ t }: { t: T }) {
                 "Se faz sentido, nesse caso, um logótipo e um símbolo novos é parte do que definimos em conjunto, antes de se cobrar o que quer que seja.",
               )}
             </p>
-            <div className="vi-doubt-ask">
-              <ProposalAsk label={t("Get your free proposal", "Pedir proposta gratuita")} />
-            </div>
           </div>
         </SlideIn>
       </div>

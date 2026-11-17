@@ -56,6 +56,13 @@ in view) and Feathericons (the mark as a specimen in a ruled cell).
 Their colour and type stay with them; this is the site's own black,
 white and light grey, Satoshi and Geist Mono.
 
+## Changed since
+
+- 2026-11-17 (user): the page carries **no free-proposal drop of its
+  own**, in the header or at the foot of "who it is for". The bar has
+  one all the way down the page and the page ends on "Let's work
+  together"; a third was one too many.
+
 ## Open
 
 - The real work: four images.
