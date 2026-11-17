@@ -384,19 +384,24 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
 ## The comparison in grey (2026-11-16, user)
 
 - The comparison, from its title down to the note under the two pages,
-  is on one grey ground (#e1e1de, the light from the top left and the
-  grain kept), instead of the black stage under a white header: the
-  ground now sits on a wrapper round the header and the stage
-  (`.sbs-top`), so there is no seam. Its type is ink.
+  is on one ground: the ground now sits on a wrapper round the header and
+  the stage (`.sbs-top`), so there is no seam. A light grey was tried
+  first; the user kept the area but wanted the stage's earlier colour
+  back (#0b0b0b, the light from the top left, the grain), so the header
+  is now white type on it too.
 - The two plates are labelled "Designs from other professionals" /
   "Design de outros profissionais" and "Nevima's design" / "Design da
   Nevima" (user's words), in place of "Off-the-shelf template" and
   "nevima". The intro paragraph still speaks of a template; it is the
   user's to change.
-- Open: the user found the cards' backgrounds (the black metal) too
-  straight and square for a site whose own surfaces are gradients and
-  curves; three alternatives were shown as prints (liquid light,
-  contour lines, a bent sheet of metal) before anything is applied.
+- The cards' backgrounds (user: the black metal was too straight and
+  square for a site whose own surfaces are gradients and curves); three
+  were shown as prints and the user chose two: the walls of Included
+  take C, a bent sheet of metal (graphite running to black, one wide
+  curved band of light and the fold's edge); the personalization card
+  and the call card take A, liquid light (soft blurred pools of light on
+  black, drifting slowly, as the footer's light drifts). The fine grid
+  on the call card went with it. Both are SVG embedded in the CSS.
 
 ## Open
 
@@ -495,3 +500,14 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
   leaves, with no border and no shadow. A pixel past the edge, so the
   curve it is cut into never shows along the join. Under 900px there is
   no room for it, and it simply follows the photograph.
+
+## The comparison back to dark, the card's opening, a start in view (2026-11-17, user)
+
+- The dark ground over the whole comparison, title included, and the bent-metal / liquid-light backgrounds had been built on 2026-11-16 but never merged, which is why the live page still showed the old look. They are merged now, with the plates' address bars removed (the address is kept in the markup for screen readers) and the plates a little taller to take that room.
+- The personalization card's Website / Landing page switch now fills the side's width in two equal halves and can no longer run past the side's rule on narrower screens.
+- The card opens with the areas a business can be in (clinic, restaurant, estate agent, law firm, gym…) floating at three depths on a plain gradient, without the card's patterns. The current business's area is chosen: it turns white and comes to the middle, the others blur away, and the pages are built as before. After one run there and back, the next business's area is chosen. The order is the card's three businesses: dental clinic, restaurant, estate agent.
+- The card does nothing until it is at least 30% on screen, so the story is seen from its start; the call card already waited for 40% of itself.
+
+- 2026-11-17 (user): the areas lost their boxes, plain words only (the chosen one brightens and grows a little), and they float closer to the middle of the card, still spread out.
+
+- 2026-11-17 (user): the time bar moved over the two walls and made smaller; the three keys are one black block with no rules between them, and finer icons (thin long arrows that lean on hover, thin pause and an outlined play).

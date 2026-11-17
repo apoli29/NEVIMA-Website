@@ -238,7 +238,12 @@ function ServicesMenu() {
   const [open, setOpen] = useState(false);
   const wrap = useRef<HTMLSpanElement>(null);
   const button = useRef<HTMLButtonElement>(null);
+  const hover = useRef(false);
+  const leave = useRef<ReturnType<typeof setTimeout> | null>(null);
   const items = servicesMenu(lang);
+  useEffect(() => () => {
+    if (leave.current) clearTimeout(leave.current);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -262,8 +267,21 @@ function ServicesMenu() {
     <span
       ref={wrap}
       className="nav-svc relative hidden md:inline-flex"
-      onPointerEnter={() => setOpen(true)}
-      onPointerLeave={() => setOpen(false)}
+      // A mouse opens it by resting on it; a touch only by the press, or
+      // the press that follows would shut what the touch had just opened.
+      // Leaving shuts it a beat later, so a hand that cuts a corner on
+      // the way to the panel does not lose it (user, 2026-11-16).
+      onPointerEnter={(event) => {
+        if (event.pointerType !== "mouse") return;
+        hover.current = true;
+        if (leave.current) clearTimeout(leave.current);
+        setOpen(true);
+      }}
+      onPointerLeave={(event) => {
+        if (event.pointerType !== "mouse") return;
+        hover.current = false;
+        leave.current = setTimeout(() => setOpen(false), 180);
+      }}
       onBlur={(event) => {
         if (!wrap.current?.contains(event.relatedTarget as Node)) setOpen(false);
       }}
@@ -273,7 +291,9 @@ function ServicesMenu() {
         type="button"
         aria-expanded={open}
         aria-controls={id}
-        onClick={() => setOpen(!open)}
+        // Under a resting mouse the menu is already open: a click there
+        // keeps it open instead of shutting it.
+        onClick={() => setOpen(hover.current ? true : !open)}
         className="nav-link inline-flex items-center border-l border-paper/15 px-2.5 text-[0.9375rem] text-paper lg:px-6"
       >
         <span className="mr-2 hidden align-[0.12em] font-mono text-[0.625rem] tracking-[0.06em] text-paper/45 tabular-nums lg:inline">

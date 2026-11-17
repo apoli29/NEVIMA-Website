@@ -12,6 +12,8 @@ import { Included } from "./services";
 import { ServiceDepth, ServiceHero } from "./service-depth";
 import { ShootSections } from "./shoot-sections";
 import { WorkTogether } from "./work-together";
+import { SeoGeo } from "./seo-geo";
+import { seoPriceTable } from "@/lib/proposal/seo-table";
 
 /* ==================================================================
    One page per service.
@@ -62,6 +64,22 @@ export function ServicePage({ slug, lang }: { slug: string; lang: Lang }) {
   const others = servicesIn(lang).filter(
     (other) => other.slug !== service.slug && !OWN_PAGE.has(other.slug),
   );
+
+  /* SEO & GEO has a page of its own (seo-geo.tsx; user, 2026-11-16):
+     nothing of the template below is used there. */
+  if (service.slug === "seo") {
+    return (
+      <ProposalHost>
+        <JsonLd data={serviceGraph(service.slug, lang)} />
+        <FloatingNav />
+        <main id="top" className="relative bg-paper">
+          <SeoGeo prices={seoPriceTable()} />
+        </main>
+        <WorkTogether />
+        <Footer />
+      </ProposalHost>
+    );
+  }
 
   return (
     <ProposalHost>

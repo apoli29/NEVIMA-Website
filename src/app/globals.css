@@ -1557,8 +1557,8 @@
     --pad-x: calc(var(--pad) * 2);
     min-height: calc(var(--ph) + var(--pad) * 2 + 1.25rem);
     background:
-      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0) 46%),
-      #e1e1de;
+      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0) 42%),
+      #0b0b0b;
   }
   @media (min-width: 768px) {
     .svc-card { --ph: 3.5rem; --pad: 1.25rem; --gap: 1.25rem; --pad-x: calc(var(--pad) * 3); }
@@ -3899,8 +3899,8 @@
     z-index: -1;
     pointer-events: none;
     background:
-      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.55), rgb(255 255 255 / 0) 46%),
-      #e1e1de;
+      radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0) 42%),
+      #0b0b0b;
   }
   .sbs-ground::after {
     content: "";
@@ -3914,13 +3914,13 @@
      side on one screen, and every pixel taken off them is type nobody
      can read. */
   .sbs-wide { width: 100%; max-width: 102rem; margin-inline: auto; padding-inline: var(--gutter); }
-  .sbs-pair { display: grid; gap: clamp(1.75rem, 3.5vw, 3rem); }
+  .sbs-pair { display: grid; gap: clamp(1.25rem, 2.5vw, 2rem); }
   @media (min-width: 900px) { .sbs-pair { grid-template-columns: 1fr 1fr; } }
 
   .sbs-cap { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.75rem; }
   /* The template's name is held back a tone, so ours reads as the answer. */
-  .sbs-cap .mono-label { color: var(--color-ink); }
-  .sbs-cap .mono-label[data-quiet] { color: var(--color-ash); }
+  .sbs-cap .mono-label { color: var(--color-paper); }
+  .sbs-cap .mono-label[data-quiet] { color: rgb(255 255 255 / 0.62); }
 
   .sbs-sheet { background: var(--color-paper); }
   /* The address a browser would carry, in the gallery's own label. */
@@ -3935,7 +3935,8 @@
     text-transform: none;
     letter-spacing: 0.02em;
   }
-  .sbs-screen { position: relative; aspect-ratio: 9 / 7; overflow: hidden; --sbs-k: 0.5; }
+  /* taller by what the address bar used to take (user, 2026-11-16) */
+  .sbs-screen { position: relative; aspect-ratio: 9 / 7.45; overflow: hidden; --sbs-k: 0.5; }
   /* The page itself, at its own size, shrunk into the plate. */
   .sbs-mini {
     position: absolute;
@@ -3973,7 +3974,7 @@
   /* ================= the off-the-shelf template ==================== */
   /* The stops are each side's own, so each page ends on its own
      foot: the moments are shared, the distances are not. */
-  .sbs-t-page { --sbs-stop-1: -260px; --sbs-stop-2: -520px; --sbs-stop-3: -780px; --sbs-stop-4: -1039px; background: #fff; }
+  .sbs-t-page { --sbs-stop-1: -260px; --sbs-stop-2: -520px; --sbs-stop-3: -780px; --sbs-stop-4: -994px; background: #fff; }
 
   /* The bar that never gets there: it crawls, stalls, and starts again. */
   .sbs-load {
@@ -4099,7 +4100,7 @@
     --sbs-stop-1: -700px;
     --sbs-stop-2: -1190px;
     --sbs-stop-3: -1670px;
-    --sbs-stop-4: -2100px;
+    --sbs-stop-4: -2055px;
     --p-noite: #111525;
     --p-grafite: #434655;
     --p-nevoa: #a8aabc;
@@ -4311,7 +4312,7 @@
   .sbs-p-foot-legal { display: flex; justify-content: space-between; gap: 16px; padding: 18px 0 24px; border-top: 1px solid rgb(255 255 255 / 0.14); font-size: 12px; color: rgb(255 255 255 / 0.74); }
   .sbs-p-foot-legal > span > span + span { margin-left: 18px; }
 
-  .sbs-note { margin-top: clamp(1.5rem, 3vw, 2.25rem); color: var(--color-ash); text-transform: none; letter-spacing: 0.02em; }
+  .sbs-note { margin-top: clamp(1.5rem, 3vw, 2.25rem); color: rgb(255 255 255 / 0.62); text-transform: none; letter-spacing: 0.02em; }
 
   /* Held still: both pages as they end up, the template's mess included. */
   @media (prefers-reduced-motion: reduce) {
@@ -4480,14 +4481,14 @@
   /* two walls, ours and theirs, then the two labels under them, then the time */
   .sbi-room {
     display: grid;
-    grid-template-areas: "walls" "them" "side" "time";
+    grid-template-areas: "time" "walls" "them" "side";
     gap: 2rem;
     margin-top: clamp(2.5rem, 5vw, 4rem);
   }
   @media (min-width: 768px) {
     .sbi-room {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      grid-template-areas: "walls walls" "them side" "time time";
+      grid-template-areas: "time time" "walls walls" "them side";
       column-gap: clamp(1.25rem, 2.5vw, 2rem);
       row-gap: 2rem;
     }
@@ -4507,12 +4508,14 @@
     isolation: isolate;
     overflow: hidden;
     padding: var(--pt) var(--px) var(--pb);
-    /* the black metal of the cards below, the same on both walls */
+    /* a bent sheet of metal, the same on both walls (user's pick of
+       three, 2026-11-16): graphite running to black, one wide curved
+       band of light across it and the fold's edge drawn in it */
     background-color: #0c0c0d;
     background-image:
-      radial-gradient(120% 80% at 12% 0%, rgb(255 255 255 / 0.08), transparent 55%),
-      repeating-linear-gradient(90deg, rgb(255 255 255 / 0.016) 0 1px, transparent 1px 3px),
-      linear-gradient(160deg, #1d1d1f 0%, #0b0b0c 45%, #151517 72%, #0a0a0b 100%);
+      url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 640 300%27 preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3ClinearGradient id=%27s%27 x1=%270%27 y1=%270%27 x2=%271%27 y2=%270%27%3E%3Cstop offset=%270%27 stop-color=%27%23fff%27 stop-opacity=%270%27/%3E%3Cstop offset=%27.5%27 stop-color=%27%23fff%27 stop-opacity=%27.22%27/%3E%3Cstop offset=%271%27 stop-color=%27%23fff%27 stop-opacity=%270%27/%3E%3C/linearGradient%3E%3Cfilter id=%27f%27 x=%27-20%25%27 y=%27-50%25%27 width=%27140%25%27 height=%27200%25%27%3E%3CfeGaussianBlur stdDeviation=%2715%27/%3E%3C/filter%3E%3C/defs%3E%3Cpath d=%27M-64 285 C160 60 384 330 704 45 L704 96 C397 375 166 114 -64 336 Z%27 fill=%27url(%23s)%27 filter=%27url(%23f)%27/%3E%3Cpath d=%27M-64 285 C160 60 384 330 704 45%27 fill=%27none%27 stroke=%27%23fff%27 stroke-opacity=%27.18%27 stroke-width=%271%27 vector-effect=%27non-scaling-stroke%27/%3E%3C/svg%3E"),
+      linear-gradient(135deg, #4a4a4d 0%, #1a1a1c 45%, #0c0c0d 100%);
+    background-size: 100% 100%, auto;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12), inset 0 0 0 1px rgb(255 255 255 / 0.06);
   }
   /* the light: a pool on the wall over the work that is lit, carried
@@ -4673,9 +4676,10 @@
   .sbi-aside-lead { color: var(--color-ash-2); }
 
   /* the time: one hairline per work, after Pace Gallery's */
-  .sbi-time { grid-area: time; display: flex; align-items: center; gap: clamp(1rem, 3vw, 2.5rem); }
-  .sbi-ticks { flex: 1; display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; }
-  .sbi-tick { position: relative; height: 1.25rem; cursor: pointer; }
+  /* over the walls, smaller (user, 2026-11-17) */
+  .sbi-time { grid-area: time; display: flex; align-items: center; gap: clamp(1rem, 2.5vw, 2rem); margin-bottom: -0.75rem; }
+  .sbi-ticks { flex: 1; display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; }
+  .sbi-tick { position: relative; height: 1rem; cursor: pointer; }
   .sbi-tick::before {
     content: "";
     position: absolute;
@@ -4703,35 +4707,25 @@
   }
   .sbi-tick-fill[data-run] { animation-play-state: running; }
   @keyframes sbi-fill { from { scale: 0 1; } to { scale: 1 1; } }
-  .sbi-keys { display: flex; box-shadow: inset 0 0 0 1px var(--color-hair-strong); }
+  /* one black block, no rules between the keys (user, 2026-11-17) */
+  .sbi-keys { display: flex; padding: 0 0.2rem; background: var(--color-ink); }
   .sbi-key {
     position: relative;
     isolation: isolate;
     display: grid;
     place-items: center;
-    width: 2.75rem;
-    height: 2.75rem;
-    color: var(--color-ink);
+    width: 2.15rem;
+    height: 2.15rem;
+    color: rgb(255 255 255 / 0.72);
     cursor: pointer;
     transition: color 0.45s cubic-bezier(0.65, 0, 0.35, 1);
   }
-  .sbi-key + .sbi-key { box-shadow: inset 1px 0 0 var(--color-hair-strong); }
-  /* the ink fills it from the left, as the bar's proposal button fills */
-  .sbi-key::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: var(--color-ink);
-    clip-path: inset(0 100% 0 0);
-    transition: clip-path 0.45s cubic-bezier(0.65, 0, 0.35, 1);
-  }
   .sbi-key:hover,
-  .sbi-key:focus-visible { color: var(--color-paper); }
-  .sbi-key:hover::before,
-  .sbi-key:focus-visible::before { clip-path: inset(0 0 0 0); }
-  .sbi-key:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 2px; }
-  .sbi-key svg { width: 0.9rem; height: 0.9rem; }
+  .sbi-key:focus-visible { color: #fff; }
+  .sbi-key:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 3px; }
+  .sbi-key svg { width: 0.95rem; height: 0.95rem; transition: translate 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+  .sbi-key:hover .sbi-key-back { translate: -2px 0; }
+  .sbi-key:hover .sbi-key-fwd { translate: 2px 0; }
 
   /* ---- two levels: one plate, two builds of the same section -------- */
   /* On a phone the plate comes between the words and the switch, so the
@@ -4869,32 +4863,27 @@
     isolation: isolate;
     overflow: hidden;
     color: var(--color-paper);
-    background-color: #0c0c0d;
-    background-image:
-      radial-gradient(120% 80% at 12% 0%, rgb(255 255 255 / 0.09), transparent 55%),
-      radial-gradient(90% 70% at 100% 100%, rgb(255 255 255 / 0.045), transparent 60%),
-      repeating-linear-gradient(90deg, rgb(255 255 255 / 0.016) 0 1px, transparent 1px 3px),
-      linear-gradient(160deg, #1d1d1f 0%, #0b0b0c 45%, #151517 72%, #0a0a0b 100%);
+    background: #0b0b0c;
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.12),
-      inset 0 0 0 1px rgb(255 255 255 / 0.06),
+      inset 0 1px 0 rgb(255 255 255 / 0.1),
+      inset 0 0 0 1px rgb(255 255 255 / 0.05),
       0 40px 80px -50px rgb(0 0 0 / 0.6);
   }
-  /* a light crossing the metal, slowly, now and then */
+  /* liquid light (user's pick of three, 2026-11-16): soft pools of light
+     on the black, curved and blurred, drifting slowly, as the light
+     behind the footer drifts */
   .sbx-metal::after {
     content: "";
     position: absolute;
-    inset: 0;
+    inset: -12%;
     z-index: 0;
-    background: linear-gradient(112deg, transparent 38%, rgb(255 255 255 / 0.045) 50%, transparent 62%);
-    background-size: 260% 100%;
-    background-position: 120% 0;
-    animation: sbx-sheen 11s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    background: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 1300 600%27 preserveAspectRatio=%27none%27%3E%3Cdefs%3E%3Cfilter id=%27b%27 x=%27-50%25%27 y=%27-50%25%27 width=%27200%25%27 height=%27200%25%27%3E%3CfeGaussianBlur stdDeviation=%2778%27/%3E%3C/filter%3E%3C/defs%3E%3Cg filter=%27url(%23b)%27%3E%3Cpath d=%27M966 329 Q966 329 915 421 Q865 514 733 557 Q600 600 489 542 Q378 485 302 407 Q226 329 274 231 Q321 133 461 82 Q600 31 706 106 Q812 181 889 255 Z%27 fill=%27%23fff%27 opacity=%270.16%27/%3E%3Cpath d=%27M831 104 Q831 104 735 171 Q639 239 542 324 Q446 408 293 363 Q140 318 103 211 Q66 104 124 11 Q182 -81 314 -92 Q446 -102 541 -66 Q636 -30 734 37 Z%27 fill=%27%23fff%27 opacity=%270.09%27/%3E%3Cpath d=%27M897 89 Q897 89 856 136 Q815 183 747 221 Q680 259 594 234 Q509 208 449 148 Q390 89 446 27 Q502 -36 591 -66 Q680 -97 767 -66 Q855 -34 876 27 Z%27 fill=%27%23fff%27 opacity=%270.12%27/%3E%3Cpath d=%27M1146 280 Q1146 280 1098 360 Q1050 441 934 468 Q819 494 716 459 Q614 423 597 351 Q579 280 618 223 Q657 166 738 140 Q819 114 893 145 Q966 176 1056 228 Z%27 fill=%27%23fff%27 opacity=%270.06%27/%3E%3C/g%3E%3C/svg%3E") center / 100% 100% no-repeat;
+    animation: sbx-drift 26s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
     pointer-events: none;
   }
-  @keyframes sbx-sheen {
-    0%, 55% { background-position: 120% 0; }
-    100% { background-position: -20% 0; }
+  @keyframes sbx-drift {
+    from { transform: translate3d(-3%, -2%, 0) scale(1); }
+    to { transform: translate3d(3%, 2.5%, 0) scale(1.06); }
   }
 
   /* ---- personalization: the pages, side by side, then one ---------- */
@@ -4915,9 +4904,9 @@
     .sbp-card-side { box-shadow: inset -1px 0 0 rgb(255 255 255 / 0.08); }
   }
   /* the shared switch, played: a white block that inverts the word under it */
-  .sbp-modes { align-self: flex-start; }
-  .sbp-modes { grid-template-columns: 1fr 1fr; }
-  .sbp-modes .sbx-switch-opt { cursor: default; justify-content: center; min-width: 8.25rem; padding: 0.85em 0.9em; font-size: 0.8125rem; color: #fff; }
+  /* the full width of the side, two equal halves, never past its rule */
+  .sbp-modes { display: grid; align-self: stretch; width: 100%; max-width: 20rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sbp-modes .sbx-switch-opt { cursor: default; justify-content: center; min-width: 0; gap: 0.5em; padding: 0.85em 0.5em; font-size: clamp(0.75rem, 0.95vw, 0.8125rem); color: #fff; }
   .sbp-modes .sbx-switch-n { color: rgb(255 255 255 / 0.5); }
   .sbp-modes-thumb {
     position: absolute;
@@ -4932,6 +4921,78 @@
     pointer-events: none;
   }
   .sbp-opts { display: grid; gap: 0.7rem; font-size: 0.9375rem; }
+
+  /* ---- before the pages: the areas a business can be in -------------
+     The card's patterns wait (user, 2026-11-17): a plain gradient, the
+     areas floating at three depths, then one is chosen and comes to the
+     front, and the pages come in round it.                             */
+  .sbp-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(155deg, #3a3a3d 0%, #18181a 48%, #080809 100%);
+    opacity: 0;
+    transition: opacity 1s ease;
+    pointer-events: none;
+  }
+  .sbp-card::after { transition: opacity 1.2s ease; }
+  .sbp-card[data-phase="wait"]::before,
+  .sbp-card[data-phase="intro"]::before { opacity: 1; }
+  .sbp-card[data-phase="wait"]::after,
+  .sbp-card[data-phase="intro"]::after { opacity: 0; }
+  .sbp-card-side, .sbp-stage { transition: opacity 0.7s ease; }
+  .sbp-card[data-phase="wait"] > .sbp-card-side,
+  .sbp-card[data-phase="wait"] > .sbp-stage,
+  .sbp-card[data-phase="intro"] > .sbp-card-side,
+  .sbp-card[data-phase="intro"] > .sbp-stage { opacity: 0; transition-duration: 0.35s; }
+  .sbp-card > .sbp-intro { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none; }
+  .sbp-intro-label {
+    position: absolute;
+    left: clamp(1.25rem, 2.5vw, 2rem);
+    top: clamp(1.25rem, 2.5vw, 2rem);
+    color: rgb(255 255 255 / 0.55);
+    opacity: 0;
+  }
+  .sbp-chip { position: absolute; left: var(--x); top: var(--y); translate: -50% -50%; opacity: 0; }
+  .sbp-chip-in {
+    display: inline-flex;
+    padding: 0.75em 1.15em;
+    font-size: clamp(0.8125rem, 1.15vw, 1rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    color: #fff;
+  }
+  .sbp-chip[data-d="1"] .sbp-chip-in { scale: 0.86; filter: blur(1.5px); opacity: 0.7; }
+  .sbp-chip[data-d="2"] .sbp-chip-in { scale: 0.74; filter: blur(3px); opacity: 0.45; }
+  .sbp-intro[data-on] .sbp-intro-label { animation: sbp-label 4.6s ease both; }
+  .sbp-intro[data-on] .sbp-chip { animation: sbp-chip-out 4.6s cubic-bezier(0.65, 0, 0.35, 1) both; }
+  .sbp-intro[data-on] .sbp-chip[data-pick] { z-index: 1; animation-name: sbp-chip-pick; }
+  .sbp-intro[data-on] .sbp-chip-in { animation: sbp-float 6s ease-in-out var(--f) infinite alternate; }
+  .sbp-intro[data-on] .sbp-chip[data-pick] .sbp-chip-in {
+    animation: sbp-float 6s ease-in-out var(--f) infinite alternate, sbp-lit 4.6s cubic-bezier(0.65, 0, 0.35, 1) both;
+  }
+  @keyframes sbp-label { 0%, 4% { opacity: 0; } 14%, 82% { opacity: 1; } 96%, 100% { opacity: 0; } }
+  @keyframes sbp-float { from { transform: translate3d(-6px, 5px, 0); } to { transform: translate3d(6px, -5px, 0); } }
+  @keyframes sbp-chip-out {
+    0% { opacity: 0; filter: blur(6px); }
+    14%, 44% { opacity: 1; filter: blur(0); }
+    62%, 100% { opacity: 0; filter: blur(8px); }
+  }
+  @keyframes sbp-chip-pick {
+    0% { opacity: 0; left: var(--x); top: var(--y); scale: 1; }
+    14%, 44% { opacity: 1; left: var(--x); top: var(--y); scale: 1; }
+    66%, 84% { opacity: 1; left: 50%; top: 50%; scale: 1.3; }
+    100% { opacity: 0; left: 50%; top: 50%; scale: 1.18; }
+  }
+  @keyframes sbp-lit {
+    0%, 46% { color: rgb(255 255 255 / 0.85); }
+    56%, 100% { color: #fff; scale: 1.08; filter: blur(0); opacity: 1; }
+  }
+  .sbp-steps[data-phase="wait"] .sbp-step,
+  .sbp-steps[data-phase="intro"] .sbp-step { opacity: 0.32; transition: opacity 0.5s ease; }
   @media (max-width: 899.98px) {
     .sbp-opts { grid-template-columns: 1fr 1fr; column-gap: 1rem; font-size: 0.875rem; }
   }
@@ -5133,7 +5194,8 @@
   .sbp-run .pg-scrawl path,
   .sbp-steps.sbp-run .sbp-step {
     animation-duration: var(--run);
-    animation-iteration-count: infinite;
+    /* there and back once; then the next business is chosen */
+    animation-iteration-count: 2;
     animation-direction: alternate;
     animation-fill-mode: both;
     animation-timing-function: linear;
@@ -5164,18 +5226,6 @@
   /* ---- the call, as motion graphics, in the same metal ------------- */
   .sbp-ask { margin-top: clamp(4.5rem, 9vw, 7.5rem); padding: clamp(1.5rem, 4vw, 3.5rem); }
   .sbp-ask > * { position: relative; z-index: 1; }
-  /* a fine grid on the metal, fading out at its edges */
-  .sbp-ask::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background-image: linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
-    background-size: 48px 48px;
-    -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 40%, #000 30%, transparent 85%);
-    mask-image: radial-gradient(ellipse 70% 70% at 50% 40%, #000 30%, transparent 85%);
-    pointer-events: none;
-  }
   .sbc { --face: clamp(3.75rem, 9vw, 7rem); padding-top: clamp(7.5rem, 13vw, 9.5rem); }
   .sbc-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: start; }
   .sbc-side { display: flex; gap: clamp(0.6rem, 2vw, 1.5rem); }
@@ -5507,6 +5557,14 @@
     transition: opacity 0.28s ease, translate 0.38s var(--ease-out-quint);
   }
   .nav-svc-panel[data-open] { opacity: 1; translate: 0 0; pointer-events: auto; }
+  /* The gap between the cell and the panel, held by the panel itself so
+     the pointer crossing it never leaves the menu (user, 2026-11-16). */
+  .nav-svc-panel::before {
+    content: "";
+    position: absolute;
+    inset: auto -1px 100% -1px;
+    height: calc(0.5rem + 2px);
+  }
 
   .nav-svc-item {
     display: flex;
@@ -5693,5 +5751,369 @@
     .sht-map-plate[data-in] .sht-near { animation: none; }
     .sht-ring { opacity: 0.5; }
     .sht-near { opacity: 0.88; }
+/* ==================================================================
+   SEO & GEO (seo-geo.tsx): a results page, an AI assistant, three
+   curves and a calculator. Square and ruled by hairlines like the rest
+   of the site; the dark sections stand on the side-by-side ground
+   (.sbs-ground). See docs/seo-geo-decisions.md.
+   ================================================================== */
+@layer components {
+  .sg-lede { max-width: 48ch; font-size: 1.0625rem; line-height: 1.6; }
+
+  /* ---- 1. the results page ----------------------------------------- */
+  .sg-hero {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 4rem);
+    padding-top: calc(var(--section-gap) + 2.5rem);
+    padding-bottom: clamp(4.5rem, 9vw, 7.5rem);
+    align-items: center;
+  }
+  @media (min-width: 1024px) {
+    .sg-hero { grid-template-columns: minmax(0, 1fr) minmax(0, 33rem); column-gap: clamp(3rem, 6vw, 6rem); min-height: min(var(--screen), 60rem); }
+  }
+  .sg-hero-copy .sg-lede { max-width: 46ch; }
+
+  .sg-sheet {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    padding: clamp(1rem, 2.4vw, 1.5rem);
+    box-shadow: 0 40px 80px -40px rgb(0 0 0 / 0.6);
+  }
+  .sg-query {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    box-shadow: inset 0 0 0 1px var(--color-hair-strong);
+    font-size: 0.9375rem;
+    min-height: 3rem;
+  }
+  .sg-query-icon { width: 1rem; height: 1rem; flex: none; color: var(--color-ash-2); }
+  .sg-query-text { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sg-caret { display: inline-block; width: 1px; height: 1.05em; margin-left: 2px; vertical-align: -0.15em; background: var(--color-ink); }
+  .sg-caret-idle { animation: sg-blink 1.1s steps(1) infinite; }
+  @keyframes sg-blink { 50% { opacity: 0; } }
+
+  @media (max-width: 479.98px) { .sg-results-head > span:first-child { display: none; } }
+  .sg-results-head { display: flex; justify-content: space-between; margin-top: 1.25rem; padding-bottom: 0.6rem; color: var(--color-ash-2); box-shadow: inset 0 -1px 0 var(--color-hair); }
+  .sg-results { margin: 0; padding: 0; list-style: none; }
+  .sg-row {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 0.75rem;
+    padding: 0.85rem 0;
+    box-shadow: inset 0 -1px 0 var(--color-hair);
+    background: var(--color-paper);
+  }
+  .sg-rank { color: var(--color-ash-2); padding-top: 0.1rem; }
+  .sg-dither-stack { display: grid; gap: 0.45rem; align-content: start; padding-top: 0.15rem; }
+  /* What the engine cannot read is set as a dithered bar, not as text. */
+  .sg-dither {
+    display: block;
+    height: 0.4rem;
+    background-image: radial-gradient(circle at 1px 1px, rgb(0 0 0 / 0.28) 0.8px, transparent 1.1px);
+    background-size: 3px 3px;
+  }
+  .sg-dither-big { height: 0.7rem; background-image: radial-gradient(circle at 1px 1px, rgb(0 0 0 / 0.42) 0.9px, transparent 1.2px); }
+
+  .sg-row-us { position: relative; z-index: 1; }
+  .sg-row-us .sg-url { color: var(--color-ash-2); transition: color 0.6s ease; }
+  .sg-title {
+    margin-top: 0.2rem;
+    font-family: var(--font-title);
+    font-size: 1.0625rem;
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    color: var(--color-ash-2);
+    overflow-wrap: anywhere;
+    transition: color 0.6s ease;
+  }
+  .sg-desc { margin-top: 0.3rem; font-size: 0.8125rem; line-height: 1.5; color: var(--color-ash-2); opacity: 0.7; overflow-wrap: anywhere; transition: opacity 0.6s ease, color 0.6s ease; }
+  .sg-row-us[data-on] .sg-title { color: var(--color-ink); }
+  .sg-row-us[data-on] .sg-url,
+  .sg-row-us[data-on] .sg-desc { color: var(--color-ash); opacity: 1; }
+  .sg-row-us[data-on] .sg-rank { color: var(--color-ink); }
+
+  .sg-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.7rem 0 0; padding: 0; list-style: none; }
+  .sg-tag {
+    padding: 0.3rem 0.45rem;
+    font-size: 0.625rem;
+    box-shadow: inset 0 0 0 1px var(--color-hair-strong);
+    opacity: 0;
+    translate: 0 6px;
+    transition: opacity 0.45s ease, translate 0.6s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.45s ease, color 0.45s ease;
+  }
+  .sg-row-us[data-on] .sg-tag { opacity: 1; translate: 0 0; background: var(--color-ink); color: var(--color-paper); box-shadow: none; }
+
+  .sg-gap { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0; color: var(--color-ash-2); background: var(--color-paper); }
+  .sg-gap-dots { flex: 1; height: 1px; background-image: linear-gradient(90deg, var(--color-hair-strong) 50%, transparent 50%); background-size: 6px 1px; }
+
+  .sg-pager { position: relative; display: grid; grid-template-columns: repeat(5, 1fr); margin-top: 1rem; box-shadow: inset 0 0 0 1px var(--color-hair); }
+  .sg-pager-thumb { position: absolute; top: 0; bottom: 0; left: 0; width: 20%; background: var(--color-ink); translate: calc(var(--at) * 100%) 0; transition: translate 0.9s cubic-bezier(0.65, 0, 0.35, 1); }
+  .sg-pager-cell { position: relative; padding: 0.45rem 0; text-align: center; color: var(--color-ash-2); transition: color 0.5s ease; }
+  .sg-pager-cell[data-on] { color: var(--color-paper); }
+  .sg-sheet-switch { margin-top: 1rem; display: flex; justify-content: flex-start; }
+  @media (max-width: 479.98px) { .sg-sheet-switch .sbx-switch { display: grid; width: 100%; } }
+
+  /* ---- 1b. GEO: the assistant ----------------------------------------- */
+  .sg-geo { padding-top: calc(var(--section-gap) + 1rem); padding-bottom: clamp(4.5rem, 9vw, 7.5rem); }
+  .sg-geo-grid { display: grid; gap: clamp(2.5rem, 5vw, 4rem); align-items: center; }
+  @media (min-width: 1024px) { .sg-geo-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 33rem); column-gap: clamp(3rem, 6vw, 6rem); } }
+  .sg-geo-claim { max-width: 30ch; font-family: var(--font-title); font-size: clamp(1.25rem, 1.9vw, 1.5rem); font-weight: 500; line-height: 1.3; letter-spacing: -0.015em; }
+
+  .sg-ai {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: #0b0b0b;
+    color: var(--color-paper);
+    padding: clamp(1rem, 2.4vw, 1.5rem);
+    box-shadow: 0 40px 80px -40px rgb(0 0 0 / 0.45);
+  }
+  .sg-ai-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; }
+  .sg-ai-body { margin-top: 1.5rem; min-height: 17rem; display: flex; flex-direction: column; gap: 1.25rem; }
+  .sg-ai-ask {
+    align-self: flex-end;
+    max-width: 80%;
+    padding: 0.8rem 1rem;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    background: rgb(255 255 255 / 0.08);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
+  }
+  .sg-ai-answer { display: grid; grid-template-columns: 0.75rem minmax(0, 1fr); gap: 0.85rem; font-size: 1rem; line-height: 1.6; color: rgb(255 255 255 / 0.78); }
+  .sg-ai-mark { width: 0.6rem; height: 0.6rem; margin-top: 0.5rem; background: var(--color-paper); }
+  .sg-ai-mark[data-busy] { animation: sg-pulse 0.9s ease-in-out infinite alternate; }
+  @keyframes sg-pulse { from { opacity: 1; } to { opacity: 0.25; } }
+  .sg-word { animation: sg-word 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  @keyframes sg-word { from { opacity: 0; filter: blur(4px); } to { opacity: 1; filter: blur(0); } }
+  .sg-ai-sources { display: flex; align-items: center; gap: 0.75rem; margin-top: auto; padding-top: 1rem; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12); opacity: 0; transition: opacity 0.5s ease; }
+  .sg-ai-sources[data-on] { opacity: 1; }
+  .sg-source { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.55rem; color: var(--color-ink); background: var(--color-paper); }
+  .sg-source-dot { width: 0.45rem; height: 0.45rem; background: var(--color-ink); }
+
+  /* ---- 2. three levels, three curves ------------------------------- */
+  .sg-levels { padding-top: calc(var(--section-gap) + 1rem); padding-bottom: clamp(4.5rem, 9vw, 7.5rem); }
+  .sg-levels-grid { display: grid; gap: 3rem; margin-top: clamp(2.5rem, 5vw, 4rem); }
+  @media (min-width: 1024px) { .sg-levels-grid { grid-template-columns: minmax(0, 25rem) minmax(0, 1fr); column-gap: clamp(3rem, 5vw, 5rem); align-items: start; } }
+  .sg-levels-side .sbx-switch { width: 100%; display: grid; }
+  .sg-readout { margin: 2.25rem 0 0; }
+  .sg-readout-row { display: flex; align-items: end; justify-content: space-between; gap: 1rem; padding: 0.9rem 0; box-shadow: inset 0 -1px 0 rgb(255 255 255 / 0.14); }
+  .sg-readout-row:first-child { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14), inset 0 -1px 0 rgb(255 255 255 / 0.14); }
+  .sg-readout-row dt { display: grid; gap: 0.3rem; }
+  .sg-readout-q { font-size: 0.9375rem; color: var(--color-paper); }
+  .sg-readout-row dd { margin: 0; white-space: nowrap; padding: 0.35rem 0.5rem; color: var(--color-ink); background: var(--color-paper); }
+  .sg-readout-row + .sg-readout-row dd:not([data-top]) { background: transparent; color: var(--color-paper); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3); }
+
+  .sg-chart { margin: 0; }
+  .sg-chart-top { display: flex; justify-content: space-between; gap: 1rem; padding-bottom: 0.75rem; }
+  .sg-chart-svg { display: block; width: 100%; height: auto; touch-action: pan-y; cursor: crosshair; overflow: visible; }
+  .sg-band { stroke: rgb(255 255 255 / 0.16); stroke-width: 1; stroke-dasharray: 3 5; vector-effect: non-scaling-stroke; }
+  .sg-base { stroke: rgb(255 255 255 / 0.3); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .sg-axis { fill: rgb(255 255 255 / 0.42); font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .sg-curve { stroke: rgb(255 255 255 / 0.2); stroke-width: 1.25; vector-effect: non-scaling-stroke; transition: stroke 0.5s ease, stroke-width 0.5s ease; }
+  .sg-curve[data-on] { stroke: var(--color-paper); stroke-width: 2.25; }
+  .sg-curve-label { fill: rgb(255 255 255 / 0.3); font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; transition: fill 0.5s ease; }
+  .sg-curve-label[data-on] { fill: var(--color-paper); }
+  .sg-cursor { stroke: rgb(255 255 255 / 0.4); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .sg-dot { fill: var(--color-paper); }
+  .sg-chart-foot { display: flex; justify-content: space-between; gap: 1rem; padding-top: 0.9rem; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14); margin-top: 0.25rem; }
+  @media (max-width: 639.98px) { .sg-axis, .sg-curve-label { font-size: 17px; } .sg-chart-foot span:last-child { display: none; } }
+
+  /* ---- 3. the price -------------------------------------------------- */
+  .sg-price { padding-top: calc(var(--section-gap) + 1rem); padding-bottom: clamp(4.5rem, 9vw, 7.5rem); }
+  .sg-price-grid { display: grid; gap: clamp(2.5rem, 5vw, 4rem); align-items: start; }
+  @media (min-width: 1024px) { .sg-price-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 36rem); column-gap: clamp(3rem, 6vw, 6rem); } }
+  .sg-calc { box-shadow: inset 0 0 0 1px var(--color-hair-strong); padding: clamp(1.25rem, 3vw, 2rem); }
+  .sg-calc-size-value { margin-top: 0.75rem; font-size: clamp(2rem, 4vw, 3rem); font-weight: 500; line-height: 1; }
+  .sg-range {
+    --p: 0.5;
+    appearance: none;
+    -webkit-appearance: none;
+    display: block;
+    width: 100%;
+    height: 2.25rem;
+    margin-top: 1.25rem;
+    background: linear-gradient(var(--color-ink), var(--color-ink)) 0 50% / calc(var(--p) * 100%) 2px no-repeat,
+      linear-gradient(var(--color-hair-strong), var(--color-hair-strong)) 0 50% / 100% 1px no-repeat;
+    cursor: pointer;
+  }
+  .sg-range::-webkit-slider-thumb { -webkit-appearance: none; width: 1.1rem; height: 1.1rem; background: var(--color-ink); border: 0; border-radius: 0; transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+  .sg-range::-moz-range-thumb { width: 1.1rem; height: 1.1rem; background: var(--color-ink); border: 0; border-radius: 0; }
+  .sg-range:active::-webkit-slider-thumb { transform: scale(1.25); }
+  .sg-range:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 4px; }
+  .sg-range-ticks { display: flex; justify-content: space-between; margin-top: 0.15rem; color: var(--color-ash-2); }
+  .sg-range-ticks span { width: 1.1rem; text-align: center; transition: color 0.3s ease; }
+  .sg-range-ticks span[data-on] { color: var(--color-ink); }
+
+  .sg-ledger { margin: 2rem 0 0; }
+  .sg-ledger-row { display: flex; align-items: end; justify-content: space-between; gap: 1rem; padding: 1.1rem 0; box-shadow: inset 0 -1px 0 var(--color-hair); }
+  .sg-ledger-row:first-child { box-shadow: inset 0 1px 0 var(--color-hair-strong), inset 0 -1px 0 var(--color-hair); }
+  .sg-ledger-row dt { display: grid; gap: 0.3rem; }
+  .sg-ledger-name { font-size: 1rem; font-weight: 500; }
+  .sg-ledger-fig { margin: 0; font-family: var(--font-title); font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .sg-ledger-row:first-child .sg-ledger-fig { font-weight: 300; }
+  .sg-ledger-per { margin-left: 0.15em; font-size: 0.55em; font-weight: 400; color: var(--color-ash); letter-spacing: 0; }
+  .sg-calc-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.25rem; margin-top: 1.75rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sg-word, .sg-ai-mark[data-busy], .sg-caret-idle { animation: none; }
+    .sg-pager-thumb, .sg-tag { transition: none; }
+  }
+}
+@layer components {
+  .sg-page1 { fill: rgb(255 255 255 / 0.035); }
+}
+
+/* SEO & GEO: one ground behind the whole page, held to the screen and
+   clipped to the page, its tone set by the scroll (useToneVeil in
+   seo-geo.tsx). The faint light in its corner and the grain are the
+   side-by-side ground's (.sbs-ground); the grain fades out as the
+   ground turns white, with the corner light. */
+@layer components {
+  .sg-room { position: relative; isolation: isolate; clip-path: inset(0); }
+  .sg-ground {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-color: #0b0b0b;
+  }
+  .sg-ground-dusk {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0) 42%);
+  }
+  .sg-ground-grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+  }
+}
+
+/* SEO & GEO, second round (user, 2026-11-17): the examples' keys, the
+   live captions, the definitions set as wall labels, the dark cards
+   (the chart, and the price's outer card) and the cards inside them. */
+@layer components {
+  /* ---- the examples: three keys over the time's hairlines ----------- */
+  .sg-keys { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
+  .sg-key { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: 0.55rem; row-gap: 0.6rem; padding: 0 0 0.15rem; text-align: left; cursor: pointer; color: var(--color-ash-2); transition: color 0.4s ease; }
+  .sg-key-line { grid-column: 1 / -1; position: relative; display: block; height: 1px; background: var(--color-hair-strong); overflow: hidden; }
+  .sg-key-fill { position: absolute; inset: 0; background: var(--color-ink); transform-origin: 0 50%; transform: scaleX(0); }
+  .sg-key-n { font-size: 0.625rem; }
+  .sg-key-label { font-size: 0.875rem; font-weight: 500; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sg-key[aria-selected="true"] { color: var(--color-ink); }
+  .sg-key:hover { color: var(--color-ash); }
+  .sg-key:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 4px; }
+  .sg-keys-dark .sg-key { color: rgb(255 255 255 / 0.42); }
+  .sg-keys-dark .sg-key-line { background: rgb(255 255 255 / 0.2); }
+  .sg-keys-dark .sg-key-fill { background: var(--color-paper); }
+  .sg-keys-dark .sg-key[aria-selected="true"] { color: var(--color-paper); }
+  .sg-keys-dark .sg-key:hover { color: rgb(255 255 255 / 0.75); }
+  .sg-keys-dark .sg-key:focus-visible { outline-color: var(--color-paper); }
+
+  /* ---- the results page, second round ------------------------------ */
+  .sg-url { font-size: 0.75rem; line-height: 1.4; color: var(--color-ash-2); overflow-wrap: anywhere; }
+  .sg-row-us:not([data-on]) .sg-title { color: var(--color-ash); }
+  .sg-row-us:not([data-on]) .sg-desc { opacity: 1; }
+  .sg-sheet-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-top: 1rem; }
+  .sg-sheet-foot .sg-pager { flex: 1 1 12rem; margin-top: 0; }
+
+  /* ---- a definition, set as a wall label --------------------------- */
+  .sg-def {
+    display: grid;
+    gap: 0.9rem;
+    max-width: 34rem;
+    margin-top: clamp(2rem, 4vw, 2.75rem);
+    padding-top: 1.1rem;
+    box-shadow: inset 0 1px 0 var(--color-hair-strong);
+  }
+  @media (min-width: 640px) { .sg-def { grid-template-columns: 9.5rem minmax(0, 1fr); column-gap: 1.5rem; } }
+  .sg-def dt { display: grid; gap: 0.35rem; align-content: start; color: var(--color-ash-2); }
+  .sg-def-term { font-family: var(--font-title); font-size: 1.5rem; font-weight: 500; letter-spacing: -0.02em; line-height: 1; color: var(--color-ink); }
+  .sg-def dd { margin: 0; font-size: 1rem; line-height: 1.55; color: var(--color-ash); }
+  .sg-def-dark { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22); }
+  .sg-def-dark dt { color: rgb(255 255 255 / 0.45); }
+  .sg-def-dark .sg-def-term { color: var(--color-paper); }
+  .sg-def-dark dd { color: rgb(255 255 255 / 0.72); }
+
+  /* ---- the live caption, under a demonstration --------------------- */
+  .sg-caption { display: grid; margin-top: 1.1rem; }
+  .sg-caption-line {
+    grid-area: 1 / 1;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 0.9rem;
+    align-items: baseline;
+    opacity: 0;
+    translate: 0 6px;
+    filter: blur(3px);
+    transition: opacity 0.5s ease, translate 0.7s cubic-bezier(0.22, 1, 0.36, 1), filter 0.5s ease;
+  }
+  .sg-caption-line[data-on] { opacity: 1; translate: 0 0; filter: blur(0); transition-delay: 0.12s; }
+  .sg-caption-tag { display: inline-flex; align-items: center; gap: 0.45rem; white-space: nowrap; color: var(--color-ash-2); }
+  .sg-caption-dot { width: 0.4rem; height: 0.4rem; background: currentColor; }
+  .sg-caption-line[data-on] .sg-caption-tag { color: var(--color-ink); }
+  .sg-caption-text { font-size: 0.9375rem; line-height: 1.5; color: var(--color-ash); text-wrap: pretty; }
+  .sg-caption-dark .sg-caption-tag { color: rgb(255 255 255 / 0.45); }
+  .sg-caption-dark .sg-caption-line[data-on] .sg-caption-tag { color: var(--color-paper); }
+  .sg-caption-dark .sg-caption-text { color: rgb(255 255 255 / 0.72); }
+
+  /* ---- the assistant, second round ---------------------------------- */
+  .sg-ai-ask { opacity: 0; translate: 0 8px; transition: opacity 0.5s ease, translate 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+  .sg-ai-ask[data-on] { opacity: 1; translate: 0 0; }
+  .sg-ai-sources { flex-wrap: wrap; }
+  .sg-source { color: var(--color-paper); background: transparent; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.28); }
+  .sg-source .sg-source-dot { background: rgb(255 255 255 / 0.6); }
+  .sg-source[data-own] { color: var(--color-ink); background: var(--color-paper); box-shadow: none; }
+  .sg-source[data-own] .sg-source-dot { background: var(--color-ink); }
+
+  /* ---- the dark cards: black, a light in one corner, grain ---------- */
+  .sg-card-dark {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    color: var(--color-paper);
+    background:
+      radial-gradient(120% 90% at 0% 0%, rgb(255 255 255 / 0.11), rgb(255 255 255 / 0) 55%),
+      radial-gradient(90% 70% at 100% 100%, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0) 60%),
+      #0b0b0b;
+  }
+  .sg-card-grain {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.14;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+  }
+  .sg-chart.sg-card-dark { padding: clamp(1.25rem, 3vw, 2rem); }
+
+  /* The chart section on white: its readouts in ink. */
+  .sg-readout-row,
+  .sg-readout-row:first-child { box-shadow: inset 0 -1px 0 var(--color-hair); }
+  .sg-readout-row:first-child { box-shadow: inset 0 1px 0 var(--color-hair), inset 0 -1px 0 var(--color-hair); }
+  .sg-readout-q { color: var(--color-ink); }
+  .sg-readout-row dd { color: var(--color-paper); background: var(--color-ink); }
+  .sg-readout-row + .sg-readout-row dd:not([data-top]) { color: var(--color-ink); background: transparent; box-shadow: inset 0 0 0 1px var(--color-hair-strong); }
+
+  /* ---- the price: the white card inside the dark one ----------------- */
+  .sg-price-card { padding: clamp(1.5rem, 5vw, 4.5rem); }
+  .sg-price-card .sg-price-grid { align-items: center; }
+  .sg-price-card .sg-calc {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.4) inset, 0 50px 90px -40px rgb(0 0 0 / 0.8);
+  }
+  @media (max-width: 639.98px) {
+    .sg-price-card { margin-inline: calc(var(--gutter) * -0.5); padding: 1.5rem 1rem 1rem; }
+  }
+}
+@layer components {
+  /* On a phone the examples' names wrap rather than being cut. */
+  @media (max-width: 639.98px) {
+    .sg-key-label { white-space: normal; line-height: 1.25; }
   }
 }

@@ -608,14 +608,33 @@ function sheetPlace(i: number) {
   } as CSSProperties;
 }
 
-function SitemapCard({ t, run }: { t: T; run: boolean }) {
+/** The areas a business can be in, floating behind the card before one
+    is chosen (user, 2026-11-17). The first three are the card's three
+    businesses, in their order; where each floats is written beside it. */
+function sectors(t: T) {
+  return [
+    { label: t("Dental clinic", "Clínica dentária"), x: 38, y: 38, d: 0 },
+    { label: t("Restaurant", "Restaurante"), x: 60, y: 59, d: 0 },
+    { label: t("Estate agent", "Imobiliária"), x: 64, y: 35, d: 1 },
+    { label: t("Law firm", "Escritório de advogados"), x: 30, y: 62, d: 1 },
+    { label: t("Gym", "Ginásio"), x: 49, y: 70, d: 2 },
+    { label: t("Architecture studio", "Atelier de arquitetura"), x: 50, y: 28, d: 2 },
+    { label: t("Beauty salon", "Salão de estética"), x: 72, y: 48, d: 1 },
+    { label: t("Physiotherapy", "Fisioterapia"), x: 26, y: 46, d: 2 },
+    { label: t("Hotel", "Hotel"), x: 41, y: 54, d: 2 },
+    { label: t("Bakery", "Pastelaria"), x: 74, y: 71, d: 2 },
+  ];
+}
+
+/** What the card is doing: waiting to be seen, choosing the business's
+    area, or building its pages (there and back). */
+type Phase = "wait" | "intro" | "build" | "still";
+
+function SitemapCard({ t, phase, which, onPicked, onBuilt }: { t: T; phase: Phase; which: number; onPicked: () => void; onBuilt: () => void }) {
   const all = useMemo(() => businesses(t), [t]);
-  // The business changes at the end of each way back, when the card is
-  // empty: the same elements stay, only what is drawn in them changes, so
-  // the clock is never broken.
-  const [which, setWhich] = useState(0);
-  const turns = useRef(0);
-  const biz = all[which % all.length]!;
+  const areas = useMemo(() => sectors(t), [t]);
+  const pick = which % all.length;
+  const biz = all[pick]!;
   const counts = [
     t("One page.", "Uma página."),
     t("Two pages.", "Duas páginas."),
@@ -624,16 +643,36 @@ function SitemapCard({ t, run }: { t: T; run: boolean }) {
     t("Five pages.", "Cinco páginas."),
   ];
   return (
-    <div className={`sbp-card sbx-metal ${run ? "sbp-run" : ""}`} aria-hidden="true" style={{ ["--run" as string]: `${RUN_S}s` }}>
+    <div className={`sbp-card sbx-metal ${phase === "build" ? "sbp-run" : ""}`} data-phase={phase} aria-hidden="true" style={{ ["--run" as string]: `${RUN_S}s` }}>
       <style dangerouslySetInnerHTML={{ __html: CARD_CSS }} />
+
+      {/* First the areas a business can be in, floating on a plain
+          gradient; one is chosen, and the pages are built for it. */}
+      <div className="sbp-intro" data-on={phase === "intro" || undefined}>
+        <span className="sbp-intro-label mono-label">{t("The business", "O negócio")}</span>
+        {areas.map((a, i) => (
+          <span
+            key={i}
+            className="sbp-chip"
+            data-pick={i === pick || undefined}
+            data-d={a.d}
+            style={{ ["--x" as string]: `${a.x}%`, ["--y" as string]: `${a.y}%`, ["--f" as string]: `${-i * 1.3}s` } as CSSProperties}
+            onAnimationEnd={(e) => {
+              if (i === pick && e.animationName === "sbp-chip-pick") onPicked();
+            }}
+          >
+            <span className="sbp-chip-in">{a.label}</span>
+          </span>
+        ))}
+      </div>
 
       <div className="sbp-card-side">
         <div className="sbx-switch sbx-switch-dark sbp-modes" style={{ ["--n" as string]: 2 } as CSSProperties}>
           <span
             className="sbp-modes-thumb"
-            onAnimationIteration={() => {
-              turns.current += 1;
-              if (turns.current % 2 === 0) setWhich((w) => w + 1);
+            // there and back once, then the next business is chosen
+            onAnimationEnd={(e) => {
+              if (e.animationName === "sbp-mode") onBuilt();
             }}
           />
           <span className="sbx-switch-opt">
@@ -859,6 +898,16 @@ export function SbsPersonal() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const run = mounted && !reduce;
+  // Nothing moves until the card is partly on screen, so its story is
+  // seen from the start (user, 2026-11-17); then it chooses, builds,
+  // and chooses again, for the next business.
+  const [figure, seen] = useInView<HTMLElement>(0.3);
+  const [phase, setPhase] = useState<Phase>("wait");
+  const [which, setWhich] = useState(0);
+  useEffect(() => {
+    if (run && seen && phase === "wait") setPhase("intro");
+  }, [run, seen, phase]);
+  const shown: Phase = run ? phase : "still";
 
   const steps = [
     { n: "01", name: t("A website or a landing page", "Website ou landing page"), text: t("Several pages, or one with everything.", "Várias páginas, ou uma só com tudo.") },
@@ -885,10 +934,19 @@ export function SbsPersonal() {
           </p>
         </div>
 
-        <figure className="sbp-figure">
-          <SitemapCard t={t} run={run} />
+        <figure ref={figure} className="sbp-figure">
+          <SitemapCard
+            t={t}
+            phase={shown}
+            which={which}
+            onPicked={() => setPhase("build")}
+            onBuilt={() => {
+              setWhich((w) => w + 1);
+              setPhase("intro");
+            }}
+          />
           <figcaption>
-            <ol className={`sbp-steps ${run ? "sbp-run" : ""}`} style={{ ["--run" as string]: `${RUN_S}s` }}>
+            <ol className={`sbp-steps ${run && phase === "build" ? "sbp-run" : ""}`} data-phase={shown} style={{ ["--run" as string]: `${RUN_S}s` }}>
               {steps.map((s, i) => (
                 <li key={s.n} className="sbp-step" data-i={i}>
                   <span className="sbp-step-n mono-label" aria-hidden="true">
