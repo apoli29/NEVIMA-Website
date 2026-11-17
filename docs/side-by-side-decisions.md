@@ -511,3 +511,9 @@ styles under `.sbs-*` at the foot of `src/app/globals.css`).
 - 2026-11-17 (user): the areas lost their boxes, plain words only (the chosen one brightens and grows a little), and they float closer to the middle of the card, still spread out.
 
 - 2026-11-17 (user): the time bar moved over the two walls and made smaller; the three keys are one black block with no rules between them, and finer icons (thin long arrows that lean on hover, thin pause and an outlined play).
+
+## Between the sections: the tonal veil (2026-11-17, user)
+
+- Taken from the SEO & GEO page after an audit of which of its animations fit here (user: "há animações nesta página que também fariam sentido na página side by side"). Only the veil did: the page had four hard cuts (the comparison's dark ground, Included's white, the levels' black, personalization's white, Let's work together's black). The examples' keys, the live captions and the dark cards are particular to the SEO & GEO content and the page already has its own equivalents (the gallery's time, the levels' switch, the metal and liquid-light grounds).
+- The veil is now shared (`ToneRoom`, `tone-veil.tsx`), used by both pages. The sections lost their own grounds (`.sbs-ground` on the comparison, `bg-paper` on Included and personalization, `bg-ink` on the levels) and carry `data-tone` (dark #0b0b0b, ink #000, light).
+- Rule (user): Pilar Seguros' cards, in every version, are closed. They are not touched: neither the two plates nor the levels' pages dim or scale; only Included's and personalization's content does (`data-tone-body`).

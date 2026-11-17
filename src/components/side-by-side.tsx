@@ -7,6 +7,7 @@ import { FloatingNav } from "./floating-nav";
 import { Footer } from "./footer";
 import { ProposalHost } from "./proposal-host";
 import { WorkTogether } from "./work-together";
+import { ToneRoom } from "./tone-veil";
 import { SbsIncluded, SbsLevels, SbsPersonal } from "./sbs-service";
 import { useSeen } from "./use-seen";
 import { useT } from "@/lib/use-lang";
@@ -701,8 +702,14 @@ export function SideBySide() {
       <FloatingNav />
       <main id="top" className="relative bg-paper">
         {/* The comparison, from its title to the note under the two pages, on one dark ground, the stage's own (user, 2026-11-16). */}
-        <div className="sbs-top relative isolate text-paper">
-          <div aria-hidden="true" className="sbs-ground" />
+        {/* Between the sections, the tonal veil (tone-veil.tsx, user
+            2026-11-17): the comparison's dark ground, Included's white,
+            the levels' black and personalization's white are one ground
+            that turns with the scroll. Pilar's plates and the levels'
+            pages are left exactly as they are: only Included and
+            personalization dim as they go. */}
+        <ToneRoom>
+        <div data-tone="dark" className="sbs-top relative isolate text-paper">
         <header className="shell pt-[calc(var(--section-gap)+2rem)] pb-[clamp(2.5rem,5vw,4rem)]">
           <SlideIn ready>
             <p className="mono-label text-paper/55">{t("Side by side", "Lado a lado")}</p>
@@ -771,6 +778,7 @@ export function SideBySide() {
         <SbsIncluded />
         <SbsLevels />
         <SbsPersonal />
+        </ToneRoom>
       </main>
 
       <WorkTogether />
