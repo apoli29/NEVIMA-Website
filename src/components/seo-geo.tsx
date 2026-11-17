@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointer
 import { motion, useReducedMotion } from "motion/react";
 import { SlideIn } from "./enter";
 import { ProposalAsk } from "./about-faq";
-import { Switch, useScramble, type T } from "./sbs-shared";
+import { Switch, useInView, useScramble, type T } from "./sbs-shared";
 import { useSeen } from "./use-seen";
 import { useLang, useT } from "@/lib/use-lang";
 import type { SeoPrice } from "@/lib/proposal/seo-table";
@@ -16,11 +16,12 @@ import type { SeoPrice } from "@/lib/proposal/seo-table";
    every other service page is set from. Three sections, each built
    around one thing to watch rather than a block of text:
 
-   1. What SEO is: a results page where a business's result starts as
-      noise on page 4 and, once it speaks the engine's language, is
-      decoded and climbs to the top. Then GEO: an AI assistant that,
-      asked the same question, either cannot name anyone or names the
-      business and cites its website.
+   1. What SEO is: a results page where three invented businesses, one
+      after another, go from page 4 (a page called "Home" on someone
+      else's domain) to the top. Then GEO: an AI assistant that, asked
+      the same three questions, either sends the person to directories
+      or names the business and cites its website. The definitions are
+      wall labels; the rest of each is the caption of its demonstration.
    2. Basic SEO, the one-off service and the monthly service, as three
       curves on one chart: twelve months of visibility, with a cursor
       that reads off where the business sits in two searches.
@@ -40,180 +41,365 @@ import type { SeoPrice } from "@/lib/proposal/seo-table";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-/** A line of noise as long as a text, the same on server and client. */
-function noise(text: string, seed = 7) {
-  const glyphs = "abcdefghijklmnopqrstuvwxyz0123456789*#%&+";
-  let s = seed;
-  let out = "";
-  for (const c of text) {
-    s = (s * 9301 + 49297) % 233280;
-    out += /[\p{L}\p{N}]/u.test(c) ? glyphs[Math.floor((s / 233280) * glyphs.length)] : c;
-  }
-  return out;
+/* ---------------------------------------------------------------- */
+/* The three examples, shared by the results page and the assistant  */
+/* ---------------------------------------------------------------- */
+
+/* Three invented businesses in three sectors, and three ways of
+   searching (user, 2026-11-17): one near the person searching, one in
+   a named city, and one with no place at all. Without SEO a business's
+   result is what a website made with no thought for search engines
+   really shows: a page called "Home", a description that says little,
+   and an address on someone else's domain. Without GEO the assistant
+   still answers, and still cites its sources (it always does): it just
+   does not name the business. */
+
+type Example = {
+  key: string;
+  label: string;
+  query: string;
+  name: string;
+  bad: { title: string; url: string; desc: string };
+  good: { title: string; url: string; desc: string; tags: string[] };
+  ask: string;
+  without: string;
+  withGeo: string;
+  elsewhere: [string, string];
+};
+
+function examples(t: T): Example[] {
+  return [
+    {
+      key: "nearby",
+      label: t("Nearby", "Perto de mim"),
+      query: t("dentist near me", "dentista perto de mim"),
+      name: "Clínica Dentária Sorriso",
+      bad: {
+        title: t("Home", "Início"),
+        url: "clinica-sorriso.site-gratis.com/inicio",
+        desc: t(
+          "Welcome. A clinic with years of experience and a team dedicated to every smile.",
+          "Bem-vindos. Uma clínica com anos de experiência e uma equipa dedicada a cada sorriso.",
+        ),
+      },
+      good: {
+        title: t("Clínica Dentária Sorriso · Dentist in Alvalade, Lisbon", "Clínica Dentária Sorriso · Dentista em Alvalade, Lisboa"),
+        url: "clinicasorriso.pt",
+        desc: t(
+          "Implants, orthodontics and oral hygiene in Alvalade, 300 m from the metro. Online booking and same-day emergencies.",
+          "Implantes, ortodontia e higiene oral em Alvalade, a 300 m do metro. Marcação online e urgências no próprio dia.",
+        ),
+        tags: [t("Title", "Título"), t("Description", "Descrição"), t("Location", "Localização"), t("Hours", "Horário"), t("Reviews 4.8", "Avaliações 4,8")],
+      },
+      ask: t("I need a dentist near me, in Alvalade. Which would you recommend?", "Preciso de um dentista perto de mim, em Alvalade. Qual recomendas?"),
+      without: t(
+        "There are several dental clinics in Alvalade. The area’s health directories list the options with the best reviews.",
+        "Em Alvalade há várias clínicas dentárias. Os diretórios de saúde da zona listam as opções com melhores avaliações.",
+      ),
+      withGeo: t(
+        "I’d recommend Clínica Dentária Sorriso, in Alvalade, 300 m from the metro. It does implants and orthodontics, has an average rating of 4.8 and takes bookings online, with same-day emergencies.",
+        "Recomendo a Clínica Dentária Sorriso, em Alvalade, a 300 m do metro. Faz implantes e ortodontia, tem uma avaliação média de 4,8 e aceita marcações online, com urgências no próprio dia.",
+      ),
+      elsewhere: [t("Health directory", "Diretório de saúde"), t("Neighbourhood forum", "Fórum do bairro")],
+    },
+    {
+      key: "lisbon",
+      label: t("Lisbon", "Lisboa"),
+      query: t("real estate agency in Lisbon", "imobiliária em Lisboa"),
+      name: "Casa Alfama Imobiliária",
+      bad: {
+        title: t("Home page", "Página inicial"),
+        url: "casa-alfama.site-gratis.com/home",
+        desc: t(
+          "Buying, selling and renting property. More information by phone.",
+          "Compra, venda e arrendamento de imóveis. Mais informações por telefone.",
+        ),
+      },
+      good: {
+        title: t("Casa Alfama Imobiliária · Buy and sell a home in Lisbon", "Casa Alfama Imobiliária · Comprar e vender casa em Lisboa"),
+        url: "casaalfama.pt",
+        desc: t(
+          "Flats in Alfama, Graça and Baixa. A free valuation of the property and support all the way to the deed.",
+          "Apartamentos em Alfama, Graça e Baixa. Avaliação gratuita do imóvel e acompanhamento até à escritura.",
+        ),
+        tags: [t("Title", "Título"), t("Description", "Descrição"), t("Areas", "Zonas"), t("Listings", "Imóveis"), t("Reviews 4.9", "Avaliações 4,9")],
+      },
+      ask: t("Which estate agency would you recommend for selling a flat in Lisbon?", "Que imobiliária recomendas para vender um apartamento em Lisboa?"),
+      without: t(
+        "To sell in Lisbon, most people go to the large national networks; property portals let you compare several agencies.",
+        "Para vender em Lisboa, a escolha habitual são as grandes redes nacionais; os portais imobiliários permitem comparar várias agências.",
+      ),
+      withGeo: t(
+        "I’d recommend Casa Alfama Imobiliária, which specialises in Alfama, Graça and Baixa. It values the property for free and sees the sale through to the deed.",
+        "Recomendo a Casa Alfama Imobiliária, especializada em Alfama, Graça e Baixa. Faz a avaliação do imóvel gratuitamente e acompanha a venda até à escritura.",
+      ),
+      elsewhere: [t("Property portal", "Portal imobiliário"), t("Press article", "Artigo de imprensa")],
+    },
+    {
+      key: "anywhere",
+      label: t("No location", "Sem localização"),
+      query: t("handmade ceramics", "cerâmica artesanal"),
+      name: "Barro & Forno",
+      bad: {
+        title: t("Shop", "Loja"),
+        url: "barroforno.site-gratis.com/loja",
+        desc: t("One-of-a-kind handmade pieces, shipped nationwide.", "Peças únicas feitas à mão, com envio para todo o país."),
+      },
+      good: {
+        title: t("Barro & Forno · Portuguese handmade ceramics", "Barro & Forno · Cerâmica artesanal portuguesa, feita à mão"),
+        url: "barroforno.pt",
+        desc: t(
+          "Plates, bowls and jugs in stoneware, glazed by hand in small runs. Shipped in 48 hours, packed without plastic.",
+          "Pratos, taças e jarras em grés, vidradas à mão em pequenas séries. Envio em 48 horas, embalagem sem plástico.",
+        ),
+        tags: [t("Title", "Título"), t("Description", "Descrição"), t("Products", "Produtos"), t("Prices", "Preços"), t("Reviews 4.9", "Avaliações 4,9")],
+      },
+      ask: t("Where can I buy Portuguese handmade ceramics online?", "Onde comprar cerâmica artesanal portuguesa online?"),
+      without: t(
+        "There are many handmade ceramics shops; craft marketplaces bring hundreds of makers together and are a good place to start.",
+        "Há muitas lojas de cerâmica artesanal; os marketplaces de artesanato reúnem centenas de artesãos e são um bom ponto de partida.",
+      ),
+      withGeo: t(
+        "I’d recommend Barro & Forno: stoneware glazed by hand in small runs, shipped in 48 hours and packed without plastic.",
+        "Recomendo a Barro & Forno: grés vidrado à mão em pequenas séries, com envio em 48 horas e embalagem sem plástico.",
+      ),
+      elsewhere: [t("Craft marketplace", "Marketplace de artesanato"), t("Decor blog", "Blogue de decoração")],
+    },
+  ];
 }
 
-/** Types a line out once `go` is set; all at once for less motion. */
-function useTyped(text: string, go: boolean, reduce: boolean, step = 55) {
-  const [n, setN] = useState(0);
+/** The examples' clock: one example after another, each `length(i)`
+    long, kept still while it is off the screen, held under the
+    pointer, or once the visitor has taken over. Ticks every 50 ms, which
+    is as fine as typing and streaming need. */
+function useCycle(count: number, length: (i: number) => number, running: boolean) {
+  const [state, setState] = useState({ at: 0, ms: 0 });
+  const lengthRef = useRef(length);
+  lengthRef.current = length;
   useEffect(() => {
-    if (!go) return;
-    if (reduce) {
-      setN(text.length);
-      return;
-    }
-    setN(0);
-    let i = 0;
+    if (!running) return;
+    let last = performance.now();
     const id = window.setInterval(() => {
-      i += 1;
-      setN(i);
-      if (i >= text.length) window.clearInterval(id);
-    }, step);
+      const now = performance.now();
+      const dt = Math.min(now - last, 200);
+      last = now;
+      setState((s) => {
+        const ms = s.ms + dt;
+        return ms >= lengthRef.current(s.at) ? { at: (s.at + 1) % count, ms: 0 } : { at: s.at, ms };
+      });
+    }, 50);
     return () => window.clearInterval(id);
-  }, [text, go, reduce, step]);
-  return text.slice(0, n);
+  }, [running, count]);
+  const pick = (at: number) => setState({ at, ms: 0 });
+  return { ...state, pick };
+}
+
+/** The three examples as keys, each over a hairline that fills with its
+    time (the side-by-side gallery's time, sbs-included.tsx). */
+function ExampleKeys({
+  list,
+  at,
+  progress,
+  onPick,
+  dark,
+  label,
+}: {
+  list: Example[];
+  at: number;
+  progress: number;
+  onPick: (i: number) => void;
+  dark?: boolean;
+  label: string;
+}) {
+  return (
+    <div role="tablist" aria-label={label} className={`sg-keys ${dark ? "sg-keys-dark" : ""}`}>
+      {list.map((ex, i) => (
+        <button
+          key={ex.key}
+          type="button"
+          role="tab"
+          aria-selected={i === at}
+          className="sg-key"
+          onClick={() => onPick(i)}
+        >
+          <span className="sg-key-line" aria-hidden="true">
+            <span className="sg-key-fill" style={{ transform: `scaleX(${i < at ? 1 : i === at ? progress : 0})` }} />
+          </span>
+          <span className="mono-label sg-key-n">{String(i + 1).padStart(2, "0")}</span>
+          <span className="sg-key-label">{ex.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** The caption under a demonstration: the part of the definition the
+    picture is proving at that moment, swapped with it. */
+function LiveCaption({ on, onText, offText, labels, dark }: { on: boolean; onText: string; offText: string; labels: [string, string]; dark?: boolean }) {
+  return (
+    <div className={`sg-caption ${dark ? "sg-caption-dark" : ""}`} aria-live="polite">
+      {[false, true].map((state) => (
+        <p key={String(state)} className="sg-caption-line" data-on={state === on || undefined} aria-hidden={state !== on}>
+          <span className="mono-label sg-caption-tag">
+            <span aria-hidden="true" className="sg-caption-dot" />
+            {state ? labels[1] : labels[0]}
+          </span>
+          <span className="sg-caption-text">{state ? onText : offText}</span>
+        </p>
+      ))}
+    </div>
+  );
 }
 
 /* ---------------------------------------------------------------- */
 /* 1. SEO: the results page                                          */
 /* ---------------------------------------------------------------- */
 
-function SearchMachine({ t, on, setOn }: { t: T; on: boolean; setOn: (on: boolean) => void }) {
+const TYPE_MS = 55;
+const SEO_OFF_MS = 2400;
+const SEO_ON_MS = 4600;
+const seoTypeEnd = (ex: Example) => ex.query.length * TYPE_MS + 450;
+
+function SeoDemo({ t }: { t: T }) {
   const reduce = useReducedMotion() ?? false;
-  const ref = useRef<HTMLDivElement>(null);
-  const seen = useSeen(ref, { threshold: 0.2 });
-  const query = t("aesthetic clinic in Vila Nova de Gaia", "clínica de estética em Vila Nova de Gaia");
-  const typed = useTyped(query, seen, reduce);
-  const typedDone = typed.length === query.length;
+  const list = useMemo(() => examples(t), [t]);
+  const [ref, inView] = useInView<HTMLDivElement>(0.25);
+  const [held, setHeld] = useState(false);
+  const [manual, setManual] = useState<boolean | null>(reduce ? true : null);
+  const running = inView && !held && manual === null && !reduce;
+  const length = (i: number) => seoTypeEnd(list[i]!) + SEO_OFF_MS + SEO_ON_MS;
+  const { at, ms, pick } = useCycle(list.length, length, running);
+  const ex = list[at]!;
+  const typeEnd = seoTypeEnd(ex);
 
-  const title = t("Clínica Aurora · Aesthetics in Vila Nova de Gaia", "Clínica Aurora · Estética em Vila Nova de Gaia");
-  const url = "clinicaaurora.pt";
-  const desc = t(
-    "Face and body treatments in the centre of Gaia. Book online, open Monday to Saturday.",
-    "Tratamentos de rosto e corpo no centro de Gaia. Marcação online, de segunda a sábado.",
-  );
-  const shownTitle = useScramble(on ? title : noise(title, 3), reduce);
-  const shownUrl = useScramble(on ? url : noise(url, 11), reduce);
-  const shownDesc = useScramble(on ? desc : noise(desc, 5), reduce);
+  const typed = manual !== null ? ex.query : ex.query.slice(0, Math.floor(ms / TYPE_MS));
+  const typing = manual === null && ms < typeEnd;
+  const on = manual ?? ms >= typeEnd + SEO_OFF_MS;
+  const progress = manual !== null ? 1 : Math.min(ms / length(at), 1);
 
-  // The first time the screen is seen, the query is typed and the
-  // business is shown without SEO for a moment, then with it.
-  const played = useRef(false);
-  useEffect(() => {
-    if (!typedDone || played.current) return;
-    played.current = true;
-    if (reduce) return;
-    const id = window.setTimeout(() => setOn(true), 1300);
-    return () => window.clearTimeout(id);
-  }, [typedDone, reduce, setOn]);
-
-  const tags = [
-    t("Title", "Título"),
-    t("Description", "Descrição"),
-    t("Address", "Morada"),
-    t("Opening hours", "Horário"),
-    t("Reviews 4.9", "Avaliações 4,9"),
-  ];
-
-  // Six rows on both sides, so the sheet keeps its height: four other
-  // results, the gap to a later page, and the business.
-  const rows = on ? ["us", "a", "b", "c", "d", "gap"] : ["a", "b", "c", "d", "gap", "us"];
+  const shown = on ? ex.good : ex.bad;
+  const title = useScramble(shown.title, reduce);
+  const url = useScramble(shown.url, reduce);
+  const desc = useScramble(shown.desc, reduce);
   const page = on ? 1 : 4;
-  const whereShown = useScramble(`Clínica Aurora · ${t("page", "página")} ${page}`, reduce);
+  const pageShown = useScramble(`${t("Page", "Página")} ${page}`, reduce);
+
+  // Page 4 holds results 31 to 40: the business is the 38th. With SEO it
+  // is the first, and the others move down.
+  const rows = on ? ["us", "a", "b", "c", "d"] : ["a", "b", "us", "c", "d"];
+  const first = on ? 1 : 36;
 
   return (
-    <div ref={ref} className="sg-sheet">
-      <div className="sg-query">
-        <svg aria-hidden="true" viewBox="0 0 16 16" className="sg-query-icon">
-          <circle cx="6.5" cy="6.5" r="4.75" fill="none" stroke="currentColor" strokeWidth="1.25" />
-          <path d="M10 10l4.5 4.5" stroke="currentColor" strokeWidth="1.25" />
-        </svg>
-        <span className="sg-query-text">
-          {typed}
-          <span aria-hidden="true" className={`sg-caret ${typedDone ? "sg-caret-idle" : ""}`} />
-        </span>
-      </div>
+    <div ref={ref} onPointerEnter={() => setHeld(true)} onPointerLeave={() => setHeld(false)}>
+      <ExampleKeys
+        dark
+        list={list}
+        at={at}
+        progress={progress}
+        label={t("Examples", "Exemplos")}
+        onPick={(i) => {
+          pick(i);
+          setManual((m) => m ?? true);
+        }}
+      />
+      <div className="sg-sheet mt-4">
+        <div className="sg-query">
+          <svg aria-hidden="true" viewBox="0 0 16 16" className="sg-query-icon">
+            <circle cx="6.5" cy="6.5" r="4.75" fill="none" stroke="currentColor" strokeWidth="1.25" />
+            <path d="M10 10l4.5 4.5" stroke="currentColor" strokeWidth="1.25" />
+          </svg>
+          <span className="sg-query-text">
+            {typed}
+            <span aria-hidden="true" className={`sg-caret ${typing ? "" : "sg-caret-idle"}`} />
+          </span>
+        </div>
 
-      <div className="sg-results-head mono-label">
-        <span>{t("Results · page 1", "Resultados · página 1")}</span>
-        <span className={on ? "text-ink" : undefined}>{whereShown}</span>
-      </div>
+        <div className="sg-results-head mono-label">
+          <span>{t("Results", "Resultados")}</span>
+          <span className="text-ink">{pageShown}</span>
+        </div>
 
-      <ol className="sg-results" aria-label={t("Search results (demonstration)", "Resultados de pesquisa (demonstração)")}>
-        {rows.map((id, i) => {
-          if (id === "gap") {
+        <ol className="sg-results" aria-label={t("Search results (demonstration)", "Resultados de pesquisa (demonstração)")}>
+          {rows.map((id, i) => {
+            const rank = first + i;
+            if (id === "us") {
+              return (
+                <motion.li
+                  key="us"
+                  layout
+                  layoutDependency={`${on}-${at}`}
+                  transition={{ duration: 0.9, ease: EASE }}
+                  className="sg-row sg-row-us"
+                  data-on={on || undefined}
+                >
+                  <span className="sg-rank mono-label">{String(rank).padStart(2, "0")}</span>
+                  <div className="min-w-0">
+                    <p className="sg-url">{url}</p>
+                    <p className="sg-title">{title}</p>
+                    <p className="sg-desc">{desc}</p>
+                    <ul className="sg-tags" aria-label={t("What the engine reads", "O que o motor lê")}>
+                      {ex.good.tags.map((tag, k) => (
+                        <li key={tag} className="sg-tag mono-label" style={{ transitionDelay: on ? `${0.55 + k * 0.08}s` : "0s" }}>
+                          {tag}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </motion.li>
+              );
+            }
             return (
-              <motion.li key="gap" layout layoutDependency={on} transition={{ duration: 0.9, ease: EASE }} className="sg-gap mono-label" aria-hidden="true">
-                <span className="sg-gap-dots" />
-                <span>{on ? t("Page 2", "Página 2") : t("Pages 2 to 4", "Páginas 2 a 4")}</span>
-              </motion.li>
-            );
-          }
-          const rank = id === "us" ? (on ? 1 : 37) : i + 1;
-          if (id === "us") {
-            return (
-              <motion.li
-                key="us"
-                layout
-                layoutDependency={on}
-                transition={{ duration: 0.9, ease: EASE }}
-                className="sg-row sg-row-us"
-                data-on={on || undefined}
-              >
+              <motion.li key={id} layout layoutDependency={`${on}-${at}`} transition={{ duration: 0.9, ease: EASE }} className="sg-row" aria-hidden="true">
                 <span className="sg-rank mono-label">{String(rank).padStart(2, "0")}</span>
-                <div className="min-w-0">
-                  <p className="sg-url mono-label">{shownUrl}</p>
-                  <p className="sg-title">{shownTitle}</p>
-                  <p className="sg-desc">{shownDesc}</p>
-                  <ul className="sg-tags" aria-label={t("What the engine reads", "O que o motor lê")}>
-                    {tags.map((tag, k) => (
-                      <li key={tag} className="sg-tag mono-label" style={{ transitionDelay: on ? `${0.55 + k * 0.08}s` : "0s" }}>
-                        {tag}
-                      </li>
-                    ))}
-                  </ul>
+                <div className="sg-dither-stack">
+                  <span className="sg-dither" style={{ width: `${[38, 30, 44, 34][(i + at) % 4]}%` }} />
+                  <span className="sg-dither sg-dither-big" style={{ width: `${[72, 64, 80, 58][(i + at) % 4]}%` }} />
+                  <span className="sg-dither" style={{ width: `${[90, 84, 76, 88][(i + at) % 4]}%` }} />
                 </div>
               </motion.li>
             );
-          }
-          return (
-            <motion.li key={id} layout layoutDependency={on} transition={{ duration: 0.9, ease: EASE }} className="sg-row" aria-hidden="true">
-              <span className="sg-rank mono-label">{String(rank).padStart(2, "0")}</span>
-              <div className="sg-dither-stack">
-                <span className="sg-dither" style={{ width: `${[38, 30, 44, 34][i % 4]}%` }} />
-                <span className="sg-dither sg-dither-big" style={{ width: `${[72, 64, 80, 58][i % 4]}%` }} />
-                <span className="sg-dither" style={{ width: `${[90, 84, 76, 88][i % 4]}%` }} />
-              </div>
-            </motion.li>
-          );
-        })}
-      </ol>
+          })}
+        </ol>
 
-      <div className="sg-pager" style={{ ["--at" as string]: page - 1 }} aria-hidden="true">
-        <span className="sg-pager-thumb" />
-        {[1, 2, 3, 4, 5].map((n) => (
-          <span key={n} className="sg-pager-cell mono-label" data-on={n === page || undefined}>
-            {n}
-          </span>
-        ))}
+        <div className="sg-sheet-foot">
+          <div className="sg-pager" style={{ ["--at" as string]: page - 1 }} aria-hidden="true">
+            <span className="sg-pager-thumb" />
+            {[1, 2, 3, 4, 5].map((n) => (
+              <span key={n} className="sg-pager-cell mono-label" data-on={n === page || undefined}>
+                {n}
+              </span>
+            ))}
+          </div>
+          <Switch
+            label={t("The business’s website", "O website do negócio")}
+            value={on ? "on" : "off"}
+            onChange={(id) => setManual(id === "on")}
+            options={[
+              { id: "off", label: t("Without SEO", "Sem SEO") },
+              { id: "on", label: t("With SEO", "Com SEO") },
+            ]}
+          />
+        </div>
       </div>
 
-      <div className="sg-sheet-switch">
-        <Switch
-          label={t("The business’s website", "O website do negócio")}
-          value={on ? "on" : "off"}
-          onChange={(id) => setOn(id === "on")}
-          options={[
-            { id: "off", label: t("Without SEO", "Sem SEO") },
-            { id: "on", label: t("With SEO", "Com SEO") },
-          ]}
-        />
-      </div>
+      <LiveCaption
+        dark
+        on={on}
+        labels={[t("Without SEO", "Sem SEO"), t("With SEO", "Com SEO")]}
+        offText={t(
+          "With poorly worked SEO, a website is lost in the last pages of results.",
+          "Com um SEO mal trabalhado, um website fica perdido nas últimas páginas de resultados.",
+        )}
+        onText={t(
+          "With personalized SEO, it has a much better chance of reaching the first pages.",
+          "Com um SEO personalizado, tem muito mais hipóteses de alcançar as primeiras páginas.",
+        )}
+      />
     </div>
   );
 }
 
 function SeoHero({ t }: { t: T }) {
-  const [on, setOn] = useState(false);
   return (
     <section aria-labelledby="sg-title" data-tone="dark" className="relative text-paper">
       <div className="shell sg-hero">
@@ -226,18 +412,24 @@ function SeoHero({ t }: { t: T }) {
             </h1>
           </SlideIn>
           <SlideIn ready distance={0} delay={0.08}>
-            <p className="sg-lede mt-8 text-paper/70">
-              {t(
-                "SEO (Search Engine Optimization) is a set of practices that put a website in the best possible positions in the searches made by its target audiences. With poorly worked SEO, a website is lost in the last pages of results; with personalized SEO, it has a much better chance of reaching the first pages.",
-                "O SEO (Search Engine Optimization) consiste num conjunto de práticas que colocam um website nas melhores posições possíveis das pesquisas efetuadas pelos públicos-alvo. Com um SEO mal trabalhado, um website fica perdido nas últimas páginas de resultados; com um SEO personalizado, tem muito mais hipóteses de alcançar as primeiras páginas.",
-              )}
-            </p>
+            <dl className="sg-def sg-def-dark">
+              <dt>
+                <span className="sg-def-term">SEO</span>
+                <span className="mono-label">Search Engine Optimization</span>
+              </dt>
+              <dd>
+                {t(
+                  "A set of practices that put a website in the best possible positions in the searches made by its target audiences.",
+                  "Um conjunto de práticas que colocam um website nas melhores posições possíveis das pesquisas efetuadas pelos públicos-alvo.",
+                )}
+              </dd>
+            </dl>
           </SlideIn>
         </div>
         <div className="sg-hero-stage">
-          <SearchMachine t={t} on={on} setOn={setOn} />
-          <p className="mono-label mt-4 text-paper/45">
-            {t("The clinic is invented; the results page is a demonstration.", "A clínica é inventada; a página de resultados é uma demonstração.")}
+          <SeoDemo t={t} />
+          <p className="mono-label mt-5 text-paper/40">
+            {t("The businesses are invented; the results page is a demonstration.", "Os negócios são inventados; a página de resultados é uma demonstração.")}
           </p>
         </div>
       </div>
@@ -249,107 +441,100 @@ function SeoHero({ t }: { t: T }) {
 /* 1b. GEO: the assistant                                            */
 /* ---------------------------------------------------------------- */
 
-function useStreamed(text: string, key: string, go: boolean, reduce: boolean) {
-  const words = useMemo(() => text.split(" "), [text]);
-  const [n, setN] = useState(0);
-  useEffect(() => {
-    if (!go) return;
-    if (reduce) {
-      setN(words.length);
-      return;
-    }
-    setN(0);
-    let i = 0;
-    const id = window.setInterval(() => {
-      i += 1;
-      setN(i);
-      if (i >= words.length) window.clearInterval(id);
-    }, 70);
-    return () => window.clearInterval(id);
-    // key restarts the stream when the answer changes
-  }, [words, key, go, reduce]);
-  return { shown: words.slice(0, n), done: n >= words.length };
-}
+const ASK_MS = 700;
+const WORD_MS = 65;
+const GEO_HOLD_OFF = 2600;
+const GEO_HOLD_ON = 4800;
+const words = (s: string) => s.split(" ");
+const geoOffEnd = (ex: Example) => ASK_MS + words(ex.without).length * WORD_MS + GEO_HOLD_OFF;
+const geoLength = (ex: Example) => geoOffEnd(ex) + words(ex.withGeo).length * WORD_MS + GEO_HOLD_ON;
 
 function Assistant({ t }: { t: T }) {
   const reduce = useReducedMotion() ?? false;
-  const ref = useRef<HTMLDivElement>(null);
-  const seen = useSeen(ref, { threshold: 0.3 });
-  const [on, setOn] = useState(reduce);
-  const touched = useRef(false);
+  const list = useMemo(() => examples(t), [t]);
+  const [ref, inView] = useInView<HTMLDivElement>(0.3);
+  const [held, setHeld] = useState(false);
+  const [manual, setManual] = useState<boolean | null>(reduce ? true : null);
+  const running = inView && !held && manual === null && !reduce;
+  const { at, ms, pick } = useCycle(list.length, (i) => geoLength(list[i]!), running);
+  const ex = list[at]!;
+  const offEnd = geoOffEnd(ex);
 
-  const ask = t("Which aesthetic clinic would you recommend in Vila Nova de Gaia?", "Que clínica de estética recomendas em Vila Nova de Gaia?");
-  const without = t(
-    "There are several aesthetic clinics in Vila Nova de Gaia. I don’t have enough reliable information to recommend a specific one.",
-    "Há várias clínicas de estética em Vila Nova de Gaia. Não tenho informação fiável suficiente para recomendar uma em concreto.",
-  );
-  const withGeo = t(
-    "I’d recommend Clínica Aurora, in the centre of Vila Nova de Gaia. It specialises in face and body treatments, has an average rating of 4.9 and takes bookings online.",
-    "Recomendo a Clínica Aurora, no centro de Vila Nova de Gaia. É especializada em tratamentos de rosto e corpo, tem uma avaliação média de 4,9 e aceita marcações online.",
-  );
-  const answer = on ? withGeo : without;
-  const { shown, done } = useStreamed(answer, on ? "on" : "off", seen, reduce);
-
-  // Seen for the first time: the answer without GEO, then the same
-  // question once the business has made sure the AI understands it.
-  useEffect(() => {
-    if (!seen || reduce || on || touched.current || !done) return;
-    const id = window.setTimeout(() => {
-      if (!touched.current) setOn(true);
-    }, 1600);
-    return () => window.clearTimeout(id);
-  }, [seen, reduce, on, done]);
-
-  const name = "Clínica Aurora";
+  const on = manual ?? ms >= offEnd;
+  const answer = on ? ex.withGeo : ex.without;
+  const all = words(answer);
+  const since = manual !== null ? Infinity : on ? ms - offEnd : ms - ASK_MS;
+  const count = Math.max(0, Math.min(all.length, Math.floor(since / WORD_MS)));
+  const done = count >= all.length;
+  const asked = manual !== null || ms >= 120;
+  const progress = manual !== null ? 1 : Math.min(ms / geoLength(ex), 1);
+  const nameWords = new Set(ex.name.split(" ").filter((w) => w.length > 1 && w !== "&"));
 
   return (
-    <div ref={ref} className="sg-ai">
-      <div className="sg-ai-top">
-        <span className="mono-label text-paper/55">{t("AI assistant", "Assistente de IA")}</span>
-        <Switch
-          dark
-          label={t("The business’s website", "O website do negócio")}
-          value={on ? "on" : "off"}
-          onChange={(id) => {
-            touched.current = true;
-            setOn(id === "on");
-          }}
-          options={[
-            { id: "off", label: t("Without GEO", "Sem GEO") },
-            { id: "on", label: t("With GEO", "Com GEO") },
-          ]}
-        />
-      </div>
+    <div ref={ref} onPointerEnter={() => setHeld(true)} onPointerLeave={() => setHeld(false)}>
+      <ExampleKeys
+        list={list}
+        at={at}
+        progress={progress}
+        label={t("Examples", "Exemplos")}
+        onPick={(i) => {
+          pick(i);
+          setManual((m) => m ?? true);
+        }}
+      />
+      <div className="sg-ai mt-4">
+        <div className="sg-ai-top">
+          <span className="mono-label text-paper/55">{t("AI assistant", "Assistente de IA")}</span>
+          <Switch
+            dark
+            label={t("The business’s website", "O website do negócio")}
+            value={on ? "on" : "off"}
+            onChange={(id) => setManual(id === "on")}
+            options={[
+              { id: "off", label: t("Without GEO", "Sem GEO") },
+              { id: "on", label: t("With GEO", "Com GEO") },
+            ]}
+          />
+        </div>
 
-      <div className="sg-ai-body">
-        <p className="sg-ai-ask">{ask}</p>
-        <div className="sg-ai-answer">
-          <span aria-hidden="true" className="sg-ai-mark" data-busy={(seen && !done) || undefined} />
-          <p aria-live="polite">
-            {shown.map((w, i) => {
-              const strong = on && name.includes(w.replace(/[.,]/g, "")) && w.length > 2;
-              return (
-                <span key={`${on}-${i}`} className={`sg-word ${strong ? "font-medium text-paper" : ""}`}>
+        <div className="sg-ai-body">
+          <p key={ex.key} className="sg-ai-ask" data-on={asked || undefined}>
+            {ex.ask}
+          </p>
+          <div className="sg-ai-answer">
+            <span aria-hidden="true" className="sg-ai-mark" data-busy={(!done && manual === null) || undefined} />
+            <p aria-live="polite">
+              {all.slice(0, count).map((w, i) => (
+                <span key={`${ex.key}-${on}-${i}`} className={`sg-word ${on && nameWords.has(w.replace(/[.,:]/g, "")) ? "font-medium text-paper" : ""}`}>
                   {w}{" "}
                 </span>
-              );
-            })}
-          </p>
-        </div>
-        <div className="sg-ai-sources mono-label" data-on={(done && seen) || undefined}>
-          {on ? (
-            <>
-              <span className="text-paper/45">{t("Source", "Fonte")}</span>
-              <span className="sg-source">
+              ))}
+            </p>
+          </div>
+          <div className="sg-ai-sources mono-label" data-on={done || undefined}>
+            <span className="text-paper/45">{t("Sources", "Fontes")}</span>
+            {(on ? [ex.good.url] : ex.elsewhere).map((src) => (
+              <span key={src} className="sg-source" data-own={on || undefined}>
                 <span aria-hidden="true" className="sg-source-dot" />
-                clinicaaurora.pt
+                {src}
               </span>
-            </>
-          ) : (
-            <span className="text-paper/45">{t("No sources", "Sem fontes")}</span>
-          )}
+            ))}
+          </div>
         </div>
       </div>
+
+      <LiveCaption
+        on={on}
+        labels={[t("Without GEO", "Sem GEO"), t("With GEO", "Com GEO")]}
+        offText={t(
+          "More and more of us turn to Artificial Intelligence for suggestions and recommendations.",
+          "Todos nós usamos cada vez mais a Inteligência Artificial para obter sugestões e recomendações.",
+        )}
+        onText={t(
+          "These practices raise the chances of AI tools recommending a business to their users.",
+          "Estas práticas aumentam a probabilidade de as ferramentas de IA recomendarem um negócio aos seus utilizadores.",
+        )}
+      />
     </div>
   );
 }
@@ -373,18 +558,24 @@ function GeoSection({ t }: { t: T }) {
                 "A IA só recomenda negócios quando eles próprios fazem questão de garantir que a IA os percebe.",
               )}
             </p>
-            <p className="sg-lede mt-6 text-ash">
-              {t(
-                "GEO (Generative Engine Optimization) is a different set of practices with a similar purpose, aimed at Artificial Intelligence instead. More and more of us turn to it for suggestions and recommendations, and these practices raise the chances of AI tools recommending a business to their users.",
-                "O GEO (Generative Engine Optimization) consiste num conjunto de práticas diferentes, com um propósito semelhante, mas direcionado para a Inteligência Artificial. Todos nós a usamos cada vez mais para obter sugestões e recomendações, e estas práticas aumentam a probabilidade de as ferramentas de IA recomendarem um negócio aos seus utilizadores.",
-              )}
-            </p>
+            <dl className="sg-def">
+              <dt>
+                <span className="sg-def-term">GEO</span>
+                <span className="mono-label">Generative Engine Optimization</span>
+              </dt>
+              <dd>
+                {t(
+                  "A different set of practices with a similar purpose, aimed at Artificial Intelligence instead.",
+                  "Um conjunto de práticas diferentes, com um propósito semelhante, mas direcionado para a Inteligência Artificial.",
+                )}
+              </dd>
+            </dl>
           </SlideIn>
         </div>
         <div>
           <Assistant t={t} />
-          <p className="mono-label mt-4 text-ash-2">
-            {t("A demonstration: the clinic and the assistant are invented.", "Uma demonstração: a clínica e o assistente são inventados.")}
+          <p className="mono-label mt-5 text-ash-2">
+            {t("A demonstration: the businesses and the assistant are invented.", "Uma demonstração: os negócios e o assistente são inventados.")}
           </p>
         </div>
       </div>
@@ -451,7 +642,7 @@ function useNarrow() {
 function Levels({ t }: { t: T }) {
   const reduce = useReducedMotion() ?? false;
   const ref = useRef<HTMLDivElement>(null);
-  const seen = useSeen(ref, { threshold: 0.35 });
+  const seen = useSeen(ref, { threshold: 0.12 });
   const [level, setLevel] = useState<Level>("basic");
   const [month, setMonth] = useState(12);
   const narrow = useNarrow();
@@ -462,8 +653,8 @@ function Levels({ t }: { t: T }) {
       name: t("Basic SEO practices", "Práticas básicas de SEO"),
       when: t("Included in every website", "Incluídas em todos os websites"),
       body: t(
-        "They make sure the website comes up at the top of very specific searches that lead to the business, such as its own name, and on later pages of related searches, such as “aesthetic clinics in Vila Nova de Gaia”.",
-        "Garantem que o website aparece no topo das pesquisas muito específicas que remetem para o negócio, como o nome do próprio negócio, e em páginas mais distantes nas pesquisas relacionadas, como “clínicas de estética em Vila Nova de Gaia”.",
+        "They make sure the website comes up at the top of very specific searches that lead to the business, such as its own name, and on later pages of related searches, such as “dentists in Lisbon”.",
+        "Garantem que o website aparece no topo das pesquisas muito específicas que remetem para o negócio, como o nome do próprio negócio, e em páginas mais distantes nas pesquisas relacionadas, como “dentistas em Lisboa”.",
       ),
     },
     once: {
@@ -503,10 +694,10 @@ function Levels({ t }: { t: T }) {
   const order: Level[] = ["basic", "once", "monthly"];
 
   return (
-    <section aria-labelledby="sg-levels" data-tone="dark" className="relative text-paper">
+    <section aria-labelledby="sg-levels" data-tone="light" className="relative">
       <div className="shell sg-levels">
         <SlideIn ready>
-          <p className="mono-label text-paper/55">{t("The impact of each level", "O impacto de cada nível")}</p>
+          <p className="mono-label text-ash-2">{t("The impact of each level", "O impacto de cada nível")}</p>
           <h2 id="sg-levels" className="display mt-6 text-[clamp(2rem,4.2vw,3.5rem)] leading-[1.02]">
             <span className="block font-light">{t("Basic, one-off or monthly:", "Básico, único ou mensal:")}</span>
             <span className="block font-medium">{t("twelve months of each.", "doze meses de cada um.")}</span>
@@ -516,7 +707,6 @@ function Levels({ t }: { t: T }) {
         <div ref={ref} className="sg-levels-grid">
           <div className="sg-levels-side">
             <Switch
-              dark
               label={t("Level of SEO", "Nível de SEO")}
               value={level}
               onChange={(id) => setLevel(id as Level)}
@@ -527,23 +717,23 @@ function Levels({ t }: { t: T }) {
               ]}
             />
             <motion.div key={level} initial={reduce ? false : { opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, ease: EASE }} className="mt-9">
-              <p className="mono-label text-paper/45">{info[level].when}</p>
+              <p className="mono-label text-ash-2">{info[level].when}</p>
               <h3 className="display mt-3 text-[1.625rem] font-medium leading-[1.1]">{info[level].name}</h3>
-              <p className="mt-4 max-w-[44ch] text-[1rem] leading-[1.6] text-paper/70">{info[level].body}</p>
+              <p className="mt-4 max-w-[44ch] text-[1rem] leading-[1.6] text-ash">{info[level].body}</p>
             </motion.div>
 
             <dl className="sg-readout">
               <div className="sg-readout-row">
                 <dt>
-                  <span className="mono-label text-paper/45">{t("Search by name", "Pesquisa pelo nome")}</span>
-                  <span className="sg-readout-q">“Clínica Aurora”</span>
+                  <span className="mono-label text-ash-2">{t("Search by name", "Pesquisa pelo nome")}</span>
+                  <span className="sg-readout-q">“Clínica Dentária Sorriso”</span>
                 </dt>
                 <dd className="mono-label">{t("No. 1", "1.º lugar")}</dd>
               </div>
               <div className="sg-readout-row">
                 <dt>
-                  <span className="mono-label text-paper/45">{t("Related search", "Pesquisa relacionada")}</span>
-                  <span className="sg-readout-q">{t("“aesthetic clinics in Gaia”", "“clínicas de estética em Gaia”")}</span>
+                  <span className="mono-label text-ash-2">{t("Related search", "Pesquisa relacionada")}</span>
+                  <span className="sg-readout-q">{t("“dentists in Lisbon”", "“dentistas em Lisboa”")}</span>
                 </dt>
                 <dd className="mono-label" data-top={rank <= 10 || undefined}>
                   {relatedShown}
@@ -552,7 +742,8 @@ function Levels({ t }: { t: T }) {
             </dl>
           </div>
 
-          <figure className="sg-chart">
+          <figure className="sg-chart sg-card-dark">
+            <div aria-hidden="true" className="sg-card-grain" />
             <div className="sg-chart-top mono-label">
               <span className="text-paper/55">{t("Visibility in related searches", "Visibilidade nas pesquisas relacionadas")}</span>
               <span className="text-paper/40">{t("Illustrative", "Ilustrativo")}</span>
@@ -655,17 +846,20 @@ function Price({ t, table }: { t: T; table: SeoPrice[] }) {
 
   return (
     <section aria-labelledby="sg-price" data-tone="light" className="sg-price relative">
-      <div className="shell sg-price-grid">
-        <div>
+      <div className="shell">
+       <div className="sg-price-card sg-card-dark">
+        <div aria-hidden="true" className="sg-card-grain" />
+        <div className="sg-price-grid">
+        <div className="sg-price-copy">
           <SlideIn ready>
-            <p className="mono-label text-ash-2">{t("Price", "Preço")}</p>
-            <h2 id="sg-price" className="display mt-6 text-[clamp(2rem,4.2vw,3.5rem)] leading-[1.02]">
+            <p className="mono-label text-paper/55">{t("Price", "Preço")}</p>
+            <h2 id="sg-price" className="display mt-6 text-paper text-[clamp(2rem,4.2vw,3.5rem)] leading-[1.02]">
               <span className="block font-light">{t("What it costs,", "Quanto custa,")}</span>
               <span className="block font-medium">{t("measured by the website.", "à medida do website.")}</span>
             </h2>
           </SlideIn>
           <SlideIn ready distance={0} delay={0.08}>
-            <p className="sg-lede mt-8 text-ash">
+            <p className="sg-lede mt-8 text-paper/70">
               {t(
                 "Basic SEO comes with every website. The one-off work is worked out from the website’s price, and the monthly service from the one-off work.",
                 "O SEO básico vem com todos os websites. O trabalho pontual é calculado a partir do valor do website, e o serviço mensal a partir do trabalho pontual.",
@@ -743,6 +937,8 @@ function Price({ t, table }: { t: T; table: SeoPrice[] }) {
           </div>
         </div>
       </div>
+        </div>
+       </div>
     </section>
   );
 }
