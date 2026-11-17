@@ -2,7 +2,6 @@
 
 import { SlideIn } from "./enter";
 import { BeforeAfter } from "./project-report";
-import { ServiceHero } from "./service-depth";
 import { ToneRoom } from "./tone-veil";
 import { Included, Coverage, Tailored } from "./shoot-sections";
 import { ProposalAsk } from "./about-faq";
@@ -40,6 +39,52 @@ import type { T } from "./sbs-shared";
    side with their captions under them, Luma's pricing for three plain
    cards with the middle one inverted.
    ================================================================== */
+
+/* ---- the header ------------------------------------------------- */
+
+/** Set exactly as the side-by-side page's is (user, 2026-11-17: the two
+    headers are to read as one system): the same dark ground, the same
+    room above and below it, the same mono label, the same display size
+    and the same two SlideIns. The photograph that stood here, its cut
+    corner and its credit are gone. */
+function Head({ t }: { t: T }) {
+  const facts = [
+    { v: t("Mainland Portugal", "Portugal continental"), l: t("Where it is available", "Onde está disponível") },
+    { v: t("30 km of Gaia", "30 km de Gaia"), l: t("Travel included within", "Deslocação incluída até") },
+    { v: t("The files", "As fotografias"), l: t("Yours once paid for", "Ficam do cliente depois de pagas") },
+  ];
+  return (
+    <section data-tone="dark" className="relative isolate text-paper">
+      <header className="shell ps-head" data-tone-body>
+        <SlideIn ready>
+          <p className="mono-label text-paper/55">{t("Additional service", "Serviço adicional")}</p>
+          <h1 className="display mt-7 max-w-[18ch] text-[clamp(2.5rem,6vw,4.75rem)] leading-[0.98] font-light">
+            {t("Photo Shoot", "Sessão Fotográfica")}
+          </h1>
+        </SlideIn>
+        <SlideIn ready distance={0} delay={0.08}>
+          <p className="ps-head-say">
+            <span className="font-light sm:block">{t("With no visual content worth the name,", "Sem conteúdo visual de qualidade,")}</span>{" "}
+            <span className="font-medium sm:block">{t("a website is better left unmade.", "mais vale não ter website.")}</span>
+          </p>
+        </SlideIn>
+        <SlideIn ready distance={0} delay={0.16}>
+          <dl className="ps-head-facts">
+            {facts.map((f) => (
+              <div key={f.l}>
+                <dt>{f.v}</dt>
+                <dd className="mono-label">{f.l}</dd>
+              </div>
+            ))}
+          </dl>
+        </SlideIn>
+        <SlideIn ready distance={0} delay={0.22} className="ps-head-ask">
+          <ProposalAsk label={t("Get your free proposal", "Pedir proposta gratuita")} />
+        </SlideIn>
+      </header>
+    </section>
+  );
+}
 
 /* ---- the opening ------------------------------------------------ */
 
@@ -218,22 +263,14 @@ function Packages({ t }: { t: T }) {
 export function PhotoShoot() {
   const t = useT();
   return (
-    <>
-      {/* The photograph and the name first, as every service page has
-          them (service-depth.tsx). */}
-      <div className="shell pt-[5.75rem] md:pt-[calc(var(--section-gap)+3rem)]">
-        <ServiceHero slug="photo-shoot" name={t("Photo Shoot", "Sessão Fotográfica")} />
-      </div>
-
-      {/* Then one room, turning from light to dark under the veil. */}
-      <ToneRoom>
-        <Opening t={t} />
-        <Compare t={t} />
-        <Included t={t} />
-        <Packages t={t} />
-        <Coverage t={t} />
-        <Tailored t={t} />
-      </ToneRoom>
-    </>
+    <ToneRoom>
+      <Head t={t} />
+      <Opening t={t} />
+      <Compare t={t} />
+      <Included t={t} />
+      <Packages t={t} />
+      <Coverage t={t} />
+      <Tailored t={t} />
+    </ToneRoom>
   );
 }

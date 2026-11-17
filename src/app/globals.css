@@ -6747,3 +6747,165 @@
   .sht { border-top: 0; }
   .sht-lede { margin-top: 1.5rem; }
 }
+
+/* ---- the photo shoot's header, as the side-by-side page's is -------- */
+@layer components {
+  .ps-head { padding-top: calc(var(--section-gap) + 2rem); padding-bottom: clamp(2.5rem, 5vw, 4rem); }
+  .ps-head-say {
+    margin-top: 2rem;
+    max-width: 30ch;
+    font-family: var(--font-title);
+    font-size: clamp(1.25rem, 2.4vw, 1.875rem);
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+    color: rgb(255 255 255 / 0.92);
+    text-wrap: balance;
+  }
+  /* The three the plate used to carry, now plain on the dark: no card,
+     no cut corner, nothing laid on anything. */
+  .ps-head-facts {
+    display: grid;
+    gap: 1.25rem 2.5rem;
+    margin-top: clamp(2.25rem, 4vw, 3rem);
+    padding-top: clamp(1.5rem, 3vw, 2rem);
+    border-top: 1px solid rgb(255 255 255 / 0.16);
+    max-width: 52rem;
+  }
+  @media (min-width: 640px) { .ps-head-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .ps-head-facts dt {
+    font-family: var(--font-title);
+    font-weight: 300;
+    font-size: clamp(1.25rem, 1.9vw, 1.625rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .ps-head-facts dd { margin: 0.45rem 0 0; color: rgb(255 255 255 / 0.55); }
+  .ps-head-ask { display: flex; margin-top: clamp(2rem, 3.5vw, 2.75rem); }
+
+  /* ---- the country in relief (shoot-sections.tsx) ------------------
+     No WebGL: the land is a stack of boxes cut by one path, the thirty
+     kilometres a shorter stack standing on it, and over them the
+     outline, which draws itself before either rises. The Inspo archive
+     had no extruded map to take from, so it is built from the
+     technique rather than from a reference, in the page's own black,
+     white and light grey.                                            */
+  .psm-plate { display: grid; justify-items: center; gap: clamp(1.5rem, 3vw, 2.5rem); }
+  .psm {
+    width: 100%;
+    display: grid;
+    place-items: center;
+    perspective: 1400px;
+    perspective-origin: 50% 42%;
+    /* The box is 600 tall and lies back, so it needs less room than it
+       stands in — but perspective brings its near edge forward, so the
+       room is measured against what is seen, not against the box. */
+    height: clamp(19rem, 48vw, 30rem);
+  }
+  .psm-stage {
+    position: relative;
+    transform-style: preserve-3d;
+    /* Laid back and turned a little, and the hand turns it further. */
+    transform:
+      scale(var(--psm-k, 0.62))
+      rotateX(calc(54deg + var(--py, 0) * -7deg))
+      rotateZ(calc(-9deg + var(--px, 0) * 7deg));
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @media (min-width: 900px) { .psm-stage { --psm-k: 0.72; } }
+  @media (max-width: 560px) { .psm-stage { --psm-k: 0.5; } }
+
+  /* The shadow it casts, under everything. */
+  .psm-shade {
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    top: 12%;
+    bottom: 10%;
+    border-radius: 50%;
+    background: rgb(0 0 0 / 0.22);
+    filter: blur(26px);
+    transform: translateZ(-26px);
+    opacity: 0;
+    transition: opacity 0.9s ease 0.5s;
+  }
+  .psm[data-in] .psm-shade { opacity: 1; }
+
+  /* The land: every slice the same outline, one above the other. */
+  .psm-slab {
+    position: absolute;
+    inset: 0;
+    background: #e6e6e4;
+    transform: translateZ(0);
+    transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1) calc(0.45s + var(--i) * 22ms);
+  }
+  .psm[data-in] .psm-slab { transform: translateZ(calc(var(--i) * 1.5px)); }
+  /* The top slice is the one that is read, and the sides fall away. */
+  .psm-slab:last-of-type { background: #f4f4f2; }
+  .psm[data-lit="far"] .psm-slab:last-of-type { background: #dcdcd9; }
+
+  /* The outline, drawn first and kept. */
+  .psm-rim {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+    transform: translateZ(calc(12 * 1.5px + 0.4px));
+  }
+  .psm-rim path {
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-dasharray: 1900;
+    stroke-dashoffset: 1900;
+    transition: stroke-dashoffset 1.1s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+  .psm[data-in] .psm-rim path { stroke-dashoffset: 0; }
+
+  /* The thirty kilometres: cut to the land, then to the circle. */
+  .psm-near {
+    position: absolute;
+    inset: 0;
+    transform: translateZ(calc(12 * 1.5px));
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) calc(0.95s + var(--i) * 26ms);
+  }
+  .psm[data-in] .psm-near { transform: translateZ(calc(12 * 1.5px + var(--i) * 1.7px)); }
+  .psm-near > span {
+    position: absolute;
+    inset: 0;
+    background: #121212;
+  }
+  .psm-near:last-of-type > span { background: var(--color-ink); }
+  .psm[data-lit="near"] .psm-near:last-of-type > span { background: #000; box-shadow: 0 0 0 1px #000; }
+
+  /* The ring, out of the point and on for good. */
+  .psm-ring {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    margin: -30px 0 0 -30px;
+    border: 2px solid var(--color-ink);
+    border-radius: 50%;
+    transform: translateZ(calc(12 * 1.5px + 8 * 1.7px + 0.5px)) scale(0.15);
+    opacity: 0;
+    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) 1.5s, opacity 0.6s ease 1.5s;
+  }
+  .psm[data-in] .psm-ring { transform: translateZ(calc(12 * 1.5px + 8 * 1.7px + 0.5px)) scale(1); opacity: 0.55; }
+  .psm[data-in] .psm-ring { animation: psm-pulse 3.4s ease-in-out 2.6s infinite; }
+  .psm[data-lit="near"] .psm-ring { opacity: 1; }
+  @keyframes psm-pulse {
+    0%, 70%, 100% { box-shadow: 0 0 0 0 rgb(0 0 0 / 0.18); }
+    35% { box-shadow: 0 0 0 10px rgb(0 0 0 / 0); }
+  }
+
+  /* The label, flat to the page and out of the drawing's way. */
+  .psm-cap { display: flex; align-items: center; gap: 0.6rem; color: var(--color-ash); text-transform: none; letter-spacing: 0.04em; }
+  .psm-cap-key { width: 0.7rem; height: 0.7rem; border-radius: 50%; background: var(--color-ink); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .psm-stage { transition: none; }
+    .psm-slab, .psm-near, .psm-ring, .psm-shade { transition: none; }
+    .psm-rim path { transition: none; stroke-dashoffset: 0; }
+    .psm[data-in] .psm-ring { animation: none; }
+  }
+}
