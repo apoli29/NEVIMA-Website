@@ -11,6 +11,7 @@ import { FloatingNav } from "./floating-nav";
 import { Included } from "./services";
 import { ServiceDepth, ServiceHero } from "./service-depth";
 import { PhotoShoot } from "./photo-shoot";
+import { VisualIdentity } from "./visual-identity";
 import { WorkTogether } from "./work-together";
 import { SeoGeo } from "./seo-geo";
 import { seoPriceTable } from "@/lib/proposal/seo-table";
@@ -67,6 +68,22 @@ export function ServicePage({ slug, lang }: { slug: string; lang: Lang }) {
 
   /* SEO & GEO has a page of its own (seo-geo.tsx; user, 2026-11-16):
      nothing of the template below is used there. */
+  /* Visual identity has a page of its own too (visual-identity.tsx;
+     user, 2026-11-17), set as the photo shoot's is. */
+  if (service.slug === "visual-identity") {
+    return (
+      <ProposalHost>
+        <JsonLd data={serviceGraph(service.slug, lang)} />
+        <FloatingNav />
+        <main id="top" className="relative bg-paper">
+          <VisualIdentity />
+        </main>
+        <WorkTogether />
+        <Footer />
+      </ProposalHost>
+    );
+  }
+
   /* The photo shoot has a page of its own too (photo-shoot.tsx; user,
      2026-11-17): the plate at its head, then its own room of sections. */
   if (service.slug === "photo-shoot") {
