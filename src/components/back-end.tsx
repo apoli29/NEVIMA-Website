@@ -9,7 +9,7 @@ import { Illuminated } from "./services";
 import { useInView, type T } from "./sbs-shared";
 import { TO_FILL } from "@/lib/work";
 import { useT } from "@/lib/use-lang";
-import { CostBars, GrowthLines, HoursBars, MonthCards, SavedHours, ToolFlow, WeekDonut } from "./back-end-charts";
+import { CostBars, GrowthLines, HoursBars, MonthCards, RequestLoop, SavedHours, ToolFlow, WeekDonut } from "./back-end-charts";
 
 /* ==================================================================
    Back-end features
@@ -64,6 +64,11 @@ function Head({ t }: { t: T }) {
       {/* No drop of its own: the bar carries one all the way down and
           the page ends on "Let's work together". */}
       <header className="shell ps-head" data-tone-body>
+        {/* The words keep their place, ranged left and unchanged; beside
+            them, from 1024px, one request walks through the back end so
+            what the service is reads before a line of it is. */}
+        <div className="be-head-top">
+          <div>
         <SlideIn ready>
           <p className="mono-label text-paper/55">{t("Additional service", "Serviço adicional")}</p>
           <h1 className="display mt-7 max-w-[18ch] text-[clamp(2.5rem,6vw,4.75rem)] leading-[0.98] font-light">
@@ -76,6 +81,11 @@ function Head({ t }: { t: T }) {
             <span className="font-medium sm:block">{t("gains from this.", "ganha com isto.")}</span>
           </p>
         </SlideIn>
+          </div>
+          <SlideIn ready distance={0} delay={0.12}>
+            <RequestLoop t={t} />
+          </SlideIn>
+        </div>
         <SlideIn ready distance={0} delay={0.16}>
           <dl className="ps-head-facts">
             {facts.map((f) => (

@@ -147,3 +147,36 @@ páginas de serviço.
 do custo mensal, à espera do preço do estúdio. Os nomes das três
 ferramentas continuam a vir de `TO_FILL`, e o diagrama enche-se sozinho
 quando chegarem.
+
+## O elemento do cabeçalho (2026-11-17, terceiro pedido)
+
+Escolhida a **opção B**: um elemento novo, em vez de mudar de sítio um
+dos que já existiam. A opção A pedia tirar o mini painel ou o diagrama
+da secção onde está, e os dois estão lá a fazer um trabalho que mais
+nada faz — o painel dá os números a seguir às três interfaces, o
+diagrama é a única coisa que mostra como as ferramentas se ligam. Tirar
+qualquer um deixava um buraco para tapar com outra coisa.
+
+`RequestLoop` (em `back-end-charts.tsx`, estilos `.be-rl-*`) mostra um
+pedido a andar pelo back end, em quatro passos ligados por um fio com um
+ponto a descer: o formulário é enviado, o pedido entra na base de dados,
+a marcação ocupa o calendário, a confirmação sai. No fim recomeça com um
+pedido novo.
+
+- O texto, a ordem e os três factos do cabeçalho ficaram como estavam.
+  O que entrou foi `.be-head-top`, que a partir dos 1024px põe o
+  elemento ao lado das palavras; abaixo disso ele cai para debaixo do
+  texto do hero, antes dos factos, e mantém o tamanho.
+- É apoio, não manchete: fios de 1px da mesma espessura da régua dos
+  factos, rótulos em mono de 10px, e nada mais claro do que o título ao
+  lado. O branco cheio só aparece no passo que está a acontecer.
+- Com movimento reduzido fica parado no estado final, com os quatro
+  passos dados e sem pontos a circular.
+- Lê-se sem texto explicativo; os rótulos de uma palavra estão lá como
+  nome de cada passo, não como explicação, e o conjunto tem um
+  `aria-label` que conta a mesma história por palavras.
+
+Referência pelo INSPO MCP: a Builder.io (título à esquerda, interface do
+produto à direita, sobre preto) — só a composição. A nossa é muito mais
+contida: sem capturas de ecrã, sem cor de destaque, só fios e tipo.
+
