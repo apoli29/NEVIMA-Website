@@ -3971,120 +3971,131 @@
     animation: sbs-scroll var(--sbs-loop) cubic-bezier(0.22, 1, 0.36, 1) infinite;
   }
 
-  /* ================= the off-the-shelf template ==================== */
-  /* The stops are each side's own, so each page ends on its own
-     foot: the moments are shared, the distances are not. */
-  .sbs-t-page { --sbs-stop-1: -260px; --sbs-stop-2: -520px; --sbs-stop-3: -780px; --sbs-stop-4: -994px; background: #fff; }
-
-  /* The bar that never gets there: it crawls, stalls, and starts again. */
-  .sbs-load {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 5;
-    height: 3px;
-    width: 96%;
-    background: #2d6cdf;
+  /* ============ the website other professionals deliver ============= */
+  /* The kind of website many brokers are handed, after two real ones
+     the user brought (2026-11-17), set in one idiom from top to foot so
+     it reads as one website (user, the same day): Arial; navy capitals
+     with a short blue rule under every title; icons as on a slide, in
+     pale blue squares; white cards with a border and a faint shadow;
+     white and pale grey grounds in turn; navy at the top and the foot.
+     Nothing moves: the page only goes down, to the same moments as ours,
+     its stops read off its own data-stop sections. */
+  .sbs-c-page {
+    --sbs-stop-1: -660px;
+    --sbs-stop-2: -1180px;
+    --sbs-stop-3: -1900px;
+    --sbs-stop-4: -2500px;
+    --c-navy: #1d3c87;
+    --c-blue: #1b4f9e;
+    --c-link: #3b8ad4;
+    --c-pale: #f3f5f9;
+    background: #fff;
+    color: #555;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    line-height: 1.55;
   }
-  .sbs-run .sbs-load { animation: sbs-load var(--sbs-loop) linear infinite; }
-  @keyframes sbs-load {
-    0% { width: 0; }
-    8% { width: 18%; }
-    14%, 22% { width: 24%; }
-    30% { width: 52%; }
-    44%, 70% { width: 61%; }
-    88% { width: 92%; }
-    96%, 100% { width: 96%; }
-  }
+  .sbs-c-a { color: var(--c-link); }
 
-  .sbs-t-top { display: flex; align-items: center; gap: 18px; padding: 11px 26px; background: #1e3a5f; color: #fff; font-size: 12px; }
-  .sbs-t-brand { font-weight: 700; font-size: 15px; letter-spacing: 0.5px; }
-  .sbs-t-nav { display: flex; gap: 14px; margin-left: auto; }
-  .sbs-t-cta { background: #f0a500; color: #1e3a5f; font-weight: 700; padding: 6px 12px; border-radius: 3px; }
-  /* The header does not arrive, it lands in jolts. */
-  .sbs-run .sbs-t-top { animation: sbs-jolt var(--sbs-loop) steps(1) infinite; }
-  @keyframes sbs-jolt {
-    0%, 4% { opacity: 0; }
-    5%, 9% { opacity: 1; translate: 0 -6px; }
-    10%, 100% { opacity: 1; translate: 0 0; }
-  }
+  /* The one title, everywhere. */
+  .sbs-c-title { margin: 0 0 28px; text-align: center; font-size: 22px; font-weight: 700; color: var(--c-navy); }
+  .sbs-c-title::after { content: ""; display: block; width: 46px; height: 3px; margin: 10px auto 0; background: var(--c-link); }
+  /* The one icon, everywhere. */
+  .sbs-c-ico { display: inline-flex; padding: 9px; background: #e3eefb; color: #2f7fd0; border-radius: 4px; }
+  .sbs-c-ico svg { width: 34px; height: 34px; }
+  /* The one card, everywhere. */
+  .sbs-c-kind, .sbs-c-srow > span, .sbs-c-offices > div { background: #fff; border: 1px solid #e1e5ec; box-shadow: 0 1px 4px rgb(0 0 0 / 0.06); }
 
-  /* The banner that lands late and shoves everything under it down. */
-  .sbs-t-banner {
-    position: relative;
-    display: grid;
-    place-items: center;
-    height: 300px;
-    background: #c9ccd1;
-    color: #9aa0a6;
-    overflow: hidden;
-  }
-  .sbs-run .sbs-t-banner { animation: sbs-late var(--sbs-loop) steps(1) infinite; }
-  @keyframes sbs-late {
-    0%, 17% { height: 0; }
-    18%, 100% { height: 300px; }
-  }
-  .sbs-t-stock { width: 190px; height: 120px; }
-  .sbs-t-dots { position: absolute; bottom: 14px; left: 50%; translate: -50% 0; display: flex; gap: 7px; }
-  .sbs-t-dots i { width: 9px; height: 9px; border-radius: 50%; background: rgb(255 255 255 / 0.65); }
-  .sbs-t-dots i.on { background: #f0a500; }
-  /* A carousel nobody asked for, turning over on its own. */
-  .sbs-run .sbs-t-dots i { animation: sbs-dot var(--sbs-loop) steps(1) infinite; }
-  .sbs-run .sbs-t-dots i:nth-child(2) { animation-delay: calc(var(--sbs-loop) * -0.75); }
-  .sbs-run .sbs-t-dots i:nth-child(3) { animation-delay: calc(var(--sbs-loop) * -0.5); }
-  .sbs-run .sbs-t-dots i:nth-child(4) { animation-delay: calc(var(--sbs-loop) * -0.25); }
-  @keyframes sbs-dot {
-    0%, 24% { background: #f0a500; }
-    25%, 100% { background: rgb(255 255 255 / 0.65); }
-  }
+  .sbs-c-strip { display: flex; justify-content: flex-end; align-items: center; gap: 6px; padding: 3px 24px; background: var(--c-navy); color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+  .sbs-c-flag { width: 14px; height: 9px; margin-left: 8px; background: linear-gradient(90deg, #046a38 0 40%, #da291c 40%); }
 
-  .sbs-t-copy { padding: 26px 26px 6px; text-align: center; }
-  .sbs-t-copy h3 { margin: 0 0 10px; font-size: 38px; font-weight: 800; letter-spacing: -0.5px; color: #1e3a5f; }
-  .sbs-t-copy p { margin: 0 auto 18px; max-width: 60ch; font-size: 15px; line-height: 1.5; color: #6b6b6b; }
-  .sbs-t-b1 { display: inline-block; background: #f0a500; color: #1e3a5f; font-weight: 700; font-size: 13px; padding: 11px 20px; border-radius: 4px; }
-  .sbs-t-b2 { display: inline-block; margin-left: 10px; border: 2px solid #1e3a5f; color: #1e3a5f; font-weight: 700; font-size: 13px; padding: 9px 18px; border-radius: 4px; }
+  .sbs-c-head { display: flex; align-items: center; gap: 16px; padding: 12px 24px; border-bottom: 1px solid #e3e3e3; box-shadow: 0 2px 6px rgb(0 0 0 / 0.08); position: relative; z-index: 1; background: #fff; }
+  .sbs-c-logo { display: flex; align-items: center; gap: 7px; flex: none; }
+  .sbs-c-logo svg { width: 44px; height: 44px; }
+  .sbs-c-logo-name { display: flex; align-items: baseline; gap: 5px; }
+  .sbs-c-logo-name b { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-size: 26px; line-height: 1; color: var(--c-navy); text-shadow: 1px 1px 0 #b9c9e6; }
+  .sbs-c-logo-name i { font-style: normal; font-size: 11px; font-weight: 700; letter-spacing: 0.18em; color: #f39200; }
+  .sbs-c-logo small { display: block; margin-top: 2px; font-size: 9px; color: #888; }
+  .sbs-c-nav { display: flex; flex-wrap: wrap; margin-left: auto; font-size: 10px; font-weight: 700; color: #444; }
+  .sbs-c-nav span { padding: 3px 7px; border-left: 1px solid #d5d5d5; }
+  .sbs-c-nav span:first-child { border-left: 0; }
+  .sbs-c-nav span[data-on] { color: var(--c-link); }
+  .sbs-c-tools { display: flex; align-items: center; gap: 9px; color: var(--c-navy); font-size: 12px; }
+  .sbs-c-tools svg { width: 14px; height: 14px; color: #777; }
+  .sbs-c-ig { width: 11px; height: 11px; border: 1.6px solid currentColor; border-radius: 3px; }
+  .sbs-c-burger { display: none; flex-direction: column; gap: 4px; margin-left: auto; }
+  .sbs-c-burger i { width: 20px; height: 2.5px; background: #333; }
 
-  .sbs-t-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 28px 26px; }
-  .sbs-t-card { border: 1px solid #dcdcdc; border-radius: 4px; padding: 14px; }
-  .sbs-t-ph { display: block; height: 70px; margin-bottom: 12px; background: #e3e3e3; }
-  .sbs-t-card h4 { margin: 0 0 7px; font-size: 14px; color: #1e3a5f; }
-  .sbs-t-card p { margin: 0 0 8px; font-size: 12px; line-height: 1.5; color: #6b6b6b; }
-  .sbs-t-more { font-size: 12px; color: #2d6cdf; }
+  .sbs-c-slide { position: relative; height: 400px; overflow: hidden; background: #3a6ea8; }
+  .sbs-c-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .sbs-c-slide-copy { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
+  .sbs-c-slide-copy h3 { margin: 0; font-size: 46px; font-weight: 700; letter-spacing: 0.08em; color: #fff; text-shadow: 0 2px 8px rgb(0 0 0 / 0.45); }
+  .sbs-c-slide-copy span { padding: 9px 24px; background: var(--c-blue); color: #fff; font-size: 11px; font-weight: 700; border-radius: 3px; }
+  .sbs-c-arrow { position: absolute; top: 50%; left: 14px; translate: 0 -50%; font-size: 46px; line-height: 1; color: rgb(255 255 255 / 0.8); }
+  .sbs-c-arrow[data-right] { left: auto; right: 14px; }
+  .sbs-c-dots { position: absolute; bottom: 14px; left: 50%; translate: -50% 0; display: flex; gap: 6px; }
+  .sbs-c-dots i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid #fff; }
+  .sbs-c-dots i[data-on] { background: #fff; }
 
-  .sbs-t-band { padding: 26px; background: #f3f4f6; text-align: center; }
-  .sbs-t-band h4 { margin: 0 0 16px; font-size: 20px; font-weight: 800; color: #1e3a5f; }
-  .sbs-t-faces { display: flex; justify-content: center; gap: 18px; }
-  .sbs-t-faces i { width: 76px; height: 76px; border-radius: 50%; background: #dcdee1; }
 
-  .sbs-t-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 26px 44px; background: #1e3a5f; color: rgb(255 255 255 / 0.8); font-size: 12px; }
-  .sbs-t-badge { border: 1px solid rgb(255 255 255 / 0.35); padding: 4px 9px; font-size: 11px; }
+  /* Grounds in turn: pale, white, white, pale, white, pale. */
+  .sbs-c-advice { padding: 40px 24px 10px; background: var(--c-pale); text-align: center; }
+  .sbs-c-advice p { max-width: 62ch; margin: 0 auto; font-size: 14px; }
+  .sbs-c-kinds { padding: 0 24px 40px; background: var(--c-pale); }
+  .sbs-c-tabs { display: flex; justify-content: center; gap: 30px; padding: 20px 0; font-size: 10px; font-weight: 700; color: #888; }
+  .sbs-c-tabs span { padding-bottom: 6px; }
+  .sbs-c-tabs span[data-on] { color: var(--c-link); border-bottom: 2px solid var(--c-link); }
+  .sbs-c-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .sbs-c-kind { padding: 22px 16px 18px; text-align: center; }
+  .sbs-c-kind h5 { margin: 12px 0 4px; font-size: 16px; font-weight: 700; color: var(--c-navy); }
+  .sbs-c-kind small { display: block; font-size: 9px; color: #666; }
 
-  /* The wall over the foot of it, which comes up and stays. Its type is
-     the plate's, not the page's, so it reads at the size a cookie wall
-     reads at on the real thing. */
-  .sbs-cookie {
-    position: absolute;
-    z-index: 6;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.7rem 0.8rem;
-    background: #202833;
-    color: #fff;
-    font-size: 0.6875rem;
-    line-height: 1.4;
-    translate: 0 0;
-  }
-  .sbs-run .sbs-cookie { animation: sbs-cookie var(--sbs-loop) cubic-bezier(0.22, 1, 0.36, 1) infinite; }
-  @keyframes sbs-cookie {
-    0%, 22% { translate: 0 100%; }
-    28%, 100% { translate: 0 0; }
-  }
-  .sbs-cookie-ok { flex: none; background: #f0a500; color: #1e3a5f; font-weight: 700; padding: 0.4rem 0.7rem; border-radius: 3px; }
-  .sbs-cookie-no { flex: none; text-decoration: underline; opacity: 0.85; }
+  .sbs-c-services { padding: 44px 24px 40px; }
+  .sbs-c-srow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; text-align: center; }
+  .sbs-c-srow > span { padding: 18px 8px 16px; }
+  .sbs-c-srow small { display: block; margin-top: 12px; font-size: 10px; font-weight: 700; color: var(--c-navy); }
+
+  .sbs-c-text { padding: 12px 24px 44px; font-size: 12.5px; color: #555; }
+  .sbs-c-text .sbs-c-title { margin-bottom: 22px; font-size: 18px; }
+  .sbs-c-text p { margin: 0 0 10px; }
+  .sbs-c-text .sbs-c-q { margin-top: 16px; font-weight: 700; color: var(--c-navy); }
+  .sbs-c-text ul { margin: -2px 0 12px; padding-left: 34px; list-style: disc; }
+  .sbs-c-text li { margin: 1px 0; }
+  .sbs-c-text b { color: #333; }
+  .sbs-c-under { text-decoration: underline; }
+
+  .sbs-c-about { padding: 44px 24px 34px; background: var(--c-pale); }
+  .sbs-c-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .sbs-c-cols p { margin: 0; font-size: 12.5px; }
+  .sbs-c-cols .sbs-c-lead { font-size: 14px; font-weight: 700; color: var(--c-navy); }
+  .sbs-c-privacy { display: block; margin-top: 26px; text-align: center; font-size: 11px; }
+  .sbs-c-privacy .sbs-c-a { text-decoration: underline; }
+
+  .sbs-c-visit { padding: 34px 24px 34px; }
+  .sbs-c-offices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; font-size: 11.5px; }
+  .sbs-c-offices > div { padding: 18px 16px; text-align: center; }
+  .sbs-c-offices > div > :not(.sbs-c-ico) { display: block; }
+  .sbs-c-offices b { margin: 10px 0 6px; font-size: 16px; color: var(--c-navy); }
+  .sbs-c-offices .sbs-c-a { text-decoration: underline; }
+  .sbs-c-offices em { font-style: italic; font-size: 10.5px; color: #777; }
+
+  /* The footer: four columns on navy, under the page's own title. */
+  .sbs-c-foot { display: grid; grid-template-columns: 1.2fr 0.9fr 1.3fr 1fr; gap: 24px; padding: 26px 24px 20px; background: var(--c-navy); color: rgb(255 255 255 / 0.82); font-size: 11.5px; }
+  .sbs-c-foot h6 { margin: 0 0 14px; font-size: 12px; font-weight: 700; color: #fff; }
+  .sbs-c-foot h6::after { content: ""; display: block; width: 30px; height: 2px; margin-top: 7px; background: var(--c-link); }
+  .sbs-c-foot p { margin: 0; }
+  .sbs-c-foot span, .sbs-c-foot em { display: block; margin-bottom: 4px; }
+  .sbs-c-foot em { margin-top: -3px; font-size: 10px; color: rgb(255 255 255 / 0.6); }
+  .sbs-c-line { display: flex !important; align-items: flex-start; gap: 6px; }
+  .sbs-c-line svg { flex: none; width: 13px; height: 13px; margin-top: 1px; color: #8fc0f0; }
+  .sbs-c-social { display: flex !important; gap: 8px; margin-top: 14px; }
+  .sbs-c-social b { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: var(--c-blue); border-radius: 50%; font-size: 11px; color: #fff; }
+  .sbs-c-social .sbs-c-ig { width: 24px; height: 24px; border: 0; }
+  .sbs-c-social .sbs-c-ig::after { content: ""; width: 10px; height: 10px; border: 1.6px solid #fff; border-radius: 3px; }
+
+  .sbs-c-legal { border-top: 1px solid rgb(255 255 255 / 0.15); }
+  .sbs-c-legal { padding: 18px 24px; background: var(--c-navy); color: #fff; font-size: 11px; }
+  .sbs-c-copy { padding: 8px 24px 12px; background: #142c66; color: rgb(255 255 255 / 0.8); font-size: 9.5px; }
 
   /* ========================= ours ================================== */
   /* Pilar Seguros, an invented insurance broker, in its own four colours
@@ -4167,6 +4178,7 @@
   .sbs-p-lead h3 span { display: block; }
   .sbs-p-lead p { margin: 16px auto 0; max-width: 44ch; font-size: 15px; line-height: 1.5; }
   .sbs-p-ghost { margin-top: 22px; padding: 12px 22px; font-size: 13px; background: transparent; }
+  .sbs-p-ghost + .sbs-p-ghost { margin-left: 8px; }
 
   /* 2 · The products as a column of very large words (after Wealthsimple). */
   .sbs-p-index { display: flex; flex-direction: column; align-items: center; padding: 52px 0 60px; }
@@ -4317,34 +4329,8 @@
   /* Held still: both pages as they end up, the template's mess included. */
   @media (prefers-reduced-motion: reduce) {
     .sbs-run .sbs-mini,
-    .sbs-run .sbs-load,
-    .sbs-run .sbs-t-top,
-    .sbs-run .sbs-t-banner,
-    .sbs-run .sbs-t-dots i,
-    .sbs-run .sbs-cookie,
     .sbs-run .sbs-p-track { animation: none; }
   }
-}
-
-/* The rest of what a template has: reviews with five stars each, a
-   gallery of nothing in particular, and a contact strip with a map. */
-@layer components {
-  .sbs-t-quotes { padding: 30px 26px; background: #fff; text-align: center; }
-  .sbs-t-quotes h4 { margin: 0 0 20px; font-size: 20px; font-weight: 800; color: #1e3a5f; }
-  .sbs-t-quoterow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .sbs-t-quote { border: 1px solid #dcdcdc; border-radius: 4px; padding: 16px; }
-  .sbs-t-stars { color: #f0a500; font-size: 15px; letter-spacing: 2px; }
-  .sbs-t-quote p { margin: 9px 0; font-size: 12px; line-height: 1.5; color: #6b6b6b; font-style: italic; }
-  .sbs-t-who { font-size: 12px; font-weight: 700; color: #1e3a5f; }
-
-  .sbs-t-gallery { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; padding: 24px 26px; background: #f3f4f6; }
-  .sbs-t-gallery span { display: block; aspect-ratio: 1; background: #dcdee1; }
-
-  .sbs-t-contact { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: center; padding: 30px 26px; }
-  .sbs-t-contact h4 { margin: 0 0 9px; font-size: 22px; font-weight: 800; color: #1e3a5f; }
-  .sbs-t-contact p { margin: 0 0 16px; font-size: 13px; line-height: 1.5; color: #6b6b6b; }
-  .sbs-t-map { display: block; height: 170px; background: repeating-linear-gradient(45deg, #e6e8ea 0 12px, #dcdee1 12px 24px); }
-
 }
 
 /* On a phone the two plates stand one over the other, and a desktop page
@@ -4356,16 +4342,16 @@
     .sbs-mini { width: 620px; }
     .sbs-screen { aspect-ratio: 3 / 4; }
 
-    .sbs-t-page { --sbs-stop-1: -317px; --sbs-stop-2: -634px; --sbs-stop-3: -951px; --sbs-stop-4: -1267px; }
-    .sbs-t-top { gap: 10px; padding: 10px 18px; font-size: 11px; }
-    .sbs-t-nav { gap: 9px; }
-    .sbs-t-copy { padding: 20px 18px 4px; }
-    .sbs-t-copy h3 { font-size: 30px; }
-    .sbs-t-cards, .sbs-t-quoterow { grid-template-columns: 1fr 1fr; }
-    .sbs-t-cards > :last-child, .sbs-t-quoterow > :last-child { display: none; }
-    .sbs-t-gallery { grid-template-columns: repeat(3, 1fr); }
-    .sbs-t-contact { grid-template-columns: 1fr; }
-    .sbs-t-foot { padding: 16px 18px 40px; }
+    .sbs-c-nav, .sbs-c-tools { display: none; }
+    .sbs-c-burger { display: flex; }
+    .sbs-c-slide { height: 360px; }
+    .sbs-c-slide-copy h3 { font-size: 34px; }
+          .sbs-c-srow { grid-template-columns: 1fr 1fr; }
+    .sbs-c-cols { grid-template-columns: 1fr 1fr; }
+    .sbs-c-cols .sbs-c-lead { grid-column: 1 / -1; }
+    .sbs-c-offices { grid-template-columns: 1fr 1fr; }
+    .sbs-c-offices > :last-child { display: none; }
+    .sbs-c-foot { grid-template-columns: 1fr 1fr; }
 
     .sbs-p-page { --sbs-stop-1: -826px; --sbs-stop-2: -1262px; --sbs-stop-3: -1900px; }
     .sbs-p-hero { height: 826px; }
@@ -4383,6 +4369,517 @@
     .sbs-p-foot-top { flex-direction: column; align-items: flex-start; gap: 22px; }
     .sbs-p-foot-cols { grid-template-columns: 1fr 1fr; row-gap: 28px; }
     .sbs-p-foot-legal { flex-direction: column; gap: 8px; }
+  }
+}
+
+/* ---- Pilar at the Advanced level (sbs-advanced.tsx) -----------------
+   The design levels' second page: the same five sections and words as
+   the Essential+ page (.sbs-p-*), in Pilar's own type and colours, with
+   one colour of its own, a deep violet, for the opening and the slats
+   that pass between sections (user, 2026-11-17). References: Lithic and
+   Evolve Private Wealth (first round), Palais de Tokyo for the five
+   kinds of insurance, the user's sliding-ease bars under the steps.
+
+   It runs on a loop of its own, longer than the comparison's so the
+   opening has room: sbs-a-scroll, 26s (--sbs-loop on its screen). The
+   opening 0-8.75% (twice as fast, user 2026-11-18), the hero held to 22%, the five kinds 26-46%, the table
+   50-60%, the steps 64-86%, the foot 90-96% (its move as long as the others); the foot then dissolves
+   into the opening's ground (96-97%) and the page is set back at the top
+   under it; every section is set back from 97%, unseen. Each section's
+   entrance plays over the second half of the move that brings it in. sbs-advanced.tsx reads the same
+   holds for the kinds and the steps (keep them in step). Only under
+   .sbs-run: without the loop (less motion) every section is finished. */
+@property --slat { syntax: "<length>"; inherits: false; initial-value: 9px; }
+
+@layer components {
+  .sbs-a-page {
+    --sym: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='30' height='100' rx='8'/%3E%3Cpath fill-rule='evenodd' d='M44 0H76A24 24 0 0 1 100 24V42A24 24 0 0 1 76 66H44A6 6 0 0 1 38 60V6A6 6 0 0 1 44 0Z M59 23H79V43H59Z'/%3E%3C/svg%3E");
+    --a-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --a-violet: #2a1f4d;
+    --a-violet-deep: #171230;
+    --sbs-loop: 26s;
+  }
+  /* the page moves on a smooth in-out (not the comparison's fast ease-out,
+     which did 80% of each move in its first quarter and left every effect
+     to play after the page had stopped); the sheets below use the same
+     curve and the same windows, so they move with it (user, 2026-11-17) */
+  .sbs-run .sbs-a-page { animation-name: sbs-a-scroll; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+  @keyframes sbs-a-scroll {
+    0%, 22% { translate: 0 0; }
+    26%, 46% { translate: 0 calc(var(--sbs-stop-1) * var(--sbs-k)); }
+    50%, 60% { translate: 0 calc(var(--sbs-stop-2) * var(--sbs-k)); }
+    64%, 86% { translate: 0 calc(var(--sbs-stop-3) * var(--sbs-k)); }
+    90%, 98.5% { translate: 0 calc(var(--sbs-stop-4) * var(--sbs-k)); }
+    98.6%, 100% { translate: 0 0; }
+  }
+
+  /* The symbol in depth: fourteen layers of the shape behind a face of
+     slats. The slats close into a solid face as --slat reaches 9px. */
+  .sbs-a-solid { perspective: 700px; --side-a: var(--p-grafite); --side-b: var(--p-noite); --face: var(--p-noite); }
+  .sbs-a-turn {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--rx, 14deg)) rotateY(var(--ry, -30deg));
+    transition: transform 1.1s var(--a-ease);
+  }
+  .sbs-a-turn > * {
+    position: absolute;
+    inset: 0;
+    -webkit-mask: var(--sym) center / contain no-repeat;
+    mask: var(--sym) center / contain no-repeat;
+  }
+  .sbs-a-turn > i {
+    background: color-mix(in srgb, var(--side-b) calc(var(--z) * 7%), var(--side-a));
+    transform: translateZ(calc(var(--z) * -1.6px));
+  }
+  .sbs-a-turn > b {
+    background: var(--face);
+    transform: translateZ(0.5px);
+    -webkit-mask: var(--sym) center / contain no-repeat, repeating-linear-gradient(to bottom, #000 0 var(--slat), transparent var(--slat) 9px);
+    -webkit-mask-composite: source-in;
+    mask: var(--sym) center / contain no-repeat, repeating-linear-gradient(to bottom, #000 0 var(--slat), transparent var(--slat) 9px);
+    mask-composite: intersect;
+  }
+
+  /* contour lines, Lithic's: hairlines, drawn one after another */
+  .sbs-a-rings, .sbs-a-contour, .sbs-a-band-rings { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .sbs-a-rings ellipse, .sbs-a-contour ellipse, .sbs-a-band-rings ellipse {
+    fill: none;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+
+  /* Between sections: stacked sheets. The section being left is pushed
+     back (shrinks from its top, darkens, rounds its corners) while the next
+     rises over it as a sheet whose rounded top widens to the page and
+     squares off (user, 2026-11-17: "mais avançada, premium"; it replaces
+     the slats). Between them the page's own ground, Noite. */
+  .sbs-a-page { background: var(--p-noite); --a-move: cubic-bezier(0.65, 0, 0.35, 1); --a-enter: cubic-bezier(0.65, 0, 0.35, 1); }
+  .sbs-a-sheetx { position: relative; isolation: isolate; transform-origin: 50% 0; }
+  .sbs-a-sheetx::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 40;
+    pointer-events: none;
+    background: #05060c;
+    opacity: 0;
+  }
+
+  /* Every section fills the plate's view (user, 2026-11-17: the next one
+     showed under the hero while it was held), its content centred in it;
+     --sbs-view is the view's height in the page's pixels (useFit). */
+  .sbs-a-page .sbs-a-hero { height: max(700px, var(--sbs-view, 700px)); }
+  .sbs-a-page .sbs-a-index,
+  .sbs-a-page .sbs-a-sheet,
+  .sbs-a-page .sbs-a-how,
+  .sbs-a-page .sbs-a-foot { min-height: var(--sbs-view, 0px); }
+  .sbs-a-page .sbs-a-index { align-content: center; }
+  .sbs-a-page .sbs-a-sheet,
+  .sbs-a-page .sbs-a-how,
+  .sbs-a-page .sbs-a-foot { display: flex; flex-direction: column; justify-content: center; }
+  @media (max-width: 899.98px) {
+    .sbs-a-page .sbs-a-hero { height: max(826px, var(--sbs-view, 826px)); }
+  }
+
+  /* 1 · the opening and the hero ---------------------------------------- */
+  .sbs-a-rings ellipse { stroke: rgb(255 255 255 / 0.42); }
+  .sbs-a-lead h3 .sbs-a-line { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+  .sbs-a-lead h3 .sbs-a-line > span { display: block; transform-origin: 0 100%; }
+  /* the opening's ground: the photograph's own sky (#abadbf to #bfc0cd),
+     kept to its grey lavender (user, 2026-11-17: closer to the hero) */
+  .sbs-a-intro {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(110% 90% at 50% 40%, #c8c9d6, #a9abbe 80%);
+    opacity: 0;
+    visibility: hidden;
+  }
+  /* the ground moves: two soft pools of a deeper violet and of light
+     drift across it, slowly and never in step (user, 2026-11-17) */
+  .sbs-a-intro::before,
+  .sbs-a-intro::after {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    pointer-events: none;
+  }
+  .sbs-a-intro::before { background: radial-gradient(38% 42% at 30% 70%, rgb(138 140 166 / 0.5), transparent 70%); }
+  .sbs-a-intro::after { background: radial-gradient(34% 38% at 72% 28%, rgb(228 229 238 / 0.65), transparent 70%); }
+  .sbs-a-metal { z-index: 1; }
+  /* The symbol in white metal, rendered in WebGL (pilar-metal.tsx): it
+     fills the opening, drawn at the size it is seen; the flight through
+     the square of the P is its camera's, on this page's loop. */
+  .sbs-a-metal { position: absolute; inset: 0; }
+
+  /* 2 · the five kinds of insurance (after Palais de Tokyo) -------------- */
+  .sbs-a-index {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 30px;
+    overflow: hidden;
+    padding: 56px 60px 60px;
+    background-color: var(--p-noite);
+    color: #fff;
+  }
+  .sbs-a-contour ellipse { stroke: rgb(168 170 188 / 0.24); }
+  .sbs-a-kinds-mark { position: relative; }
+  /* the symbol travels to the row being read, level with its top (--y,
+     read off the rows in sbs-advanced.tsx) */
+  .sbs-a-kinds-solid {
+    position: absolute;
+    top: 0;
+    left: 60px;
+    width: 120px;
+    height: 120px;
+    --face: linear-gradient(180deg, #fff, var(--p-nevoa));
+    --side-a: var(--p-grafite);
+    --side-b: #0a0d18;
+    translate: 0 var(--y, 0px);
+    transition: translate 0.9s var(--a-ease);
+    /* kept on a layer of its own, with its turn: promoted afresh at each
+       move, its fifteen masked layers were drawn again as it set off and
+       the move started with a jolt (user, 2026-11-18: "muito travada") */
+    will-change: translate;
+  }
+  .sbs-a-kinds-solid .sbs-a-turn { will-change: transform; }
+  .sbs-a-kicker { position: relative; display: block; margin: 0 0 14px; font-family: var(--p-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--p-nevoa); }
+  .sbs-a-kinds { position: relative; }
+  .sbs-a-kind {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    align-items: baseline;
+    padding: 6px 0 8px;
+    border-top: 1px solid rgb(255 255 255 / 0.12);
+  }
+  .sbs-a-kind:last-child { border-bottom: 1px solid rgb(255 255 255 / 0.12); }
+  .sbs-a-num { font-family: var(--p-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--p-nevoa); }
+  .sbs-a-kind b { display: block; overflow: hidden; font-family: var(--p-display); font-weight: 400; font-size: 52px; line-height: 1.12; letter-spacing: -0.025em; }
+  .sbs-a-kind b > span { display: block; color: rgb(255 255 255 / 0.32); transition: color 0.6s var(--a-ease); }
+  .sbs-a-kind[data-on] b > span { color: #fff; }
+  .sbs-a-about { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.7s var(--a-ease); }
+  /* every line takes the same room (two lines, whether it needs one or
+     two), so as one opens and another closes, on the same curve, the list
+     keeps its height and the section, centred in the frame, holds still
+     (user, 2026-11-17: a small tremble under the list as the kinds changed) */
+  .sbs-a-about { overflow: hidden; }
+  .sbs-a-about > p { overflow: hidden; height: 3.4em; margin: 0; padding-top: 0.3em; max-width: 40ch; font-size: 14px; line-height: 1.5; color: rgb(255 255 255 / 0.7); }
+  .sbs-a-kind[data-on] .sbs-a-about { grid-template-rows: 1fr; }
+
+  /* 3 · the quotes as a comparison table, Pilar's pick its lit column */
+  .sbs-a-sheet { padding: 64px 60px 66px; background: #fff; }
+  .sbs-a-sheet-head { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: end; margin-bottom: 30px; }
+  .sbs-a-sheet-head h4 { margin: 0; font-family: var(--p-display); font-weight: 400; font-size: 40px; line-height: 1.02; letter-spacing: -0.02em; }
+  .sbs-a-sheet-head p { margin: 0; font-size: 14.5px; line-height: 1.55; }
+  .sbs-a-table {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 1.15fr 1fr;
+    grid-template-rows: repeat(6, auto);
+    transform-origin: 50% 0;
+  }
+  .sbs-a-tr { display: contents; }
+  .sbs-a-col {
+    position: absolute;
+    inset: 0;
+    /* both ends said: an absolute grid child's open end runs to the grid's edge */
+    grid-column: 3 / 4;
+    grid-row: 1 / 7;
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--p-noite);
+    box-shadow: 0 30px 50px -26px rgb(17 21 37 / 0.6);
+  }
+  .sbs-a-col::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 35%, rgb(168 170 188 / 0.22) 50%, transparent 65%);
+    translate: -120% 0;
+  }
+  .sbs-a-cell { position: relative; z-index: 1; padding: 14px 14px; border-top: 1px solid #e6e7ec; font-size: 13.5px; line-height: 1.35; text-align: center; }
+  .sbs-a-cap, .sbs-a-who { border-top: 0; }
+  .sbs-a-cap { display: flex; flex-direction: column; justify-content: flex-end; gap: 7px; text-align: left; padding-left: 0; }
+  .sbs-a-cap b { font-size: 13px; font-weight: 600; }
+  .sbs-a-cap span { font-family: var(--p-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--p-grafite); }
+  .sbs-a-who { align-self: end; padding-top: 22px; font-size: 14px; font-weight: 600; }
+  .sbs-a-tag { display: block; margin-bottom: 6px; font-family: var(--p-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--p-nevoa); }
+  .sbs-a-th { padding-left: 0; text-align: left; font-family: var(--p-display); font-size: 17px; letter-spacing: -0.01em; }
+  .sbs-a-tr[data-first] .sbs-a-cell:not(.sbs-a-th) { font-family: var(--p-display); font-size: 24px; font-weight: 500; letter-spacing: -0.01em; }
+  .sbs-a-tr[data-first] .sbs-a-cell[data-pick] { font-size: 30px; font-weight: 700; }
+  .sbs-a-cell[data-pick] { color: #fff; border-top-color: rgb(255 255 255 / 0.14); }
+  .sbs-a-foot-cell { grid-column: 1; grid-row: 6; display: flex; align-items: center; padding-left: 0; }
+  .sbs-a-foot-cell .sbs-p-wide { display: inline-block; margin: 0; padding: 12px 22px; }
+  .sbs-a-why { grid-column: 3; grid-row: 6; text-align: left; font-size: 12.5px; line-height: 1.45; color: #dcdde5; }
+
+  /* 4 · the steps: a carousel as the hero's reviews are, on a band of
+     the sliding-ease bars; the section itself on the page's white */
+  .sbs-a-how { padding: 60px 60px 62px; border-top: 1px solid #ececf1; background: #fff; }
+  .sbs-a-how-head { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: end; padding-bottom: 34px; }
+  .sbs-a-how-head h4 { margin: 0; font-family: var(--p-display); font-weight: 400; font-size: 40px; line-height: 1.04; letter-spacing: -0.015em; }
+  .sbs-a-how-head h4 span { display: block; }
+  .sbs-a-how-head p { margin: 0; font-size: 14.5px; line-height: 1.6; }
+  /* the band runs the page's whole width, out past the section's
+     padding, and is kept low (user, 2026-11-17) */
+  .sbs-a-carousel {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    height: 196px;
+    margin-inline: -60px;
+    background: var(--p-noite);
+  }
+  .sbs-a-bars { position: absolute; inset: 0; z-index: -1; }
+  .sbs-a-bars::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(90% 120% at 50% 50%, rgb(17 21 37 / 0.1), rgb(17 21 37 / 0.6));
+  }
+  .sbs-a-strip {
+    width: 100%;
+    overflow: hidden;
+    mask-image: linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%);
+  }
+  .sbs-a-belt { display: flex; gap: 14px; width: max-content; padding: 0 14px; }
+  .sbs-run .sbs-a-belt { animation: sbs-a-belt 40s linear infinite; }
+  .sbs-a-strip:hover .sbs-a-belt { animation-play-state: paused; }
+  @keyframes sbs-a-belt { to { translate: calc(-50% - 7px) 0; } }
+  .sbs-a-card {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 300px;
+    min-height: 140px;
+    padding: 16px 20px 18px;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    border-radius: 12px;
+    background: rgb(17 21 37 / 0.72);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06);
+    color: #fff;
+  }
+  .sbs-a-card-num { font-family: var(--p-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--p-nevoa); }
+  .sbs-a-card-num i { font-style: normal; opacity: 0.6; }
+  .sbs-a-card b { margin-top: auto; font-family: var(--p-display); font-weight: 400; font-size: 26px; line-height: 1.04; letter-spacing: -0.02em; }
+  .sbs-a-card-text { font-size: 13.5px; line-height: 1.5; color: rgb(255 255 255 / 0.74); }
+
+  /* 5 · the foot: the Essential+ foot (.sbs-p-foot-*), in motion. Its
+     hairlines are drawn as pseudo-elements so they can be drawn across;
+     the section's own grain stays on its ::after. */
+  .sbs-a-foot .sbs-p-foot-top,
+  .sbs-a-foot .sbs-p-foot-legal { position: relative; border-color: transparent; }
+  .sbs-a-foot .sbs-p-foot-top::after,
+  .sbs-a-foot .sbs-p-foot-legal::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgb(255 255 255 / 0.14);
+    transform-origin: 0 50%;
+  }
+  .sbs-a-foot .sbs-p-foot-top::after { bottom: 0; }
+  .sbs-a-foot .sbs-p-foot-legal::before { top: 0; }
+  .sbs-a-foot .sbs-p-foot-top h4 .sbs-a-line { display: block; overflow: hidden; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+  .sbs-a-foot .sbs-p-foot-top h4 .sbs-a-line > span { display: block; }
+  /* the matte glow of Grafite, still (it drifted, repainting the foot on every frame) */
+  .sbs-a-foot { background: radial-gradient(140% 110% at 30% 20%, rgb(67 70 85 / 0.38), rgb(67 70 85 / 0) 65%), var(--p-noite); }
+
+  /* ---- the loop: each section's finish played as it arrives -------- */
+  /* the opening: the violet and the symbol, the turn to face, the flight
+     through the square of the P (the eye moves to within 2px of it), the
+     fade that reveals the website; it comes back over the hero while the
+     page returns to the top */
+  .sbs-run .sbs-a-intro { animation: sbs-a-intro var(--sbs-loop) linear infinite; }
+  @keyframes sbs-a-intro {
+    0%, 6.75% { opacity: 1; visibility: visible; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+    8.75%, 97% { opacity: 0; visibility: hidden; }
+    97.1%, 100% { opacity: 1; visibility: visible; }
+  }
+  /* the fade in is on the symbol's box, never on the turning stack:
+     opacity on a preserve-3d element flattens it */
+  .sbs-run .sbs-a-metal { animation: sbs-a-intro-in var(--sbs-loop) linear infinite; }
+  @keyframes sbs-a-intro-in {
+    0% { opacity: 0; animation-timing-function: var(--a-ease); }
+    0.75%, 96% { opacity: 1; }
+    97%, 100% { opacity: 0; }
+  }
+  .sbs-run .sbs-a-intro::before { animation: sbs-a-pool-a 11s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate; }
+  .sbs-run .sbs-a-intro::after { animation: sbs-a-pool-b 15s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate; }
+  @keyframes sbs-a-pool-a {
+    from { translate: -6% 4%; scale: 1; }
+    to { translate: 10% -8%; scale: 1.15; }
+  }
+  @keyframes sbs-a-pool-b {
+    from { translate: 8% -2%; scale: 1.1; }
+    to { translate: -10% 9%; scale: 0.95; }
+  }
+  .sbs-run .sbs-a-lead h3 .sbs-a-line > span { animation: sbs-a-line var(--sbs-loop) linear infinite both; }
+  .sbs-run .sbs-a-lead h3 .sbs-a-line + .sbs-a-line > span { animation-delay: 0.08s; }
+  /* each line rises from its mask with a slight turn that straightens as
+     it lands, in about 0.6s (user, 2026-11-17: quicker, finer) */
+  @keyframes sbs-a-line {
+    0%, 7% { translate: 0 105%; rotate: 4deg; opacity: 0; animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1); }
+    7.6% { opacity: 1; }
+    9.4%, 96% { translate: 0 0; rotate: 0deg; opacity: 1; }
+    97%, 100% { translate: 0 105%; rotate: 4deg; opacity: 0; }
+  }
+  .sbs-run .sbs-a-lead p, .sbs-run .sbs-a-lead .sbs-p-pill, .sbs-run .sbs-a-hero .sbs-p-reviews { animation: sbs-a-fade var(--sbs-loop) linear infinite both; }
+  @keyframes sbs-a-fade {
+    0%, 7.5% { opacity: 0; translate: 0 10px; animation-timing-function: var(--a-ease); }
+    10%, 96% { opacity: 1; translate: 0 0; }
+    97%, 100% { opacity: 0; }
+  }
+  .sbs-run .sbs-a-hero .sbs-p-sky { animation: sbs-a-sky var(--sbs-loop) linear infinite both; }
+  @keyframes sbs-a-sky {
+    0%, 6.25% { scale: 1.12; animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+    15%, 96% { scale: 1; }
+    97%, 100% { scale: 1.12; }
+  }
+  .sbs-run .sbs-a-rings ellipse { animation: sbs-a-draw-hero var(--sbs-loop) linear infinite both; animation-delay: calc(var(--i) * 0.09s); }
+  @keyframes sbs-a-draw-hero {
+    0%, 7% { stroke-dashoffset: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+    15%, 96% { stroke-dashoffset: 0; }
+    97%, 100% { stroke-dashoffset: 1; }
+  }
+
+  /* each change: the section left pushed back, the next one rising, in
+     the same windows as the page's moves (22-26, 46-50, 60-64, 86-89) */
+  .sbs-run .sbs-a-hero { animation: sbs-a-out-1 var(--sbs-loop) linear infinite; }
+  .sbs-run .sbs-a-hero::before { animation: sbs-a-veil-1 var(--sbs-loop) linear infinite; }
+  .sbs-run .sbs-a-index { animation: sbs-a-in-1 var(--sbs-loop) linear infinite, sbs-a-out-2 var(--sbs-loop) linear infinite; }
+  .sbs-run .sbs-a-index::before { animation: sbs-a-veil-2 var(--sbs-loop) linear infinite; }
+  .sbs-run .sbs-a-sheet { animation: sbs-a-in-2 var(--sbs-loop) linear infinite, sbs-a-out-3 var(--sbs-loop) linear infinite; }
+  .sbs-run .sbs-a-sheet::before { animation: sbs-a-veil-3 var(--sbs-loop) linear infinite; }
+  .sbs-run .sbs-a-how { animation: sbs-a-in-3 var(--sbs-loop) linear infinite, sbs-a-out-4 var(--sbs-loop) linear infinite; }
+  .sbs-run .sbs-a-how::before { animation: sbs-a-veil-4 var(--sbs-loop) linear infinite; }
+
+  /* outgoing: scale (and, for the hero, which has no entrance, its corners) */
+  @keyframes sbs-a-out-1 { 0%, 22% { scale: 1; clip-path: inset(0 round 0); animation-timing-function: var(--a-move); } 26%, 97% { scale: 0.94; clip-path: inset(0 round 22px); } 98%, 100% { scale: 1; clip-path: inset(0 round 0); } }
+  @keyframes sbs-a-out-2 { 0%, 46% { scale: 1; animation-timing-function: var(--a-move); } 50%, 97% { scale: 0.94; } 98%, 100% { scale: 1; } }
+  @keyframes sbs-a-out-3 { 0%, 60% { scale: 1; animation-timing-function: var(--a-move); } 64%, 97% { scale: 0.94; } 98%, 100% { scale: 1; } }
+  @keyframes sbs-a-out-4 { 0%, 86% { scale: 1; animation-timing-function: var(--a-move); } 90%, 97% { scale: 0.94; } 98%, 100% { scale: 1; } }
+  @keyframes sbs-a-veil-1 { 0%, 22% { opacity: 0; animation-timing-function: var(--a-move); } 26%, 97% { opacity: 0.5; } 98%, 100% { opacity: 0; } }
+  @keyframes sbs-a-veil-2 { 0%, 46% { opacity: 0; animation-timing-function: var(--a-move); } 50%, 97% { opacity: 0.5; } 98%, 100% { opacity: 0; } }
+  @keyframes sbs-a-veil-3 { 0%, 60% { opacity: 0; animation-timing-function: var(--a-move); } 64%, 97% { opacity: 0.5; } 98%, 100% { opacity: 0; } }
+  @keyframes sbs-a-veil-4 { 0%, 86% { opacity: 0; animation-timing-function: var(--a-move); } 90%, 97% { opacity: 0.5; } 98%, 100% { opacity: 0; } }
+
+  /* incoming: the rounded sheet widening to the page */
+  @keyframes sbs-a-in-1 { 0%, 22% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 26%, 97% { clip-path: inset(0 0 0 0 round 0); } 98%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
+  @keyframes sbs-a-in-2 { 0%, 46% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 50%, 97% { clip-path: inset(0 0 0 0 round 0); } 98%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
+  @keyframes sbs-a-in-3 { 0%, 60% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 64%, 97% { clip-path: inset(0 0 0 0 round 0); } 98%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
+  @keyframes sbs-a-in-4 { 0%, 86% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); animation-timing-function: var(--a-enter); } 90%, 98% { clip-path: inset(0 0 0 0 round 0); } 99%, 100% { clip-path: inset(0 4% 0 4% round 28px 28px 0 0); } }
+
+  .sbs-run .sbs-a-kind b > span { animation: sbs-a-rise var(--sbs-loop) linear infinite both; animation-delay: calc(var(--i) * 0.11s); }
+  @keyframes sbs-a-rise {
+    0%, 24% { translate: 0 110%; animation-timing-function: var(--a-ease); }
+    26%, 97% { translate: 0 0; }
+    98%, 100% { translate: 0 110%; }
+  }
+  .sbs-run .sbs-a-contour ellipse { animation: sbs-a-draw-index var(--sbs-loop) linear infinite both; animation-delay: calc(var(--i) * 0.06s); }
+  @keyframes sbs-a-draw-index {
+    0%, 25% { stroke-dashoffset: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+    33%, 97% { stroke-dashoffset: 0; }
+    98%, 100% { stroke-dashoffset: 1; }
+  }
+  .sbs-run .sbs-a-kinds-mark { animation: sbs-a-mark var(--sbs-loop) linear infinite both; }
+  @keyframes sbs-a-mark {
+    0%, 24% { opacity: 0; scale: 0.8; animation-timing-function: var(--a-ease); }
+    26%, 97% { opacity: 1; scale: 1; }
+    98%, 100% { opacity: 0; scale: 0.8; }
+  }
+
+  /* the table settles flat, no 3D tilt: a 3D move on an endless loop
+     is drawn once at a fixed resolution and the table was blurred, on and
+     off (user, 2026-11-18); a flat one is drawn at its full size, so the
+     table is sharp from the moment it comes in */
+  .sbs-run .sbs-a-table { animation: sbs-a-settle var(--sbs-loop) linear infinite both; }
+  @keyframes sbs-a-settle {
+    0%, 48% { opacity: 0; transform: translateY(64px) rotate(-3deg) scale(0.9); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+    49.5% { opacity: 1; }
+    52%, 97% { opacity: 1; transform: none; }
+    98%, 100% { opacity: 0; transform: translateY(64px) rotate(-3deg) scale(0.9); }
+  }
+  .sbs-run .sbs-a-col { animation: sbs-a-lift var(--sbs-loop) linear infinite both; }
+  @keyframes sbs-a-lift {
+    0%, 54% { box-shadow: 0 0 0 0 rgb(17 21 37 / 0); animation-timing-function: var(--a-ease); }
+    58%, 97% { box-shadow: 0 30px 50px -26px rgb(17 21 37 / 0.6); }
+    98%, 100% { box-shadow: 0 0 0 0 rgb(17 21 37 / 0); }
+  }
+  .sbs-run .sbs-a-col::after { animation: sbs-a-sheen var(--sbs-loop) linear infinite both; }
+  @keyframes sbs-a-sheen {
+    0%, 55% { translate: -120% 0; animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+    59%, 100% { translate: 120% 0; }
+  }
+
+  .sbs-run .sbs-a-how-head > * { animation: sbs-a-how var(--sbs-loop) linear infinite both; }
+  .sbs-run .sbs-a-how-head > * + * { animation-delay: 0.1s; }
+  .sbs-run .sbs-a-carousel { animation: sbs-a-how var(--sbs-loop) linear infinite both; animation-delay: 0.2s; }
+  @keyframes sbs-a-how {
+    0%, 62% { opacity: 0; translate: 0 18px; animation-timing-function: var(--a-ease); }
+    64%, 97% { opacity: 1; translate: 0 0; }
+    98%, 100% { opacity: 0; }
+  }
+
+  /* the foot, on arrival: one light entrance, its three blocks rising
+     together over the second half of the move (88-90%) and still the
+     moment the page stops; the rules are simply there and the glow holds
+     still (user, 2026-11-18: the foot's entrance was heavy, "o mais leve e
+     previsível possível"; it had seven staggered entrances running on
+     past the stop and a glow repainting the foot on every frame) */
+  .sbs-run .sbs-a-foot .sbs-p-foot-top,
+  .sbs-run .sbs-a-foot .sbs-p-foot-cols,
+  .sbs-run .sbs-a-foot .sbs-p-foot-legal { animation: sbs-a-foot-in var(--sbs-loop) linear infinite both; }
+  @keyframes sbs-a-foot-in {
+    0%, 88% { opacity: 0; translate: 0 12px; animation-timing-function: var(--a-ease); }
+    90%, 98% { opacity: 1; translate: 0 0; }
+    99%, 100% { opacity: 0; translate: 0 12px; }
+  }
+  .sbs-run .sbs-a-foot { animation: sbs-a-in-4 var(--sbs-loop) linear infinite; }
+  /* the end of the visit: the foot dissolves into the opening's ground
+     (96-97%) and the page is set back at the top under it, where the
+     opening is waiting; it used to race back up through every section
+     as they were being undone (user, 2026-11-18: "o display automático
+     não acompanha a animação do website") */
+  .sbs-a-foot::before { z-index: 50; background: radial-gradient(110% 90% at 50% 40%, #c8c9d6, #a9abbe 80%); }
+  .sbs-run .sbs-a-foot::before { animation: sbs-a-close var(--sbs-loop) linear infinite; }
+  @keyframes sbs-a-close {
+    0%, 96% { opacity: 0; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+    97%, 98.5% { opacity: 1; }
+    98.6%, 100% { opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sbs-a-turn, .sbs-a-kinds-solid, .sbs-a-about { transition: none; }
+  }
+
+  /* the narrow page, on a phone (620px, as the comparison's) */
+  @media (max-width: 899.98px) {
+    .sbs-a-index { grid-template-columns: 150px 1fr; gap: 14px; padding: 48px 36px 52px; }
+    .sbs-a-kinds-solid { left: 10px; width: 100px; height: 100px; }
+    .sbs-a-kind { grid-template-columns: 40px 1fr; }
+    .sbs-a-kind b { font-size: 42px; }
+    .sbs-a-sheet { padding: 48px 36px 52px; }
+    .sbs-a-sheet-head { grid-template-columns: 1fr; gap: 16px; }
+    .sbs-a-table { grid-template-columns: 1.05fr 1fr 1.15fr 1fr; }
+    .sbs-a-cell { padding: 11px 8px; font-size: 12px; }
+    .sbs-a-th { font-size: 14px; }
+    .sbs-a-tr[data-first] .sbs-a-cell:not(.sbs-a-th) { font-size: 18px; }
+    .sbs-a-tr[data-first] .sbs-a-cell[data-pick] { font-size: 22px; }
+    .sbs-a-foot-cell .sbs-p-wide { padding: 10px 12px; font-size: 11.5px; white-space: nowrap; }
+    .sbs-a-how { padding: 48px 36px 52px; }
+    .sbs-a-carousel { margin-inline: -36px; }
+    .sbs-a-how-head { grid-template-columns: 1fr; gap: 16px; padding-bottom: 28px; }
   }
 }
 
@@ -4758,104 +5255,19 @@
   .sbl-says-one { grid-area: 1 / 1; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s; }
   .sbl-says-one[data-on] { opacity: 1; visibility: visible; transition: opacity 0.5s ease 0.1s, visibility 0s; }
 
+  /* The plate: either level's whole page, scaled in and taken down it by
+     the comparison's own loop (sbs-scroll, 18s), as the plates above are. */
   .sbl-plate {
-    --k: 0.6;
-    --mx: 640px;
-    --my: 160px;
+    --sbs-loop: 18s;
     position: relative;
-    aspect-ratio: 880 / 540;
+    aspect-ratio: 9 / 7.45;
     overflow: hidden;
     background: #fff;
     box-shadow: 0 0 0 1px rgb(255 255 255 / 0.14), 0 40px 80px -40px rgb(0 0 0 / 0.9);
   }
-  .sbl-page { position: absolute; top: 0; left: 0; transform: scale(var(--k)); transform-origin: 0 0; }
+  .sbl-plate .sbl-screen { position: absolute; inset: 0; aspect-ratio: auto; }
+  @media (max-width: 899.98px) { .sbl-plate { aspect-ratio: 3 / 4; } }
   .sbl-caption { margin-top: 1rem; color: rgb(255 255 255 / 0.45); }
-
-  /* Pilar, in its own four colours, at both levels (its round buttons are
-     its own brand's, not the site's) */
-  .sbl-build {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    font-family: var(--f-lvl-sans), ui-sans-serif, system-ui, sans-serif;
-    color: #111525;
-    background: #fff;
-  }
-  .sbl-nav { position: absolute; top: 0; left: 0; right: 0; z-index: 3; display: flex; align-items: center; justify-content: space-between; padding: 22px 36px; }
-  .sbl-logo { display: inline-flex; align-items: center; gap: 7px; font-size: 19px; font-weight: 600; letter-spacing: -0.015em; }
-  .sbl-logo svg { width: 17px; height: 17px; }
-  .sbl-links { display: inline-flex; align-items: center; gap: 26px; font-size: 13.5px; font-weight: 500; color: #434655; }
-  .sbl-nav-light,
-  .sbl-nav-light .sbl-links { color: #fff; }
-  .sbl-pill { display: inline-flex; padding: 9px 16px; border-radius: 999px; background: #111525; color: #fff; font-size: 13px; font-weight: 600; }
-  .sbl-nav-light .sbl-pill { background: #fff; color: #111525; }
-  .sbl-pill-ghost { background: transparent; color: #111525; box-shadow: inset 0 0 0 1.5px #111525; }
-
-  /* Essential+: a clean split, coming in once and holding still */
-  .sbl-ess-body { position: absolute; inset: 86px 36px 36px; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center; }
-  .sbl-ess-copy h3 { font-family: var(--f-lvl-display), sans-serif; font-size: 46px; font-weight: 500; line-height: 1.02; letter-spacing: -0.02em; }
-  .sbl-ess-copy p { max-width: 34ch; margin: 18px 0 26px; font-size: 15px; line-height: 1.5; color: #434655; }
-  .sbl-ess-photo { height: 100%; overflow: hidden; border-radius: 12px; background: #a8aabc; }
-  .sbl-ess-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 84%; }
-  .sbl-ess-copy > *,
-  .sbl-ess-photo { animation: sbl-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
-  .sbl-ess-copy p { animation-delay: 0.08s; }
-  .sbl-ess-copy .sbl-pill { animation-delay: 0.16s; }
-  .sbl-ess-photo { animation-delay: 0.12s; }
-  @keyframes sbl-rise { from { opacity: 0; translate: 0 14px; } }
-
-  /* Advanced: the photograph across the page, moving slowly; the line
-     revealed line by line; the symbol built piece by piece; a light that
-     follows the pointer */
-  .sbl-adv { background: #111525; color: #fff; }
-  .sbl-adv-photo { position: absolute; inset: 0; overflow: hidden; }
-  .sbl-adv-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 78%; }
-  .sbl-kb { transform-origin: 60% 50%; animation: sbl-kb 14s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate; }
-  @keyframes sbl-kb {
-    from { scale: 1.14; translate: -1.5% 1%; }
-    to { scale: 1.02; translate: 1% -1%; }
-  }
-  .sbl-adv-wash {
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(90deg, rgb(17 21 37 / 0.88) 0%, rgb(17 21 37 / 0.55) 48%, rgb(17 21 37 / 0.05) 100%),
-      linear-gradient(0deg, rgb(17 21 37 / 0.6) 0%, transparent 45%);
-  }
-  .sbl-adv-light {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(260px circle at var(--mx) var(--my), rgb(168 170 188 / 0.32), transparent 70%);
-    mix-blend-mode: screen;
-    pointer-events: none;
-  }
-  .sbl-adv-symbol { position: absolute; top: 96px; right: 44px; width: 92px; height: 92px; fill: #a8aabc; }
-  .sbl-adv-symbol rect {
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: sbl-px 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-    animation-delay: calc(0.35s + var(--i) * 18ms);
-  }
-  @keyframes sbl-px { from { opacity: 0; scale: 0.2; } }
-  .sbl-adv-copy { position: absolute; left: 44px; right: 180px; bottom: 44px; z-index: 2; }
-  .sbl-adv-copy h3 { font-family: var(--f-lvl-display), sans-serif; font-size: 62px; font-weight: 500; line-height: 0.98; letter-spacing: -0.03em; }
-  .sbl-line { display: block; overflow: hidden; padding-bottom: 0.06em; margin-bottom: -0.06em; }
-  .sbl-line > span {
-    display: block;
-    white-space: nowrap;
-    animation: sbl-line 1s cubic-bezier(0.22, 1, 0.36, 1) both;
-    animation-delay: calc(0.15s + var(--i) * 0.12s);
-  }
-  @keyframes sbl-line { from { translate: 0 105%; } }
-  .sbl-adv-copy p {
-    max-width: 36ch;
-    margin-top: 20px;
-    font-size: 15px;
-    line-height: 1.5;
-    color: rgb(255 255 255 / 0.78);
-    animation: sbl-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.55s both;
-  }
-  .sbl-plate[data-still] .sbl-build * { animation: none !important; }
 
   /* ---- black metal: the personalization card and the call's card --- */
   .sbx-metal {
@@ -5590,6 +6002,115 @@
 
   @media (prefers-reduced-motion: reduce) {
     .nav-svc-panel, .nav-svc-caret { transition: none; }
+  }
+}
+
+/* ---- by hand: the call under the plates and the larger window ------
+   (sbs-explore.tsx, sbs-scrub.ts; user, 2026-11-17). Square, ruled by
+   hairlines, as the bar's cells are; the call fills with white from the
+   left, as the bar's button fills; a small mouse whose wheel rolls says
+   what it does. */
+@layer components {
+  .sbx-explore { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem; margin-top: 1.25rem; }
+  .sbx-explore button {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 2.75rem;
+    padding: 0.7rem 1.05rem;
+    border: 1px solid rgb(255 255 255 / 0.28);
+    color: var(--color-paper);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    overflow: hidden;
+    transition: color 0.45s cubic-bezier(0.65, 0, 0.35, 1), border-color 0.45s ease;
+  }
+  .sbx-explore button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--color-paper);
+    scale: 0 1;
+    transform-origin: 0 50%;
+    transition: scale 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .sbx-explore button:focus-visible { outline: 1px solid var(--color-paper); outline-offset: 3px; }
+  @media (hover: hover) and (pointer: fine) {
+    .sbx-explore button:hover { color: var(--color-ink); border-color: var(--color-paper); }
+    .sbx-explore button:hover::before { scale: 1 1; }
+  }
+  .sbx-explore .sbx-explore-go { color: var(--color-ink); border-color: var(--color-paper); }
+  .sbx-explore .sbx-explore-go::before { scale: 1 1; }
+  .sbx-explore-icon { display: grid; place-items: center; width: 1rem; height: 1rem; }
+  .sbx-explore svg { width: 1rem; height: 1rem; flex: none; }
+  .sbx-explore-wheel { animation: sbx-wheel 1.6s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+  @keyframes sbx-wheel {
+    0% { translate: 0 0; opacity: 1; }
+    70% { translate: 0 3px; opacity: 0; }
+    100% { translate: 0 0; opacity: 0; }
+  }
+  .sbx-explore-hint { color: rgb(255 255 255 / 0.55); }
+
+  /* the plate while it is by hand: it says it can be moved */
+  .sbs-screen[data-manual] { cursor: grab; touch-action: none; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.35); }
+  .sbs-screen[data-manual]:active { cursor: grabbing; }
+
+  /* the larger window */
+  /* it opens outside the sections, so it says the comparison's loop
+     itself (Advanced says its own) */
+  .sbx-prev { --sbs-loop: 18s; position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: clamp(0.75rem, 2.5vw, 2rem); }
+  .sbx-prev-backdrop { position: absolute; inset: 0; background: rgb(5 5 8 / 0.96); animation: sbx-fade 0.35s cubic-bezier(0.23, 1, 0.32, 1); }
+  .sbx-prev-frame {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    width: min(100%, 72rem);
+    height: 100%;
+    max-height: 56rem;
+    color: var(--color-paper);
+    animation: sbx-rise 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .sbx-prev-head { display: flex; align-items: center; gap: 1rem; }
+  .sbx-prev-head .mono-label { color: rgb(255 255 255 / 0.7); }
+  .sbx-prev-hint { margin-left: auto; color: rgb(255 255 255 / 0.45) !important; }
+  .sbx-prev-close {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+    padding: 0.55rem 0.9rem;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .sbx-prev-close svg { width: 0.9rem; height: 0.9rem; }
+  .sbx-prev-close:focus-visible { outline: 1px solid var(--color-paper); outline-offset: 3px; }
+  .sbx-prev-body { position: relative; flex: 1; min-height: 0; }
+  .sbx-prev-body > .sbs-screen { height: 100%; aspect-ratio: auto; margin-inline: auto; max-width: calc((100dvh - 9rem) * 9 / 7.45); background: #fff; }
+  .sbx-prev-wide { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .sbx-prev-plate { display: flex; flex-direction: column; gap: 0.6rem; min-height: 0; margin: 0; }
+  .sbx-prev-plate figcaption { color: rgb(255 255 255 / 0.62); }
+  .sbx-prev-plate .sbs-screen { flex: 1; aspect-ratio: auto; background: #fff; }
+  @keyframes sbx-fade { from { opacity: 0; } }
+  @keyframes sbx-rise { from { opacity: 0; translate: 0 18px; scale: 0.98; } }
+  @media (max-width: 899.98px) {
+    .sbx-prev-wide { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+    .sbx-prev-hint { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sbx-explore-wheel, .sbx-prev-backdrop, .sbx-prev-frame { animation: none; }
+    .sbx-explore button, .sbx-explore button::before { transition: none; }
   }
 }
 
