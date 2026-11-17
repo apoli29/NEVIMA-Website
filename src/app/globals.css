@@ -5969,26 +5969,19 @@
   .sg-page1 { fill: rgb(255 255 255 / 0.035); }
 }
 
-/* SEO & GEO: one ground behind the whole page, held to the screen and
-   clipped to the page, its tone set by the scroll (useToneVeil in
-   seo-geo.tsx). The faint light in its corner and the grain are the
-   side-by-side ground's (.sbs-ground); the grain fades out as the
-   ground turns white, with the corner light. */
+/* The tonal veil (tone-veil.tsx): one ground behind a room of sections,
+   held to the screen and clipped to the room, its tone set by the
+   scroll. The corner light and the grain are the side-by-side ground's
+   (.sbs-ground) and fade out as the ground turns white. */
 @layer components {
-  .sg-room { position: relative; isolation: isolate; clip-path: inset(0); }
-  .sg-ground {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background-color: #0b0b0b;
-  }
-  .sg-ground-dusk {
+  .tv-room { position: relative; isolation: isolate; clip-path: inset(0); }
+  .tv-ground { position: fixed; inset: 0; z-index: -1; pointer-events: none; background-color: #0b0b0b; }
+  .tv-dusk {
     position: absolute;
     inset: 0;
     background-image: radial-gradient(130% 160% at 0% 0%, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0) 42%);
   }
-  .sg-ground-grain {
+  .tv-grain {
     position: absolute;
     inset: 0;
     opacity: 0.1;
