@@ -916,8 +916,8 @@ export function SbsPersonal() {
   ];
 
   return (
-    <section aria-labelledby="sbp-title" className="sbp relative bg-paper pt-(--section-gap) pb-(--section-gap)">
-      <div className="shell">
+    <section aria-labelledby="sbp-title" data-tone="light" className="sbp relative pt-(--section-gap) pb-(--section-gap)">
+      <div className="shell" data-tone-body>
         <div className="sbp-head">
           <div>
             <p className="mono-label text-ash-2">{t("Personalization", "Personalização")}</p>
