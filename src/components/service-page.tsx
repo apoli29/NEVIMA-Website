@@ -12,6 +12,7 @@ import { Included } from "./services";
 import { ServiceDepth, ServiceHero } from "./service-depth";
 import { PhotoShoot } from "./photo-shoot";
 import { VisualIdentity } from "./visual-identity";
+import { BackEnd } from "./back-end";
 import { WorkTogether } from "./work-together";
 import { SeoGeo } from "./seo-geo";
 import { seoPriceTable } from "@/lib/proposal/seo-table";
@@ -93,6 +94,23 @@ export function ServicePage({ slug, lang }: { slug: string; lang: Lang }) {
         <FloatingNav />
         <main id="top" className="relative bg-paper">
           <PhotoShoot />
+        </main>
+        <WorkTogether />
+        <Footer />
+      </ProposalHost>
+    );
+  }
+
+  /* The back-end features have a page of their own too (back-end.tsx;
+     user, 2026-11-17), set as the photo shoot's and the visual
+     identity's are. */
+  if (service.slug === "back-end-features") {
+    return (
+      <ProposalHost>
+        <JsonLd data={serviceGraph(service.slug, lang)} />
+        <FloatingNav />
+        <main id="top" className="relative bg-paper">
+          <BackEnd />
         </main>
         <WorkTogether />
         <Footer />
