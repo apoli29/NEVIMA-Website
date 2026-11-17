@@ -7271,76 +7271,6 @@
   }
 
   /* ---- 4. how it is built ---------------------------------------- */
-  /* The tools on one line, tied by wires with the data running along
-     them. On a phone the line stands up and the wires run downward. */
-  .be-wire {
-    display: grid;
-    gap: 0;
-    margin-top: clamp(2.5rem, 5vw, 3.5rem);
-    justify-items: center;
-    align-items: center;
-  }
-  @media (min-width: 820px) {
-    .be-wire { grid-auto-flow: column; grid-auto-columns: max-content; justify-content: center; }
-  }
-  .be-wire-node {
-    display: grid;
-    place-items: center;
-    min-width: 9.5rem;
-    padding: 0.9rem 1.1rem;
-    border: 1px solid rgb(255 255 255 / 0.2);
-    background: rgb(255 255 255 / 0.04);
-    color: rgb(255 255 255 / 0.72);
-    text-align: center;
-    opacity: 0;
-    translate: 0 0.5rem;
-    transition: opacity 0.6s ease, translate 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .be-wire[data-in] .be-wire-node { opacity: 1; translate: 0 0; transition-delay: calc(var(--n, 0) * 0.15s); }
-  .be-wire-site { border-color: rgb(255 255 255 / 0.45); color: #fff; }
-  /* The wire itself, with one dot running along it. */
-  .be-wire-run {
-    position: relative;
-    display: block;
-    width: 1px;
-    height: 2.25rem;
-    background: rgb(255 255 255 / 0.18);
-  }
-  @media (min-width: 820px) { .be-wire-run { width: 3rem; height: 1px; } }
-  .be-wire-run::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 0;
-    width: 3px;
-    height: 3px;
-    margin-left: -1.5px;
-    border-radius: 999px;
-    background: #fff;
-    opacity: 0;
-  }
-  @media (min-width: 820px) {
-    .be-wire-run::after { left: 0; top: 50%; margin: -1.5px 0 0 0; }
-  }
-  .be-wire[data-in] .be-wire-run::after {
-    animation: be-run-y 2.4s linear calc(var(--i) * 0.4s + 0.8s) infinite;
-  }
-  @media (min-width: 820px) {
-    .be-wire[data-in] .be-wire-run::after { animation-name: be-run-x; }
-  }
-  @keyframes be-run-y {
-    0% { opacity: 0; top: 0; }
-    12% { opacity: 1; }
-    70% { opacity: 1; }
-    80%, 100% { opacity: 0; top: 100%; }
-  }
-  @keyframes be-run-x {
-    0% { opacity: 0; left: 0; }
-    12% { opacity: 1; }
-    70% { opacity: 1; }
-    80%, 100% { opacity: 0; left: 100%; }
-  }
-
   .be-made-rows { display: grid; margin-top: clamp(2.5rem, 5vw, 3.5rem); }
   .be-made-row {
     display: grid;
@@ -7378,8 +7308,429 @@
   @media (prefers-reduced-motion: reduce) {
     .be-col-after .be-list li[data-gone] > span::after,
     .be-col-after .be-list li[data-gone],
-    .be-left,
-    .be-wire-node { transition: none; }
-    .be-wire[data-in] .be-wire-run::after { animation: none; }
+    .be-left { transition: none; }
+  }
+}
+
+/* ---- the figures on the back-end page (back-end-charts.tsx) ---------
+   Drawings in the site's own two colours. There is no third colour to
+   tell one series from another, so weight, fill and a name on the
+   drawing do that work instead — which is also what makes them read in
+   grayscale, in forced colours and to anyone who sorts colour
+   differently. Hairline axes, thin marks, a gap of the ground between
+   touching marks, labels only where they carry the story.
+
+   Method: the dataviz skill. Composition: Bandcamp's counter set into
+   its own sentence, n8n's canvas for the flow (both through Inspo).  */
+@layer components {
+  .bef {
+    --bef-ink: var(--color-ink);
+    --bef-soft: rgb(0 0 0 / 0.28);
+    --bef-hair: rgb(0 0 0 / 0.12);
+    --bef-dim: var(--color-ash-2);
+    --bef-ground: var(--color-paper);
+    --bef-h: clamp(170px, 26vw, 260px);
+    margin: clamp(2rem, 4vw, 3rem) 0 0;
+  }
+  .bef[data-dark] {
+    --bef-ink: #ffffff;
+    --bef-soft: rgb(255 255 255 / 0.34);
+    --bef-hair: rgb(255 255 255 / 0.16);
+    --bef-dim: rgb(255 255 255 / 0.5);
+    --bef-ground: #0b0b0b;
+  }
+  .bef-name {
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    color: var(--bef-dim);
+    margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+  }
+  /* The warning rides every drawing: these numbers are made up. */
+  .bef-mark {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+    margin-top: 1.25rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--bef-hair);
+    color: var(--bef-dim);
+    text-transform: none;
+    letter-spacing: 0.04em;
+  }
+  .bef-foot { margin-right: auto; }
+
+  /* ---- 1. the two lines ------------------------------------------ */
+  /* The readout stands above the drawing, so the drawing leaves it
+     the room instead of having it land on the caption. */
+  .bef-line { position: relative; padding-left: 2.75rem; }
+  /* Room for the readout, which only a pointer ever raises. */
+  @media (min-width: 760px) {
+    .bef-line { padding-top: 4.75rem; }
+    .bef:has(.bef-line) .bef-name { margin-bottom: 0; }
+  }
+  @media (min-width: 760px) { .bef-line { padding-right: 9.5rem; } }
+
+  .bef-ticks {
+    position: absolute;
+    right: calc(100% + 0.5rem);
+    top: 0;
+    width: 2.25rem;
+    height: 100%;
+    pointer-events: none;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--bef-dim);
+  }
+  .bef-ticks span { position: absolute; right: 0; translate: 0 -50%; }
+
+  .bef-plot { position: relative; height: var(--bef-h); }
+  .bef-plot:focus-visible { outline: 1px solid var(--bef-soft); outline-offset: 8px; }
+  .bef-plot svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .bef-grid { stroke: var(--bef-hair); stroke-width: 1; }
+  .bef-cross { stroke: var(--bef-soft); stroke-width: 1; }
+  .bef-path { fill: none; stroke: var(--bef-ink); stroke-linecap: round; stroke-linejoin: round; }
+  /* Uncovered once, as the pair is reached, and never again. */
+  .bef-wipe { transform: scaleX(0); transform-origin: left center; transition: transform 1.6s cubic-bezier(0.33, 1, 0.68, 1); }
+  .bef-line[data-run] .bef-wipe { transform: scaleX(1); }
+  .bef-line[data-still] .bef-wipe { transition: none; }
+  .bef-path-digital { stroke-width: 2; }
+  .bef-path-manual { stroke-width: 1.25; stroke: var(--bef-soft); }
+
+  .bef-dot {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--bef-ink);
+    /* The ring is the ground, so a dot stays legible over a line. */
+    box-shadow: 0 0 0 2px var(--bef-ground);
+    translate: -50% -50%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease 1.6s;
+  }
+  .bef-line[data-run] .bef-dot { opacity: 1; }
+  .bef-line[data-still] .bef-dot { transition: none; }
+  .bef-dot-manual { background: var(--bef-soft); }
+  .bef-dot-at { transition: none; opacity: 1; }
+  .bef-dot-faint { background: var(--bef-soft); }
+
+  /* The series named where they end, so identity never rests on a
+     colour key. Under 760px they fall below the drawing instead. */
+  .bef-said {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--bef-dim);
+  }
+  .bef-said b { font-size: 1rem; font-weight: 500; color: var(--bef-ink); }
+  .bef-said::before {
+    content: "";
+    width: 1.25rem;
+    height: 2px;
+    background: var(--bef-ink);
+    translate: 0 -0.2em;
+  }
+  .bef-said-manual::before { height: 1px; background: var(--bef-soft); }
+  @media (min-width: 760px) {
+    .bef-said {
+      position: absolute;
+      right: 0;
+      top: calc(var(--bef-h) * var(--y) / 100);
+      width: 8.5rem;
+      margin: 0;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.1rem;
+      translate: 0 -50%;
+    }
+    .bef-said::before { display: none; }
+    .bef-said b { font-size: 1.125rem; }
+  }
+
+  .bef-when {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.6rem;
+    color: var(--bef-dim);
+    text-transform: none;
+    letter-spacing: 0.04em;
+  }
+
+  /* The readout. Value first, series name after it. */
+  .bef-tip {
+    position: absolute;
+    bottom: calc(100% + 0.6rem);
+    display: grid;
+    gap: 0.25rem;
+    min-width: 9.5rem;
+    padding: 0.6rem 0.7rem;
+    background: var(--bef-ground);
+    border: 1px solid var(--bef-hair);
+    translate: -50% 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .bef-tip[data-edge="start"] { translate: 0 0; }
+  .bef-tip[data-edge="end"] { translate: -100% 0; }
+  .bef-tip-when { color: var(--bef-dim); text-transform: none; letter-spacing: 0.04em; }
+  .bef-tip-row { display: flex; align-items: baseline; gap: 0.45rem; font-size: 0.8125rem; }
+  .bef-tip-row b { font-size: 0.9375rem; font-weight: 500; color: var(--bef-ink); font-variant-numeric: tabular-nums; }
+  .bef-tip-row em { font-style: normal; color: var(--bef-dim); }
+  .bef-key { width: 0.75rem; height: 2px; background: var(--bef-ink); translate: 0 -0.2em; }
+  .bef-key-faint { height: 1px; background: var(--bef-soft); }
+
+  /* ---- 2. the three cards ---------------------------------------- */
+  .bef-cards { display: grid; gap: 1px; background: var(--bef-hair); border-block: 1px solid var(--bef-hair); }
+  @media (min-width: 640px) { .bef-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .bef-card { padding: clamp(1.25rem, 3vw, 1.75rem) 0; background: var(--bef-ground); }
+  @media (min-width: 640px) { .bef-card { padding-inline: clamp(1rem, 2vw, 1.5rem); } }
+  .bef-card:first-child { padding-left: 0; }
+  .bef-card-v {
+    font-family: var(--font-title);
+    font-weight: 300;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--bef-ink);
+  }
+  .bef-card-name { margin-top: 0.7rem; font-size: 1rem; }
+  .bef-card-say { margin-top: 0.3rem; color: var(--bef-dim); text-transform: none; letter-spacing: 0.04em; }
+
+  /* ---- 3. the hours ---------------------------------------------- */
+  .bef-bars { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: clamp(0.5rem, 1.5vw, 1.25rem); }
+  .bef-stems {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    /* The ground does the separating, not a stroke. */
+    gap: 2px;
+    height: clamp(110px, 20vw, 180px);
+    border-bottom: 1px solid var(--bef-hair);
+  }
+  .bef-bar {
+    position: relative;
+    width: clamp(10px, 3vw, 22px);
+    height: 0;
+    border: 0;
+    padding: 0;
+    border-radius: 4px 4px 0 0;
+    background: var(--bef-ink);
+    cursor: default;
+    transition: height 0.9s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i) * 90ms);
+  }
+  .bef-bars[data-run] .bef-bar { height: var(--h); }
+  .bef-bars[data-still] .bef-bar { transition: none; }
+  .bef-bar-auto { background: var(--bef-soft); }
+  /* The hit area is bigger than the mark: a 0,3 h bar is a sliver. */
+  .bef-bar::before { content: ""; position: absolute; inset: -14px -5px 0; }
+  .bef-bar:focus-visible { outline: 1px solid var(--bef-ink); outline-offset: 3px; }
+  /* Under 640px five columns leave no room for a name: the pairs lie
+     down and become five rows instead. */
+  @media (max-width: 639.98px) {
+    .bef-bars { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+    .bef-group { display: grid; gap: 0.35rem; }
+    .bef-stems {
+      order: 2;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      height: auto;
+      border-bottom: 0;
+      border-left: 1px solid var(--bef-hair);
+    }
+    .bef-bar {
+      width: 0;
+      height: 10px;
+      border-radius: 0 4px 4px 0;
+      transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i) * 90ms);
+    }
+    .bef-bars[data-run] .bef-bar { width: var(--h); height: 10px; }
+    .bef-bar::before { inset: -4px -14px; }
+    .bef-bar-tip { left: 0; translate: 0 0; }
+    .bef-group-name { order: 1; margin-top: 0; font-size: 0.9375rem; }
+    .bef-group-v { order: 3; }
+  }
+  .bef-group-name { margin-top: 0.7rem; font-size: 0.8125rem; line-height: 1.35; text-wrap: pretty; }
+  .bef-group-v { margin-top: 0.25rem; color: var(--bef-dim); text-transform: none; letter-spacing: 0.04em; font-size: 0.625rem; }
+
+  .bef-bar-tip,
+  .bef-cost-bar .bef-bar-tip {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 0.5rem);
+    display: grid;
+    gap: 0.1rem;
+    width: max-content;
+    max-width: 11rem;
+    padding: 0.5rem 0.6rem;
+    background: var(--bef-ground);
+    border: 1px solid var(--bef-hair);
+    text-align: left;
+    translate: -50% 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    z-index: 2;
+  }
+  .bef-bar:hover .bef-bar-tip,
+  .bef-bar:focus-visible .bef-bar-tip,
+  .bef-cost-bar:hover .bef-bar-tip,
+  .bef-cost-bar:focus-visible .bef-bar-tip { opacity: 1; }
+  .bef-bar-tip b { font-size: 0.875rem; font-weight: 500; color: var(--bef-ink); }
+  .bef-bar-tip em { font-style: normal; font-size: 0.75rem; color: var(--bef-dim); }
+
+  .bef-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.25rem; margin-top: 1.1rem; font-size: 0.8125rem; color: var(--bef-dim); }
+  .bef-legend-key { width: 0.85rem; height: 0.85rem; border-radius: 2px; }
+  .bef-legend-manual { background: var(--bef-ink); }
+  .bef-legend-auto { background: var(--bef-soft); }
+
+  /* The ring. Three parts of one whole, each a step of the one hue,
+     each named and numbered beside it. */
+  .bef-ring { position: relative; width: min(260px, 72%); margin: 0 auto; }
+  .bef-ring svg { display: block; width: 100%; height: auto; rotate: -90deg; }
+  .bef-arc {
+    fill: none;
+    stroke: var(--bef-ink);
+    stroke-width: 11;
+    stroke-dasharray: 0 100;
+    transition: stroke-dasharray 0.9s cubic-bezier(0.33, 1, 0.68, 1) calc(var(--i) * 150ms), opacity 0.2s ease;
+    cursor: default;
+  }
+  .bef-ring[data-run] .bef-arc { stroke-dasharray: var(--len) 100; }
+  .bef-ring[data-still] .bef-arc { transition: none; }
+  .bef-arc:nth-of-type(2) { stroke: rgb(0 0 0 / 0.5); }
+  .bef-arc:nth-of-type(3) { stroke: rgb(0 0 0 / 0.18); }
+  .bef-arc[data-on] { opacity: 0.72; }
+  .bef-arc:focus-visible { outline: none; opacity: 0.72; }
+  .bef-ring-mid {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    gap: 0.15rem;
+    width: 60%;
+    text-align: center;
+    translate: -50% -50%;
+  }
+  .bef-ring-mid b {
+    font-family: var(--font-title);
+    font-weight: 300;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .bef-ring-mid span { color: var(--bef-dim); text-transform: none; letter-spacing: 0.04em; font-size: 0.625rem; }
+
+  .bef-parts { display: grid; margin-top: clamp(1.5rem, 3vw, 2rem); }
+  .bef-parts > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    padding-block: 0.65rem;
+    border-top: 1px solid var(--bef-hair);
+    transition: opacity 0.2s ease;
+  }
+  .bef-parts > div:last-child { border-bottom: 1px solid var(--bef-hair); }
+  .bef-parts dt { display: flex; align-items: center; gap: 0.55rem; font-size: 0.9375rem; }
+  .bef-parts dd { margin: 0; font-size: 0.875rem; color: var(--bef-dim); font-variant-numeric: tabular-nums; }
+  .bef-parts > div[data-on] dd { color: var(--bef-ink); }
+  .bef-parts-key { width: 0.85rem; height: 0.85rem; border-radius: 2px; background: var(--bef-ink); }
+  .bef-parts-key[data-i="1"] { background: rgb(0 0 0 / 0.5); }
+  .bef-parts-key[data-i="2"] { background: rgb(0 0 0 / 0.18); }
+
+  /* The counter: the number set into the sentence that reads it. */
+  .bef-saved { margin-top: clamp(2.5rem, 5vw, 3.5rem); }
+  .bef-saved-say {
+    max-width: 46ch;
+    font-size: clamp(1rem, 1.3vw, 1.0625rem);
+    line-height: 1.7;
+    color: var(--color-ash);
+    text-wrap: pretty;
+  }
+  .bef-saved-in {
+    padding: 0.1em 0.3em;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-variant-numeric: tabular-nums;
+  }
+  .bef-saved-big { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.25rem 1rem; margin-top: clamp(1.25rem, 2.5vw, 1.75rem); }
+  .bef-saved-big b {
+    font-family: var(--font-title);
+    font-weight: 300;
+    font-size: clamp(4rem, 13vw, 8.5rem);
+    line-height: 0.85;
+    letter-spacing: -0.045em;
+  }
+  .bef-saved-big span { color: var(--color-ash-2); text-transform: none; letter-spacing: 0.04em; }
+  .bef-saved .bef-mark { border-color: var(--color-hair); color: var(--color-ash-2); }
+
+  /* ---- 4. the flow and the cost ---------------------------------- */
+  .bef-flow svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+  }
+  .bef-wire { fill: none; stroke: rgb(255 255 255 / 0.22); stroke-width: 1; }
+  .bef-bead { fill: #ffffff; }
+  .bef-node rect { fill: rgb(255 255 255 / 0.04); stroke: rgb(255 255 255 / 0.2); stroke-width: 1; }
+  .bef-node text { fill: rgb(255 255 255 / 0.72); text-anchor: middle; dominant-baseline: middle; }
+  .bef-node[data-lit] rect { stroke: rgb(255 255 255 / 0.5); }
+  .bef-node[data-lit] text { fill: #ffffff; }
+
+  /* The longest bar stops well short of the page: a block the width
+     of the shell reads as a slab, not as a measure. */
+  .bef-cost { display: grid; gap: clamp(1.25rem, 3vw, 1.75rem); max-width: 44rem; }
+  .bef-cost-name { font-size: 0.9375rem; color: var(--bef-dim); }
+  .bef-cost-lane { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem; }
+  .bef-cost-bar {
+    position: relative;
+    width: 0;
+    height: 2.25rem;
+    border: 0;
+    padding: 0;
+    border-radius: 0 4px 4px 0;
+    background: var(--bef-soft);
+    cursor: default;
+    transition: width 1s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i) * 160ms);
+  }
+  .bef-cost[data-run] .bef-cost-bar { width: var(--w); }
+  .bef-cost[data-still] .bef-cost-bar { transition: none; }
+  .bef-cost-bar[data-ours] { background: #ffffff; }
+  .bef-cost-bar:focus-visible { outline: 1px solid #ffffff; outline-offset: 3px; }
+  /* The value sits past the bar's end, never inside it: a short bar
+     would otherwise crop its own number. */
+  .bef-cost-v {
+    font-family: var(--font-title);
+    font-size: clamp(1.125rem, 2vw, 1.5rem);
+    font-weight: 500;
+    color: var(--bef-ink);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bef-wipe, .bef-dot, .bef-bar, .bef-arc, .bef-cost-bar { transition: none; }
+  }
+}
+
+@layer components {
+  /* Where the drawings of the week sit, inside the ledger section. */
+  .be-figs {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 3.5rem);
+    padding-bottom: clamp(3rem, 6vw, 4.5rem);
+  }
+  @media (min-width: 900px) {
+    .be-figs { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); column-gap: clamp(2.5rem, 5vw, 4rem); align-items: start; }
+    .be-figs > :last-child { grid-column: 1 / -1; }
   }
 }
