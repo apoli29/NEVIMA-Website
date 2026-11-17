@@ -6751,6 +6751,11 @@
 /* ---- the photo shoot's header, as the side-by-side page's is -------- */
 @layer components {
   .ps-head { padding-top: calc(var(--section-gap) + 2rem); padding-bottom: clamp(2.5rem, 5vw, 4rem); }
+  /* The photo shoot's header sits in the middle of the page, but its
+     words stay ranged left as every other header's are (user,
+     2026-11-17: "a mesma, mas centrado comparado à página"). The block
+     is narrowed and centred; nothing inside it is centred. */
+  .ps-head-mid { width: min(100%, 58rem); margin-inline: auto; }
   .ps-head-say {
     margin-top: 2rem;
     max-width: 30ch;
@@ -6907,5 +6912,145 @@
     .psm-slab, .psm-near, .psm-ring, .psm-shade { transition: none; }
     .psm-rim path { transition: none; stroke-dashoffset: 0; }
     .psm[data-in] .psm-ring { animation: none; }
+  }
+}
+
+/* ---- visual identity (visual-identity.tsx) --------------------------
+   The service's own page, built on the photo shoot's: the same header
+   (.ps-head), the same section rhythm (.ps-sec), the same leading line
+   (.ps-lede). What is its own is here. References through Inspo:
+   Orpetron (the mark shown as a seal with its construction in view)
+   and Feathericons (the mark as a specimen in a ruled cell), in the
+   site's own black, white and light grey.                            */
+@layer components {
+  /* The three things the proposal is seen in. */
+  .vi-three {
+    display: grid;
+    gap: clamp(2rem, 4vw, 3rem);
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+    align-items: start;
+  }
+  @media (min-width: 900px) { .vi-three { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .vi-piece .rp-ba { border-color: rgb(255 255 255 / 0.18); }
+  .vi-cap {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.9rem;
+  }
+  .vi-cap-name { font-size: 1rem; font-weight: 500; }
+  .vi-cap-shape { color: rgb(255 255 255 / 0.45); }
+
+  /* A place for an image that has not arrived: it says what belongs in
+     it and keeps the shape it will hold. */
+  .vi-slot {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    overflow: hidden;
+    background: #efefee;
+    border: 1px solid rgb(0 0 0 / 0.14);
+  }
+  .vi-slot[data-dark] { background: #0f0f0f; border-color: rgb(255 255 255 / 0.18); }
+  .vi-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .vi-slot-say {
+    padding: 0 1rem;
+    text-align: center;
+    text-transform: none;
+    letter-spacing: 0.04em;
+    color: var(--color-ash-2);
+  }
+  .vi-slot[data-dark] .vi-slot-say { color: rgb(255 255 255 / 0.6); }
+
+  /* The symbol on the guides it is built on: the grid draws itself as
+     the section is reached, and the mark sits in the middle of it. */
+  .vi-mark { position: relative; display: block; aspect-ratio: 1 / 1; }
+  .vi-grid { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .vi-g-rule {
+    fill: none;
+    stroke: rgb(255 255 255 / 0.42);
+    stroke-width: 0.8;
+    stroke-dasharray: var(--d);
+    stroke-dashoffset: var(--d);
+    transition: stroke-dashoffset 0.9s cubic-bezier(0.33, 1, 0.68, 1) var(--o);
+  }
+  .vi-grid[data-in] .vi-g-rule { stroke-dashoffset: 0; }
+  .vi-g-faint { stroke: rgb(255 255 255 / 0.2); }
+  .vi-g-dot { fill: rgb(255 255 255 / 0.5); opacity: 0; transition: opacity 0.5s ease 0.9s; }
+  .vi-grid[data-in] .vi-g-dot { opacity: 1; }
+  /* The mark stands inside the circle the guides draw. */
+  .vi-mark-slot { position: absolute; inset: 24%; }
+  .vi-mark-slot .vi-slot { height: 100%; border-radius: 2px; }
+
+  /* ---- who it is for --------------------------------------------- */
+  .vi-answer {
+    display: grid;
+    gap: 0.75rem 2.5rem;
+    margin-top: clamp(2rem, 4vw, 2.75rem);
+    align-items: baseline;
+  }
+  @media (min-width: 720px) { .vi-answer { grid-template-columns: auto minmax(0, 1fr); } }
+  .vi-no {
+    font-family: var(--font-title);
+    font-weight: 500;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+  }
+  .vi-no-say { max-width: 48ch; font-size: clamp(1rem, 1.3vw, 1.125rem); line-height: 1.6; color: var(--color-ash); text-wrap: pretty; }
+
+  /* The case changes in place, as the photo shoot's dials do. */
+  .vi-case {
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+    padding-top: clamp(1.5rem, 3vw, 2rem);
+    border-top: 1px solid var(--color-hair);
+  }
+  .vi-case-lead { display: block; font-size: 0.9375rem; color: var(--color-ash-2); }
+  .vi-case-slot { position: relative; display: block; margin-top: 0.6rem; }
+  .vi-case-word,
+  .vi-case-ghost {
+    font-family: var(--font-title);
+    font-weight: 300;
+    font-size: clamp(1.375rem, 2.6vw, 2.25rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .vi-case-word {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    translate: 0 0.6rem;
+    transition: opacity 0.5s ease, translate 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .vi-case-word[data-on] { opacity: 1; translate: 0 0; }
+  .vi-case-word[data-gone] { translate: 0 -0.6rem; }
+  .vi-case-ghost { display: block; visibility: hidden; }
+
+  .vi-doubt {
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+    padding-top: clamp(1.75rem, 3vw, 2.25rem);
+    border-top: 1px solid var(--color-hair);
+    display: grid;
+    gap: 1.25rem;
+    align-items: start;
+  }
+  @media (min-width: 900px) {
+    .vi-doubt { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(2.5rem, 5vw, 4rem); }
+    .vi-doubt-ask { grid-column: 1 / -1; }
+  }
+  .vi-doubt-say {
+    font-family: var(--font-title);
+    font-size: clamp(1.375rem, 2.4vw, 2rem);
+    line-height: 1.16;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .vi-doubt-more { max-width: 46ch; font-size: clamp(1rem, 1.3vw, 1.0625rem); line-height: 1.6; color: var(--color-ash); text-wrap: pretty; }
+  .vi-doubt-ask { display: flex; margin-top: 0.5rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vi-g-rule, .vi-g-dot, .vi-case-word { transition: none; }
   }
 }
