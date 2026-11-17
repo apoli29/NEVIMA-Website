@@ -126,3 +126,17 @@ glass was taken.
   reason the visual identity page has none. It was centred in the page
   for one pass and put back to the shell's left edge the same day, so
   every service header starts on the same line.
+- 2026-11-17 (user: "nao o metas deitado como esta prefiro em pe"): the
+  country stands instead of lying back. It faces the reader, turned
+  13 degrees so the wall its thickness makes is seen along one side,
+  and the hand turns it ten degrees either way; under that, an inner
+  box drifts five degrees on a fourteen-second loop, so it is never
+  quite still without ever fighting the hand for the same transform.
+  The slices darken with depth, the lit face is lighter than they are,
+  and the shadow falls behind rather than under it.
+- The same day, the phone's overlap: the drawing is 600 tall and its box
+  is what that comes to once scaled, and a grid box that size pushes an
+  oversized child down instead of centring it — which put the map over
+  the words. The stage is hung on the box's middle with `position:
+  absolute` and `translate(-50%, -50%)` instead. Measured at 375px: 37px
+  clear above and 22px below.
