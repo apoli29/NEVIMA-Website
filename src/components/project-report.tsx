@@ -148,6 +148,37 @@ function ServiceChapter({
   );
 }
 
+/** One side of the card. A file that is not there yet (the photo shoot's
+    places are named and empty until the studio drops its photographs in)
+    falls back to the label of what belongs in it. */
+function Face({ src, dark, waiting }: { src: string | null; dark: boolean; waiting?: string }) {
+  // Keyed on the file by its caller, so a new one starts whole rather
+  // than being told, after the fact, that the last one was missing.
+  const [broken, setBroken] = useState(false);
+  if (src && !broken) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt=""
+        draggable={false}
+        // The server draws the image too, so the browser may have tried
+        // and failed before React was here to be told: the node is asked
+        // itself as it arrives.
+        ref={(node) => {
+          if (node && node.complete && node.naturalWidth === 0) setBroken(true);
+        }}
+        onError={() => setBroken(true)}
+      />
+    );
+  }
+  return (
+    <span className="rp-ba-empty" data-dark={dark ? "" : undefined}>
+      <span className="rp-fill">{waiting ?? TO_FILL}</span>
+    </span>
+  );
+}
+
 /** The brand before and after, in one card (user, 2026-10-13). At rest
     it shows after; the hand going left uncovers before, and leaving the
     card lets after close back over it. A handle on the cut, and a brief
@@ -167,7 +198,24 @@ const BA_FOLLOW = 14;
 const BA_PEEK = 72;
 const BA_PEEK_MS = 700;
 
-function BeforeAfter({ before, after, name }: { before: string | null; after: string | null; name: string }) {
+/** Shared with the photo shoot's page (2026-11-17), so both sliders are
+    the same thing: the same follow, the same handle, the same keys. A
+    face with no file behind it says what belongs there instead. */
+export function BeforeAfter({
+  before,
+  after,
+  name,
+  ratio,
+  says,
+}: {
+  before: string | null;
+  after: string | null;
+  name: string;
+  /** the card's shape, where it is not the report's 4:3 */
+  ratio?: string;
+  /** what each face says while its photograph is missing */
+  says?: { before: string; after: string };
+}) {
   const reduce = useReducedMotion() ?? false;
   const t = useT();
   const more = { before: t("Showing more of before", "A mostrar mais do antes"), after: t("Showing more of after", "A mostrar mais do depois") };
@@ -304,21 +352,16 @@ function BeforeAfter({ before, after, name }: { before: string | null; after: st
     jump(v);
   };
 
-  const face = (src: string | null, dark: boolean) =>
-    src ? (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img src={src} alt="" draggable={false} />
-    ) : (
-      <span className="rp-ba-empty" data-dark={dark ? "" : undefined}>
-        <span className="rp-fill">{TO_FILL}</span>
-      </span>
-    );
+  const face = (src: string | null, dark: boolean, waiting?: string) => (
+    <Face key={src ?? "empty"} src={src} dark={dark} waiting={waiting} />
+  );
 
   return (
     <div>
       <div
         ref={card}
         className="rp-ba"
+        style={ratio ? { aspectRatio: ratio } : undefined}
         role="slider"
         tabIndex={0}
         aria-label={t(`${name}: before and after`, `${name}: antes e depois`)}
@@ -361,9 +404,9 @@ function BeforeAfter({ before, after, name }: { before: string | null; after: st
       >
         {/* Before underneath, whole; after over it, cut at the hand: the
             further left the hand, the more of before. */}
-        <div className="rp-ba-face">{face(before, false)}</div>
+        <div className="rp-ba-face">{face(before, false, says?.before)}</div>
         <div ref={top} className="rp-ba-face" style={{ clipPath: "inset(0 0% 0 0)" }}>
-          {face(after, true)}
+          {face(after, true, says?.after)}
         </div>
         <span ref={line} className="rp-ba-line" style={{ transform: "translateX(100cqw)" }} aria-hidden="true" />
         <span

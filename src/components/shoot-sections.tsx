@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
 import { useInView, type T } from "./sbs-shared";
-import { useT } from "@/lib/use-lang";
 
 /* ==================================================================
    The photo shoot, in full
@@ -76,17 +75,23 @@ function included(t: T) {
   ];
 }
 
-function Included({ t }: { t: T }) {
+export function Included({ t }: { t: T }) {
   const rows = included(t);
   return (
-    <section aria-labelledby="sht-in-title" className="sht sht-in">
-      <div className="sht-head">
+    <section aria-labelledby="sht-in-title" data-tone="light" className="sht sht-in relative">
+      <div className="shell sht-head" data-tone-body>
         <div className="sht-stick">
           <p className="mono-label text-ash-2">{t("What the session includes", "O que a sessão inclui")}</p>
           <h2 id="sht-in-title" className="display sht-title">
             <span className="font-light sm:block">{t("Six things,", "Seis coisas,")}</span>{" "}
             <span className="font-medium sm:block">{t("none of them extra.", "nenhuma delas à parte.")}</span>
           </h2>
+          <p className="ps-lede sht-lede">
+            {t(
+              "A session is not only the day of photography. This is everything inside it, and none of it is charged apart.",
+              "A sessão não é só o dia de fotografia. Isto é tudo o que vai dentro dela, e nada se cobra à parte.",
+            )}
+          </p>
         </div>
 
         <dl className="sht-rows">
@@ -123,7 +128,7 @@ const COAST: [number, number][] = [
 
 const GAIA: [number, number] = [41.12, -8.62];
 
-function Coverage({ t }: { t: T }) {
+export function Coverage({ t }: { t: T }) {
   const reduce = useReducedMotion() ?? false;
   const [ref, inView] = useInView<HTMLDivElement>(0.25);
   const [lit, setLit] = useState<"near" | "far" | null>(null);
@@ -134,14 +139,21 @@ function Coverage({ t }: { t: T }) {
   const gy = KM_Y(GAIA[0]);
 
   return (
-    <section aria-labelledby="sht-map-title" className="sht sht-map">
-      <div className="sht-map-grid">
+    <section aria-labelledby="sht-map-title" data-tone="light" className="sht sht-map relative">
+      <div className="shell sht-map-grid" data-tone-body>
         <div>
           <p className="mono-label text-ash-2">{t("Where we work", "Área de cobertura")}</p>
           <h2 id="sht-map-title" className="display sht-title">
             <span className="font-light sm:block">{t("Mainland Portugal,", "Portugal continental,")}</span>{" "}
             <span className="font-medium sm:block">{t("and nowhere else.", "e mais nenhum lado.")}</span>
           </h2>
+
+          <p className="ps-lede sht-lede">
+            {t(
+              "Where we go, and what getting there costs.",
+              "Onde vamos, e o que custa lá chegar.",
+            )}
+          </p>
 
           <ul className="sht-legend">
             <li
@@ -227,7 +239,7 @@ function dials(t: T) {
   ];
 }
 
-function Tailored({ t }: { t: T }) {
+export function Tailored({ t }: { t: T }) {
   const reduce = useReducedMotion() ?? false;
   const [ref, inView] = useInView<HTMLDivElement>(0.3);
   const list = dials(t);
@@ -240,13 +252,20 @@ function Tailored({ t }: { t: T }) {
   }, [inView, reduce]);
 
   return (
-    <section aria-labelledby="sht-fit-title" className="sht sht-fit">
-      <div ref={ref}>
+    <section aria-labelledby="sht-fit-title" data-tone="light" className="sht sht-fit relative">
+      <div ref={ref} className="shell" data-tone-body>
         <p className="mono-label text-ash-2">{t("Personalisation", "Personalização")}</p>
         <h2 id="sht-fit-title" className="display sht-title">
           <span className="font-light sm:block">{t("Every session is shaped", "Cada sessão é pensada")}</span>{" "}
           <span className="font-medium sm:block">{t("around the brand.", "à medida de cada marca.")}</span>
         </h2>
+
+        <p className="ps-lede sht-lede">
+          {t(
+            "Nothing here is a closed package: the session is drawn around what the brand has to show.",
+            "Nada aqui é um pacote fechado: a sessão é desenhada à volta do que a marca tem para mostrar.",
+          )}
+        </p>
 
         <div className="sht-dials">
           {list.map((d) => {
@@ -280,16 +299,3 @@ function Tailored({ t }: { t: T }) {
   );
 }
 
-/* ================================================================== */
-
-/** The three sections the studio has written for the photo shoot. */
-export function ShootSections() {
-  const t = useT();
-  return (
-    <>
-      <Included t={t} />
-      <Coverage t={t} />
-      <Tailored t={t} />
-    </>
-  );
-}
