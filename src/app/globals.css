@@ -5751,6 +5751,9 @@
     .sht-map-plate[data-in] .sht-near { animation: none; }
     .sht-ring { opacity: 0.5; }
     .sht-near { opacity: 0.88; }
+  }
+}
+
 /* ==================================================================
    SEO & GEO (seo-geo.tsx): a results page, an AI assistant, three
    curves and a calculator. Square and ruled by hairlines like the rest
