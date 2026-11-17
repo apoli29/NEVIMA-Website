@@ -1,0 +1,239 @@
+"use client";
+
+import { SlideIn } from "./enter";
+import { BeforeAfter } from "./project-report";
+import { ServiceHero } from "./service-depth";
+import { ToneRoom } from "./tone-veil";
+import { Included, Coverage, Tailored } from "./shoot-sections";
+import { ProposalAsk } from "./about-faq";
+import { TO_FILL } from "@/lib/work";
+import { useT } from "@/lib/use-lang";
+import type { T } from "./sbs-shared";
+
+/* ==================================================================
+   The photo shoot
+
+   The service's own page (user, 2026-11-17), set the way SEO & GEO's
+   is rather than from the services' template: one room, its sections
+   turning from light to dark under the tonal veil (tone-veil.tsx),
+   their headings coming in on the same SlideIn the rest of the site
+   arrives on, and the free-proposal drop the whole site presses.
+
+   What is here, in order: the photograph and the service's name, an
+   opening that says what a session is worth, the same business
+   photographed twice (section 1), what the session includes, the
+   packages, where we work, and how each session is shaped.
+
+   PLACES FOR PHOTOGRAPHS. Every pair in the comparison is a named,
+   empty place under public/photo-shoot/ (see its README). While a file
+   is missing, its side of the slider says what belongs there and the
+   card keeps its shape, so dropping the real photograph in is the whole
+   of the work: no layout changes, no code changes.
+
+   The packages are the studio's to set. Their fields read [a preencher]
+   until it does, which is what the rest of the site does with anything
+   the studio has not given yet (TO_FILL, lib/work.ts). No price is
+   invented here.
+
+   References through Inspo, turned into this site's own black, white,
+   Satoshi and Geist Mono: Works Studio for three examples read side by
+   side with their captions under them, Luma's pricing for three plain
+   cards with the middle one inverted.
+   ================================================================== */
+
+/* ---- the opening ------------------------------------------------ */
+
+function Opening({ t }: { t: T }) {
+  return (
+    <section data-tone="light" className="relative">
+      <div className="shell ps-open" data-tone-body>
+        <SlideIn ready>
+          <p className="mono-label text-ash-2">{t("Why it is worth it", "Porque vale a pena")}</p>
+          <h2 className="display ps-open-title">
+            <span className="font-light sm:block">{t("A website is believed", "Um website acredita-se")}</span>{" "}
+            <span className="font-medium sm:block">{t("by its photographs first.", "primeiro pelas fotografias.")}</span>
+          </h2>
+        </SlideIn>
+        <SlideIn ready distance={0} delay={0.08} className="ps-open-say">
+          <p>
+            {t(
+              "A business can have the best product on the street: if the photographs were taken in a hurry, in whatever light there was, that is what a client sees before reading a word.",
+              "Um negócio pode ter o melhor produto da rua: se as fotografias foram tiradas à pressa, com a luz que havia, é isso que o cliente vê antes de ler uma palavra.",
+            )}
+          </p>
+          <p>
+            {t(
+              "A session done properly gives the website pictures of its own — of the place, of the people and of the work — and the same pictures go on serving social media, advertising and whatever comes next.",
+              "Uma sessão feita a sério dá ao website imagens que lhe pertencem — do espaço, das pessoas e do trabalho — e essas mesmas imagens continuam a servir as redes sociais, os anúncios e o que vier a seguir.",
+            )}
+          </p>
+        </SlideIn>
+      </div>
+    </section>
+  );
+}
+
+/* ---- 1. the same business, photographed twice -------------------- */
+
+/** Each pair is a place under public/photo-shoot/, named after what
+    belongs in it, and a shape that does not change when it arrives. */
+const PAIRS = [
+  { id: "produto", dir: "produto", ratio: "1 / 1", en: "A product", pt: "Um produto" },
+  { id: "equipa", dir: "equipa", ratio: "4 / 5", en: "The team", pt: "A equipa" },
+  { id: "espaco", dir: "espaco", ratio: "3 / 2", en: "The place", pt: "O espaço" },
+] as const;
+
+function Compare({ t }: { t: T }) {
+  return (
+    <section aria-labelledby="ps-cmp-title" data-tone="dark" className="relative text-paper">
+      <div className="shell ps-sec" data-tone-body>
+        <SlideIn ready>
+          <p className="mono-label text-paper/55">{t("The same business, twice", "O mesmo negócio, duas vezes")}</p>
+          <h2 id="ps-cmp-title" className="display ps-title">
+            <span className="font-light sm:block">{t("The difference is not the camera.", "A diferença não está na câmara.")}</span>{" "}
+            <span className="font-medium sm:block">{t("It is the light and the time.", "Está na luz e no tempo.")}</span>
+          </h2>
+        </SlideIn>
+
+        <SlideIn ready distance={0} delay={0.08}>
+          <p className="ps-lede ps-lede-dark">
+            {t(
+              "Three things every business has to show, photographed in a hurry and photographed by us. Move the cut to see one turn into the other.",
+              "Três coisas que qualquer negócio tem de mostrar, fotografadas à pressa e fotografadas por nós. Mover o corte para ver uma passar à outra.",
+            )}
+          </p>
+        </SlideIn>
+
+        <div className="ps-pairs">
+          {PAIRS.map((pair, i) => {
+            const name = t(pair.en, pair.pt);
+            return (
+              <SlideIn key={pair.id} ready distance={0} delay={0.1 + i * 0.06}>
+                <figure className="ps-pair">
+                  <BeforeAfter
+                    name={name}
+                    ratio={pair.ratio}
+                    before={`/photo-shoot/${pair.dir}/antes.webp`}
+                    after={`/photo-shoot/${pair.dir}/depois.webp`}
+                    says={{
+                      before: t(`Photograph: ${pair.en.toLowerCase()} — before`, `Fotografia: ${pair.pt.toLowerCase()} — antes`),
+                      after: t(`Photograph: ${pair.en.toLowerCase()} — after`, `Fotografia: ${pair.pt.toLowerCase()} — depois`),
+                    }}
+                  />
+                  <figcaption className="ps-pair-cap">
+                    <span className="ps-pair-name">{name}</span>
+                    <span className="mono-label ps-pair-shape">{pair.ratio.replace(" / ", ":")}</span>
+                  </figcaption>
+                </figure>
+              </SlideIn>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ---- 3. the packages --------------------------------------------- */
+
+/** What tells one package from another (the studio's brief). The values
+    wait for the studio, as everything unfilled on this site does. */
+function packages(t: T) {
+  const rows = [
+    t("Photographs delivered", "Fotografias entregues"),
+    t("How long the session runs", "Duração da sessão"),
+    t("How many places", "Número de locais"),
+    t("Delivered in", "Prazo de entrega"),
+  ];
+  return {
+    rows,
+    cards: [
+      { id: "a", name: TO_FILL, price: TO_FILL, lit: false },
+      { id: "b", name: TO_FILL, price: TO_FILL, lit: true },
+      { id: "c", name: TO_FILL, price: TO_FILL, lit: false },
+    ],
+  };
+}
+
+function Packages({ t }: { t: T }) {
+  const { rows, cards } = packages(t);
+  return (
+    <section aria-labelledby="ps-pack-title" data-tone="dark" className="relative text-paper">
+      <div className="shell ps-sec" data-tone-body>
+        <SlideIn ready>
+          <p className="mono-label text-paper/55">{t("Packages", "Pacotes")}</p>
+          <h2 id="ps-pack-title" className="display ps-title">
+            <span className="font-light sm:block">{t("Three ways to do the same thing,", "Três maneiras de fazer o mesmo,")}</span>{" "}
+            <span className="font-medium sm:block">{t("by the size of what there is to show.", "conforme o tamanho do que há para mostrar.")}</span>
+          </h2>
+        </SlideIn>
+
+        <SlideIn ready distance={0} delay={0.08}>
+          <p className="ps-lede ps-lede-dark">
+            {t(
+              "What tells them apart is how many photographs are delivered, how long the session runs, how many places it covers and how soon the files arrive.",
+              "O que os distingue é quantas fotografias são entregues, quanto tempo dura a sessão, quantos locais cobre e em quanto tempo chegam os ficheiros.",
+            )}
+          </p>
+        </SlideIn>
+
+        <div className="ps-packs">
+          {cards.map((card, i) => (
+            <SlideIn key={card.id} ready distance={0} delay={0.1 + i * 0.06}>
+              <article className="ps-pack" data-lit={card.lit || undefined}>
+                <p className="mono-label ps-pack-kicker">{t(`Package ${i + 1}`, `Pacote ${i + 1}`)}</p>
+                <h3 className="ps-pack-name">{card.name}</h3>
+                <p className="ps-pack-price">{card.price}</p>
+                <dl className="ps-pack-rows">
+                  {rows.map((row) => (
+                    <div key={row}>
+                      <dt className="mono-label">{row}</dt>
+                      <dd>{TO_FILL}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </article>
+            </SlideIn>
+          ))}
+        </div>
+
+        <SlideIn ready distance={0} delay={0.24}>
+          <div className="ps-pack-foot">
+            <p className="mono-label">
+              {t(
+                "The packages and their prices are the studio's to set; the form works an estimate out meanwhile.",
+                "Os pacotes e os preços são definidos pelo estúdio; entretanto, o formulário calcula uma estimativa.",
+              )}
+            </p>
+            <ProposalAsk label={t("Get your free proposal", "Pedir proposta gratuita")} />
+          </div>
+        </SlideIn>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================== */
+
+export function PhotoShoot() {
+  const t = useT();
+  return (
+    <>
+      {/* The photograph and the name first, as every service page has
+          them (service-depth.tsx). */}
+      <div className="shell pt-[5.75rem] md:pt-[calc(var(--section-gap)+3rem)]">
+        <ServiceHero slug="photo-shoot" name={t("Photo Shoot", "Sessão Fotográfica")} />
+      </div>
+
+      {/* Then one room, turning from light to dark under the veil. */}
+      <ToneRoom>
+        <Opening t={t} />
+        <Compare t={t} />
+        <Included t={t} />
+        <Packages t={t} />
+        <Coverage t={t} />
+        <Tailored t={t} />
+      </ToneRoom>
+    </>
+  );
+}

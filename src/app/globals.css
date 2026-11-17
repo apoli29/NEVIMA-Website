@@ -6113,3 +6113,116 @@
     .sg-key-label { white-space: normal; line-height: 1.25; }
   }
 }
+
+/* ---- the photo shoot's own page (photo-shoot.tsx) -------------------
+   One room under the tonal veil, set the way SEO & GEO's page is: the
+   headings arrive on the site's own SlideIn, the sections turn from
+   light to dark between them, and the spacing is the one every other
+   page keeps. References through Inspo, in black, white, Satoshi and
+   Geist Mono: Works Studio for three examples read side by side with
+   their captions under them, Luma's pricing for three plain cards with
+   the middle one inverted.                                           */
+@layer components {
+  .ps-sec, .ps-open { padding-block: clamp(4rem, 8vw, 7rem); }
+
+  .ps-title, .ps-open-title {
+    margin-top: 1.5rem;
+    max-width: 22ch;
+    font-size: clamp(1.875rem, 4vw, 3.25rem);
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+
+  /* The line that says what a section is, before it is read. */
+  .ps-lede {
+    margin-top: clamp(1.5rem, 3vw, 2.25rem);
+    max-width: 52ch;
+    font-size: clamp(1rem, 1.3vw, 1.125rem);
+    line-height: 1.6;
+    color: var(--color-ash);
+    text-wrap: pretty;
+  }
+  .ps-lede-dark { color: rgb(255 255 255 / 0.72); }
+
+  /* ---- the opening ----------------------------------------------- */
+  .ps-open-say { display: grid; gap: 1.1rem; margin-top: clamp(2rem, 4vw, 3rem); max-width: 58ch; }
+  .ps-open-say p { font-size: clamp(1.0625rem, 1.5vw, 1.25rem); line-height: 1.6; color: var(--color-ash); text-wrap: pretty; }
+  .ps-open-say p:first-child { color: var(--color-ink); }
+
+  /* ---- 1. the same business, twice ------------------------------- */
+  .ps-pairs {
+    display: grid;
+    gap: clamp(2rem, 4vw, 3rem);
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+    align-items: start;
+  }
+  @media (min-width: 860px) { .ps-pairs { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  /* The slider is the report's own (.rp-ba), on the dark: its frame
+     takes the light instead of the ink. */
+  .ps-pair .rp-ba { border-color: rgb(255 255 255 / 0.18); }
+  .ps-pair-cap {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.9rem;
+  }
+  .ps-pair-name { font-size: 1rem; font-weight: 500; }
+  .ps-pair-shape { color: rgb(255 255 255 / 0.45); }
+
+  /* ---- 3. the packages ------------------------------------------- */
+  .ps-packs {
+    display: grid;
+    gap: 1px;
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+    background: rgb(255 255 255 / 0.16);
+    border: 1px solid rgb(255 255 255 / 0.16);
+  }
+  @media (min-width: 860px) { .ps-packs { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .ps-pack { padding: clamp(1.5rem, 2.4vw, 2rem); background: #0b0b0b; }
+  /* The middle one carries the weight, as that pricing page's does. */
+  .ps-pack[data-lit] { background: var(--color-paper); color: var(--color-ink); }
+  .ps-pack-kicker { color: rgb(255 255 255 / 0.5); }
+  .ps-pack[data-lit] .ps-pack-kicker { color: var(--color-ash-2); }
+  .ps-pack-name {
+    margin-top: 1rem;
+    font-family: var(--font-title);
+    font-weight: 300;
+    font-size: clamp(1.5rem, 2.2vw, 2rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .ps-pack-price {
+    margin-top: 0.35rem;
+    font-family: var(--font-title);
+    font-weight: 500;
+    font-size: clamp(1.25rem, 1.8vw, 1.625rem);
+    letter-spacing: -0.02em;
+  }
+  .ps-pack-rows { margin-top: 1.5rem; display: grid; }
+  .ps-pack-rows > div {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.85rem 0;
+    border-top: 1px solid rgb(255 255 255 / 0.14);
+  }
+  .ps-pack[data-lit] .ps-pack-rows > div { border-top-color: var(--color-hair); }
+  .ps-pack-rows dt { color: rgb(255 255 255 / 0.5); }
+  .ps-pack[data-lit] .ps-pack-rows dt { color: var(--color-ash-2); }
+  .ps-pack-rows dd { margin: 0; font-size: 0.9375rem; line-height: 1.45; }
+
+  .ps-pack-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem 2rem;
+    margin-top: clamp(1.75rem, 3vw, 2.5rem);
+  }
+  .ps-pack-foot .mono-label { max-width: 46ch; color: rgb(255 255 255 / 0.55); text-transform: none; letter-spacing: 0.02em; }
+
+  /* The three sections that were written first keep their styles and
+     lose only the rule between them: the room draws the seams now. */
+  .sht { border-top: 0; }
+  .sht-lede { margin-top: 1.5rem; }
+}
