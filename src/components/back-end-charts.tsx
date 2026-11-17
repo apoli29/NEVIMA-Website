@@ -621,3 +621,90 @@ export function CostBars({ t }: { t: T }) {
     </Figure>
   );
 }
+
+/* ---- the header's own piece -------------------------------------- */
+
+/** One request walking through the back end, over and over: the form is
+    sent, the request lands in the table, the booking takes its place in
+    the calendar, the confirmation goes out. Then a new one starts.
+
+    It is support, not the headline (user, 2026-11-17): hairlines, small
+    type and nothing brighter than the title beside it. With reduced
+    motion asked for it simply stands at the end of the walk, with every
+    step done. */
+export function RequestLoop({ t }: { t: T }) {
+  const reduce = useReducedMotion() ?? false;
+  /* 0 the form, 1 the table, 2 the calendar, 3 the email, 4 a breath
+     with the whole walk done, and then a new request. */
+  const [step, setStep] = useState(reduce ? 4 : 0);
+
+  useEffect(() => {
+    if (reduce) return;
+    const id = window.setTimeout(() => setStep((s) => (s + 1) % 5), step === 4 ? 1100 : 1500);
+    return () => window.clearTimeout(id);
+  }, [step, reduce]);
+
+  const steps = [
+    { key: "form", name: t("Contact form", "Formulário") },
+    { key: "base", name: t("Database", "Base de dados") },
+    { key: "when", name: t("Calendar", "Calendário") },
+    { key: "mail", name: t("Confirmation", "Confirmação") },
+  ];
+
+  return (
+    <div
+      className="be-rl"
+      role="img"
+      aria-label={t(
+        "A request from the website's form lands in the database, takes its place in the calendar, and the confirmation goes out on its own.",
+        "Um pedido do formulário do website entra na base de dados, ocupa o seu lugar no calendário, e a confirmação sai sozinha.",
+      )}
+    >
+      {steps.map((s, i) => (
+        <div key={s.key} className="be-rl-step">
+          <div className="be-rl-card" data-on={step === i || undefined} data-done={step > i || undefined}>
+            <span className="mono-label be-rl-name">{s.name}</span>
+            <span className="be-rl-draw" aria-hidden="true">
+              {s.key === "form" && (
+                <>
+                  <i className="be-rl-field" />
+                  <i className="be-rl-field be-rl-field-b" />
+                  <i className="be-rl-send" />
+                </>
+              )}
+              {s.key === "base" && (
+                <>
+                  <i className="be-rl-row be-rl-row-new" />
+                  <i className="be-rl-row" />
+                  <i className="be-rl-row" />
+                </>
+              )}
+              {s.key === "when" && (
+                <span className="be-rl-cal">
+                  {Array.from({ length: 14 }, (_, c) => (
+                    <i key={c} data-take={c === 9 || undefined} />
+                  ))}
+                </span>
+              )}
+              {s.key === "mail" && (
+                <>
+                  <i className="be-rl-line" />
+                  <i className="be-rl-line be-rl-line-b" />
+                  <svg className="be-rl-tick" viewBox="0 0 16 16">
+                    <path d="M3 8.5 L6.5 12 L13 4.5" />
+                  </svg>
+                </>
+              )}
+            </span>
+          </div>
+
+          {i < steps.length - 1 && (
+            <span className="be-rl-wire" aria-hidden="true">
+              {step === i + 1 && !reduce && <span className="be-rl-bead" />}
+            </span>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}

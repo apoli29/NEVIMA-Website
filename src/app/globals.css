@@ -7734,3 +7734,139 @@
     .be-figs > :last-child { grid-column: 1 / -1; }
   }
 }
+
+/* ---- the request walking through the header (back-end-charts.tsx) ---
+   Beside the title, never louder than it: the ground the header already
+   has, hairlines at the same weight as the facts' rule below, the same
+   mono label, and no fill brighter than the type. Under 1024px it falls
+   below the words and keeps its size.
+
+   References through Inspo for product pieces in a header (Linear's
+   shipped panels, n8n's canvas): the composition only — a short flow of
+   small interfaces tied by a line, stepping rather than looping at
+   random.                                                             */
+@layer components {
+  /* The header keeps its words ranged left and takes the piece beside
+     them; the three facts stay their full width underneath. */
+  @media (min-width: 1024px) {
+    .be-head-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 19rem;
+      column-gap: clamp(2.5rem, 5vw, 5rem);
+      align-items: center;
+    }
+  }
+
+  .be-rl {
+    display: grid;
+    justify-items: stretch;
+    width: 100%;
+    max-width: 21rem;
+    margin-top: clamp(2.25rem, 4vw, 3rem);
+  }
+  @media (min-width: 1024px) { .be-rl { margin-top: 0; } }
+  .be-rl-step { display: grid; justify-items: center; }
+
+  .be-rl-card {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    background: rgb(255 255 255 / 0.02);
+    transition: border-color 0.45s ease, background 0.45s ease;
+  }
+  .be-rl-card[data-done] { border-color: rgb(255 255 255 / 0.2); }
+  .be-rl-card[data-on] { border-color: rgb(255 255 255 / 0.4); background: rgb(255 255 255 / 0.05); }
+  .be-rl-name {
+    flex: 1;
+    font-size: 0.625rem;
+    text-transform: none;
+    letter-spacing: 0.08em;
+    color: rgb(255 255 255 / 0.4);
+    transition: color 0.45s ease;
+  }
+  .be-rl-card[data-done] .be-rl-name { color: rgb(255 255 255 / 0.55); }
+  .be-rl-card[data-on] .be-rl-name { color: rgb(255 255 255 / 0.85); }
+
+  /* The little drawing on the right of each card. */
+  .be-rl-draw { position: relative; display: block; width: 3.75rem; height: 1.75rem; flex: none; }
+  .be-rl-draw i { position: absolute; display: block; background: rgb(255 255 255 / 0.22); }
+
+  /* The form: two fields and the button that sends them. */
+  .be-rl-field { left: 0; top: 0.15rem; width: 2.5rem; height: 3px; }
+  .be-rl-field-b { top: 0.7rem; width: 1.6rem; }
+  .be-rl-send {
+    left: 0;
+    bottom: 0.1rem;
+    width: 1.1rem;
+    height: 0.6rem;
+    border-radius: 1px;
+    background: rgb(255 255 255 / 0.3);
+    transition: background 0.3s ease, scale 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .be-rl-card[data-on] .be-rl-send { background: #ffffff; scale: 0.9 1; }
+  .be-rl-card[data-done] .be-rl-send { background: rgb(255 255 255 / 0.45); }
+
+  /* The table: the new row lands on top of the ones already there. */
+  .be-rl-row { left: 0; width: 3.75rem; height: 4px; }
+  .be-rl-row:nth-child(2) { top: 0.75rem; width: 3rem; }
+  .be-rl-row:nth-child(3) { top: 1.35rem; width: 3.4rem; }
+  .be-rl-row-new { top: 0.15rem; opacity: 0; translate: 0 -0.4rem; }
+  .be-rl-card[data-on] .be-rl-row-new,
+  .be-rl-card[data-done] .be-rl-row-new {
+    opacity: 1;
+    translate: 0 0;
+    background: #ffffff;
+    transition: opacity 0.4s ease, translate 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .be-rl-card[data-done] .be-rl-row-new { background: rgb(255 255 255 / 0.45); }
+
+  /* The calendar: one cell takes its place. */
+  .be-rl-cal { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .be-rl-cal i { position: static; width: 100%; height: 100%; background: rgb(255 255 255 / 0.12); }
+  .be-rl-cal i[data-take] { background: rgb(255 255 255 / 0.12); transition: background 0.4s ease; }
+  .be-rl-card[data-on] .be-rl-cal i[data-take] { background: #ffffff; }
+  .be-rl-card[data-done] .be-rl-cal i[data-take] { background: rgb(255 255 255 / 0.45); }
+
+  /* The confirmation: two lines and the tick that says it left. */
+  .be-rl-line { left: 0; top: 0.3rem; width: 2.2rem; height: 3px; }
+  .be-rl-line-b { top: 1rem; width: 1.4rem; }
+  .be-rl-tick { position: absolute; right: 0; top: 0.1rem; width: 1.5rem; height: 1.5rem; }
+  .be-rl-tick path {
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 18;
+    stroke-dashoffset: 18;
+  }
+  .be-rl-card[data-on] .be-rl-tick path { stroke-dashoffset: 0; transition: stroke-dashoffset 0.5s cubic-bezier(0.33, 1, 0.68, 1); }
+  .be-rl-card[data-done] .be-rl-tick path { stroke-dashoffset: 0; stroke: rgb(255 255 255 / 0.45); }
+
+  /* The wire between one step and the next, and the data going down it. */
+  .be-rl-wire { position: relative; display: block; width: 1px; height: 1.5rem; background: rgb(255 255 255 / 0.16); }
+  .be-rl-bead {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 3px;
+    height: 3px;
+    margin-left: -1.5px;
+    border-radius: 999px;
+    background: #ffffff;
+    animation: be-rl-run 0.7s cubic-bezier(0.55, 0, 0.45, 1) forwards;
+  }
+  @keyframes be-rl-run {
+    from { top: 0; opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    to { top: 100%; opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .be-rl-card, .be-rl-name, .be-rl-send, .be-rl-row-new, .be-rl-cal i[data-take], .be-rl-tick path { transition: none; }
+  }
+}
