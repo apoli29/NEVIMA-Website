@@ -122,3 +122,7 @@ glass was taken.
   now names the programs and the care — developed in Lightroom (colour,
   light, contrast, the frame) and retouched in detail in Photoshop. The
   programs are the studio's own answer, not a guess.
+- 2026-11-17 (user): the header has no drop of its own, for the same
+  reason the visual identity page has none. It was centred in the page
+  for one pass and put back to the shell's left edge the same day, so
+  every service header starts on the same line.
