@@ -86,3 +86,39 @@ glass was taken.
   read side by side with their captions under them) and Luma's pricing
   (three plain cards, the middle one inverted). Nothing of their colour
   or type was taken.
+
+## Third pass (2026-11-17, user): the header, and the country in relief
+
+- **The header is the side-by-side page's**, not a photograph: the same
+  dark ground inside the room, the same `pt-[calc(var(--section-gap)+2rem)]`
+  and `pb-[clamp(2.5rem,5vw,4rem)]`, the same mono label, the same
+  `display` size, the same two `SlideIn`s. It carries the label, the
+  name, the studio's sentence, the three facts and the free-proposal
+  drop. The photograph, its cut corner and its credit are gone, and
+  `ServiceHero` is no longer called here (the other three service pages
+  still use it).
+- **The map has volume.** No WebGL and no new dependency: the land is
+  twelve boxes cut by one path and stacked in Z, the thirty kilometres
+  eight shorter boxes standing on it (cut to the land first, then to a
+  circle of thirty), and over them the outline, which draws itself
+  before either rises. The stage is laid back 54 degrees and turned 9,
+  and follows the hand within seven degrees where there is a hand to
+  follow (`pointer: fine`); a soft ellipse under it is the shadow.
+  Everything is a transition on `transform`, so a phone draws it as
+  cheaply as a photograph, and `prefers-reduced-motion` leaves it as it
+  ends up.
+- The order of the entrance is the one asked for: the outline draws, the
+  land rises slice by slice, then the thirty kilometres, then the ring
+  goes out from the point and pulses on.
+- Pointing at a legend row lights its zone: the thirty kilometres go to
+  solid black with their ring, or the rest of the country darkens.
+- **The label left the drawing** (it used to cross the outline): it is
+  flat to the page under the map, "Vila Nova de Gaia · 30 km à volta",
+  with the black key beside it.
+- The Inspo archive had no extruded map to take from, so this is built
+  from the technique rather than from a reference, in the page's own
+  black, white and light grey.
+- **Editing** (user, 2026-11-17): the row in "what the session includes"
+  now names the programs and the care — developed in Lightroom (colour,
+  light, contrast, the frame) and retouched in detail in Photoshop. The
+  programs are the studio's own answer, not a guess.

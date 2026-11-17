@@ -54,8 +54,8 @@ function included(t: T) {
     {
       name: t("Editing and retouching", "Edição e retoque"),
       body: t(
-        "Every photograph delivered is worked on: colour, light, contrast and whatever needs correcting. The retouching is done so that the photograph still looks true.",
-        "Todas as fotografias entregues são tratadas: cor, luz, contraste e as correções necessárias. O retoque é feito para a fotografia continuar a parecer verdadeira.",
+        "Every photograph delivered is worked on one at a time: developed in Lightroom — colour, light, contrast, the frame — and then retouched in detail in Photoshop, where what could not be put right on the day is put right. The retouching is done so that the photograph still looks true.",
+        "Todas as fotografias entregues são tratadas uma a uma: a revelação em Lightroom — cor, luz, contraste, enquadramento — e depois o retoque ao pormenor em Photoshop, onde se corrige o que não se conseguiu corrigir no dia. O retoque é feito para a fotografia continuar a parecer verdadeira.",
       ),
     },
     {
@@ -128,6 +128,124 @@ const COAST: [number, number][] = [
 
 const GAIA: [number, number] = [41.12, -8.62];
 
+/* The drawing's own box, in kilometres: the country is about 253 km
+   across and 543 km down, and the box is that with a margin, so one
+   pixel of it is one kilometre and the thirty around Gaia are thirty. */
+const BOX_W = 275;
+const BOX_H = 600;
+/** How many slices the land is built from, and how deep each one is. */
+const SLABS = 12;
+const SLAB_Z = 1.5;
+/** The thirty kilometres stand on the land, and above it. */
+const NEARS = 8;
+const NEAR_Z = 1.7;
+
+const LAND = COAST.map(([lat, lon], i) => `${i ? "L" : "M"}${KM_X(lon).toFixed(1)} ${KM_Y(lat).toFixed(1)}`).join(" ") + " Z";
+const GX = KM_X(GAIA[1]);
+const GY = KM_Y(GAIA[0]);
+/** The outline's length, for the stroke that draws itself. */
+const RIM = 1900;
+
+/** Mainland Portugal with volume: the land is a stack of slices cut to
+    the same outline, the thirty kilometres a shorter stack standing on
+    it, and over them the outline itself, which draws before either
+    rises. It tilts a little under the hand. Nothing here is WebGL: the
+    slices are plain boxes cut by one path, so a phone draws it as
+    cheaply as a photograph. Held still, and shown as it ends up, for
+    anyone who has asked for less motion. */
+function Relief({ t, lit }: { t: T; lit: "near" | "far" | null }) {
+  const reduce = useReducedMotion() ?? false;
+  const [ref, inView] = useInView<HTMLDivElement>(0.25);
+  const stage = useRef<HTMLDivElement>(null);
+  const shown = inView || reduce;
+
+  // The tilt follows the hand, written straight on the stage: two
+  // numbers, no frame of its own, and not at all on a touch screen.
+  useEffect(() => {
+    const el = ref.current;
+    const st = stage.current;
+    if (!el || !st || reduce) return;
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+    const move = (event: PointerEvent) => {
+      const box = el.getBoundingClientRect();
+      if (!box.width || !box.height) return;
+      const px = (event.clientX - box.left) / box.width - 0.5;
+      const py = (event.clientY - box.top) / box.height - 0.5;
+      st.style.setProperty("--px", px.toFixed(3));
+      st.style.setProperty("--py", py.toFixed(3));
+    };
+    const away = () => {
+      st.style.setProperty("--px", "0");
+      st.style.setProperty("--py", "0");
+    };
+    el.addEventListener("pointermove", move);
+    el.addEventListener("pointerleave", away);
+    return () => {
+      el.removeEventListener("pointermove", move);
+      el.removeEventListener("pointerleave", away);
+    };
+  }, [ref, reduce]);
+
+  const slabs = Array.from({ length: SLABS }, (_, i) => i);
+  const nears = Array.from({ length: NEARS }, (_, i) => i);
+
+  return (
+    <div className="psm-plate">
+      <div
+        ref={ref}
+        className="psm"
+        data-in={shown || undefined}
+        data-lit={lit ?? undefined}
+        role="img"
+        aria-label={t(
+          "Mainland Portugal in relief, with the thirty kilometres around Vila Nova de Gaia raised and in black",
+          "Portugal continental em relevo, com os trinta quilómetros à volta de Vila Nova de Gaia elevados e a preto",
+        )}
+      >
+        <div ref={stage} className="psm-stage" style={{ width: BOX_W, height: BOX_H }}>
+          <span aria-hidden="true" className="psm-shade" />
+
+          {/* The land, slice by slice. */}
+          {slabs.map((i) => (
+            <span
+              key={`s${i}`}
+              aria-hidden="true"
+              className="psm-slab"
+              style={{ clipPath: `path("${LAND}")`, ["--i" as string]: i }}
+            />
+          ))}
+
+          {/* Its outline, which draws itself first. */}
+          <svg aria-hidden="true" className="psm-rim" viewBox={`0 0 ${BOX_W} ${BOX_H}`}>
+            <path d={LAND} pathLength={RIM} />
+          </svg>
+
+          {/* The thirty kilometres, standing on the land and cut to it. */}
+          {nears.map((i) => (
+            <span key={`n${i}`} aria-hidden="true" className="psm-near" style={{ clipPath: `path("${LAND}")`, ["--i" as string]: i }}>
+              <span style={{ clipPath: `circle(30px at ${GX.toFixed(1)}px ${GY.toFixed(1)}px)` }} />
+            </span>
+          ))}
+
+          {/* The ring that goes out from the point, and keeps going. */}
+          <span
+            aria-hidden="true"
+            className="psm-ring"
+            style={{ left: GX, top: GY }}
+          />
+        </div>
+      </div>
+
+      {/* The label, out of the drawing and flat to the page, so it can
+          never cross the outline (user, 2026-11-17). */}
+      <p className="psm-cap mono-label">
+        <span aria-hidden="true" className="psm-cap-key" />
+        {t("Vila Nova de Gaia · 30 km around it", "Vila Nova de Gaia · 30 km à volta")}
+      </p>
+    </div>
+  );
+}
+
 export function Coverage({ t }: { t: T }) {
   const reduce = useReducedMotion() ?? false;
   const [ref, inView] = useInView<HTMLDivElement>(0.25);
@@ -181,33 +299,7 @@ export function Coverage({ t }: { t: T }) {
           </ul>
         </div>
 
-        <div ref={ref} className="sht-map-plate" data-in={shown || undefined} data-lit={lit ?? undefined}>
-          <svg viewBox="-10 -10 420 600" className="sht-map-svg" role="img" aria-label={t("Mainland Portugal, with the thirty kilometres around Vila Nova de Gaia marked", "Portugal continental, com os trinta quilómetros à volta de Vila Nova de Gaia assinalados")}>
-            <defs>
-              <clipPath id="sht-land">
-                <path d={path} />
-              </clipPath>
-            </defs>
-            {/* The country: the far zone, the one that is charged. */}
-            <path d={path} className="sht-land" />
-            {/* The thirty kilometres, cut to the land so the ring never
-                swims out into the sea. */}
-            <g clipPath="url(#sht-land)">
-              <circle cx={gx} cy={gy} r={30} className="sht-near" />
-            </g>
-            <circle cx={gx} cy={gy} r={30} className="sht-ring" />
-            <circle cx={gx} cy={gy} r={2.4} className="sht-dot" />
-            {/* A hairline out of the ring to the name, so the label
-                never sits on the country. */}
-            <line x1={gx + 30} y1={gy} x2={gx + 62} y2={gy} className="sht-leader" />
-            <text x={gx + 68} y={gy - 3} className="sht-pin">
-              Vila Nova de Gaia
-            </text>
-            <text x={gx + 68} y={gy + 17} className="sht-pin sht-pin-small">
-              {t("30 km around it", "30 km à volta")}
-            </text>
-          </svg>
-        </div>
+        <Relief t={t} lit={lit} />
       </div>
     </section>
   );
