@@ -148,3 +148,19 @@ respondem ao ponteiro, e nenhuma célula vazia nas grelhas. O resto —
 GSAP, fontes à sorte, imagens do picsum, proibir os rótulos em mono —
 contraria o que está assente, e o projeto ganha.
 
+### Corrigido no mesmo dia (2026-11-18)
+
+Duas coisas, depois de ver a pagina no ar:
+
+- **So a Pilar.** O estudio nao quis negocios inventados para alem do
+  que o site ja tem. A Aurora e a Terral continuam desenhadas em
+  `vi-brands.tsx`, em `SPARE_BRANDS`, fora de uso: pô-las de volta e
+  uma linha na lista `BRANDS` e mais nada. Com um so negocio os cards
+  do hero nao rodam, e o loop da seccao 3 repete a Pilar.
+- **No hero, o texto primeiro e os cards depois.** Os cards passaram
+  para o fim do cabecalho, a seguir ao titulo, a frase e aos tres
+  factos. A troca entre negocios foi endurecida enquanto la estava: o
+  que sai vai-se embora antes de o que entra assentar, para nunca
+  haver dois nomes meio-desenhados um por cima do outro, que era o que
+  se via no print.
+

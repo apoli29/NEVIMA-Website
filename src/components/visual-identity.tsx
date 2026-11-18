@@ -48,17 +48,19 @@ import { useT } from "@/lib/use-lang";
 /** One turn of the three, in milliseconds. */
 const PAIR_MS = 3400;
 
-/** Two cards, side by side: on one the mark each business had, on the
-    other the mark it ends up with. They run off one clock, so the
-    before and the after on screen always belong to each other. On a
-    phone one card sits over the other. */
+/** Two cards, side by side: on one the mark the business had, on the
+    other the mark it ends up with. Only Pilar is shown (user,
+    2026-11-18), so nothing turns; were another business ever added to
+    BRANDS, the two cards would turn off one clock, the before and the
+    after on screen always belonging to each other. On a phone one card
+    sits over the other. */
 function Pair({ t }: { t: T }) {
   const reduce = useReducedMotion() ?? false;
   const [ref, inView] = useInView<HTMLDivElement>(0.3);
   const [at, setAt] = useState(0);
 
   useEffect(() => {
-    if (!inView || reduce) return;
+    if (!inView || reduce || BRANDS.length < 2) return;
     const tick = window.setInterval(() => setAt((n) => n + 1), PAIR_MS);
     return () => window.clearInterval(tick);
   }, [inView, reduce]);
@@ -110,15 +112,8 @@ function Head({ t }: { t: T }) {
             {t("Visual identity", "Identidade visual")}
           </h1>
         </SlideIn>
-        {/* Right after the title (user, 2026-11-18): the same three
-            invented businesses on both sides, the mark each had against
-            the mark each ends up with, turning together so a pair is
-            always a pair. The line under them reads as their caption. */}
         <SlideIn ready distance={0} delay={0.08}>
-          <Pair t={t} />
-        </SlideIn>
-        <SlideIn ready distance={0} delay={0.12}>
-          <p className="ps-head-say vi-head-say">
+          <p className="ps-head-say">
             <span className="font-light sm:block">{t("An outdated logo", "Um logótipo antiquado")}</span>{" "}
             <span className="font-medium sm:block">{t("undoes a first-rate website.", "desfaz um website de topo.")}</span>
           </p>
@@ -132,6 +127,12 @@ function Head({ t }: { t: T }) {
               </div>
             ))}
           </dl>
+        </SlideIn>
+        {/* The words first, and the cards after them (user,
+            2026-11-18): the mark the business had against the mark it
+            ends up with, side by side, one over the other on a phone. */}
+        <SlideIn ready distance={0} delay={0.22}>
+          <Pair t={t} />
         </SlideIn>
       </header>
     </section>
