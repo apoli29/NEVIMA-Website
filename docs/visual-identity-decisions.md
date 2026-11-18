@@ -164,3 +164,9 @@ Duas coisas, depois de ver a pagina no ar:
   haver dois nomes meio-desenhados um por cima do outro, que era o que
   se via no print.
 
+**O botao do card cinzento saiu** (user, 2026-11-18): o card fica com o
+texto e com o loop da marca. A barra leva o formulario em todo o lado,
+a seccao dos precos tem o seu proprio botao e a pagina acaba em "Let's
+work together" - o mesmo raciocinio que tirou o botao do retangulo
+cinzento da pagina do back end.
+
