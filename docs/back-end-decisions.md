@@ -180,3 +180,73 @@ Referência pelo INSPO MCP: a Builder.io (título à esquerda, interface do
 produto à direita, sobre preto) — só a composição. A nossa é muito mais
 contida: sem capturas de ecrã, sem cor de destaque, só fios e tipo.
 
+## A página refeita (2026-11-18, quarto pedido)
+
+O utilizador reviu a página print a print. O que ficou:
+
+**Hero.** Passou do preto para o cinzento quente `#f4f4f2` — o mesmo
+das folhas dentro do card da Personalização do Side by Side (escolhido
+pelo utilizador de entre três cinzentos, 2026-11-18, porque não havia
+um cinzento já usado nos headers dos serviços: os da Sessão Fotográfica
+e da Identidade Visual são pretos). O título ficou em cima de tudo, com
+o rótulo por baixo dele. O pequeno elemento de ontem (`RequestLoop`)
+deu lugar a `ProcessCard`: um card retangular, do formato e do feitio
+do card da Personalização, com os quatro passos listados de um lado
+(ligados por um fio com um ponto a descer) e, do outro, o passo a
+acontecer numa folha branca — o formulário a ser enviado, o pedido a
+cair na tabela, o calendário a ser ocupado, a confirmação a sair.
+Recomeça sozinho. Com movimento reduzido fica no último passo.
+
+**A abertura** ("A parte do website que trata da papelada") saiu.
+
+**Porque deve um negócio pequeno investir em soluções de back end.**
+Fundo branco. "O trabalho de secretaria não paga as contas", e por
+baixo a frase onde a palavra **horas** se acende: um bloco preto
+desenha-se por trás dela da esquerda para a direita e a palavra passa a
+branco. As barras das horas e o anel da semana passaram para dentro de
+um card cinzento, com o contador das horas devolvidas no pé. Saíram a
+lista "Um dia à mão" e o gráfico das duas linhas de crescimento: diziam
+o mesmo que o card.
+
+**As percentagens do anel** somavam 101% por arredondamento. Agora
+guardam a meia casa onde existe: 62,5% + 31% + 6,5% = 100%.
+
+**As nossas três soluções de back end.** Fundo branco, três cards, cada
+um com o fio da página da Sessão Fotográfica — a linha-guia do mapa,
+com a mesma espessura e o mesmo ponto na ponta — a descer do nome e a
+atravessar até ao desenho da solução. Desenha-se quando os três são
+alcançados. No fim, um retângulo cinzento, ao feitio do bloco preto do
+portfolio, para o que as três não cobrem, com o botão do formulário.
+
+**Um mês de um negócio pequeno** (os três cartões de números) saiu.
+
+**O que a empresa ganha** ficou compacto: os nove títulos sempre à
+vista e a descrição só quando é pedida. É feito com `<details>`, por
+isso funciona com o teclado e sem script nenhum; abrir um fecha o
+anterior (`name="be-nine"`).
+
+**Como é feito** saiu da página e está inteiro em
+`src/components/back-end-built.tsx`, com o sítio onde pode ser
+reaproveitado escrito no topo do ficheiro. A primeira escolha é o Side
+by Side, por baixo do "nosso" website: é o único desenho do site que
+mostra o que está por trás de um website nosso.
+
+**Como funcionam os preços** é nova, antes do CTA final: o valor de
+implementação (depende das soluções e de quanto têm de ser
+interligadas), o serviço mensal simbólico, e a reunião inicial
+gratuita. Os dois valores leem `[a preencher]`.
+
+### Skills e referências
+
+A skill `gpt-taste` foi invocada a pedido do utilizador. Dela ficou o
+que não choca com o sistema da casa: títulos em contentores largos (o
+H1 nunca passa de duas ou três linhas), espaçamento generoso entre
+secções, cards que respondem ao ponteiro e grelhas sem células vazias.
+O resto dela — GSAP, fontes à sorte, imagens do picsum, a proibição dos
+rótulos em mono — contraria o que está assente neste ficheiro e no
+CLAUDE.md, e o projeto ganha. A `dataviz` e a `frontend-design`
+continuaram a valer para os desenhos. O INSPO MCP foi consultado para
+listas compactas e interativas; não devolveu nada melhor do que a
+linguagem de linhas que o site já tem, por isso o acordeão é feito
+dela.
+
