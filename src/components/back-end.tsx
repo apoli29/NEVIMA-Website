@@ -51,10 +51,10 @@ function Head({ t }: { t: T }) {
     { v: t("Emails", "E-mails"), l: t("Automatic or pre-written", "Automáticos ou pré-preenchidos") },
   ];
   return (
-    <section data-tone="light" className="relative isolate be-grey">
-      {/* The grey the side-by-side card's sheets are set on (user,
-          2026-11-18): it holds the black type as firmly as the white
-          sections below do, and tells the header from them. */}
+    <section data-tone="dark" className="relative isolate text-paper">
+      {/* Black, as it was and as the other service headers are (user,
+          2026-11-18: the grey was only ever meant for the drawings).
+          The title still sits at the top of it. */}
       <header className="shell ps-head be-head" data-tone-body>
         <div className="be-head-top">
           <div className="be-head-words">
@@ -62,7 +62,7 @@ function Head({ t }: { t: T }) {
               <h1 className="display be-head-title">
                 {t("Back-end Features", "Funcionalidades de Back End")}
               </h1>
-              <p className="mono-label text-ash-2 be-head-kicker">{t("Additional service", "Serviço adicional")}</p>
+              <p className="mono-label text-paper/55 be-head-kicker">{t("Additional service", "Serviço adicional")}</p>
             </SlideIn>
             <SlideIn ready distance={0} delay={0.08}>
               <p className="ps-head-say be-head-say">
@@ -112,10 +112,10 @@ function Why({ t }: { t: T }) {
   }, [inView]);
 
   return (
-    <section aria-labelledby="be-why-title" data-tone="light" className="relative">
+    <section aria-labelledby="be-why-title" data-tone="dark" className="relative text-paper">
       <div className="shell ps-sec" data-tone-body>
         <SlideIn ready>
-          <p className="mono-label text-ash-2">
+          <p className="mono-label text-paper/55">
             {t(
               "Why should small businesses invest in back end solutions?",
               "Porque deve um negócio pequeno investir em soluções de back end?",
@@ -143,10 +143,10 @@ function Why({ t }: { t: T }) {
         <SlideIn ready distance={0} delay={0.14}>
           <div className="be-card be-card-week">
             <div className="be-card-two">
-              <HoursBars t={t} />
-              <WeekDonut t={t} />
+              <HoursBars t={t} dark />
+              <WeekDonut t={t} dark />
             </div>
-            <SavedHours t={t} />
+            <SavedHours t={t} dark />
           </div>
         </SlideIn>
       </div>
@@ -358,10 +358,10 @@ function Prices({ t }: { t: T }) {
   ];
 
   return (
-    <section aria-labelledby="be-price-title" data-tone="light" className="relative be-grey">
+    <section aria-labelledby="be-price-title" data-tone="dark" className="relative text-paper">
       <div className="shell ps-sec" data-tone-body>
         <SlideIn ready>
-          <p className="mono-label text-ash-2">{t("How the price works", "Como funcionam os preços")}</p>
+          <p className="mono-label text-paper/55">{t("How the price works", "Como funcionam os preços")}</p>
           <h2 id="be-price-title" className="display be-why-title">
             <span className="font-light sm:block">{t("One build, then a small", "Uma implementação, depois um")}</span>{" "}
             <span className="font-medium sm:block">{t("monthly service.", "serviço mensal pequeno.")}</span>

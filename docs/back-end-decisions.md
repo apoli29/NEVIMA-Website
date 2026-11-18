@@ -255,3 +255,22 @@ mantém o texto e fica só com ele. A barra leva o formulário em todo o
 lado e a página acaba em "Let's work together", pelo mesmo
 raciocínio que tirou os botões dos cabeçalhos dos serviços.
 
+### O cinzento era só para os gráficos (2026-11-18)
+
+Corrigido no mesmo dia: o cinzento que o utilizador tinha sugerido era
+para o **fundo dos gráficos**, não para a página. As cores da página
+voltaram ao que eram — cabeçalho preto, "porque deve investir" preto,
+as três soluções e os nove ganhos em branco, e os preços pretos, onde
+dantes estava o "como é feito" — e o cinzento ficou onde foi pedido:
+
+- o card onde o pedido anda (`.be-pc`) e o card que segura os desenhos
+  da semana (`.be-card`) usam o mesmo fundo escuro do card da
+  Personalização do Side by Side, que foi o exemplo que o utilizador
+  deu em print;
+- dentro deles, os desenhos passam para o jogo escuro dos tokens
+  `.bef` (`data-dark`): as barras, as duas sombras do anel, as chaves
+  da legenda e o contador viram passos de branco.
+
+O título continua no topo do cabeçalho e o retângulo cinzento das três
+soluções fica como estava, porque esse foi pedido cinzento de propósito.
+
