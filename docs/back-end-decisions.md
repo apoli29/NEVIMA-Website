@@ -250,3 +250,8 @@ listas compactas e interativas; não devolveu nada melhor do que a
 linguagem de linhas que o site já tem, por isso o acordeão é feito
 dela.
 
+**O botão do retângulo cinzento saiu** (user, 2026-11-18): o bloco
+mantém o texto e fica só com ele. A barra leva o formulário em todo o
+lado e a página acaba em "Let's work together", pelo mesmo
+raciocínio que tirou os botões dos cabeçalhos dos serviços.
+

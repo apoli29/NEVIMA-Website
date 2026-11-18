@@ -267,9 +267,6 @@ function Solutions({ t }: { t: T }) {
                 {t("Tell us what you need in our form and we’ll find a solution for you.", "Basta dizer o que falta no formulário e encontramos uma solução.")}
               </span>
             </h3>
-            <div className="be-slab-foot">
-              <ProposalAsk label={t("Get your free proposal", "Pedir proposta gratuita")} />
-            </div>
           </div>
         </SlideIn>
       </div>
