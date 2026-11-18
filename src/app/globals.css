@@ -7045,28 +7045,6 @@
   .vi-case-word[data-gone] { translate: 0 -0.6rem; }
   .vi-case-ghost { display: block; visibility: hidden; }
 
-  .vi-doubt {
-    margin-top: clamp(2.5rem, 5vw, 3.5rem);
-    padding-top: clamp(1.75rem, 3vw, 2.25rem);
-    border-top: 1px solid var(--color-hair);
-    display: grid;
-    gap: 1.25rem;
-    align-items: start;
-  }
-  @media (min-width: 900px) {
-    .vi-doubt { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(2.5rem, 5vw, 4rem); }
-    .vi-doubt-ask { grid-column: 1 / -1; }
-  }
-  .vi-doubt-say {
-    font-family: var(--font-title);
-    font-size: clamp(1.375rem, 2.4vw, 2rem);
-    line-height: 1.16;
-    letter-spacing: -0.02em;
-    text-wrap: balance;
-  }
-  .vi-doubt-more { max-width: 46ch; font-size: clamp(1rem, 1.3vw, 1.0625rem); line-height: 1.6; color: var(--color-ash); text-wrap: pretty; }
-  .vi-doubt-ask { display: flex; margin-top: 0.5rem; }
-
   @media (prefers-reduced-motion: reduce) {
     .vi-g-rule, .vi-g-dot, .vi-case-word { transition: none; }
   }
@@ -7930,4 +7908,212 @@
   .bef-saved[data-dark] .bef-saved-big b { color: #ffffff; }
   .bef-saved[data-dark] .bef-saved-big span { color: rgb(255 255 255 / 0.5); }
   .bef-saved[data-dark] .bef-mark { border-color: rgb(255 255 255 / 0.14); color: rgb(255 255 255 / 0.5); }
+}
+
+/* ---- visual identity, the parts added on 2026-11-18 ------------------
+   Three invented businesses shown before and after in the header, the
+   answer uncovered by a black bar the way How we work fills its rail,
+   the two lists of cases side by side, the mark taken apart and built
+   again in the grey card, and how the price works. Nothing new in the
+   type or the spacing: the sections keep .ps-sec, the titles the
+   display face, the labels Geist Mono.                               */
+@layer components {
+  /* Every mark is drawn, never an image file. */
+  .vi-mark-svg { display: block; width: 100%; height: auto; }
+  .vi-sh {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      opacity 0.55s ease,
+      translate 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      scale 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      rotate 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* ---- the two cards in the header -------------------------------- */
+  .vi-pair {
+    display: grid;
+    gap: 1rem;
+    margin-top: clamp(2rem, 4vw, 3rem);
+  }
+  @media (min-width: 640px) { .vi-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; } }
+  .vi-pair-card {
+    display: grid;
+    gap: 1.1rem;
+    margin: 0;
+    padding: clamp(1.1rem, 2.2vw, 1.75rem);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+  }
+  .vi-pair-card[data-side="after"] { box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3); }
+  .vi-pair-head { color: rgb(255 255 255 / 0.45); text-transform: none; letter-spacing: 0.06em; }
+  .vi-pair-card[data-side="after"] .vi-pair-head { color: rgb(255 255 255 / 0.75); }
+
+  .vi-pair-stage { position: relative; height: clamp(8.5rem, 15vw, 11rem); }
+  .vi-pair-one {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 0.6rem;
+    opacity: 0;
+    translate: 0 0.55rem;
+    transition: opacity 0.6s ease, translate 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .vi-pair-one[data-on] { opacity: 1; translate: 0 0; }
+  .vi-pair-mark { display: block; width: clamp(3.25rem, 6.5vw, 4.5rem); color: rgb(255 255 255 / 0.5); }
+  .vi-pair-card[data-side="after"] .vi-pair-mark { color: #ffffff; }
+  .vi-pair-name {
+    font-family: var(--font-title);
+    font-size: clamp(1.0625rem, 1.8vw, 1.375rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: rgb(255 255 255 / 0.6);
+  }
+  .vi-pair-card[data-side="after"] .vi-pair-name { color: #ffffff; }
+  .vi-pair-trade { color: rgb(255 255 255 / 0.4); text-transform: none; letter-spacing: 0.06em; }
+  .vi-head-say { margin-top: clamp(2rem, 4vw, 2.75rem); }
+
+  /* ---- the answer, uncovered ------------------------------------- */
+  /* Hidden until it is reached, then a black bar runs across it and
+     leaves the word behind - the marker of How we work, which fills its
+     rail from the left as the row goes by. */
+  .vi-no { position: relative; display: inline-block; }
+  .vi-no-word {
+    display: block;
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 0.85s cubic-bezier(0.65, 0, 0.35, 1) 0.15s;
+  }
+  .vi-no[data-said] .vi-no-word { clip-path: inset(0 0 0 0); }
+  .vi-no-bar {
+    position: absolute;
+    top: 0.04em;
+    bottom: 0.14em;
+    left: 0;
+    width: 0.2em;
+    background: var(--color-ink);
+    opacity: 0;
+  }
+  .vi-no[data-said] .vi-no-bar { animation: vi-no-run 0.85s cubic-bezier(0.65, 0, 0.35, 1) 0.15s forwards; }
+  @keyframes vi-no-run {
+    0% { left: 0; opacity: 1; }
+    90% { opacity: 1; }
+    100% { left: 100%; opacity: 0; }
+  }
+  .vi-no[data-still] .vi-no-word { clip-path: inset(0 0 0 0); transition: none; }
+  .vi-no[data-still] .vi-no-bar { animation: none; }
+
+  /* ---- the two lists of cases ------------------------------------- */
+  .vi-cases { display: grid; gap: clamp(2rem, 4vw, 3rem); }
+  @media (min-width: 900px) {
+    .vi-cases { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(2.5rem, 5vw, 4rem); align-items: start; }
+  }
+  .vi-cases .vi-case { margin-top: clamp(2.5rem, 5vw, 3.5rem); }
+  @media (min-width: 900px) { .vi-cases .vi-case + .vi-case { margin-top: clamp(2.5rem, 5vw, 3.5rem); } }
+  /* What we would turn down is set a step back, in grey. */
+  .vi-case[data-muted] .vi-case-lead { color: var(--color-ash-2); }
+  .vi-case[data-muted] .vi-case-word,
+  .vi-case[data-muted] .vi-case-ghost { color: var(--color-ash-2); font-weight: 300; }
+
+  /* ---- not sure? --------------------------------------------------- */
+  .vi-sure-title {
+    max-width: 24ch;
+    margin-top: 1.5rem;
+    font-size: clamp(1.875rem, 4vw, 3.25rem);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  .vi-sure {
+    display: grid;
+    gap: clamp(2rem, 4vw, 3rem);
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+    padding: clamp(1.5rem, 4vw, 3rem);
+    background: #f4f4f2;
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .vi-sure { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); column-gap: clamp(2.5rem, 5vw, 4rem); }
+  }
+  .vi-sure-say {
+    max-width: 34ch;
+    font-family: var(--font-title);
+    font-size: clamp(1.25rem, 2.4vw, 1.875rem);
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+    text-wrap: pretty;
+  }
+  .vi-sure-foot { display: flex; margin-top: clamp(1.75rem, 3.5vw, 2.5rem); }
+
+  /* The mark taken apart and built again, one business at a time. */
+  .vi-morph { display: grid; justify-items: center; gap: 1.25rem; }
+  .vi-morph-stage { position: relative; display: block; width: min(15rem, 76%); aspect-ratio: 1 / 1; }
+  .vi-morph-grid { position: absolute; inset: 0; display: block; }
+  /* The guides are drawn for the dark room; on this grey they are ink. */
+  .vi-morph .vi-g-rule { stroke: rgb(0 0 0 / 0.32); }
+  .vi-morph .vi-g-faint { stroke: rgb(0 0 0 / 0.14); }
+  .vi-morph .vi-g-dot { fill: rgb(0 0 0 / 0.38); }
+  .vi-morph-face {
+    position: absolute;
+    inset: 22%;
+    display: block;
+    color: var(--color-ink);
+    transition: opacity 0.5s ease;
+  }
+
+  /* 0 it stands - 1 it comes apart while the guides draw - 2 the new
+     one is built on them - 3 it stands, and the guides go. */
+  .vi-morph-new .vi-sh { opacity: 0; scale: 0.35; }
+  .vi-morph[data-step="2"] .vi-morph-new .vi-sh,
+  .vi-morph[data-step="3"] .vi-morph-new .vi-sh {
+    opacity: 1;
+    scale: 1;
+    transition-delay: calc(var(--n) * 90ms);
+  }
+  .vi-morph[data-step="1"] .vi-morph-old .vi-sh,
+  .vi-morph[data-step="2"] .vi-morph-old .vi-sh,
+  .vi-morph[data-step="3"] .vi-morph-old .vi-sh {
+    opacity: 0;
+    scale: 0.55;
+    translate: calc((var(--n) - 1.5) * 26%) calc((var(--n) - 1.5) * -18%);
+    rotate: calc((var(--n) - 1.5) * 9deg);
+    transition-delay: calc(var(--n) * 70ms);
+  }
+
+  .vi-morph-say { display: grid; justify-items: center; gap: 0.3rem; text-align: center; }
+  .vi-morph-name {
+    font-family: var(--font-title);
+    font-size: clamp(1.125rem, 2vw, 1.5rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .vi-morph-trade { color: var(--color-ash-2); text-transform: none; letter-spacing: 0.06em; }
+
+  /* ---- how the price works ---------------------------------------- */
+  .vi-price { margin-top: clamp(2.5rem, 5vw, 3.5rem); border-top: 1px solid rgb(255 255 255 / 0.28); }
+  .vi-price-row {
+    display: grid;
+    gap: 0.5rem 2.5rem;
+    padding-block: clamp(1.25rem, 2.4vw, 1.75rem);
+    border-bottom: 1px solid rgb(255 255 255 / 0.14);
+    align-items: baseline;
+  }
+  @media (min-width: 760px) { .vi-price-row { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.6fr); } }
+  .vi-price-row dt { display: flex; align-items: baseline; gap: 0.75rem; }
+  .vi-price-n { color: rgb(255 255 255 / 0.5); }
+  .vi-price-head { font-size: 1.0625rem; font-weight: 500; line-height: 1.3; text-wrap: pretty; }
+  .vi-price-body { margin: 0; font-size: 0.9375rem; line-height: 1.6; color: rgb(255 255 255 / 0.78); text-wrap: pretty; }
+  .vi-price-foot {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: clamp(2rem, 4vw, 2.75rem);
+    align-items: center;
+  }
+  @media (min-width: 820px) { .vi-price-foot { grid-template-columns: minmax(0, 1fr) auto; column-gap: 2.5rem; } }
+  .vi-price-foot .mono-label { color: rgb(255 255 255 / 0.5); max-width: 52ch; text-transform: none; letter-spacing: 0.04em; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vi-sh, .vi-pair-one, .vi-no-word, .vi-morph-face { transition: none; }
+    .vi-no[data-said] .vi-no-bar { animation: none; }
+  }
 }

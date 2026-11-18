@@ -68,3 +68,83 @@ white and light grey, Satoshi and Geist Mono.
 - The real work: four images.
 - A price, if the studio ever wants one on the page. Today the
   free-proposal drop stands in its place, as on every other service.
+
+## A página alargada (2026-11-18)
+
+### Três negócios inventados
+
+O utilizador pediu para reaproveitar a **Pilar** (a mediadora de seguros
+inventada em que o Side by Side assenta) e inventar mais duas. Ficaram:
+
+| Nome | Setor | Antes | Depois |
+| --- | --- | --- | --- |
+| Pilar | Mediação de seguros | escudo com uma letra dentro, estrela por cima | o pilar e a abertura (o mesmo de `sbs-pilar.tsx`) |
+| Aurora | Clínica de estética | floreado à volta de uma folha, dentro de uma oval fina | o primeiro sol sobre uma linha |
+| Terral | Mediação imobiliária | casa desenhada com chaminé, dentro de um anel | a terra, o céu e o T que assenta neles |
+
+Estão todas em `src/components/vi-brands.tsx`, desenhadas em SVG no
+preto e branco da casa, dentro de um quadrado de cem unidades. Não há
+um único ficheiro de imagem nem uma linha de tipo que não seja nossa.
+
+O que faz um "antes" parecer um antes nunca é uma piada à custa dele:
+são as quatro coisas que realmente datam uma marca — um desenho do
+ofício em vez de um sinal para ele, um contorno dentro de outro, um
+floreado, e uma moldura à volta de tudo. O "depois" responde a cada um
+com uma figura geométrica só, que o mesmo ofício aguenta a qualquer
+tamanho.
+
+Cada forma leva `.vi-sh` e um índice em `--n`: é isso que permite ao
+card da secção 3 desfazer uma marca e construir a seguinte, forma a
+forma.
+
+### Secção 1 — o hero
+
+H1 "Visual identity". Logo a seguir, dois cards lado a lado: num a
+marca que cada negócio tinha, no outro a marca que passa a ter. Correm
+do mesmo relógio, por isso o antes e o depois no ecrã pertencem sempre
+um ao outro. No telemóvel um fica por cima do outro. O card do "antes"
+é desenhado um passo mais apagado, para o ganho se ler sozinho. A frase
+"An outdated logo undoes a first-rate website" passou para debaixo dos
+cards, onde funciona como legenda do que se acabou de ver.
+
+### Secção 2 — para quem é
+
+A pergunta ficou igual. A resposta **"No."** começa escondida e é
+descoberta uma vez, quando é alcançada, por uma barra preta que corre
+por cima dela da esquerda para a direita — o marcador da secção "Como
+trabalhamos", que enche o seu carril da esquerda à medida que a fila
+passa. Com movimento reduzido já lá está.
+
+O componente que o utilizador apontou passou a dois, lado a lado e
+sincronizados: à esquerda os casos em que faz sentido, com o estilo que
+já tinha; à direita, em cinzento, os casos em que não faz. O cinzento é
+deliberado — o que está à direita é o que recusaríamos.
+
+### Secção 3 — com dúvidas?
+
+Card cinzento com o texto e o botão do formulário, e ao lado a animação
+em loop: a marca antiga está de pé, desfaz-se (cada forma afasta-se,
+roda e apaga-se, uma a seguir à outra) enquanto as guias se desenham, a
+marca nova é construída sobre elas forma a forma, e fica de pé antes de
+passar ao negócio seguinte. Quatro passos de 1,25 s cada.
+
+Referências pelo INSPO MCP: a **Geex** (formas esculpidas e resolvidas
+sobre um fundo vazio) e a **Portal One** (a geometria de construção
+deixada à vista). Só a composição; a cor e o tipo são os da casa.
+
+### Secção nova — como funcionam os preços
+
+Antes do CTA final, na mesma apresentação da secção de preços das
+Funcionalidades de Back End: o que inclui o serviço, quanto custa e se
+é à parte ou em pacote, quantas propostas e revisões, e a reunião
+inicial gratuita. Os valores leem `[a preencher]`.
+
+### Skills
+
+A `gpt-taste` foi invocada a pedido do utilizador. Dela ficou o que não
+choca com o sistema da casa: o H1 em contentor largo e nunca acima de
+duas ou três linhas, espaçamento largo entre secções, cards que
+respondem ao ponteiro, e nenhuma célula vazia nas grelhas. O resto —
+GSAP, fontes à sorte, imagens do picsum, proibir os rótulos em mono —
+contraria o que está assente, e o projeto ganha.
+
