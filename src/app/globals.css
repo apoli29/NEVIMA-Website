@@ -7535,11 +7535,7 @@
    in the type or the spacing: the sections keep .ps-sec, the titles
    keep the display face, the labels keep Geist Mono.                  */
 @layer components {
-  /* The grey, named once. */
-  .be-grey { background: #f4f4f2; }
-
   /* ---- the header ------------------------------------------------ */
-  .be-head { color: var(--color-ink); }
   .be-head-title {
     max-width: 16ch;
     font-size: clamp(2.5rem, 5.6vw, 4.5rem);
@@ -7548,10 +7544,6 @@
     letter-spacing: -0.03em;
   }
   .be-head-kicker { margin-top: 1.1rem; }
-  .be-head-say { color: var(--color-ink); }
-  /* The facts were set for white on black; here they are black on grey. */
-  .be-head-facts { border-top-color: var(--color-hair-strong); }
-  .be-head-facts dd { color: var(--color-ash-2); }
   @media (min-width: 1024px) {
     .be-head-top {
       display: grid;
@@ -7565,8 +7557,8 @@
   .be-pc {
     display: grid;
     margin: clamp(2.25rem, 4vw, 3rem) 0 0;
-    background: linear-gradient(155deg, #edede9 0%, #f8f8f6 46%, #e4e4df 100%);
-    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.09);
+    background: linear-gradient(155deg, #3a3a3d 0%, #18181a 48%, #080809 100%);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
   }
   @media (min-width: 1024px) { .be-pc { margin-top: 0; } }
   @media (min-width: 560px) {
@@ -7577,10 +7569,10 @@
     flex-direction: column;
     gap: 1.1rem;
     padding: clamp(1.1rem, 2vw, 1.5rem);
-    box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.08);
+    box-shadow: inset 0 -1px 0 rgb(255 255 255 / 0.1);
   }
-  @media (min-width: 560px) { .be-pc-side { box-shadow: inset -1px 0 0 rgb(0 0 0 / 0.08); } }
-  .be-pc-kicker { color: var(--color-ash-2); text-transform: none; letter-spacing: 0.06em; }
+  @media (min-width: 560px) { .be-pc-side { box-shadow: inset -1px 0 0 rgb(255 255 255 / 0.1); } }
+  .be-pc-kicker { color: rgb(255 255 255 / 0.45); text-transform: none; letter-spacing: 0.06em; }
   .be-pc-steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
   .be-pc-step {
     position: relative;
@@ -7591,18 +7583,18 @@
     padding-bottom: 1.15rem;
   }
   .be-pc-step:last-child { padding-bottom: 0; }
-  .be-pc-n { color: rgb(0 0 0 / 0.3); transition: color 0.4s ease; }
+  .be-pc-n { color: rgb(255 255 255 / 0.3); transition: color 0.4s ease; }
   .be-pc-name {
     font-size: 0.875rem;
     line-height: 1.3;
-    color: rgb(0 0 0 / 0.42);
+    color: rgb(255 255 255 / 0.42);
     text-wrap: pretty;
     transition: color 0.4s ease;
   }
   .be-pc-step[data-done] .be-pc-n,
-  .be-pc-step[data-done] .be-pc-name { color: rgb(0 0 0 / 0.55); }
-  .be-pc-step[data-on] .be-pc-n { color: var(--color-ink); }
-  .be-pc-step[data-on] .be-pc-name { color: var(--color-ink); font-weight: 500; }
+  .be-pc-step[data-done] .be-pc-name { color: rgb(255 255 255 / 0.55); }
+  .be-pc-step[data-on] .be-pc-n { color: #ffffff; }
+  .be-pc-step[data-on] .be-pc-name { color: #ffffff; font-weight: 500; }
   /* The wire down the list, with the data going along it. */
   .be-pc-wire {
     position: absolute;
@@ -7610,7 +7602,7 @@
     top: 1.35em;
     bottom: 0.2rem;
     width: 1px;
-    background: rgb(0 0 0 / 0.14);
+    background: rgb(255 255 255 / 0.16);
   }
   .be-pc-bead {
     position: absolute;
@@ -7620,7 +7612,7 @@
     height: 3px;
     margin-left: -1.5px;
     border-radius: 999px;
-    background: var(--color-ink);
+    background: #ffffff;
     animation: be-pc-run 0.7s cubic-bezier(0.55, 0, 0.45, 1) forwards;
   }
   @keyframes be-pc-run {
@@ -7736,40 +7728,45 @@
     font-size: clamp(1.125rem, 2vw, 1.625rem);
     line-height: 1.3;
     letter-spacing: -0.02em;
-    color: var(--color-ash);
+    color: rgb(255 255 255 / 0.72);
     text-wrap: pretty;
   }
   /* The word the sentence turns on: a black block draws itself behind
      it, left to right, and the word goes white inside it. */
-  .be-lit { position: relative; display: inline-block; color: var(--color-ink); }
+  .be-lit { position: relative; display: inline-block; color: #ffffff; }
   .be-lit-block {
     position: absolute;
     left: -0.18em;
     right: -0.18em;
     top: -0.06em;
     bottom: -0.1em;
-    background: var(--color-ink);
+    background: #ffffff;
     transform: scaleX(0);
     transform-origin: left center;
     transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.2s;
   }
   .be-lit[data-on] .be-lit-block { transform: scaleX(1); }
   .be-lit-word { position: relative; transition: color 0.3s ease 0.55s; }
-  .be-lit[data-on] .be-lit-word { color: var(--color-paper); }
+  .be-lit[data-on] .be-lit-word { color: var(--color-ink); }
 
   /* ---- a card to hold a drawing ----------------------------------- */
+  /* The one grey the user asked for, and the only one: the ground the
+     drawings are read on (user, 2026-11-18), the card of the
+     side-by-side page. The page's own tones are untouched. */
   .be-card {
     margin-top: clamp(2.5rem, 5vw, 3.5rem);
-    padding: clamp(1.25rem, 3vw, 2.5rem);
-    background: #f4f4f2;
+    padding: clamp(1.5rem, 3vw, 2.75rem);
+    background: linear-gradient(155deg, #3a3a3d 0%, #18181a 48%, #080809 100%);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
   }
-  /* The drawings inside it sit on its grey, so their rings match. */
-  .be-card .bef { --bef-ground: #f4f4f2; margin-top: 0; }
+  /* The drawings sit on the card's own dark, so their rings match. */
+  .be-card .bef { --bef-ground: #202022; margin-top: 0; }
+  .be-card .bef-saved { --bef-ground: #202022; }
   .be-card-two { display: grid; gap: clamp(2rem, 4vw, 3rem); align-items: start; }
   @media (min-width: 900px) {
     .be-card-two { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); column-gap: clamp(2.5rem, 5vw, 4rem); }
   }
-  .be-card .bef-saved { margin-top: clamp(2rem, 4vw, 3rem); padding-top: clamp(1.5rem, 3vw, 2rem); border-top: 1px solid var(--color-hair); }
+  .be-card .bef-saved { margin-top: clamp(2rem, 4vw, 3rem); padding-top: clamp(1.5rem, 3vw, 2rem); border-top: 1px solid rgb(255 255 255 / 0.14); }
   .be-card .bef-saved .bef-mark { border: 0; padding-top: 0; margin-top: 0.75rem; }
 
   /* ---- the three solutions ---------------------------------------- */
@@ -7838,7 +7835,6 @@
     letter-spacing: -0.03em;
     text-wrap: balance;
   }
-  .be-slab-foot { display: flex; margin-top: clamp(1.75rem, 3.5vw, 2.5rem); }
 
   /* ---- the nine, compact ------------------------------------------ */
   .be-nine { margin-top: clamp(2rem, 4vw, 2.75rem); border-top: 1px solid var(--color-hair); }
@@ -7885,19 +7881,19 @@
   }
 
   /* ---- how the price works ---------------------------------------- */
-  .be-price { margin-top: clamp(2.5rem, 5vw, 3.5rem); border-top: 1px solid var(--color-hair-strong); }
+  .be-price { margin-top: clamp(2.5rem, 5vw, 3.5rem); border-top: 1px solid rgb(255 255 255 / 0.28); }
   .be-price-row {
     display: grid;
     gap: 0.5rem 2.5rem;
     padding-block: clamp(1.25rem, 2.4vw, 1.75rem);
-    border-bottom: 1px solid var(--color-hair);
+    border-bottom: 1px solid rgb(255 255 255 / 0.14);
     align-items: baseline;
   }
   @media (min-width: 760px) { .be-price-row { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.6fr); } }
   .be-price-row dt { display: flex; align-items: baseline; gap: 0.75rem; }
-  .be-price-n { color: var(--color-ash-2); }
+  .be-price-n { color: rgb(255 255 255 / 0.5); }
   .be-price-head { font-size: 1.0625rem; font-weight: 500; line-height: 1.3; text-wrap: pretty; }
-  .be-price-body { margin: 0; font-size: 0.9375rem; line-height: 1.6; color: var(--color-ash); text-wrap: pretty; }
+  .be-price-body { margin: 0; font-size: 0.9375rem; line-height: 1.6; color: rgb(255 255 255 / 0.78); text-wrap: pretty; }
   .be-price-foot {
     display: grid;
     gap: 1.25rem;
@@ -7905,7 +7901,7 @@
     align-items: center;
   }
   @media (min-width: 820px) { .be-price-foot { grid-template-columns: minmax(0, 1fr) auto; column-gap: 2.5rem; } }
-  .be-price-foot .mono-label { color: var(--color-ash-2); max-width: 52ch; text-transform: none; letter-spacing: 0.04em; }
+  .be-price-foot .mono-label { color: rgb(255 255 255 / 0.5); max-width: 52ch; text-transform: none; letter-spacing: 0.04em; }
 
   @media (prefers-reduced-motion: reduce) {
     .be-pc-panel, .be-pc-n, .be-pc-name, .be-lit-block, .be-lit-word,
@@ -7917,4 +7913,21 @@
     .be-pc-panel[data-on] .be-pc-cal i[data-take],
     .be-pc-panel[data-on] .be-pc-tick path { animation: none; }
   }
+}
+
+@layer components {
+  /* The drawings read on a dark ground too (user, 2026-11-18): the two
+     steps of the ring and the counter's own type flip with it. The rest
+     already turns on the .bef tokens. */
+  .bef[data-dark] .bef-arc:nth-of-type(2) { stroke: rgb(255 255 255 / 0.5); }
+  .bef[data-dark] .bef-arc:nth-of-type(3) { stroke: rgb(255 255 255 / 0.2); }
+  .bef[data-dark] .bef-parts-key { background: #ffffff; }
+  .bef[data-dark] .bef-parts-key[data-i="1"] { background: rgb(255 255 255 / 0.5); }
+  .bef[data-dark] .bef-parts-key[data-i="2"] { background: rgb(255 255 255 / 0.2); }
+
+  .bef-saved[data-dark] .bef-saved-say { color: rgb(255 255 255 / 0.72); }
+  .bef-saved[data-dark] .bef-saved-in { background: #ffffff; color: var(--color-ink); }
+  .bef-saved[data-dark] .bef-saved-big b { color: #ffffff; }
+  .bef-saved[data-dark] .bef-saved-big span { color: rgb(255 255 255 / 0.5); }
+  .bef-saved[data-dark] .bef-mark { border-color: rgb(255 255 255 / 0.14); color: rgb(255 255 255 / 0.5); }
 }

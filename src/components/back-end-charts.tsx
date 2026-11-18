@@ -350,7 +350,7 @@ function taskName(key: string, t: T) {
   }
 }
 
-export function HoursBars({ t }: { t: T }) {
+export function HoursBars({ t, dark }: { t: T; dark?: boolean }) {
   const reduce = useReducedMotion() ?? false;
   const [ref, seen] = useSeenOnce<HTMLDivElement>(0.3);
   const run = seen || reduce;
@@ -361,6 +361,7 @@ export function HoursBars({ t }: { t: T }) {
   return (
     <Figure
       t={t}
+      dark={dark}
       name={t("Hours a week, by hand and with a back end", "Horas por semana, à mão e com um back end")}
     >
       <div ref={ref} className="bef-bars" data-run={run || undefined} data-still={reduce || undefined}>
@@ -405,7 +406,7 @@ export function HoursBars({ t }: { t: T }) {
   );
 }
 
-export function WeekDonut({ t }: { t: T }) {
+export function WeekDonut({ t, dark }: { t: T; dark?: boolean }) {
   const reduce = useReducedMotion() ?? false;
   const [ref, seen] = useSeenOnce<HTMLDivElement>(0.4);
   const run = seen || reduce;
@@ -430,7 +431,7 @@ export function WeekDonut({ t }: { t: T }) {
   });
 
   return (
-    <Figure t={t} name={t("The week of 40 hours, after", "A semana de 40 horas, depois")}>
+    <Figure t={t} dark={dark} name={t("The week of 40 hours, after", "A semana de 40 horas, depois")}>
       <div ref={ref} className="bef-ring" data-run={run || undefined} data-still={reduce || undefined}>
         <svg viewBox="0 0 100 100" role="img" aria-label={parts.map((p) => `${name(p.key)}: ${num(p.hours, 1)} h`).join("; ")}>
           {parts.map((part, i) => (
@@ -478,13 +479,13 @@ export function WeekDonut({ t }: { t: T }) {
   );
 }
 
-export function SavedHours({ t }: { t: T }) {
+export function SavedHours({ t, dark }: { t: T; dark?: boolean }) {
   const reduce = useReducedMotion() ?? false;
   const [ref, seen] = useSeenOnce<HTMLParagraphElement>(0.5);
   const num = useNum();
   const shown = useCount(savedHours, seen || reduce, reduce ? 0 : 1600);
   return (
-    <div className="bef-saved">
+    <div className="bef-saved" data-dark={dark || undefined}>
       <p ref={ref} className="bef-saved-say">
         {t("A week by hand spends", "Uma semana à mão gasta")}{" "}
         <span className="bef-saved-in">{num(manualHours, 1)} h</span>{" "}
