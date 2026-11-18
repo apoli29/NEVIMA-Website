@@ -467,7 +467,9 @@ export function WeekDonut({ t }: { t: T }) {
               {name(part.key)}
             </dt>
             <dd>
-              {num(part.hours, 1)} h · {num(part.share)}%
+              {/* A half point is kept where there is one: rounded to
+                  whole numbers the three add up to 101. */}
+              {num(part.hours, 1)} h · {num(part.share, part.share % 1 === 0 ? 0 : 1)}%
             </dd>
           </div>
         ))}
@@ -622,89 +624,122 @@ export function CostBars({ t }: { t: T }) {
   );
 }
 
-/* ---- the header's own piece -------------------------------------- */
+/* ---- the header's card ------------------------------------------- */
 
-/** One request walking through the back end, over and over: the form is
-    sent, the request lands in the table, the booking takes its place in
-    the calendar, the confirmation goes out. Then a new one starts.
+/** One request walking through the back end, on a loop, in the shape
+    the side-by-side page's personalization card has (user, 2026-11-18:
+    the same card, the same kind of animation, in grey): the steps
+    listed down one side, the thing itself happening on the other.
 
-    It is support, not the headline (user, 2026-11-17): hairlines, small
-    type and nothing brighter than the title beside it. With reduced
-    motion asked for it simply stands at the end of the walk, with every
-    step done. */
-export function RequestLoop({ t }: { t: T }) {
+    Four steps: the form is sent, the request is kept in the database,
+    the booking takes its place in the calendar, the confirmation goes
+    out. Then a new request starts.
+
+    With reduced motion asked for it stands at the end of the walk,
+    every step done and nothing moving. */
+export function ProcessCard({ t }: { t: T }) {
   const reduce = useReducedMotion() ?? false;
-  /* 0 the form, 1 the table, 2 the calendar, 3 the email, 4 a breath
-     with the whole walk done, and then a new request. */
-  const [step, setStep] = useState(reduce ? 4 : 0);
+  const [ref, seen] = useSeenOnce<HTMLElement>(0.25);
+  const [step, setStep] = useState(0);
+  const run = seen && !reduce;
 
   useEffect(() => {
-    if (reduce) return;
-    const id = window.setTimeout(() => setStep((s) => (s + 1) % 5), step === 4 ? 1100 : 1500);
+    if (!run) return;
+    const id = window.setTimeout(() => setStep((s) => (s + 1) % 4), step === 3 ? 2600 : 2200);
     return () => window.clearTimeout(id);
-  }, [step, reduce]);
+  }, [step, run]);
 
+  const at = reduce ? 3 : step;
   const steps = [
-    { key: "form", name: t("Contact form", "Formulário") },
-    { key: "base", name: t("Database", "Base de dados") },
-    { key: "when", name: t("Calendar", "Calendário") },
-    { key: "mail", name: t("Confirmation", "Confirmação") },
+    { n: "01", name: t("The form is sent", "O formulário é enviado") },
+    { n: "02", name: t("The request is kept", "O pedido fica guardado") },
+    { n: "03", name: t("The booking is made", "A marcação é criada") },
+    { n: "04", name: t("The client is answered", "O cliente é respondido") },
   ];
 
   return (
-    <div
-      className="be-rl"
+    <figure
+      ref={ref}
+      className="be-pc"
+      data-at={at}
+      data-still={reduce || undefined}
       role="img"
       aria-label={t(
-        "A request from the website's form lands in the database, takes its place in the calendar, and the confirmation goes out on its own.",
-        "Um pedido do formulário do website entra na base de dados, ocupa o seu lugar no calendário, e a confirmação sai sozinha.",
+        "A request sent from the website's form is kept in the database, becomes a booking in the calendar, and the confirmation goes out on its own.",
+        "Um pedido enviado pelo formulário do website fica guardado na base de dados, passa a marcação no calendário, e a confirmação sai sozinha.",
       )}
     >
-      {steps.map((s, i) => (
-        <div key={s.key} className="be-rl-step">
-          <div className="be-rl-card" data-on={step === i || undefined} data-done={step > i || undefined}>
-            <span className="mono-label be-rl-name">{s.name}</span>
-            <span className="be-rl-draw" aria-hidden="true">
-              {s.key === "form" && (
-                <>
-                  <i className="be-rl-field" />
-                  <i className="be-rl-field be-rl-field-b" />
-                  <i className="be-rl-send" />
-                </>
-              )}
-              {s.key === "base" && (
-                <>
-                  <i className="be-rl-row be-rl-row-new" />
-                  <i className="be-rl-row" />
-                  <i className="be-rl-row" />
-                </>
-              )}
-              {s.key === "when" && (
-                <span className="be-rl-cal">
-                  {Array.from({ length: 14 }, (_, c) => (
-                    <i key={c} data-take={c === 9 || undefined} />
-                  ))}
+      <div className="be-pc-side">
+        <p className="mono-label be-pc-kicker">{t("A request, from end to end", "Um pedido, do início ao fim")}</p>
+        <ol className="be-pc-steps">
+          {steps.map((s, i) => (
+            <li key={s.n} className="be-pc-step" data-on={at === i || undefined} data-done={at > i || undefined}>
+              <span className="mono-label be-pc-n" aria-hidden="true">
+                {s.n}
+              </span>
+              <span className="be-pc-name">{s.name}</span>
+              {i < steps.length - 1 && (
+                <span className="be-pc-wire" aria-hidden="true">
+                  {at === i + 1 && !reduce && <span className="be-pc-bead" />}
                 </span>
               )}
-              {s.key === "mail" && (
-                <>
-                  <i className="be-rl-line" />
-                  <i className="be-rl-line be-rl-line-b" />
-                  <svg className="be-rl-tick" viewBox="0 0 16 16">
-                    <path d="M3 8.5 L6.5 12 L13 4.5" />
-                  </svg>
-                </>
-              )}
-            </span>
-          </div>
+            </li>
+          ))}
+        </ol>
+      </div>
 
-          {i < steps.length - 1 && (
-            <span className="be-rl-wire" aria-hidden="true">
-              {step === i + 1 && !reduce && <span className="be-rl-bead" />}
-            </span>
-          )}
+      <div className="be-pc-stage" aria-hidden="true">
+        <div className="be-pc-panel" data-on={at === 0 || undefined}>
+          <span className="be-pc-sheet">
+            <span className="be-pc-bar be-pc-bar-head" />
+            <span className="be-pc-field" style={{ ["--i" as string]: 0 }} />
+            <span className="be-pc-field" style={{ ["--i" as string]: 1 }} />
+            <span className="be-pc-field be-pc-field-tall" style={{ ["--i" as string]: 2 }} />
+            <span className="be-pc-send" />
+          </span>
         </div>
-      ))}
-    </div>
+
+        <div className="be-pc-panel" data-on={at === 1 || undefined}>
+          <span className="be-pc-sheet">
+            <span className="be-pc-thead">
+              <i /> <i /> <i />
+            </span>
+            <span className="be-pc-trow be-pc-trow-new">
+              <i /> <i /> <i />
+            </span>
+            <span className="be-pc-trow">
+              <i /> <i /> <i />
+            </span>
+            <span className="be-pc-trow">
+              <i /> <i /> <i />
+            </span>
+          </span>
+        </div>
+
+        <div className="be-pc-panel" data-on={at === 2 || undefined}>
+          <span className="be-pc-sheet">
+            <span className="be-pc-bar be-pc-bar-head" />
+            <span className="be-pc-cal">
+              {Array.from({ length: 21 }, (_, c) => (
+                <i key={c} data-take={c === 10 || undefined} />
+              ))}
+            </span>
+          </span>
+        </div>
+
+        <div className="be-pc-panel" data-on={at === 3 || undefined}>
+          <span className="be-pc-sheet">
+            <span className="be-pc-bar be-pc-bar-head" />
+            <span className="be-pc-bar" style={{ ["--w" as string]: "72%" }} />
+            <span className="be-pc-bar" style={{ ["--w" as string]: "54%" }} />
+            <span className="be-pc-mailfoot">
+              <svg className="be-pc-tick" viewBox="0 0 20 20">
+                <path d="M4 10.5 L8.5 15 L16 5.5" />
+              </svg>
+            </span>
+          </span>
+        </div>
+      </div>
+    </figure>
   );
 }

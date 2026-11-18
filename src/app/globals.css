@@ -7083,193 +7083,6 @@
    white and light grey, and with nothing borrowed but the composition.
                                                                       */
 @layer components {
-  /* ---- 1. why, even for the smallest business -------------------- */
-  .be-claim { margin-top: clamp(2.5rem, 5vw, 3.5rem); max-width: 34ch; }
-  .be-claim-line {
-    font-family: var(--font-title);
-    font-weight: 300;
-    font-size: clamp(1.5rem, 3.2vw, 2.75rem);
-    line-height: 1.16;
-    letter-spacing: -0.02em;
-    text-wrap: pretty;
-    /* Faint until the light reaches it, white once it has passed: the
-       same reading the comparison on the home page gets. */
-    color: rgb(255 255 255 / 0.3);
-    transition: color 0.4s ease;
-  }
-  .be-claim-line[data-lit="true"] { color: #fff; }
-
-  /* The same day told twice, the second one shorter because the tasks
-     are not done by hand any more. */
-  .be-day {
-    display: grid;
-    gap: clamp(2rem, 4vw, 3rem);
-    margin-top: clamp(3rem, 6vw, 4.5rem);
-    align-items: start;
-  }
-  @media (min-width: 820px) {
-    .be-day { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: clamp(2.5rem, 5vw, 4.5rem); }
-  }
-  .be-col-head { color: rgb(255 255 255 / 0.5); }
-  .be-list {
-    list-style: none;
-    margin: 1.25rem 0 0;
-    padding: 0;
-    display: grid;
-  }
-  .be-list li {
-    padding-block: 0.8rem;
-    border-top: 1px solid rgb(255 255 255 / 0.12);
-    font-size: clamp(0.9375rem, 1.2vw, 1.0625rem);
-    line-height: 1.45;
-    color: rgb(255 255 255 / 0.82);
-  }
-  .be-list li:last-child { border-bottom: 1px solid rgb(255 255 255 / 0.12); }
-
-  /* On the right, the tasks that are taken off the hands go: each one
-     strikes through and fades, one after the other, as the pair is
-     reached. What is left stands alone. */
-  .be-col-after .be-list li[data-gone] > span {
-    position: relative;
-    display: inline-block;
-    color: rgb(255 255 255 / 0.82);
-  }
-  .be-col-after .be-list li[data-gone] > span::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 52%;
-    width: 0;
-    height: 1px;
-    background: rgb(255 255 255 / 0.4);
-    transition: width 0.5s cubic-bezier(0.65, 0, 0.35, 1) calc(var(--i) * 140ms + 200ms);
-  }
-  .be-day[data-in] .be-col-after .be-list li[data-gone] > span::after { width: 100%; }
-  .be-col-after .be-list li[data-gone] {
-    opacity: 1;
-    transition: opacity 0.6s ease calc(var(--i) * 140ms + 500ms);
-  }
-  .be-day[data-in] .be-col-after .be-list li[data-gone] { opacity: 0.4; }
-  .be-left {
-    margin-top: 1.5rem;
-    font-family: var(--font-title);
-    font-weight: 500;
-    font-size: clamp(1.125rem, 1.8vw, 1.5rem);
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-    opacity: 0;
-    translate: 0 0.5rem;
-    transition: opacity 0.7s ease 1.4s, translate 0.7s cubic-bezier(0.22, 1, 0.36, 1) 1.4s;
-  }
-  .be-day[data-in] .be-left { opacity: 1; translate: 0 0; }
-
-  /* ---- 2. what they are ------------------------------------------ */
-  .be-pieces {
-    display: grid;
-    gap: clamp(2rem, 4vw, 3rem);
-    margin-top: clamp(2.5rem, 5vw, 3.5rem);
-    align-items: start;
-  }
-  @media (min-width: 900px) { .be-pieces { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  .be-piece { margin: 0; }
-  .be-piece-name { margin-top: 1rem; font-size: 1rem; font-weight: 500; }
-  .be-piece-body {
-    margin-top: 0.5rem;
-    font-size: 0.9375rem;
-    line-height: 1.6;
-    color: var(--color-ash);
-    text-wrap: pretty;
-  }
-
-  /* A place for the real screen. While the file is missing, the little
-     interface plays in it; the shape does not change when it arrives. */
-  .be-screen {
-    position: relative;
-    display: block;
-    aspect-ratio: 4 / 3;
-    width: 100%;
-    overflow: hidden;
-    background: #f1f1f0;
-    border: 1px solid rgb(0 0 0 / 0.12);
-  }
-  .be-screen img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .be-screen-say {
-    position: absolute;
-    left: 0.75rem;
-    right: 0.75rem;
-    bottom: 0.7rem;
-    text-transform: none;
-    letter-spacing: 0.04em;
-    color: var(--color-ash-2);
-  }
-  .be-mock { position: absolute; inset: 0.75rem 0.75rem 2.4rem; display: block; }
-
-  .be-ui {
-    display: grid;
-    align-content: start;
-    gap: 0.4rem;
-    height: 100%;
-    padding: 0.6rem 0.7rem;
-    background: #fff;
-    border: 1px solid rgb(0 0 0 / 0.1);
-    font-size: 0.6875rem;
-    line-height: 1.3;
-    color: var(--color-ink);
-    overflow: hidden;
-  }
-  .be-ui-bar { display: flex; gap: 0.3rem; margin-bottom: 0.2rem; }
-  .be-ui-bar i { width: 0.35rem; height: 0.35rem; border-radius: 999px; background: rgb(0 0 0 / 0.18); }
-  .be-ui-dim { color: var(--color-ash-2); }
-  .be-ui-head, .be-ui-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 0.9fr);
-    gap: 0.5rem;
-    padding-block: 0.3rem;
-    border-bottom: 1px solid rgb(0 0 0 / 0.07);
-  }
-  .be-ui-head { color: var(--color-ash-2); font-size: 0.5625rem; }
-  .be-ui-row { opacity: 0; translate: 0 0.5rem; }
-  .be-mock[data-run] .be-ui-row {
-    animation: be-land 0.6s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i) * 600ms + 300ms) forwards;
-  }
-  .be-mock[data-still] .be-ui-row { opacity: 1; translate: 0 0; }
-  @keyframes be-land { to { opacity: 1; translate: 0 0; } }
-
-  .be-ui-month { color: var(--color-ash-2); font-size: 0.5625rem; }
-  .be-cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.25rem; margin-top: 0.2rem; }
-  .be-cal-cell { aspect-ratio: 1 / 1; background: rgb(0 0 0 / 0.05); }
-  .be-mock[data-run] .be-cal-cell[data-on] {
-    animation: be-fill 0.45s ease calc(var(--i) * 420ms + 300ms) forwards;
-  }
-  .be-mock[data-still] .be-cal-cell[data-on] { background: var(--color-ink); }
-  @keyframes be-fill { to { background: var(--color-ink); } }
-
-  .be-mail { display: grid; gap: 0.45rem; padding-top: 0.2rem; }
-  .be-mail-line { font-size: 0.6875rem; line-height: 1.5; }
-  .be-mail em {
-    font-style: normal;
-    display: inline-block;
-    padding: 0 0.2rem;
-    background: rgb(0 0 0 / 0.07);
-    color: transparent;
-  }
-  .be-mock[data-run] .be-mail em {
-    animation: be-say 0.5s ease calc(var(--i) * 900ms + 500ms) forwards;
-  }
-  .be-mock[data-still] .be-mail em { color: var(--color-ink); background: transparent; }
-  @keyframes be-say { to { color: var(--color-ink); background: transparent; } }
-
-  .be-others {
-    margin-top: clamp(2rem, 4vw, 2.75rem);
-    padding-top: clamp(1.25rem, 2.5vw, 1.75rem);
-    border-top: 1px solid var(--color-hair);
-    max-width: 52ch;
-    font-size: clamp(1rem, 1.3vw, 1.0625rem);
-    line-height: 1.6;
-    color: var(--color-ash);
-    text-wrap: pretty;
-  }
-
   /* ---- 4. how it is built ---------------------------------------- */
   .be-made-rows { display: grid; margin-top: clamp(2.5rem, 5vw, 3.5rem); }
   .be-made-row {
@@ -7303,12 +7116,6 @@
     max-width: 52ch;
     text-transform: none;
     letter-spacing: 0.04em;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .be-col-after .be-list li[data-gone] > span::after,
-    .be-col-after .be-list li[data-gone],
-    .be-left { transition: none; }
   }
 }
 
@@ -7722,133 +7529,90 @@
   }
 }
 
+/* ---- the back-end page, reshaped (2026-11-18) -----------------------
+   The header on the warm grey the side-by-side card's sheets use, the
+   rest on white, and one grey block to end each argument. Nothing new
+   in the type or the spacing: the sections keep .ps-sec, the titles
+   keep the display face, the labels keep Geist Mono.                  */
 @layer components {
-  /* Where the drawings of the week sit, inside the ledger section. */
-  .be-figs {
-    display: grid;
-    gap: clamp(2.5rem, 5vw, 3.5rem);
-    padding-bottom: clamp(3rem, 6vw, 4.5rem);
-  }
-  @media (min-width: 900px) {
-    .be-figs { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); column-gap: clamp(2.5rem, 5vw, 4rem); align-items: start; }
-    .be-figs > :last-child { grid-column: 1 / -1; }
-  }
-}
+  /* The grey, named once. */
+  .be-grey { background: #f4f4f2; }
 
-/* ---- the request walking through the header (back-end-charts.tsx) ---
-   Beside the title, never louder than it: the ground the header already
-   has, hairlines at the same weight as the facts' rule below, the same
-   mono label, and no fill brighter than the type. Under 1024px it falls
-   below the words and keeps its size.
-
-   References through Inspo for product pieces in a header (Linear's
-   shipped panels, n8n's canvas): the composition only — a short flow of
-   small interfaces tied by a line, stepping rather than looping at
-   random.                                                             */
-@layer components {
-  /* The header keeps its words ranged left and takes the piece beside
-     them; the three facts stay their full width underneath. */
+  /* ---- the header ------------------------------------------------ */
+  .be-head { color: var(--color-ink); }
+  .be-head-title {
+    max-width: 16ch;
+    font-size: clamp(2.5rem, 5.6vw, 4.5rem);
+    line-height: 0.98;
+    font-weight: 300;
+    letter-spacing: -0.03em;
+  }
+  .be-head-kicker { margin-top: 1.1rem; }
+  .be-head-say { color: var(--color-ink); }
+  /* The facts were set for white on black; here they are black on grey. */
+  .be-head-facts { border-top-color: var(--color-hair-strong); }
+  .be-head-facts dd { color: var(--color-ash-2); }
   @media (min-width: 1024px) {
     .be-head-top {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 19rem;
-      column-gap: clamp(2.5rem, 5vw, 5rem);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+      column-gap: clamp(2.5rem, 5vw, 4.5rem);
       align-items: center;
     }
   }
 
-  .be-rl {
+  /* ---- the card where a request walks through --------------------- */
+  .be-pc {
     display: grid;
-    justify-items: stretch;
-    width: 100%;
-    max-width: 21rem;
-    margin-top: clamp(2.25rem, 4vw, 3rem);
+    margin: clamp(2.25rem, 4vw, 3rem) 0 0;
+    background: linear-gradient(155deg, #edede9 0%, #f8f8f6 46%, #e4e4df 100%);
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.09);
   }
-  @media (min-width: 1024px) { .be-rl { margin-top: 0; } }
-  .be-rl-step { display: grid; justify-items: center; }
-
-  .be-rl-card {
+  @media (min-width: 1024px) { .be-pc { margin-top: 0; } }
+  @media (min-width: 560px) {
+    .be-pc { grid-template-columns: minmax(10.5rem, 0.46fr) minmax(0, 1fr); min-height: clamp(16rem, 21vw, 19rem); }
+  }
+  .be-pc-side {
     display: flex;
-    align-items: center;
-    gap: 0.85rem;
-    width: 100%;
-    padding: 0.7rem 0.85rem;
-    border: 1px solid rgb(255 255 255 / 0.12);
-    background: rgb(255 255 255 / 0.02);
-    transition: border-color 0.45s ease, background 0.45s ease;
+    flex-direction: column;
+    gap: 1.1rem;
+    padding: clamp(1.1rem, 2vw, 1.5rem);
+    box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.08);
   }
-  .be-rl-card[data-done] { border-color: rgb(255 255 255 / 0.2); }
-  .be-rl-card[data-on] { border-color: rgb(255 255 255 / 0.4); background: rgb(255 255 255 / 0.05); }
-  .be-rl-name {
-    flex: 1;
-    font-size: 0.625rem;
-    text-transform: none;
-    letter-spacing: 0.08em;
-    color: rgb(255 255 255 / 0.4);
-    transition: color 0.45s ease;
+  @media (min-width: 560px) { .be-pc-side { box-shadow: inset -1px 0 0 rgb(0 0 0 / 0.08); } }
+  .be-pc-kicker { color: var(--color-ash-2); text-transform: none; letter-spacing: 0.06em; }
+  .be-pc-steps { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
+  .be-pc-step {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: baseline;
+    gap: 0.6rem;
+    padding-bottom: 1.15rem;
   }
-  .be-rl-card[data-done] .be-rl-name { color: rgb(255 255 255 / 0.55); }
-  .be-rl-card[data-on] .be-rl-name { color: rgb(255 255 255 / 0.85); }
-
-  /* The little drawing on the right of each card. */
-  .be-rl-draw { position: relative; display: block; width: 3.75rem; height: 1.75rem; flex: none; }
-  .be-rl-draw i { position: absolute; display: block; background: rgb(255 255 255 / 0.22); }
-
-  /* The form: two fields and the button that sends them. */
-  .be-rl-field { left: 0; top: 0.15rem; width: 2.5rem; height: 3px; }
-  .be-rl-field-b { top: 0.7rem; width: 1.6rem; }
-  .be-rl-send {
-    left: 0;
-    bottom: 0.1rem;
-    width: 1.1rem;
-    height: 0.6rem;
-    border-radius: 1px;
-    background: rgb(255 255 255 / 0.3);
-    transition: background 0.3s ease, scale 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  .be-pc-step:last-child { padding-bottom: 0; }
+  .be-pc-n { color: rgb(0 0 0 / 0.3); transition: color 0.4s ease; }
+  .be-pc-name {
+    font-size: 0.875rem;
+    line-height: 1.3;
+    color: rgb(0 0 0 / 0.42);
+    text-wrap: pretty;
+    transition: color 0.4s ease;
   }
-  .be-rl-card[data-on] .be-rl-send { background: #ffffff; scale: 0.9 1; }
-  .be-rl-card[data-done] .be-rl-send { background: rgb(255 255 255 / 0.45); }
-
-  /* The table: the new row lands on top of the ones already there. */
-  .be-rl-row { left: 0; width: 3.75rem; height: 4px; }
-  .be-rl-row:nth-child(2) { top: 0.75rem; width: 3rem; }
-  .be-rl-row:nth-child(3) { top: 1.35rem; width: 3.4rem; }
-  .be-rl-row-new { top: 0.15rem; opacity: 0; translate: 0 -0.4rem; }
-  .be-rl-card[data-on] .be-rl-row-new,
-  .be-rl-card[data-done] .be-rl-row-new {
-    opacity: 1;
-    translate: 0 0;
-    background: #ffffff;
-    transition: opacity 0.4s ease, translate 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  .be-pc-step[data-done] .be-pc-n,
+  .be-pc-step[data-done] .be-pc-name { color: rgb(0 0 0 / 0.55); }
+  .be-pc-step[data-on] .be-pc-n { color: var(--color-ink); }
+  .be-pc-step[data-on] .be-pc-name { color: var(--color-ink); font-weight: 500; }
+  /* The wire down the list, with the data going along it. */
+  .be-pc-wire {
+    position: absolute;
+    left: 0.45rem;
+    top: 1.35em;
+    bottom: 0.2rem;
+    width: 1px;
+    background: rgb(0 0 0 / 0.14);
   }
-  .be-rl-card[data-done] .be-rl-row-new { background: rgb(255 255 255 / 0.45); }
-
-  /* The calendar: one cell takes its place. */
-  .be-rl-cal { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
-  .be-rl-cal i { position: static; width: 100%; height: 100%; background: rgb(255 255 255 / 0.12); }
-  .be-rl-cal i[data-take] { background: rgb(255 255 255 / 0.12); transition: background 0.4s ease; }
-  .be-rl-card[data-on] .be-rl-cal i[data-take] { background: #ffffff; }
-  .be-rl-card[data-done] .be-rl-cal i[data-take] { background: rgb(255 255 255 / 0.45); }
-
-  /* The confirmation: two lines and the tick that says it left. */
-  .be-rl-line { left: 0; top: 0.3rem; width: 2.2rem; height: 3px; }
-  .be-rl-line-b { top: 1rem; width: 1.4rem; }
-  .be-rl-tick { position: absolute; right: 0; top: 0.1rem; width: 1.5rem; height: 1.5rem; }
-  .be-rl-tick path {
-    fill: none;
-    stroke: #ffffff;
-    stroke-width: 1.6;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-dasharray: 18;
-    stroke-dashoffset: 18;
-  }
-  .be-rl-card[data-on] .be-rl-tick path { stroke-dashoffset: 0; transition: stroke-dashoffset 0.5s cubic-bezier(0.33, 1, 0.68, 1); }
-  .be-rl-card[data-done] .be-rl-tick path { stroke-dashoffset: 0; stroke: rgb(255 255 255 / 0.45); }
-
-  /* The wire between one step and the next, and the data going down it. */
-  .be-rl-wire { position: relative; display: block; width: 1px; height: 1.5rem; background: rgb(255 255 255 / 0.16); }
-  .be-rl-bead {
+  .be-pc-bead {
     position: absolute;
     left: 50%;
     top: 0;
@@ -7856,17 +7620,301 @@
     height: 3px;
     margin-left: -1.5px;
     border-radius: 999px;
-    background: #ffffff;
-    animation: be-rl-run 0.7s cubic-bezier(0.55, 0, 0.45, 1) forwards;
+    background: var(--color-ink);
+    animation: be-pc-run 0.7s cubic-bezier(0.55, 0, 0.45, 1) forwards;
   }
-  @keyframes be-rl-run {
+  @keyframes be-pc-run {
     from { top: 0; opacity: 0; }
     20% { opacity: 1; }
     80% { opacity: 1; }
     to { top: 100%; opacity: 0; }
   }
 
+  .be-pc-stage { position: relative; display: block; min-height: 13rem; padding: clamp(1.1rem, 2vw, 1.75rem); }
+  .be-pc-panel {
+    position: absolute;
+    inset: clamp(1.1rem, 2vw, 1.75rem);
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    translate: 0 0.5rem;
+    transition: opacity 0.5s ease, translate 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  .be-pc-panel[data-on] { opacity: 1; translate: 0 0; }
+  .be-pc[data-still] .be-pc-panel { transition: none; }
+
+  /* The sheet each step happens on: the same white sheet the
+     side-by-side card lays its pages on. */
+  .be-pc-sheet {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 0.55rem;
+    width: min(100%, 18rem);
+    padding: 0.9rem 1rem 1.1rem;
+    background: #ffffff;
+    box-shadow: 0 16px 26px -20px rgb(0 0 0 / 0.45), inset 0 0 0 1px rgb(0 0 0 / 0.07);
+  }
+  .be-pc-bar { display: block; width: var(--w, 100%); height: 5px; background: rgb(0 0 0 / 0.12); }
+  .be-pc-bar-head { width: 42%; height: 6px; background: rgb(0 0 0 / 0.5); margin-bottom: 0.2rem; }
+
+  /* 01 the form: the fields fill, then the button is pressed. */
+  .be-pc-field { position: relative; display: block; height: 0.85rem; background: rgb(0 0 0 / 0.05); }
+  .be-pc-field-tall { height: 2rem; }
+  .be-pc-field::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    background: rgb(0 0 0 / 0.14);
+  }
+  .be-pc-panel[data-on] .be-pc-field::after { animation: be-pc-fill 0.5s ease calc(var(--i) * 0.28s + 0.2s) forwards; }
+  @keyframes be-pc-fill { to { width: 72%; } }
+  .be-pc-send {
+    justify-self: start;
+    width: 5rem;
+    height: 1.5rem;
+    margin-top: 0.3rem;
+    background: rgb(0 0 0 / 0.25);
+  }
+  .be-pc-panel[data-on] .be-pc-send { animation: be-pc-press 0.5s cubic-bezier(0.22, 1, 0.36, 1) 1.3s forwards; }
+  @keyframes be-pc-press {
+    40% { background: var(--color-ink); scale: 0.94 1; }
+    to { background: var(--color-ink); scale: 1 1; }
+  }
+
+  /* 02 the table: the new row lands on top. */
+  .be-pc-thead,
+  .be-pc-trow { display: grid; grid-template-columns: 1.3fr 1fr 0.8fr; gap: 0.5rem; align-items: center; }
+  .be-pc-thead i { height: 4px; background: rgb(0 0 0 / 0.3); }
+  .be-pc-trow { padding-top: 0.45rem; border-top: 1px solid rgb(0 0 0 / 0.07); }
+  .be-pc-trow i { height: 6px; background: rgb(0 0 0 / 0.1); }
+  .be-pc-trow-new i { background: rgb(0 0 0 / 0.1); }
+  .be-pc-panel[data-on] .be-pc-trow-new { animation: be-pc-land 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.35s backwards; }
+  .be-pc-panel[data-on] .be-pc-trow-new i { animation: be-pc-ink 0.6s ease 0.35s both; }
+  @keyframes be-pc-land { from { opacity: 0; translate: 0 -0.5rem; } }
+  @keyframes be-pc-ink { to { background: var(--color-ink); } }
+
+  /* 03 the calendar: one slot is taken. */
+  .be-pc-cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; margin-top: 0.2rem; }
+  .be-pc-cal i { aspect-ratio: 1; background: rgb(0 0 0 / 0.06); }
+  .be-pc-panel[data-on] .be-pc-cal i[data-take] { animation: be-pc-ink 0.5s ease 0.5s both; }
+
+  /* 04 the confirmation: the tick is drawn. */
+  .be-pc-mailfoot { display: flex; justify-content: flex-end; margin-top: 0.3rem; }
+  .be-pc-tick { width: 1.6rem; height: 1.6rem; }
+  .be-pc-tick path {
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 22;
+    stroke-dashoffset: 22;
+  }
+  .be-pc-panel[data-on] .be-pc-tick path { animation: be-pc-tick 0.6s cubic-bezier(0.33, 1, 0.68, 1) 0.45s forwards; }
+  @keyframes be-pc-tick { to { stroke-dashoffset: 0; } }
+  .be-pc[data-still] .be-pc-field::after { width: 72%; }
+  .be-pc[data-still] .be-pc-tick path { stroke-dashoffset: 0; }
+
+  /* ---- why a small business invests ------------------------------- */
+  .be-why-title {
+    max-width: 22ch;
+    margin-top: 1.5rem;
+    font-size: clamp(2rem, 4.4vw, 3.5rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  .be-why-say {
+    max-width: 44ch;
+    margin-top: clamp(1.5rem, 3vw, 2rem);
+    font-family: var(--font-title);
+    font-size: clamp(1.125rem, 2vw, 1.625rem);
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    color: var(--color-ash);
+    text-wrap: pretty;
+  }
+  /* The word the sentence turns on: a black block draws itself behind
+     it, left to right, and the word goes white inside it. */
+  .be-lit { position: relative; display: inline-block; color: var(--color-ink); }
+  .be-lit-block {
+    position: absolute;
+    left: -0.18em;
+    right: -0.18em;
+    top: -0.06em;
+    bottom: -0.1em;
+    background: var(--color-ink);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.2s;
+  }
+  .be-lit[data-on] .be-lit-block { transform: scaleX(1); }
+  .be-lit-word { position: relative; transition: color 0.3s ease 0.55s; }
+  .be-lit[data-on] .be-lit-word { color: var(--color-paper); }
+
+  /* ---- a card to hold a drawing ----------------------------------- */
+  .be-card {
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+    padding: clamp(1.25rem, 3vw, 2.5rem);
+    background: #f4f4f2;
+  }
+  /* The drawings inside it sit on its grey, so their rings match. */
+  .be-card .bef { --bef-ground: #f4f4f2; margin-top: 0; }
+  .be-card-two { display: grid; gap: clamp(2rem, 4vw, 3rem); align-items: start; }
+  @media (min-width: 900px) {
+    .be-card-two { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); column-gap: clamp(2.5rem, 5vw, 4rem); }
+  }
+  .be-card .bef-saved { margin-top: clamp(2rem, 4vw, 3rem); padding-top: clamp(1.5rem, 3vw, 2rem); border-top: 1px solid var(--color-hair); }
+  .be-card .bef-saved .bef-mark { border: 0; padding-top: 0; margin-top: 0.75rem; }
+
+  /* ---- the three solutions ---------------------------------------- */
+  .be-sols {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2rem);
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+    align-items: stretch;
+  }
+  @media (min-width: 900px) { .be-sols { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .be-sol {
+    display: grid;
+    align-content: start;
+    padding: clamp(1.25rem, 2.4vw, 1.75rem);
+    background: var(--color-paper);
+    box-shadow: inset 0 0 0 1px var(--color-hair);
+    transition: box-shadow 0.4s ease, translate 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .be-sol:hover { box-shadow: inset 0 0 0 1px var(--color-hair-strong); translate: 0 -2px; }
+  .be-sol-name { font-size: 1.0625rem; font-weight: 500; line-height: 1.3; }
+  /* The thread of the map's leader lines (photo shoot), brought here
+     (user, 2026-11-18): the same hairline and the same dot, drawing
+     itself from the name down to the drawing when the three are
+     reached. */
+  .be-sol-thread { display: block; width: 10rem; max-width: 100%; height: 2.75rem; margin: 0.8rem 0 0.6rem; overflow: visible; }
+  .be-sol-lead {
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: 1.2;
+    opacity: 0.45;
+    stroke-dasharray: 104;
+    stroke-dashoffset: 104;
+    transition: stroke-dashoffset 0.9s cubic-bezier(0.33, 1, 0.68, 1) calc(var(--i) * 0.18s + 0.1s);
+  }
+  .be-sols[data-drawn] .be-sol-lead { stroke-dashoffset: 0; }
+  .be-sol-dot {
+    fill: var(--color-ink);
+    opacity: 0;
+    transition: opacity 0.4s ease calc(var(--i) * 0.18s + 0.9s);
+  }
+  .be-sols[data-drawn] .be-sol-dot { opacity: 1; }
+  .be-sols[data-still] .be-sol-lead,
+  .be-sols[data-still] .be-sol-dot { transition: none; }
+  .be-sol-body { margin-top: 1rem; font-size: 0.9375rem; line-height: 1.6; color: var(--color-ash); text-wrap: pretty; }
+
+  /* The drawing in each card. */
+  .be-draw { position: relative; display: grid; align-content: start; gap: 0.4rem; width: 100%; max-width: 11rem; }
+  .be-draw-row { display: block; width: var(--w, 100%); height: 6px; background: rgb(0 0 0 / 0.1); }
+  .be-draw-head { width: 45%; height: 6px; background: var(--color-ink); }
+  .be-draw-cal { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
+  .be-draw-cal i { aspect-ratio: 1; background: rgb(0 0 0 / 0.08); }
+  .be-draw-cal i[data-take] { background: var(--color-ink); }
+  .be-draw-tick { position: absolute; right: 0; bottom: -0.2rem; width: 1.4rem; height: 1.4rem; }
+  .be-draw-tick path { fill: none; stroke: var(--color-ink); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---- the block that catches whatever the three miss ------------- */
+  .be-slab {
+    margin-top: clamp(3rem, 6vw, 4.5rem);
+    padding: clamp(1.5rem, 4vw, 3rem);
+    background: #f4f4f2;
+  }
+  .be-slab-say {
+    max-width: 30ch;
+    font-size: clamp(1.5rem, 3.2vw, 2.5rem);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  .be-slab-foot { display: flex; margin-top: clamp(1.75rem, 3.5vw, 2.5rem); }
+
+  /* ---- the nine, compact ------------------------------------------ */
+  .be-nine { margin-top: clamp(2rem, 4vw, 2.75rem); border-top: 1px solid var(--color-hair); }
+  .be-nine-row { border-bottom: 1px solid var(--color-hair); }
+  .be-nine-row summary {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    padding-block: 0.95rem;
+    cursor: pointer;
+    list-style: none;
+  }
+  .be-nine-row summary::-webkit-details-marker { display: none; }
+  .be-nine-row summary:focus-visible { outline: 1px solid var(--color-ink); outline-offset: 2px; }
+  .be-nine-n { color: var(--color-ash-2); transition: color 0.3s ease; }
+  .be-nine-name { font-size: 1.0625rem; font-weight: 500; line-height: 1.3; text-wrap: pretty; }
+  .be-nine-row:hover .be-nine-n,
+  .be-nine-row[open] .be-nine-n { color: var(--color-ink); }
+  /* A plus that becomes a minus, drawn rather than typed. */
+  .be-nine-mark { position: relative; display: block; width: 0.75rem; height: 0.75rem; }
+  .be-nine-mark::before,
+  .be-nine-mark::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0.75rem;
+    height: 1px;
+    background: var(--color-ink);
+    translate: -50% -50%;
+    transition: rotate 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+  }
+  .be-nine-mark::after { rotate: 90deg; }
+  .be-nine-row[open] .be-nine-mark::after { rotate: 0deg; opacity: 0; }
+  .be-nine-body {
+    max-width: 62ch;
+    margin: 0 0 1.15rem;
+    padding-left: calc(1.5rem + 1rem);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--color-ash);
+    text-wrap: pretty;
+  }
+
+  /* ---- how the price works ---------------------------------------- */
+  .be-price { margin-top: clamp(2.5rem, 5vw, 3.5rem); border-top: 1px solid var(--color-hair-strong); }
+  .be-price-row {
+    display: grid;
+    gap: 0.5rem 2.5rem;
+    padding-block: clamp(1.25rem, 2.4vw, 1.75rem);
+    border-bottom: 1px solid var(--color-hair);
+    align-items: baseline;
+  }
+  @media (min-width: 760px) { .be-price-row { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.6fr); } }
+  .be-price-row dt { display: flex; align-items: baseline; gap: 0.75rem; }
+  .be-price-n { color: var(--color-ash-2); }
+  .be-price-head { font-size: 1.0625rem; font-weight: 500; line-height: 1.3; text-wrap: pretty; }
+  .be-price-body { margin: 0; font-size: 0.9375rem; line-height: 1.6; color: var(--color-ash); text-wrap: pretty; }
+  .be-price-foot {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: clamp(2rem, 4vw, 2.75rem);
+    align-items: center;
+  }
+  @media (min-width: 820px) { .be-price-foot { grid-template-columns: minmax(0, 1fr) auto; column-gap: 2.5rem; } }
+  .be-price-foot .mono-label { color: var(--color-ash-2); max-width: 52ch; text-transform: none; letter-spacing: 0.04em; }
+
   @media (prefers-reduced-motion: reduce) {
-    .be-rl-card, .be-rl-name, .be-rl-send, .be-rl-row-new, .be-rl-cal i[data-take], .be-rl-tick path { transition: none; }
+    .be-pc-panel, .be-pc-n, .be-pc-name, .be-lit-block, .be-lit-word,
+    .be-sol, .be-sol-lead, .be-sol-dot, .be-nine-mark::before, .be-nine-mark::after { transition: none; }
+    .be-pc-panel[data-on] .be-pc-field::after,
+    .be-pc-panel[data-on] .be-pc-send,
+    .be-pc-panel[data-on] .be-pc-trow-new,
+    .be-pc-panel[data-on] .be-pc-trow-new i,
+    .be-pc-panel[data-on] .be-pc-cal i[data-take],
+    .be-pc-panel[data-on] .be-pc-tick path { animation: none; }
   }
 }
