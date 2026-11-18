@@ -8048,7 +8048,6 @@
     letter-spacing: -0.02em;
     text-wrap: pretty;
   }
-  .vi-sure-foot { display: flex; margin-top: clamp(1.75rem, 3.5vw, 2.5rem); }
 
   /* The mark taken apart and built again, one business at a time. */
   .vi-morph { display: grid; justify-items: center; gap: 1.25rem; }

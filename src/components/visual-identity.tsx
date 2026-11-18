@@ -495,9 +495,6 @@ function NotSure({ t }: { t: T }) {
                   "N\u00e3o h\u00e1 problema. Ajudamos a tomar a melhor decis\u00e3o logo na primeira reuni\u00e3o. Basta preencher o formul\u00e1rio para podermos ajudar.",
                 )}
               </p>
-              <div className="vi-sure-foot">
-                <ProposalAsk label={t("Get your free proposal", "Pedir proposta gratuita")} />
-              </div>
             </div>
             <Morph t={t} />
           </div>
