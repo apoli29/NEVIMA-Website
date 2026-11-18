@@ -157,6 +157,10 @@ function TerralAfter() {
 
 /* ================================================================== */
 
+/** Only Pilar is shown (user, 2026-11-18): the studio did not want
+    businesses invented beyond the one the site already runs on. The
+    other two stay drawn, out of use, so putting either one back is a
+    line in this list and nothing else. */
 export const BRANDS: Brand[] = [
   {
     id: "pilar",
@@ -165,6 +169,10 @@ export const BRANDS: Brand[] = [
     before: PilarBefore,
     after: PilarAfter,
   },
+];
+
+/** Kept, not thrown away: the two the page carried for a day. */
+export const SPARE_BRANDS: Brand[] = [
   {
     id: "aurora",
     name: "Aurora",
