@@ -499,3 +499,15 @@ os cards passaram de 14 para 16 das 24 colunas, na mesma regra (encostado
 está dentro cresceu: as barras até 300px de altura (eram 180), o anel até
 288px (era cerca de 200), o número do contador até 11,5rem (era 8,5), e os
 nomes e valores que os acompanham um passo acima.
+
+**A luz passou a meteorito** (2026-11-19, décimo primeiro pedido). A
+mancha difusa saiu: agora é uma cabeça pequena e brilhante com um rasto
+fino, quase uma linha (um traço curto e claro logo atrás e um mais longo
+e ténue atrás desse), por cima de um trilho quase invisível. Já não se
+esconde atrás dos cards: corre pelos espaços à volta deles, como uma pista
+num circuito — desce pelo lado esquerdo do primeiro, atravessa o espaço
+por baixo dele, desce pelo lado direito do segundo, volta pelo espaço por
+baixo deste e desce pelo lado esquerdo do terceiro. O percurso lê-se das
+próprias posições dos cards, por isso acompanha-os a qualquer largura. O
+card por onde vai passa a ter a borda acesa. Os espaços entre os cards
+cresceram (até 5,5rem) para se ver o meteorito a passar.

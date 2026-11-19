@@ -204,28 +204,55 @@ export function DepthCard({ t }: { t: T }) {
     user's sketch (2026-11-19): a wide one on the left, a smaller one on
     the right a little lower, and one in the middle under them. One soft
     light goes from the centre of one to the centre of the next as the
-    page is scrolled, and the card it is on lights its edge. */
+    page is scrolled, and the card it is on lights its edge.
+
+    The light is a meteor now (user, 2026-11-19, eleventh round): a small
+    bright head with a thin trail, almost a line, and it no longer hides
+    behind the cards. It runs through the gaps round them like a trace on
+    a board: down past the first card's left side, across the gap under
+    it, down past the second's right side, back across the gap under
+    that, and down past the third's left side. The path is read from the
+    cards themselves, so it follows them at every width. */
 export function GlowTrail({ cards }: { cards: ReactNode[] }) {
   const reduce = useReducedMotion() ?? false;
   const box = useRef<HTMLDivElement>(null);
   const items = useRef<(HTMLDivElement | null)[]>([]);
-  const [spots, setSpots] = useState<{ x: number[]; y: number[] }>({ x: [0, 0, 0], y: [0, 0, 0] });
+  const track = useRef<SVGPathElement>(null);
+  const trail = useRef<SVGPathElement>(null);
+  const tail = useRef<SVGPathElement>(null);
+  const head = useRef<SVGCircleElement>(null);
+  const [route, setRoute] = useState<{ d: string; w: number; h: number; turns: number[] }>({ d: "", w: 0, h: 0, turns: [] });
   const [lit, setLit] = useState(0);
 
-  // The centre of each card, in the box's own pixels, read again
-  // whenever anything changes size.
+  // The route, in the box's own pixels, read again whenever anything
+  // changes size: outside the side each card is flush with, and through
+  // the middle of each gap.
   useLayoutEffect(() => {
     const el = box.current;
     if (!el) return;
     const read = () => {
-      const x: number[] = [];
-      const y: number[] = [];
-      for (const card of items.current) {
-        if (!card) continue;
-        x.push(card.offsetLeft + card.offsetWidth / 2);
-        y.push(card.offsetTop + card.offsetHeight / 2);
-      }
-      setSpots({ x, y });
+      const c = items.current.filter(Boolean) as HTMLDivElement[];
+      if (c.length < 3) return;
+      const o = 14;
+      const L = (k: HTMLDivElement) => k.offsetLeft - o;
+      const R = (k: HTMLDivElement) => k.offsetLeft + k.offsetWidth + o;
+      const top = (k: HTMLDivElement) => k.offsetTop;
+      const bottom = (k: HTMLDivElement) => k.offsetTop + k.offsetHeight;
+      const g1 = (bottom(c[0]) + top(c[1])) / 2;
+      const g2 = (bottom(c[1]) + top(c[2])) / 2;
+      const pts: [number, number][] = [
+        [L(c[0]), top(c[0]) + 24],
+        [L(c[0]), g1],
+        [R(c[1]), g1],
+        [R(c[1]), g2],
+        [L(c[2]), g2],
+        [L(c[2]), bottom(c[2]) - 24],
+      ];
+      const d = pts.map(([x, y], i) => `${i ? "L" : "M"} ${x} ${y}`).join(" ");
+      // where along the route each leg ends, to know which card it is at
+      let run = 0;
+      const turns = pts.slice(1).map(([x, y], i) => (run += Math.hypot(x - pts[i][0], y - pts[i][1])));
+      setRoute({ d, w: el.offsetWidth, h: el.offsetHeight, turns });
     };
     read();
     const watch = new ResizeObserver(read);
@@ -234,18 +261,42 @@ export function GlowTrail({ cards }: { cards: ReactNode[] }) {
     return () => watch.disconnect();
   }, []);
 
-  const { scrollYProgress } = useScroll({ target: box, offset: ["start 65%", "end 55%"] });
-  const stops = [0, 0.5, 1];
-  const x = useTransform(scrollYProgress, stops, spots.x);
-  const y = useTransform(scrollYProgress, stops, spots.y);
-  useMotionValueEvent(scrollYProgress, "change", (p) => {
-    const near = p < 0.25 ? 0 : p < 0.75 ? 1 : 2;
+  const { scrollYProgress } = useScroll({ target: box, offset: ["start 70%", "end 45%"] });
+  const place = (p: number) => {
+    const path = track.current;
+    if (!path || !route.d) return;
+    const total = path.getTotalLength();
+    const at = Math.max(0, Math.min(1, p)) * total;
+    const pt = path.getPointAtLength(at);
+    head.current?.setAttribute("cx", String(pt.x));
+    head.current?.setAttribute("cy", String(pt.y));
+    head.current?.setAttribute("opacity", p <= 0 || p >= 1 ? "0" : "1");
+    // the trail: a short bright line just behind the head, and a longer
+    // faint one behind that
+    const draw = (el: SVGPathElement | null, len: number) => {
+      if (!el) return;
+      el.style.strokeDasharray = `${len} ${total + len}`;
+      el.style.strokeDashoffset = String(-(at - len));
+    };
+    draw(trail.current, 90);
+    draw(tail.current, 320);
+    const [a, b, c2, d2] = route.turns;
+    const near = at < (a + b) / 2 ? 0 : at < (c2 + d2) / 2 ? 1 : 2;
     setLit((was) => (was === near ? was : near));
-  });
+  };
+  useMotionValueEvent(scrollYProgress, "change", place);
+  useEffect(() => place(scrollYProgress.get()));
 
   return (
     <div ref={box} className="be-trail" data-still={reduce || undefined}>
-      {!reduce && <motion.span className="be-trail-glow" style={{ x, y }} aria-hidden="true" />}
+      {!reduce && route.d && (
+        <svg className="be-trail-route" width={route.w} height={route.h} viewBox={`0 0 ${route.w} ${route.h}`} aria-hidden="true">
+          <path ref={track} className="be-trail-track" d={route.d} />
+          <path ref={tail} className="be-trail-tail" d={route.d} />
+          <path ref={trail} className="be-trail-line" d={route.d} />
+          <circle ref={head} className="be-trail-head" r="2.6" opacity="0" />
+        </svg>
+      )}
       {cards.map((card, i) => (
         <div
           key={i}
