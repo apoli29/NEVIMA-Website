@@ -394,6 +394,8 @@ export function DragRun({
   const k1 = useShare(scrollYProgress, 0.24, 0.46);
   const k2 = useShare(scrollYProgress, 0.5, 0.72);
   const k3 = useShare(scrollYProgress, 0.78, 0.96);
+  // the strings from the three to the block draw once it has landed
+  const k4 = useShare(scrollYProgress, 0.9, 1);
 
   // Each card's thread draws itself once the card has landed.
   const [landed, setLanded] = useState(0);
@@ -442,6 +444,7 @@ export function DragRun({
       <div ref={run}>
         {head}
         {cards}
+        <Strings seen={slabSeen || reduce} />
         <div ref={slabRef} className="be-slab-in" data-seen={slabSeen || reduce || undefined}>
           {slab}
         </div>
@@ -456,10 +459,66 @@ export function DragRun({
             without it. */}
         <div className="be-run-head">{head}</div>
         {cards}
+        <Strings k={k4} />
         <motion.div className="be-slab-in" data-pin style={{ ["--k"]: k3 } as unknown as CSSProperties}>
           {slab}
         </motion.div>
       </div>
+    </div>
+  );
+}
+
+/** Strings from the foot of each of the three cards down to the block
+    under them, meeting at one point on its top edge (user, 2026-11-19:
+    "cria strings que liguem os 3 cards quadrados ao retângulo"). They are
+    drawn in the box's own pixels, read from the cards just above, so the
+    curves keep their shape at every width. On a desk they draw with the
+    scroll (`k`), elsewhere once they are reached (`seen`). */
+function Strings({ k, seen }: { k?: MotionValue<number>; seen?: boolean }) {
+  const box = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState<{ w: number; h: number; xs: number[] }>({ w: 0, h: 0, xs: [] });
+
+  useLayoutEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const read = () => {
+      const row = el.previousElementSibling;
+      const at = el.getBoundingClientRect();
+      // the cards' own centres; their translate is ignored (offsetLeft),
+      // so the strings aim at where the cards come to rest
+      const xs = row
+        ? Array.from(row.querySelectorAll<HTMLElement>(".be-sol")).map((c) => c.offsetLeft + c.offsetWidth / 2 + (row as HTMLElement).getBoundingClientRect().left - at.left)
+        : [];
+      setSize({ w: el.offsetWidth, h: el.offsetHeight, xs });
+    };
+    read();
+    const watch = new ResizeObserver(read);
+    watch.observe(el);
+    return () => watch.disconnect();
+  }, []);
+
+  const { w, h, xs } = size;
+  const mid = w / 2;
+  return (
+    <div ref={box} className="be-strings" aria-hidden="true">
+      {w > 0 && xs.length === 3 && (
+        <svg viewBox={`0 0 ${w} ${h}`} width={w} height={h}>
+          {xs.map((x, i) => (
+            <motion.path
+              key={i}
+              d={`M ${x} 0 C ${x} ${h * 0.62}, ${mid} ${h * 0.38}, ${mid} ${h}`}
+              style={k ? { pathLength: k } : undefined}
+              initial={k ? undefined : { pathLength: 0 }}
+              animate={k ? undefined : { pathLength: seen ? 1 : 0 }}
+              transition={{ duration: 0.9, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] }}
+            />
+          ))}
+          {xs.map((x, i) => (
+            <motion.circle key={`d${i}`} cx={x} cy={0} r={2.6} style={k ? { opacity: k } : { opacity: seen ? 1 : 0 }} />
+          ))}
+          <motion.circle cx={mid} cy={h} r={3.2} style={k ? { opacity: k } : { opacity: seen ? 1 : 0 }} />
+        </svg>
+      )}
     </div>
   );
 }

@@ -535,3 +535,13 @@ O monte de trás e as vistas finais foram reajustados para manterem o
 tamanho relativo. Corrigido também: os títulos das colunas do calendário
 (dias e horas) ficavam uma coluna fora do sítio, porque eram colocados
 antes da célula do canto; agora cada um tem a sua coluna.
+
+**As três soluções: sem escada, com fios** (2026-11-19). A escada saiu e
+os três cards voltaram a ficar lado a lado, à mesma altura, agora maiores
+e quadrados (389 x 380px a 1440px; presos ao ecrã, a altura acompanha a
+do ecrã entre 300 e 420px): o nome em cima, o desenho a ocupar o meio, o
+texto no fundo. O retângulo "É preciso algo mais específico?" fica em
+baixo, como antes, e três fios descem do pé de cada card e juntam-se num
+ponto no topo dele. No computador desenham-se com o scroll, no fim do
+arrasto; sem o arrasto, desenham-se quando são alcançados; no telemóvel,
+com os cards empilhados, não aparecem.
