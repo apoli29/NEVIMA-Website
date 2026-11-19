@@ -402,3 +402,146 @@ a secção entra no fundo do ecrã) e cada paragem acende um pouco antes de
 a linha lá chegar. O tipo passou de cinco níveis a três: o nome pequeno,
 o valor grande (com "uma vez" / "por mês" ao lado, pequeno), e a linha
 por baixo. O rótulo mono por cima saiu.
+
+## Terceira volta (2026-11-19, sétimo pedido)
+
+**Um negócio de cada vez.** Misturar uma clínica, uma imobiliária e um
+restaurante na mesma lista não fazia sentido. Cada folha mostra agora um
+negócio e depois, mudando só o conteúdo, os outros dois — sempre pela
+mesma ordem: clínica de estética, imobiliária, restaurante. O nome do
+negócio está na etiqueta da folha e no fim da legenda.
+
+- **Base de dados**: seis pedidos de cada negócio, um por linha.
+- **Calendário**: a semana de consultas da clínica, com a marcação nova
+  aberta em zoom; a semana de visitas da imobiliária; as mesas do
+  restaurante ao jantar. O passo à parte do restaurante saiu: é agora a
+  terceira versão do calendário.
+- **E-mail**: os e-mails enviados sozinhos de cada negócio; o da clínica
+  abre-se com os espaços a preencher.
+- A clínica é o negócio por onde o pedido passa: o formulário, a linha,
+  a marcação aberta e o e-mail aberto são todos da Marta.
+
+Cada versão é uma camada (`.be-lay`) da mesma folha; só a que está a ser
+mostrada tem `data-live`, que é o que lhe começa os movimentos.
+
+**O sistema do fim, mais simples.** Ainda não montamos ecossistemas
+completos, por isso saiu o que o estúdio não faz (pagamentos, faturação,
+stock, SMS). À volta das três ficam seis coisas simples feitas à medida:
+portal de clientes, portal da equipa, formulários à medida, lista de
+espera, pedidos de avaliação e relatórios mensais (à espera de o estúdio
+confirmar a lista). E têm todas a mesma estética das três: a mesma folha
+branca, do mesmo tamanho, quase sem pormenor, em três linhas por três
+colunas, com o nome por baixo e um fio para a da sua coluna. As caixas
+escuras de antes saíram.
+
+**1,5 vezes mais depressa.** Os tempos do card dividem-se por `SPEED`
+(`back-end-depth.tsx`), e a página corre todas as animações e transições
+CSS a 1,5 (`usePageSpeed` em `back-end.tsx`, o mesmo método do card da
+Personalização), por isso os tempos escritos guardam as proporções. O que
+o scroll conduz não tem tempo e não muda. As contagens dos números
+(`useCount`) continuam ao ritmo de antes.
+
+## Quarta volta (2026-11-19, oitavo pedido)
+
+**Os três negócios com a mesma profundidade.** A imobiliária e o
+restaurante estavam incompletos; agora cada um tem tudo o que a clínica
+tem:
+
+- **o formulário** do início em três versões (marcar consulta, pedir
+  visita, reservar mesa), cada uma com o seu pedido (Marta, Rui, Ana);
+- **a marcação aberta** no calendário: a visita ao T2 (consultor, morada,
+  chaves, o que procura) e a mesa para 4 (mesa, cadeira de bebé, alergia,
+  lembrete), além da consulta da clínica (`Detail`);
+- **o e-mail de confirmação** aberto, com os espaços a preencher, para os
+  três (visita confirmada com o consultor; mesa reservada com a cadeira de
+  bebé guardada).
+
+Cada pedido corre a cadeia toda no seu negócio: o Rui pede a visita de
+quinta às 12:00, é essa visita que se abre no calendário e é essa que o
+e-mail confirma; o mesmo para a Ana, sábado às 20:30.
+
+**O monte à direita.** As folhas em espera eram translúcidas e liam-se
+umas através das outras. Agora são folhas opacas, escurecidas, com o
+conteúdo apagado, empilhadas uma atrás da outra; só se veem as margens, e
+a que vem a seguir é a da frente.
+
+**O sistema do fim.** O utilizador gostou dos portais e dos formulários;
+ficaram o portal de clientes, o portal da equipa e os formulários à
+medida. As outras três passaram a ser coisas que estes mesmos negócios
+pedem e que o estúdio já faz: uma calculadora de orçamentos (como a da
+página de SEO & GEO), um catálogo que o próprio negócio edita
+(tratamentos, imóveis, menu) e uma pesquisa com filtros por cima dele.
+
+## Porque investir: a escada da primeira versão, acertada (2026-11-19, nono pedido)
+
+O utilizador queria o desalinhamento da primeira versão, só com ajustes
+pequenos: a mudança da segunda volta (as cards encaixadas em ziguezague)
+saiu, e a escada em diagonal voltou — barras em cima à esquerda, o anel à
+direita, o contador ao centro, por baixo.
+
+O que a tornou exata, em vez de estranha:
+
+- as três com a **mesma largura** (14 de 24 colunas);
+- **passos iguais**: a primeira encostada à esquerda, a segunda à
+  direita, a terceira exatamente ao meio (a 261px de cada uma, a 1440px);
+- **o mesmo espaço vertical** entre cada uma;
+- no card do anel, agora tão largo como os outros, **o anel e as três
+  partes lado a lado**, para não ficar um anel perdido num card vazio;
+- a borda acesa pela luz mais **discreta** (um fio, não uma moldura).
+
+A segunda volta perdia as margens para uma regra posterior
+(`.be-trail .be-trail-card { margin-top: 0 }`, da mesma força); as
+posições estão agora debaixo de `.be-trail .be-trail-card[...]`.
+
+**Os gráficos maiores** (2026-11-19, décimo pedido). As posições ficaram;
+os cards passaram de 14 para 16 das 24 colunas, na mesma regra (encostado
+à esquerda, encostado à direita, o terceiro exatamente ao meio), e o que
+está dentro cresceu: as barras até 300px de altura (eram 180), o anel até
+288px (era cerca de 200), o número do contador até 11,5rem (era 8,5), e os
+nomes e valores que os acompanham um passo acima.
+
+**A luz passou a meteorito** (2026-11-19, décimo primeiro pedido). A
+mancha difusa saiu: agora é uma cabeça pequena e brilhante com um rasto
+fino, quase uma linha (um traço curto e claro logo atrás e um mais longo
+e ténue atrás desse), por cima de um trilho quase invisível. Já não se
+esconde atrás dos cards: corre pelos espaços à volta deles, como uma pista
+num circuito — desce pelo lado esquerdo do primeiro, atravessa o espaço
+por baixo dele, desce pelo lado direito do segundo, volta pelo espaço por
+baixo deste e desce pelo lado esquerdo do terceiro. O percurso lê-se das
+próprias posições dos cards, por isso acompanha-os a qualquer largura. O
+card por onde vai passa a ter a borda acesa. Os espaços entre os cards
+cresceram (até 5,5rem) para se ver o meteorito a passar.
+
+**O meteorito acompanha quem lê** (2026-11-19, plano 004). Andava pela
+fração do comprimento do percurso, por isso corria à frente da página nas
+descidas e ficava para trás nas travessias compridas. Agora fica à altura
+de uma linha de leitura a 55% do ecrã, píxel a píxel, ao descer por cada
+lado; e atravessa cada espaço enquanto essa linha passa por ele, numa
+janela de 80 a 140px acima e abaixo, sem nunca se afastar mais do que
+isso. Aparece e desaparece com um esbatimento, em vez de surgir de
+repente. Sem mola: o scroll já é suavizado pelo Lenis.
+
+**Duas afinações** (2026-11-19). O meteorito começa mais cedo: a linha de
+leitura que ele segue desceu de 55% para 65% do ecrã. A passagem para o
+fundo branco das soluções começa mais tarde: quando o topo da secção está
+a 60% do ecrã, em vez dos 75% comuns a todas as passagens. É só esta
+passagem; o `ToneRoom` aceita agora `data-tone-from` em cada secção, e as
+outras páginas que o usam ficam como estavam.
+
+**O card do cabeçalho maior** (2026-11-19). O card cinzento ficou 20% mais
+alto e a folha branca aberta passou de 60% para 72% da largura dele (887 x
+517px a 1440px), com tudo o que tem dentro a crescer na mesma proporção.
+O monte de trás e as vistas finais foram reajustados para manterem o
+tamanho relativo. Corrigido também: os títulos das colunas do calendário
+(dias e horas) ficavam uma coluna fora do sítio, porque eram colocados
+antes da célula do canto; agora cada um tem a sua coluna.
+
+**As três soluções: sem escada, com fios** (2026-11-19). A escada saiu e
+os três cards voltaram a ficar lado a lado, à mesma altura, agora maiores
+e quadrados (389 x 380px a 1440px; presos ao ecrã, a altura acompanha a
+do ecrã entre 300 e 420px): o nome em cima, o desenho a ocupar o meio, o
+texto no fundo. O retângulo "É preciso algo mais específico?" fica em
+baixo, como antes, e três fios descem do pé de cada card e juntam-se num
+ponto no topo dele. No computador desenham-se com o scroll, no fim do
+arrasto; sem o arrasto, desenham-se quando são alcançados; no telemóvel,
+com os cards empilhados, não aparecem.

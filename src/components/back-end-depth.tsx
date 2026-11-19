@@ -1,136 +1,312 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { useReducedMotion } from "motion/react";
 import { useInView, type T } from "./sbs-shared";
 
 /* ==================================================================
-   The header's card, gone deeper (user, 2026-11-19, second round)
+   The header's card, gone deeper (user, 2026-11-19)
 
-   The same walk as before (a request comes in through the website's
-   form and goes through the three solutions), but each solution is now
-   shown as it really looks when it is done well:
+   A request comes in through the website's form and goes through the
+   three solutions, each shown as it really looks when it is done well.
 
-   - the database: requests landing one per line, each with who, what,
-     where it came from, when and where it stands, under a search, a
-     filter and a count, saved as they arrive;
-   - the calendar: a week, its hours and the bookings in it; the new one
-     lands, and is opened to show everything kept about it; then the
-     same calendar as a restaurant's reservations, by table and by hour;
-   - the email: the messages that went out on their own, one per line,
-     then the one just sent, opened, with its blanks filling in.
+   One business at a time (user, 2026-11-19, third round: mixing them
+   in one list made no sense): each sheet shows a clinic first, and
+   then, with only its content changing, a property agency and a
+   restaurant, so the same solution is seen working for three kinds of
+   business. The clinic is the one the request walks through: the form,
+   its line in the database, its booking opened in the calendar, its
+   confirmation opened with the blanks filling in.
 
    Then the three shrink and sit side by side, tied, and at the end they
-   are three among many: a larger back end, drawn with almost no detail,
-   for the solutions made to the measure of each business.
+   sit among a few simpler things we also build to measure (portals,
+   forms, a waiting list...), every one of them the same small sheet:
+   no payments or anything the studio does not build yet.
 
    Every name, time and number in it is made up.
+
+   It plays 1.5 times faster than it was first written (user,
+   2026-11-19): the holds here are divided by SPEED, and the page plays
+   every CSS animation at that rate (back-end.tsx), so the two clocks
+   stay together.
 
    With reduced motion asked for, it stands at the end.
    ================================================================== */
 
-/** How long each step is held, in ms: the form, the database, the
-    calendar, the restaurant, the email, the three, the whole system. */
-const HOLD = [2600, 5600, 6400, 5000, 6400, 3200, 6000];
+export const SPEED = 1.5;
+
+/** Each step, in ms at the written speed; a step with several holds
+    shows a different business in each. The form; the database (three
+    businesses); the calendar (the clinic with its booking opened, the
+    agency, the restaurant); the email (the clinic with its message
+    opened, the agency, the restaurant); the three; the whole. */
+const HOLDS: number[][] = [[2600, 2600, 2600], [2700, 2600, 2700], [4700, 4600, 4700], [5400, 5400, 5400], [3200], [6000]];
 
 /** Which sheet the request is in at each step (-1: none of them). */
-const ACTIVE = [-1, 0, 1, 1, 2, -1, -1];
+const ACTIVE = [-1, 0, 1, 2, -1, -1];
 
 /** How the three stand at the end: their size against the open one,
     and the space between them, in the card's width. */
 function layout(narrow: boolean) {
-  const W = narrow ? 88 : 60;
+  // The open sheet, in the card's width (2026-11-19: the card 20% taller,
+  // the sheets as large as it allows): 72 x 42 on a desk, 90 x 74 on a phone.
+  const W = narrow ? 90 : 72;
+  const H = narrow ? 74 : 42;
   return {
     W,
-    H: narrow ? 62 : 34,
-    row: { s: narrow ? 0.3 : 0.32, gap: 3 },
-    sys: { s: narrow ? 0.22 : 0.19, gap: 2.4 },
+    H,
+    row: { s: narrow ? 0.29 : 0.27, gap: 3 },
+    sys: { s: narrow ? 0.215 : 0.2, gap: 2.6, rowGap: narrow ? 8 : 6 },
   };
 }
 
-function pose(i: number, at: number, narrow: boolean) {
+/** Where a sheet stands. `row` is -1, 0 or 1: the others sit above and
+    under the three, in the same columns, only at the very end. */
+function pose(col: number, at: number, narrow: boolean, row = 0) {
   const L = layout(narrow);
-  if (at === 5 || at === 6) {
-    const { s, gap } = at === 5 ? L.row : L.sys;
-    const x = (i - 1) * (L.W * s + gap);
-    return { transform: `translate3d(${x}cqw, 0, 0) scale(${s})`, opacity: 1 };
+  if (at === 4 || at === 5) {
+    const end = at === 4 ? L.row : L.sys;
+    const x = (col - 1) * (L.W * end.s + end.gap);
+    const y = at === 5 ? row * (L.H * L.sys.s + L.sys.rowGap) : 0;
+    return { transform: `translate3d(${x}cqw, ${y}cqw, 0) scale(${end.s})`, opacity: 1 };
   }
-  if (ACTIVE[at] === i) {
+  if (ACTIVE[at] === col && row === 0) {
     return { transform: "translate3d(0, 0, 40px) rotateY(-3deg) rotateX(2deg) scale(1)", opacity: 1 };
   }
-  // The others wait in a fan at the back, on the right.
-  const x = (narrow ? 22 : 27) + i * 4;
-  const y = -3 + i * 1.4;
-  const z = -260 - i * 70;
-  return { transform: `translate3d(${x}cqw, ${y}cqw, ${z}px) rotateY(-34deg) rotateX(6deg) scale(0.55)`, opacity: 0.42 };
+  // The others wait at the back, on the right, in a tidy pile: solid
+  // sheets, one behind the other, each a little up and to the right, so
+  // only their edges show and nothing reads through them (user,
+  // 2026-11-19, fourth round: the see-through fan looked wrong). The one
+  // still to come is the nearest.
+  const ahead = ACTIVE[at] < 0 ? col : (col - ACTIVE[at] + 3) % 3;
+  const x = (narrow ? 24 : 31) + ahead * 1.6;
+  const y = -ahead * 1.6;
+  const z = -220 - ahead * 50;
+  return { transform: `translate3d(${x}cqw, ${y}cqw, ${z}px) rotateY(-18deg) rotateX(4deg) scale(0.42)`, opacity: 1, dim: true };
 }
 
-/* ---- the database ------------------------------------------------ */
-
-function Database({ t }: { t: T }) {
-  const rows = [
-    { who: "Marta Figueiredo", mail: "marta.f@exemplo.pt", what: t("Assessment appointment", "Consulta de avaliação"), from: "Website", at: "09:14", state: t("New", "Novo"), fresh: true },
-    { who: "Rui Santos", mail: "rui.santos@exemplo.pt", what: t("Viewing, 2-bed flat", "Visita a um T2"), from: "Website", at: "08:52", state: t("Answered", "Respondido") },
-    { who: "Inês Carvalho", mail: "ines.c@exemplo.pt", what: t("Facial cleansing", "Limpeza de pele"), from: "Instagram", at: "08:31", state: t("Booked", "Marcado") },
-    { who: "João Pereira", mail: "jpereira@exemplo.pt", what: t("Property valuation", "Avaliação de imóvel"), from: "Website", at: t("Yesterday", "Ontem"), state: t("Answered", "Respondido") },
-    { who: "Ana Lopes", mail: "ana.lopes@exemplo.pt", what: t("Table for 4", "Mesa para 4"), from: t("Phone", "Telefone"), at: t("Yesterday", "Ontem"), state: t("Booked", "Marcado") },
-    { who: "Tiago Moura", mail: "tiago.m@exemplo.pt", what: t("Quote request", "Pedido de orçamento"), from: "Website", at: t("Mon", "Seg"), state: t("Closed", "Fechado") },
-  ];
+/** One business's version of a sheet. Shown while it is the one being
+    played (`live`, which also starts its own motion), or, when its sheet
+    is not being played, if it is the clinic. */
+function Layer({ l, v, on, className, children }: { l: number; v: number; on: boolean; className: string; children: ReactNode }) {
+  const live = on && v === l;
+  const show = live || (!on && l === 0);
   return (
-    <div className="be-x be-db">
-      <div className="be-x-bar">
-        <b>{t("Requests", "Pedidos")}</b>
-        <span className="be-x-count">129</span>
-        <span className="be-x-search">{t("Search by name, email…", "Procurar por nome, e-mail…")}</span>
-        <span className="be-x-chip">{t("This week", "Esta semana")}</span>
-      </div>
-      <div className="be-db-grid">
-        <span className="be-db-h">{t("Client", "Cliente")}</span>
-        <span className="be-db-h">{t("Request", "Pedido")}</span>
-        <span className="be-db-h be-x-wide">{t("Source", "Origem")}</span>
-        <span className="be-db-h be-x-wide">{t("Received ↓", "Recebido ↓")}</span>
-        <span className="be-db-h">{t("Status", "Estado")}</span>
-        {rows.map((row, i) => (
-          <div key={row.who} className="be-db-row" data-fresh={row.fresh || undefined} style={{ ["--i" as string]: i } as CSSProperties}>
-            <span className="be-db-who">
-              <b>{row.who}</b>
-              <em>{row.mail}</em>
-            </span>
-            <span>{row.what}</span>
-            <span className="be-x-wide">{row.from}</span>
-            <span className="be-x-wide be-x-mono">{row.at}</span>
-            <span>
-              <i className="be-x-pill" data-fresh={row.fresh || undefined}>
-                {row.state}
-              </i>
-            </span>
-          </div>
-        ))}
-      </div>
-      <div className="be-x-foot">
-        <span>
-          <i className="be-x-live" /> {t("Saved as it arrives", "Guardado à chegada")}
-        </span>
-        <span>{t("6 of 129 · newest first", "6 de 129 · mais recentes primeiro")}</span>
-      </div>
+    <div className={`be-lay be-x ${className}`} data-show={show || undefined} data-live={live || undefined}>
+      {children}
     </div>
   );
 }
 
-/* ---- the calendar, and the restaurant ---------------------------- */
+/* ---- the three businesses ---------------------------------------- */
 
-function Calendar({ t }: { t: T }) {
+function businesses(t: T) {
+  return [t("Aesthetic clinic", "Clínica de estética"), t("Property agency", "Imobiliária"), t("Restaurant", "Restaurante")];
+}
+
+/** The website's form, as each business has it: where each request
+    starts. */
+function forms(t: T) {
+  return [
+    {
+      head: t("Book an appointment", "Marcar consulta"),
+      send: t("Send request", "Enviar pedido"),
+      fields: [
+        [t("Name", "Nome"), "Marta Figueiredo"],
+        [t("Email", "E-mail"), "marta.figueiredo@exemplo.pt"],
+        [t("Service", "Serviço"), t("Assessment appointment", "Consulta de avaliação")],
+        [t("Preferred time", "Horário preferido"), t("Tue morning", "Terça de manhã")],
+      ],
+    },
+    {
+      head: t("Ask for a viewing", "Pedir visita"),
+      send: t("Ask for a viewing", "Pedir visita"),
+      fields: [
+        [t("Name", "Nome"), "Rui Santos"],
+        [t("Email", "E-mail"), "rui.santos@exemplo.pt"],
+        [t("Property", "Imóvel"), t("2-bed in Alvalade · ref. 2231", "T2 em Alvalade · ref. 2231")],
+        [t("When I can", "Disponibilidade"), t("Thursday, lunchtime", "Quinta, à hora de almoço")],
+      ],
+    },
+    {
+      head: t("Book a table", "Reservar mesa"),
+      send: t("Book", "Reservar"),
+      fields: [
+        [t("Name", "Nome"), "Ana Lopes"],
+        [t("Email", "E-mail"), "ana.lopes@exemplo.pt"],
+        [t("People", "Pessoas"), t("4, one of them a baby", "4, uma delas um bebé")],
+        [t("When", "Quando"), t("Saturday, 20:30", "Sábado, 20:30")],
+      ],
+    },
+  ];
+}
+
+const mail = (name: string) =>
+  name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .split(" ")
+    .join(".") + "@exemplo.pt";
+
+/* ---- the database ------------------------------------------------ */
+
+type Req = { who: string; what: string; from: string; at: string; state: string; fresh?: boolean };
+
+function Database({ t, v, on }: { t: T; v: number; on: boolean }) {
+  const site = "Website";
+  const ans = t("Answered", "Respondido");
+  const booked = t("Booked", "Marcado");
+  const closed = t("Closed", "Fechado");
+  const y = t("Yesterday", "Ontem");
+  const sets: { count: string; rows: Req[] }[] = [
+    {
+      count: "129",
+      rows: [
+        { who: "Marta Figueiredo", what: t("Assessment appointment", "Consulta de avaliação"), from: site, at: "09:14", state: t("New", "Novo"), fresh: true },
+        { who: "Inês Carvalho", what: t("Facial cleansing", "Limpeza de pele"), from: "Instagram", at: "08:31", state: booked },
+        { who: "Sara Monteiro", what: t("Laser, 6 sessions", "Laser, 6 sessões"), from: site, at: "08:05", state: ans },
+        { who: "Carla Nunes", what: t("Treatment follow-up", "Revisão de tratamento"), from: t("Phone", "Telefone"), at: y, state: booked },
+        { who: "Beatriz Lima", what: t("Quote request", "Pedido de orçamento"), from: site, at: y, state: ans },
+        { who: "Helena Costa", what: t("Chemical peel", "Peeling químico"), from: "Instagram", at: t("Mon", "Seg"), state: closed },
+      ],
+    },
+    {
+      count: "86",
+      rows: [
+        { who: "Rui Santos", what: t("Viewing, 2-bed in Alvalade", "Visita a um T2 em Alvalade"), from: site, at: "09:02", state: t("New", "Novo"), fresh: true },
+        { who: "João Pereira", what: t("Property valuation", "Avaliação de imóvel"), from: site, at: "08:40", state: ans },
+        { who: "Marco Dias", what: t("Viewing, house in Cascais", "Visita a moradia em Cascais"), from: site, at: "08:12", state: booked },
+        { who: "Teresa Gomes", what: t("Wants to sell a 3-bed", "Quer vender um T3"), from: t("Phone", "Telefone"), at: y, state: ans },
+        { who: "Paulo Reis", what: t("1-bed to rent", "Arrendamento de T1"), from: site, at: y, state: booked },
+        { who: "Filipa Rocha", what: t("Call me back", "Pedido de contacto"), from: "Instagram", at: t("Mon", "Seg"), state: closed },
+      ],
+    },
+    {
+      count: "214",
+      rows: [
+        { who: "Ana Lopes", what: t("Table for 4, Sat 20:30", "Mesa para 4, sáb. 20:30"), from: site, at: "09:10", state: t("New", "Novo"), fresh: true },
+        { who: "Luís Mendes", what: t("Group dinner, 12", "Jantar de grupo, 12"), from: t("Email", "E-mail"), at: "08:44", state: ans },
+        { who: "Pedro Costa", what: t("Table for 2, Fri 21:00", "Mesa para 2, sex. 21:00"), from: site, at: "08:20", state: booked },
+        { who: "Rita Alves", what: t("Birthday, 8 people", "Aniversário, 8 pessoas"), from: t("Phone", "Telefone"), at: y, state: booked },
+        { who: "Nuno Silva", what: t("Group menu", "Menu de grupo"), from: site, at: y, state: ans },
+        { who: "Joana Rocha", what: t("Table for 2, tonight", "Mesa para 2, hoje"), from: "Instagram", at: t("Mon", "Seg"), state: closed },
+      ],
+    },
+  ];
+  const names = businesses(t);
+  return (
+    <div className="be-stack">
+      {sets.map((set, l) => (
+        <Layer key={l} l={l} v={v} on={on} className="be-db">
+          <div className="be-x-bar">
+            <b>{t("Requests", "Pedidos")}</b>
+            <span className="be-x-count">{set.count}</span>
+            <span className="be-x-search">{t("Search by name, email…", "Procurar por nome, e-mail…")}</span>
+            <span className="be-x-chip">{names[l]}</span>
+          </div>
+          <div className="be-db-grid">
+            <span className="be-db-h">{t("Client", "Cliente")}</span>
+            <span className="be-db-h">{t("Request", "Pedido")}</span>
+            <span className="be-db-h be-x-wide">{t("Source", "Origem")}</span>
+            <span className="be-db-h be-x-wide">{t("Received ↓", "Recebido ↓")}</span>
+            <span className="be-db-h">{t("Status", "Estado")}</span>
+            {set.rows.map((row, i) => (
+              <div key={row.who} className="be-db-row" data-fresh={row.fresh || undefined} style={{ ["--i" as string]: i } as CSSProperties}>
+                <span className="be-db-who">
+                  <b>{row.who}</b>
+                  <em>{mail(row.who)}</em>
+                </span>
+                <span>{row.what}</span>
+                <span className="be-x-wide">{row.from}</span>
+                <span className="be-x-wide be-x-mono">{row.at}</span>
+                <span>
+                  <i className="be-x-pill" data-fresh={row.fresh || undefined}>
+                    {row.state}
+                  </i>
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="be-x-foot">
+            <span>
+              <i className="be-x-live" /> {t("Saved as it arrives", "Guardado à chegada")}
+            </span>
+            <span>{t(`6 of ${set.count} · newest first`, `6 de ${set.count} · mais recentes primeiro`)}</span>
+          </div>
+        </Layer>
+      ))}
+    </div>
+  );
+}
+
+/* ---- the calendar ------------------------------------------------ */
+
+type Slot = { d: number; h: number; n: number; say: string };
+
+function Week({ t, head, taken, fresh, children }: { t: T; head: string; taken: Slot[]; fresh: Slot; children?: ReactNode }) {
   const days = [t("Mon 17", "Seg 17"), t("Tue 18", "Ter 18"), t("Wed 19", "Qua 19"), t("Thu 20", "Qui 20"), t("Fri 21", "Sex 21")];
   const hours = ["09:00", "10:00", "11:00", "12:00", "13:00"];
-  const taken = [
-    { d: 0, h: 0, n: 2, say: t("Rui S. · viewing", "Rui S. · visita") },
-    { d: 2, h: 1, n: 2, say: t("João P. · valuation", "João P. · avaliação") },
-    { d: 3, h: 0, n: 1, say: t("Team meeting", "Reunião de equipa") },
-    { d: 4, h: 2, n: 2, say: t("Inês C. · facial", "Inês C. · limpeza") },
-    { d: 3, h: 3, n: 2, say: t("Tiago M. · quote", "Tiago M. · orçamento") },
-    { d: 0, h: 3, n: 1, say: t("Supplier", "Fornecedor") },
-    { d: 1, h: 3, n: 2, say: t("Carla N. · follow-up", "Carla N. · revisão") },
-  ];
+  return (
+    <>
+      <div className="be-x-bar">
+        <b>{head}</b>
+        <span className="be-x-arrows">‹ ›</span>
+        <span className="be-x-seg">
+          <i data-on>{t("Week", "Semana")}</i>
+          <i>{t("Day", "Dia")}</i>
+        </span>
+      </div>
+      <div className="be-cal-grid">
+        {days.map((d, c) => (
+          <span key={d} className="be-cal-day" style={{ gridColumn: c + 2 }}>
+            {d}
+          </span>
+        ))}
+        {hours.map((h, r) => (
+          <span key={h} className="be-cal-hour" style={{ gridRow: r + 2 }}>
+            {h}
+          </span>
+        ))}
+        {hours.flatMap((_, r) => days.map((__, c) => <i key={`${r}-${c}`} className="be-cal-cell" style={{ gridRow: r + 2, gridColumn: c + 2 }} />))}
+        {taken.map((b, i) => (
+          <span key={i} className="be-cal-block" style={{ gridRow: `${b.h + 2} / span ${b.n}`, gridColumn: b.d + 2, ["--i" as string]: i } as CSSProperties}>
+            {b.say}
+          </span>
+        ))}
+        <span className="be-cal-block be-cal-new" style={{ gridRow: `${fresh.h + 2} / span ${fresh.n}`, gridColumn: fresh.d + 2 }}>
+          {fresh.say}
+        </span>
+        {children}
+      </div>
+    </>
+  );
+}
+
+/** A booking, opened from its own block: everything kept about it. */
+function Detail({ head, state, rows }: { t: T; head: string; state: string; rows: string[][] }) {
+  return (
+    <div className="be-cal-detail">
+      <p className="be-cal-detail-head">
+        <b>{head}</b>
+        <i className="be-x-pill" data-fresh>
+          {state}
+        </i>
+      </p>
+      <dl>
+        {rows.map(([k, val]) => (
+          <div key={k} className="be-cal-detail-row">
+            <dt>{k}</dt>
+            <dd>{val}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
+function Calendar({ t, v, on }: { t: T; v: number; on: boolean }) {
+  const names = businesses(t);
   const tables = [
     { n: t("Table 1", "Mesa 1"), seats: 2 },
     { n: t("Table 2", "Mesa 2"), seats: 4 },
@@ -150,83 +326,81 @@ function Calendar({ t }: { t: T }) {
   ];
 
   return (
-    <div className="be-x be-cal">
-      {/* the week of a clinic */}
-      <div className="be-cal-view be-cal-week">
-        <div className="be-x-bar">
-          <b>{t("Week 47 · 17–21 Nov", "Semana 47 · 17–21 nov")}</b>
-          <span className="be-x-arrows">‹ ›</span>
-          <span className="be-x-seg">
-            <i data-on>{t("Week", "Semana")}</i>
-            <i>{t("Day", "Dia")}</i>
-          </span>
-        </div>
-        <div className="be-cal-grid">
-          <span />
-          {days.map((d) => (
-            <span key={d} className="be-cal-day">
-              {d}
-            </span>
-          ))}
-          {hours.map((h, r) => (
-            <span key={h} className="be-cal-hour" style={{ gridRow: r + 2 }}>
-              {h}
-            </span>
-          ))}
-          {hours.flatMap((_, r) =>
-            days.map((__, c) => <i key={`${r}-${c}`} className="be-cal-cell" style={{ gridRow: r + 2, gridColumn: c + 2 }} />),
-          )}
-          {taken.map((b, i) => (
-            <span
-              key={i}
-              className="be-cal-block"
-              style={{ gridRow: `${b.h + 2} / span ${b.n}`, gridColumn: b.d + 2, ["--i" as string]: i } as CSSProperties}
-            >
-              {b.say}
-            </span>
-          ))}
-          <span className="be-cal-block be-cal-new" style={{ gridRow: "3 / span 1", gridColumn: 3 }}>
-            {t("Marta F. · assessment", "Marta F. · consulta")}
-          </span>
-          {/* the booking, opened: everything kept about it */}
-          <div className="be-cal-detail">
-            <p className="be-cal-detail-head">
-              <b>{t("Assessment appointment", "Consulta de avaliação")}</b>
-              <i className="be-x-pill" data-fresh>
-                {t("Confirmed", "Confirmada")}
-              </i>
-            </p>
-            <dl>
-              <dt>{t("Client", "Cliente")}</dt>
-              <dd>Marta Figueiredo</dd>
-              <dt>{t("When", "Quando")}</dt>
-              <dd>{t("Tue 18 Nov · 10:00–10:45", "Ter, 18 nov · 10:00–10:45")}</dd>
-              <dt>{t("With", "Com")}</dt>
-              <dd>{t("Dr Sofia Reis · Room 2", "Dra. Sofia Reis · Sala 2")}</dd>
-              <dt>{t("Contact", "Contacto")}</dt>
-              <dd className="be-x-mono">912 *** 418</dd>
-              <dt>{t("Reminder", "Lembrete")}</dt>
-              <dd>{t("24 h before, by email", "24 h antes, por e-mail")}</dd>
-              <dt>{t("Notes", "Notas")}</dt>
-              <dd>{t("First visit. Sensitive skin.", "Primeira consulta. Pele sensível.")}</dd>
-              <dt>{t("Came from", "Origem")}</dt>
-              <dd>{t("Website form · request #129", "Formulário do website · pedido n.º 129")}</dd>
-            </dl>
-          </div>
-        </div>
-      </div>
+    <div className="be-stack be-cal">
+      {/* the clinic's week, and the new booking opened */}
+      <Layer l={0} v={v} on={on} className="be-cal-week">
+        <Week
+          t={t}
+          head={t("Week 47 · appointments", "Semana 47 · consultas")}
+          taken={[
+            { d: 0, h: 0, n: 2, say: t("Inês C. · facial", "Inês C. · limpeza") },
+            { d: 2, h: 1, n: 2, say: t("Sara M. · laser", "Sara M. · laser") },
+            { d: 3, h: 0, n: 1, say: t("Team meeting", "Reunião de equipa") },
+            { d: 4, h: 2, n: 2, say: t("Helena C. · peel", "Helena C. · peeling") },
+            { d: 3, h: 3, n: 2, say: t("Beatriz L. · assessment", "Beatriz L. · avaliação") },
+            { d: 1, h: 3, n: 2, say: t("Carla N. · follow-up", "Carla N. · revisão") },
+          ]}
+          fresh={{ d: 1, h: 1, n: 1, say: t("Marta F. · assessment", "Marta F. · consulta") }}
+        >
+          <Detail
+            t={t}
+            head={t("Assessment appointment", "Consulta de avaliação")}
+            state={t("Confirmed", "Confirmada")}
+            rows={[
+              [t("Client", "Cliente"), "Marta Figueiredo"],
+              [t("When", "Quando"), t("Tue 18 Nov · 10:00–10:45", "Ter, 18 nov · 10:00–10:45")],
+              [t("With", "Com"), t("Dr Sofia Reis · Room 2", "Dra. Sofia Reis · Sala 2")],
+              [t("Contact", "Contacto"), "912 *** 418"],
+              [t("Reminder", "Lembrete"), t("24 h before, by email", "24 h antes, por e-mail")],
+              [t("Notes", "Notas"), t("First visit. Sensitive skin.", "Primeira consulta. Pele sensível.")],
+              [t("Came from", "Origem"), t("Website form · request #129", "Formulário do website · pedido n.º 129")],
+            ]}
+          />
+        </Week>
+      </Layer>
 
-      {/* the same calendar, for a restaurant */}
-      <div className="be-cal-view be-cal-rest">
+      {/* the property agency's week of viewings */}
+      <Layer l={1} v={v} on={on} className="be-cal-week">
+        <Week
+          t={t}
+          head={t("Week 47 · viewings", "Semana 47 · visitas")}
+          taken={[
+            { d: 0, h: 0, n: 1, say: t("Marco D. · Cascais", "Marco D. · Cascais") },
+            { d: 1, h: 2, n: 2, say: t("Paulo R. · 1-bed", "Paulo R. · T1") },
+            { d: 2, h: 0, n: 2, say: t("Teresa G. · valuation", "Teresa G. · avaliação") },
+            { d: 3, h: 1, n: 1, say: t("Office meeting", "Reunião no escritório") },
+            { d: 4, h: 3, n: 2, say: t("João P. · signing", "João P. · escritura") },
+            { d: 0, h: 3, n: 1, say: t("Photo shoot", "Sessão de fotos") },
+          ]}
+          fresh={{ d: 3, h: 3, n: 1, say: t("Rui S. · 2-bed", "Rui S. · T2") }}
+        >
+          <Detail
+            t={t}
+            head={t("Viewing, 2-bed in Alvalade", "Visita a um T2 em Alvalade")}
+            state={t("Confirmed", "Confirmada")}
+            rows={[
+              [t("Client", "Cliente"), "Rui Santos"],
+              [t("When", "Quando"), t("Thu 20 Nov · 12:00–12:45", "Qui, 20 nov · 12:00–12:45")],
+              [t("Agent", "Consultor"), "Miguel Vaz"],
+              [t("Where", "Onde"), t("Av. de Roma 88, 3rd floor", "Av. de Roma 88, 3.º esq.")],
+              [t("Keys", "Chaves"), t("Collect at the office by 11:30", "Levantar no escritório até às 11:30")],
+              [t("Looking for", "Procura"), t("2-bed, up to €390,000, with lift", "T2 até 390 000 €, com elevador")],
+              [t("Came from", "Origem"), t("Website form · request #86", "Formulário do website · pedido n.º 86")],
+            ]}
+          />
+        </Week>
+      </Layer>
+
+      {/* the restaurant's tables */}
+      <Layer l={2} v={v} on={on} className="be-cal-rest">
         <div className="be-x-bar">
           <b>{t("Saturday 22 Nov · Dinner", "Sábado, 22 nov · Jantar")}</b>
           <span className="be-x-count">{t("38 of 44 seats", "38 de 44 lugares")}</span>
-          <span className="be-x-chip">{t("Restaurant", "Restaurante")}</span>
+          <span className="be-x-chip">{names[2]}</span>
         </div>
         <div className="be-rest-grid">
-          <span />
-          {times.map((tm) => (
-            <span key={tm} className="be-cal-day">
+          {times.map((tm, c) => (
+            <span key={tm} className="be-cal-day" style={{ gridColumn: c + 2 }}>
               {tm}
             </span>
           ))}
@@ -235,21 +409,29 @@ function Calendar({ t }: { t: T }) {
               {tb.n} <em>· {tb.seats}</em>
             </span>
           ))}
-          {tables.flatMap((_, r) =>
-            times.map((__, c) => <i key={`${r}-${c}`} className="be-cal-cell" style={{ gridRow: r + 2, gridColumn: c + 2 }} />),
-          )}
+          {tables.flatMap((_, r) => times.map((__, c) => <i key={`${r}-${c}`} className="be-cal-cell" style={{ gridRow: r + 2, gridColumn: c + 2 }} />))}
           {booked.map((b, i) => (
-            <span
-              key={i}
-              className="be-cal-block"
-              style={{ gridRow: b.r + 2, gridColumn: `${b.s + 2} / span ${b.n}`, ["--i" as string]: i } as CSSProperties}
-            >
+            <span key={i} className="be-cal-block" style={{ gridRow: b.r + 2, gridColumn: `${b.s + 2} / span ${b.n}`, ["--i" as string]: i } as CSSProperties}>
               {b.say}
             </span>
           ))}
           <span className="be-cal-block be-cal-new" style={{ gridRow: 4, gridColumn: "5 / span 4" }}>
             Ana L. · 4
           </span>
+          <Detail
+            t={t}
+            head={t("Table for 4", "Mesa para 4")}
+            state={t("Confirmed", "Confirmada")}
+            rows={[
+              [t("Client", "Cliente"), "Ana Lopes"],
+              [t("When", "Quando"), t("Sat 22 Nov · 20:30–22:30", "Sáb, 22 nov · 20:30–22:30")],
+              [t("Table", "Mesa"), t("Table 3 · by the window", "Mesa 3 · junto à janela")],
+              [t("People", "Pessoas"), t("4 · a high chair", "4 · uma cadeira de bebé")],
+              [t("Notes", "Notas"), t("Nut allergy at the table", "Alergia a frutos secos na mesa")],
+              [t("Reminder", "Lembrete"), t("On the day, at 12:00", "No próprio dia, às 12:00")],
+              [t("Came from", "Origem"), t("Website form · request #214", "Formulário do website · pedido n.º 214")],
+            ]}
+          />
         </div>
         <div className="be-x-foot">
           <span>
@@ -257,103 +439,197 @@ function Calendar({ t }: { t: T }) {
           </span>
           <span>{t("2 seats free at 21:00", "2 lugares livres às 21:00")}</span>
         </div>
-      </div>
+      </Layer>
     </div>
   );
 }
 
 /* ---- the email --------------------------------------------------- */
 
-function Email({ t }: { t: T }) {
-  const sent = [
-    { to: "Marta Figueiredo", what: t("Appointment confirmed: Tuesday at 10:00", "Consulta confirmada: terça às 10:00"), kind: t("Confirmation", "Confirmação"), at: "09:14", state: t("Sent", "Enviado"), fresh: true },
-    { to: "Ana Lopes", what: t("Table for 4 confirmed: Saturday", "Mesa para 4 confirmada: sábado"), kind: t("Confirmation", "Confirmação"), at: "09:02", state: t("Opened", "Aberto") },
-    { to: "Rui Santos", what: t("Your viewing is tomorrow at 09:00", "A visita é amanhã às 09:00"), kind: t("Reminder", "Lembrete"), at: "08:00", state: t("Opened", "Aberto") },
-    { to: "Inês Carvalho", what: t("How did your facial go?", "Como correu a limpeza de pele?"), kind: t("Follow-up", "Pós-consulta"), at: "07:30", state: t("Opened", "Aberto") },
-    { to: "João Pereira", what: t("We have your request", "Recebemos o seu pedido"), kind: t("Receipt", "Receção"), at: t("Yesterday", "Ontem"), state: t("Answered", "Respondido") },
+type Sent = { to: string; what: string; kind: string; at: string; state: string; fresh?: boolean };
+
+function Email({ t, v, on }: { t: T; v: number; on: boolean }) {
+  const names = businesses(t);
+  const sentOk = t("Sent", "Enviado");
+  const opened = t("Opened", "Aberto");
+  const conf = t("Confirmation", "Confirmação");
+  const rem = t("Reminder", "Lembrete");
+  const fol = t("Follow-up", "Seguimento");
+  const y = t("Yesterday", "Ontem");
+  const sets: Sent[][] = [
+    [
+      { to: "Marta Figueiredo", what: t("Appointment confirmed: Tuesday at 10:00", "Consulta confirmada: terça às 10:00"), kind: conf, at: "09:14", state: sentOk, fresh: true },
+      { to: "Inês Carvalho", what: t("How did your facial go?", "Como correu a limpeza de pele?"), kind: t("Aftercare", "Pós-consulta"), at: "07:30", state: opened },
+      { to: "Sara Monteiro", what: t("Your laser session is tomorrow at 11:00", "A sessão de laser é amanhã às 11:00"), kind: rem, at: "08:00", state: opened },
+      { to: "Carla Nunes", what: t("We have your request", "Recebemos o seu pedido"), kind: t("Receipt", "Receção"), at: y, state: t("Answered", "Respondido") },
+      { to: "Beatriz Lima", what: t("Your quote is ready", "O seu orçamento está pronto"), kind: t("Quote", "Orçamento"), at: y, state: opened },
+    ],
+    [
+      { to: "Rui Santos", what: t("Viewing confirmed: Thursday at 12:00", "Visita confirmada: quinta às 12:00"), kind: conf, at: "09:03", state: sentOk, fresh: true },
+      { to: "Marco Dias", what: t("Your viewing is tomorrow at 09:00", "A visita é amanhã às 09:00"), kind: rem, at: "08:00", state: opened },
+      { to: "João Pereira", what: t("Your property's valuation", "A avaliação do seu imóvel"), kind: fol, at: "07:45", state: opened },
+      { to: "Teresa Gomes", what: t("We have your request", "Recebemos o seu pedido"), kind: t("Receipt", "Receção"), at: y, state: t("Answered", "Respondido") },
+      { to: "Paulo Reis", what: t("Documents for the lease", "Documentos para o arrendamento"), kind: fol, at: y, state: opened },
+    ],
+    [
+      { to: "Ana Lopes", what: t("Table for 4 confirmed: Saturday 20:30", "Mesa para 4 confirmada: sábado 20:30"), kind: conf, at: "09:11", state: sentOk, fresh: true },
+      { to: "Pedro Costa", what: t("Your table is tomorrow at 21:00", "A reserva é amanhã às 21:00"), kind: rem, at: "08:00", state: opened },
+      { to: "Luís Mendes", what: t("A menu for 12", "Proposta de menu para 12"), kind: t("Quote", "Orçamento"), at: "07:50", state: opened },
+      { to: "Rita Alves", what: t("A cake for the birthday?", "Bolo de aniversário: alguma preferência?"), kind: fol, at: y, state: opened },
+      { to: "Joana Rocha", what: t("Thank you for coming", "Obrigado pela visita"), kind: t("After the visit", "Pós-visita"), at: y, state: opened },
+    ],
+  ];
+  // Each business's confirmation: the template's words, and its blanks
+  // as [blank, what goes in it]. The studio's emails to clients address
+  // the reader, formally (CLAUDE.md).
+  type Part = string | [string, string];
+  const opens: { to: string; template: string; subject: string; body: Part[]; sent: string; file: string }[] = [
+    {
+      to: "Marta Figueiredo",
+      template: t("Template: appointment confirmed", "Modelo: confirmação de consulta"),
+      subject: t("Your appointment is confirmed", "A sua consulta está confirmada"),
+      body: [
+        t("Hello ", "Olá, "),
+        [t("{name}", "{nome}"), "Marta"],
+        t(". Your ", ". A sua "),
+        [t("{service}", "{serviço}"), t("assessment appointment", "consulta de avaliação")],
+        t(" is confirmed for ", " está confirmada para "),
+        [t("{date}", "{data}"), t("Tuesday 18 November at 10:00", "terça-feira, 18 de novembro, às 10:00")],
+        t(", with ", ", com a "),
+        [t("{who}", "{quem}"), t("Dr Sofia Reis", "Dra. Sofia Reis")],
+        t(". We'll send a reminder the day before.", ". Enviamos um lembrete na véspera."),
+      ],
+      sent: t("Sent 0.4 s after the request", "Enviado 0,4 s depois do pedido"),
+      file: "consulta.ics",
+    },
+    {
+      to: "Rui Santos",
+      template: t("Template: viewing confirmed", "Modelo: confirmação de visita"),
+      subject: t("Your viewing is confirmed", "A sua visita está confirmada"),
+      body: [
+        t("Hello ", "Olá, "),
+        [t("{name}", "{nome}"), "Rui"],
+        t(". The viewing of the ", ". A visita ao "),
+        [t("{property}", "{imóvel}"), t("2-bed in Alvalade", "T2 em Alvalade")],
+        t(" is confirmed for ", " está confirmada para "),
+        [t("{date}", "{data}"), t("Thursday 20 November at 12:00", "quinta-feira, 20 de novembro, às 12:00")],
+        t(", with ", ", com o "),
+        [t("{agent}", "{consultor}"), "Miguel Vaz"],
+        t(". We'll meet you at the door.", ". Encontramo-nos à porta do prédio."),
+      ],
+      sent: t("Sent 0.6 s after the request", "Enviado 0,6 s depois do pedido"),
+      file: "visita.ics",
+    },
+    {
+      to: "Ana Lopes",
+      template: t("Template: table confirmed", "Modelo: confirmação de reserva"),
+      subject: t("Your table is booked", "A sua mesa está reservada"),
+      body: [
+        t("Hello ", "Olá, "),
+        [t("{name}", "{nome}"), "Ana"],
+        t(". Your table for ", ". A sua mesa para "),
+        [t("{people}", "{pessoas}"), t("4 people", "4 pessoas")],
+        t(" is booked for ", " está reservada para "),
+        [t("{date}", "{data}"), t("Saturday 22 November at 20:30", "sábado, 22 de novembro, às 20:30")],
+        t(". ", ". "),
+        [t("{note}", "{nota}"), t("The high chair is ready for you", "A cadeira de bebé já está guardada")],
+        t(".", "."),
+      ],
+      sent: t("Sent 0.3 s after the request", "Enviado 0,3 s depois do pedido"),
+      file: "reserva.ics",
+    },
   ];
   // The blanks of the template, and what goes in each.
-  const slot = (blank: string, value: string, i: number) => (
+  const slot =(blank: string, value: string, i: number) => (
     <span className="be-mail-slot" style={{ ["--i" as string]: i } as CSSProperties}>
       <span className="be-mail-blank">{blank}</span>
       <span className="be-mail-value">{value}</span>
     </span>
   );
   return (
-    <div className="be-x be-mail">
-      <div className="be-x-bar">
-        <b>{t("Sent on their own", "Enviados sozinhos")}</b>
-        <span className="be-x-count">{t("14 today", "14 hoje")}</span>
-        <span className="be-x-chip">{t("Templates · 6", "Modelos · 6")}</span>
-      </div>
-      <div className="be-db-grid be-mail-grid">
-        <span className="be-db-h">{t("To", "Para")}</span>
-        <span className="be-db-h">{t("Subject", "Assunto")}</span>
-        <span className="be-db-h be-x-wide">{t("Template", "Modelo")}</span>
-        <span className="be-db-h be-x-wide">{t("Time", "Hora")}</span>
-        <span className="be-db-h">{t("Status", "Estado")}</span>
-        {sent.map((row, i) => (
-          <div key={row.to} className="be-db-row" data-fresh={row.fresh || undefined} style={{ ["--i" as string]: i } as CSSProperties}>
-            <span className="be-db-who">
-              <b>{row.to}</b>
-            </span>
-            <span>{row.what}</span>
-            <span className="be-x-wide">{row.kind}</span>
-            <span className="be-x-wide be-x-mono">{row.at}</span>
-            <span>
-              <i className="be-x-pill" data-fresh={row.fresh || undefined}>
-                {row.state}
-              </i>
-            </span>
+    <div className="be-stack">
+      {sets.map((rows, l) => (
+        <Layer key={l} l={l} v={v} on={on} className="be-mail">
+          <div className="be-x-bar">
+            <b>{t("Sent on their own", "Enviados sozinhos")}</b>
+            <span className="be-x-count">{t(`${[14, 9, 22][l]} today`, `${[14, 9, 22][l]} hoje`)}</span>
+            <span className="be-x-chip">{names[l]}</span>
           </div>
-        ))}
-      </div>
+          <div className="be-db-grid be-mail-grid">
+            <span className="be-db-h">{t("To", "Para")}</span>
+            <span className="be-db-h">{t("Subject", "Assunto")}</span>
+            <span className="be-db-h be-x-wide">{t("Template", "Modelo")}</span>
+            <span className="be-db-h be-x-wide">{t("Time", "Hora")}</span>
+            <span className="be-db-h">{t("Status", "Estado")}</span>
+            {rows.map((row, i) => (
+              <div key={row.to} className="be-db-row" data-fresh={row.fresh || undefined} style={{ ["--i" as string]: i } as CSSProperties}>
+                <span className="be-db-who">
+                  <b>{row.to}</b>
+                </span>
+                <span>{row.what}</span>
+                <span className="be-x-wide">{row.kind}</span>
+                <span className="be-x-wide be-x-mono">{row.at}</span>
+                <span>
+                  <i className="be-x-pill" data-fresh={row.fresh || undefined}>
+                    {row.state}
+                  </i>
+                </span>
+              </div>
+            ))}
+          </div>
 
-      {/* the one just sent, opened, its blanks filling in */}
-      <div className="be-mail-open">
-        <p className="be-mail-meta">
-          <span>
-            {t("To", "Para")} <b>Marta Figueiredo</b>
-          </span>
-          <span>{t("Template: appointment confirmed", "Modelo: confirmação de consulta")}</span>
-        </p>
-        <p className="be-mail-subject">{t("Your appointment is confirmed", "A sua consulta está confirmada")}</p>
-        <p className="be-mail-body">
-          {t("Hello ", "Olá, ")}
-          {slot(t("{name}", "{nome}"), "Marta", 0)}
-          {t(". Your ", ". A sua ")}
-          {slot(t("{service}", "{serviço}"), t("assessment appointment", "consulta de avaliação"), 1)}
-          {t(" is confirmed for ", " está confirmada para ")}
-          {slot(t("{date}", "{data}"), t("Tuesday 18 November at 10:00", "terça-feira, 18 de novembro, às 10:00"), 2)}
-          {t(", with ", ", com a ")}
-          {slot(t("{who}", "{quem}"), t("Dr Sofia Reis", "Dra. Sofia Reis"), 3)}
-          {t(". We'll send a reminder the day before.", ". Enviamos um lembrete na véspera.")}
-        </p>
-        <p className="be-x-foot be-mail-foot">
-          <span>
-            <i className="be-x-live" /> {t("Sent 0.4 s after the request", "Enviado 0,4 s depois do pedido")}
-          </span>
-          <span className="be-x-mono">convite.ics</span>
-        </p>
-      </div>
+          {/* this business's confirmation, just sent, opened, its blanks
+              filling in */}
+          {(() => {
+            const o = opens[l];
+            let n = 0;
+            return (
+              <div className="be-mail-open">
+                <p className="be-mail-meta">
+                  <span>
+                    {t("To", "Para")} <b>{o.to}</b>
+                  </span>
+                  <span>{o.template}</span>
+                </p>
+                <p className="be-mail-subject">{o.subject}</p>
+                <p className="be-mail-body">
+                  {o.body.map((part, i) => (typeof part === "string" ? <span key={i}>{part}</span> : <span key={i}>{slot(part[0], part[1], n++)}</span>))}
+                </p>
+                <p className="be-x-foot be-mail-foot">
+                  <span>
+                    <i className="be-x-live" /> {o.sent}
+                  </span>
+                  <span className="be-x-mono">{o.file}</span>
+                </p>
+              </div>
+            );
+          })()}
+        </Layer>
+      ))}
     </div>
   );
 }
 
-/* ---- the larger system, at the end ------------------------------- */
+/* ---- the simpler things around the three, at the end ------------- */
 
-/** The solutions made to measure, around the three: almost no detail,
-    only their names, so the three stay the ones that are read. */
+/** What else we build to measure (user, 2026-11-19, third round):
+    simple things, nothing the studio does not do yet (no payments).
+    Each is the same white sheet as the three, small, with almost no
+    detail. Above the three and under them, in their columns. */
 function others(t: T) {
   return [
-    { x: 12, y: 15, to: 0, name: t("Payments", "Pagamentos") },
-    { x: 33, y: 13, to: 0, name: t("Invoicing", "Faturação") },
-    { x: 67, y: 13, to: 2, name: t("Client area", "Área de cliente") },
-    { x: 88, y: 15, to: 2, name: t("Reviews", "Avaliações") },
-    { x: 12, y: 85, to: 0, name: t("Stock", "Stock") },
-    { x: 33, y: 87, to: 1, name: t("Team rota", "Escalas da equipa") },
-    { x: 67, y: 87, to: 1, name: t("SMS reminders", "Lembretes por SMS") },
-    { x: 88, y: 85, to: 2, name: t("Reports", "Relatórios") },
+    { col: 0, row: -1, name: t("Client portal", "Portal de clientes") },
+    { col: 1, row: -1, name: t("Team portal", "Portal da equipa") },
+    { col: 2, row: -1, name: t("Custom forms", "Formulários à medida") },
+    // Kept from the first list: the two portals and the forms (user,
+    // 2026-11-19, fourth round). The other three are things these same
+    // businesses ask for, and that the studio already builds: the price
+    // worked out on the page (as the SEO page's calculator does), a list
+    // the business edits itself (treatments, properties, a menu), and a
+    // search with filters over it.
+    { col: 0, row: 1, name: t("Quote calculator", "Calculadora de orçamentos") },
+    { col: 1, row: 1, name: t("Editable catalogue", "Catálogo editável") },
+    { col: 2, row: 1, name: t("Search with filters", "Pesquisa com filtros") },
   ];
 }
 
@@ -370,35 +646,45 @@ export function DepthSystem({ t }: { t: T }) {
     watch.observe(el);
     return () => watch.disconnect();
   }, [ref]);
-  const [step, setStep] = useState(0);
-  const run = inView && !reduce;
 
+  const [clock, setClock] = useState({ at: 0, v: 0 });
+  const run = inView && !reduce;
   useEffect(() => {
     if (!run) return;
-    const id = window.setTimeout(() => setStep((s) => (s + 1) % HOLD.length), HOLD[step]);
+    const holds = HOLDS[clock.at];
+    const id = window.setTimeout(() => {
+      setClock(({ at, v }) => (v + 1 < HOLDS[at].length ? { at, v: v + 1 } : { at: (at + 1) % HOLDS.length, v: 0 }));
+    }, holds[clock.v] / SPEED);
     return () => window.clearTimeout(id);
-  }, [step, run]);
+  }, [clock, run]);
 
-  const at = reduce ? 6 : step;
+  const at = reduce ? 5 : clock.at;
+  const v = reduce ? 0 : clock.v;
   const L = layout(narrow);
-  const end = at === 5 ? L.row : L.sys;
+  const end = at === 4 ? L.row : L.sys;
   const pitch = L.W * end.s + end.gap;
-  const centre = (i: number) => 50 + (i - 1) * pitch;
+  const sheetH = L.H * end.s;
+  const rowPitch = L.H * L.sys.s + L.sys.rowGap;
 
   const sheets = [
-    { k: "db", name: t("Database", "Base de dados"), body: <Database t={t} /> },
-    { k: "cal", name: t("Calendar", "Calendário"), body: <Calendar t={t} /> },
-    { k: "mail", name: t("Email", "E-mail"), body: <Email t={t} /> },
+    { k: "db", name: t("Database", "Base de dados"), Body: Database },
+    { k: "cal", name: t("Calendar", "Calendário"), Body: Calendar },
+    { k: "mail", name: t("Email", "E-mail"), Body: Email },
   ];
+  const names = businesses(t);
   const captions = [
-    t("A request arrives through the website", "Um pedido chega pelo website"),
-    t("It is kept in the database, with everything that was asked", "Fica registado na base de dados, com tudo o que foi pedido"),
-    t("It takes its place in the calendar, with every detail kept", "Ocupa o seu lugar no calendário, com todos os detalhes guardados"),
-    t("The same calendar, as a restaurant's reservations", "O mesmo calendário, como reservas de um restaurante"),
-    t("The confirmation goes out on its own, its blanks filled in", "A confirmação sai sozinha, com os espaços já preenchidos"),
+    t(`A request arrives through the website · ${names[v]}`, `Um pedido chega pelo website · ${names[v]}`),
+    t(`Kept in the database, with everything that was asked · ${names[v]}`, `Fica registado na base de dados, com tudo o que foi pedido · ${names[v]}`),
+    t(`It takes its place in the calendar, every detail kept · ${names[v]}`, `Ocupa o seu lugar no calendário, com todos os detalhes · ${names[v]}`),
+    t(`The confirmation goes out on its own, its blanks filled · ${names[v]}`, `A confirmação sai sozinha, com os espaços preenchidos · ${names[v]}`),
     t("The three main solutions, tied together", "As três principais soluções, ligadas entre si"),
-    t("And others, made to the measure of each business", "E outras, feitas à medida de cada negócio"),
+    t("And simpler ones around them, made to measure", "E outras mais simples à volta, feitas à medida"),
   ];
+  const nameStyle = (col: number, row: number) =>
+    ({
+      ["--x" as string]: `${(col - 1) * pitch}cqw`,
+      ["--y" as string]: `${(at === 5 ? row * rowPitch : 0) + sheetH / 2 + 1.4}cqw`,
+    }) as CSSProperties;
 
   return (
     <figure
@@ -408,31 +694,12 @@ export function DepthSystem({ t }: { t: T }) {
       data-still={reduce || undefined}
       role="img"
       aria-label={t(
-        "A request from the website's form is kept in the database with everything that was asked, takes its place in the calendar (shown also as a restaurant's reservations), and its confirmation goes out on its own. Then the three solutions sit together, among others made to the measure of each business.",
-        "Um pedido do formulário do website fica registado na base de dados com tudo o que foi pedido, ocupa o seu lugar no calendário (também mostrado como reservas de um restaurante), e a confirmação sai sozinha. Depois as três soluções ficam juntas, entre outras feitas à medida de cada negócio.",
+        "A request from the website's form is kept in the database, takes its place in the calendar, and its confirmation goes out on its own; each solution is shown for a clinic, a property agency and a restaurant. Then the three sit together, among simpler things made to measure: portals, forms, a waiting list, review requests and reports.",
+        "Um pedido do formulário do website fica registado na base de dados, ocupa o seu lugar no calendário, e a confirmação sai sozinha; cada solução é mostrada numa clínica, numa imobiliária e num restaurante. Depois as três ficam juntas, entre outras mais simples feitas à medida: portais, formulários, lista de espera, pedidos de avaliação e relatórios.",
       )}
     >
       <div className="be-ds-stage" aria-hidden="true">
         <div className="be-ds-space">
-          {/* the larger system: drawn under the three, only at the end */}
-          <svg className="be-ds-net" viewBox="0 0 100 100" preserveAspectRatio="none">
-            {others(t).map((o, i) => (
-              <path
-                key={i}
-                d={`M ${o.x} ${o.y} L ${o.x} 50 L ${centre(o.to)} 50`}
-                pathLength={100}
-                style={{ ["--i" as string]: i } as CSSProperties}
-              />
-            ))}
-          </svg>
-          {others(t).map((o, i) => (
-            <span key={o.name} className="be-ds-node" style={{ left: `${o.x}%`, top: `${o.y}%`, ["--i" as string]: i } as CSSProperties}>
-              <b>{o.name}</b>
-              <i />
-              <i />
-            </span>
-          ))}
-
           {/* the wires between the three, once they sit together */}
           {[0, 1].map((w) => (
             <span
@@ -443,64 +710,105 @@ export function DepthSystem({ t }: { t: T }) {
               <i />
             </span>
           ))}
+          {/* and, at the end, down to the others in each column */}
+          {[0, 1, 2].flatMap((col) =>
+            [-1, 1].map((row) => (
+              <span
+                key={`${col}${row}`}
+                className="be-ds-vwire"
+                style={
+                  {
+                    // off the centre, so it never runs through a name
+                    ["--x" as string]: `${(col - 1) * pitch + L.W * L.sys.s * 0.34}cqw`,
+                    ["--y" as string]: `${row * (rowPitch / 2)}cqw`,
+                    ["--h" as string]: `${L.sys.rowGap}cqw`,
+                    ["--i" as string]: col,
+                  } as CSSProperties
+                }
+              />
+            )),
+          )}
 
           {/* the form, where the request starts */}
           <div
             className="be-ds-form"
             data-on={at === 0 || undefined}
             style={{
-              transform:
-                at === 0
-                  ? "translate3d(-8cqw, 0, 60px) rotateY(8deg) rotateX(2deg)"
-                  : "translate3d(27cqw, -3cqw, -260px) rotateY(-34deg) scale(0.4)",
+              transform: at === 0 ? "translate3d(-8cqw, 0, 60px) rotateY(8deg) rotateX(2deg)" : "translate3d(27cqw, -3cqw, -260px) rotateY(-34deg) scale(0.4)",
               opacity: at === 0 ? 1 : 0,
             }}
           >
-            <p className="be-x-bar">
-              <b>{t("Book an appointment", "Marcar consulta")}</b>
-            </p>
-            <span className="be-ds-field" style={{ ["--i" as string]: 0 } as CSSProperties}>
-              <em>{t("Name", "Nome")}</em>
-              <span>Marta Figueiredo</span>
-            </span>
-            <span className="be-ds-field" style={{ ["--i" as string]: 1 } as CSSProperties}>
-              <em>{t("Email", "E-mail")}</em>
-              <span>marta.f@exemplo.pt</span>
-            </span>
-            <span className="be-ds-field" style={{ ["--i" as string]: 2 } as CSSProperties}>
-              <em>{t("Service", "Serviço")}</em>
-              <span>{t("Assessment appointment", "Consulta de avaliação")}</span>
-            </span>
-            <span className="be-ds-field" style={{ ["--i" as string]: 3 } as CSSProperties}>
-              <em>{t("Preferred time", "Horário preferido")}</em>
-              <span>{t("Tue morning", "Terça de manhã")}</span>
-            </span>
-            <span className="be-ds-send">{t("Send request", "Enviar pedido")}</span>
+            {/* the same form, as each business would have it */}
+            <div className="be-stack">
+              {forms(t).map((form, l) => (
+                <Layer key={l} l={l} v={v} on={at === 0} className="be-ds-formlay">
+                  <p className="be-x-bar">
+                    <b>{form.head}</b>
+                    <span className="be-x-chip">{names[l]}</span>
+                  </p>
+                  {form.fields.map(([label, value], i) => (
+                    <span key={label} className="be-ds-field" style={{ ["--i" as string]: i } as CSSProperties}>
+                      <em>{label}</em>
+                      <span>{value}</span>
+                    </span>
+                  ))}
+                  <span className="be-ds-send">{form.send}</span>
+                </Layer>
+              ))}
+            </div>
           </div>
 
-          {sheets.map((sheet, i) => {
-            const p = pose(i, at, narrow);
+          {/* the others, made to measure: the same sheet, almost bare */}
+          {others(t).map((o, i) => {
+            const p = pose(o.col, at, narrow, o.row);
             return (
               <div
-                key={sheet.k}
-                className="be-ds-sheet"
-                data-k={sheet.k}
-                data-on={ACTIVE[at] === i || undefined}
-                style={{ transform: p.transform, opacity: p.opacity, zIndex: ACTIVE[at] === i ? 5 : 3 - i }}
+                key={o.name}
+                className="be-ds-sheet be-ds-mini"
+                data-shown={at === 5 || undefined}
+                style={{ transform: p.transform, ["--i" as string]: i } as CSSProperties}
               >
-                {sheet.body}
+                <div className="be-x">
+                  <div className="be-x-bar">
+                    <b>{o.name}</b>
+                  </div>
+                  <div className="be-mini-lines">
+                    <i />
+                    <i />
+                    <i />
+                    <i />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {sheets.map(({ k, Body }, i) => {
+            const p = pose(i, at, narrow);
+            const on = ACTIVE[at] === i;
+            return (
+              <div
+                key={k}
+                className="be-ds-sheet"
+                data-k={k}
+                data-on={on || undefined}
+                data-dim={("dim" in p && p.dim) || undefined}
+                style={{ transform: p.transform, opacity: p.opacity, zIndex: on ? 5 : 3 - (ACTIVE[at] < 0 ? i : (i - ACTIVE[at] + 3) % 3) }}
+              >
+                <Body t={t} v={v} on={on} />
               </div>
             );
           })}
 
           {/* their names, under them, once they are small */}
           {sheets.map((sheet, i) => (
-            <span
-              key={sheet.k}
-              className="be-ds-name"
-              style={{ ["--x" as string]: `${(i - 1) * pitch}cqw`, ["--y" as string]: `${(L.H * end.s) / 2 + 1.6}cqw` } as CSSProperties}
-            >
+            <span key={sheet.k} className="be-ds-name" style={nameStyle(i, 0)}>
               {sheet.name}
+            </span>
+          ))}
+          {others(t).map((o) => (
+            <span key={o.name} className="be-ds-name be-ds-name-mini" style={nameStyle(o.col, o.row)}>
+              {o.name}
             </span>
           ))}
         </div>
@@ -512,7 +820,7 @@ export function DepthSystem({ t }: { t: T }) {
             <i key={i} data-on={at === i || undefined} data-done={at > i || undefined} />
           ))}
         </span>
-        <p key={at} className="be-dc-cap">
+        <p key={`${at}-${v}`} className="be-dc-cap">
           {captions[at]}
         </p>
       </div>

@@ -46,13 +46,17 @@ export function ToneRoom({ children, className }: { children: ReactNode; classNa
     if (!r || !g) return;
     const stops = Array.from(r.querySelectorAll<HTMLElement>(":scope > [data-tone]")).map((el) => ({
       el,
+      // A section may start its turn at its own height on the screen,
+      // `data-tone-from` (a share of the screen; the back-end page's
+      // solutions start later, user 2026-11-19); otherwise TURN_FROM.
+      from: Number(el.dataset.toneFrom) || TURN_FROM,
       grey: GREY[el.dataset.tone ?? "light"] ?? 255,
       body: el.querySelector<HTMLElement>("[data-tone-body]"),
       last: "",
     }));
     const sections = stops.length;
     const after = r.nextElementSibling ?? r.closest("main")?.nextElementSibling;
-    if (after instanceof HTMLElement) stops.push({ el: after, grey: 0, body: null, last: "" });
+    if (after instanceof HTMLElement) stops.push({ el: after, from: TURN_FROM, grey: 0, body: null, last: "" });
     if (!sections) return;
 
     let lastGrey = -1;
@@ -64,7 +68,7 @@ export function ToneRoom({ children, className }: { children: ReactNode; classNa
       let own = grey;
       for (let k = 1; k < stops.length; k++) {
         const top = stops[k]!.el.getBoundingClientRect().top;
-        const p = Math.min(Math.max((vh * TURN_FROM - top) / (vh * TURN_SPAN), 0), 1);
+        const p = Math.min(Math.max((vh * stops[k]!.from - top) / (vh * TURN_SPAN), 0), 1);
         grey += (stops[k]!.grey - grey) * smooth(p);
         if (k < sections) own = grey;
       }
