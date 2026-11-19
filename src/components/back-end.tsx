@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
 import { SlideIn } from "./enter";
 import { ToneRoom } from "./tone-veil";
 import { ProposalAsk } from "./about-faq";
 import { useInView, type T } from "./sbs-shared";
 import { HoursBars, SavedHours, WeekDonut } from "./back-end-charts";
-import { DepthSystem } from "./back-end-depth";
+import { DepthSystem, SPEED } from "./back-end-depth";
 import { DragRun, GainStory, GlowTrail, PriceLine, SceneClient, SceneDay, SceneKept } from "./back-end-motion";
 import { TO_FILL } from "@/lib/work";
 import { useT } from "@/lib/use-lang";
@@ -409,15 +409,51 @@ function Prices({ t }: { t: T }) {
 
 /* ================================================================== */
 
+/** Every animation and transition on the page played 1.5 times as fast,
+    all in proportion, delays included (user, 2026-11-19), the way the
+    side-by-side page's personalization card is sped up: done on the
+    running animations themselves, so the timings written across this
+    page and globals.css keep their ratios, and picked up again whenever
+    something on the page changes, since each change starts new ones.
+    What the scroll drives is not timed, so it is not touched. */
+function usePageSpeed(box: React.RefObject<HTMLElement | null>, rate: number) {
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    let frame = 0;
+    const fast = () => {
+      for (const a of el.getAnimations({ subtree: true })) if (a.playbackRate !== rate) a.playbackRate = rate;
+    };
+    // Transitions start at the next style pass, after the change that
+    // caused them, so look again on the next frame too.
+    const both = () => {
+      fast();
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(fast);
+    };
+    both();
+    const watch = new MutationObserver(both);
+    watch.observe(el, { subtree: true, childList: true, attributes: true });
+    return () => {
+      watch.disconnect();
+      cancelAnimationFrame(frame);
+    };
+  }, [box, rate]);
+}
+
 export function BackEnd() {
   const t = useT();
+  const page = useRef<HTMLDivElement>(null);
+  usePageSpeed(page, SPEED);
   return (
-    <ToneRoom>
-      <Head t={t} />
-      <Why t={t} />
-      <Solutions t={t} />
-      <Gains t={t} />
-      <Prices t={t} />
-    </ToneRoom>
+    <div ref={page} className="contents">
+      <ToneRoom>
+        <Head t={t} />
+        <Why t={t} />
+        <Solutions t={t} />
+        <Gains t={t} />
+        <Prices t={t} />
+      </ToneRoom>
+    </div>
   );
 }

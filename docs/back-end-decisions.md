@@ -402,3 +402,41 @@ a secção entra no fundo do ecrã) e cada paragem acende um pouco antes de
 a linha lá chegar. O tipo passou de cinco níveis a três: o nome pequeno,
 o valor grande (com "uma vez" / "por mês" ao lado, pequeno), e a linha
 por baixo. O rótulo mono por cima saiu.
+
+## Terceira volta (2026-11-19, sétimo pedido)
+
+**Um negócio de cada vez.** Misturar uma clínica, uma imobiliária e um
+restaurante na mesma lista não fazia sentido. Cada folha mostra agora um
+negócio e depois, mudando só o conteúdo, os outros dois — sempre pela
+mesma ordem: clínica de estética, imobiliária, restaurante. O nome do
+negócio está na etiqueta da folha e no fim da legenda.
+
+- **Base de dados**: seis pedidos de cada negócio, um por linha.
+- **Calendário**: a semana de consultas da clínica, com a marcação nova
+  aberta em zoom; a semana de visitas da imobiliária; as mesas do
+  restaurante ao jantar. O passo à parte do restaurante saiu: é agora a
+  terceira versão do calendário.
+- **E-mail**: os e-mails enviados sozinhos de cada negócio; o da clínica
+  abre-se com os espaços a preencher.
+- A clínica é o negócio por onde o pedido passa: o formulário, a linha,
+  a marcação aberta e o e-mail aberto são todos da Marta.
+
+Cada versão é uma camada (`.be-lay`) da mesma folha; só a que está a ser
+mostrada tem `data-live`, que é o que lhe começa os movimentos.
+
+**O sistema do fim, mais simples.** Ainda não montamos ecossistemas
+completos, por isso saiu o que o estúdio não faz (pagamentos, faturação,
+stock, SMS). À volta das três ficam seis coisas simples feitas à medida:
+portal de clientes, portal da equipa, formulários à medida, lista de
+espera, pedidos de avaliação e relatórios mensais (à espera de o estúdio
+confirmar a lista). E têm todas a mesma estética das três: a mesma folha
+branca, do mesmo tamanho, quase sem pormenor, em três linhas por três
+colunas, com o nome por baixo e um fio para a da sua coluna. As caixas
+escuras de antes saíram.
+
+**1,5 vezes mais depressa.** Os tempos do card dividem-se por `SPEED`
+(`back-end-depth.tsx`), e a página corre todas as animações e transições
+CSS a 1,5 (`usePageSpeed` em `back-end.tsx`, o mesmo método do card da
+Personalização), por isso os tempos escritos guardam as proporções. O que
+o scroll conduz não tem tempo e não muda. As contagens dos números
+(`useCount`) continuam ao ritmo de antes.
