@@ -91,6 +91,13 @@ function Head({ t }: { t: T }) {
         <SlideIn ready distance={0} delay={0.12}>
           <Cases3 t={t} />
         </SlideIn>
+        {/* The film, up here under the three cards (user, 2026-11-19);
+            the words it used to follow come after it, in Opening. */}
+        <SlideIn ready distance={0} delay={0.16}>
+          <div className="vi-head-film">
+            <Glance t={t} />
+          </div>
+        </SlideIn>
       </header>
     </section>
   );
@@ -127,37 +134,117 @@ function Opening({ t }: { t: T }) {
           </h2>
         </SlideIn>
 
-        {/* The two paragraphs, every word kept, set as one statement
-            (after Bandcamp's, through Inspo): large, and the three ideas
-            that carry it lit as they are reached. */}
-        <div className="vi-say">
-          <SlideIn ready distance={0} delay={0.06}>
-            <p className="vi-say-p">
-              {t("It rests on the core of an organisational identity: ", "Assenta no núcleo de uma identidade organizacional: ")}
-              <Lit>{t("the logo, and the symbol beside it.", "o logótipo e o símbolo ao lado dele.")}</Lit>{" "}
-              {t(
-                "When that core is out of date — or never matched what the company became — the best-built website in the world ",
-                "Quando esse núcleo está desatualizado — ou nunca correspondeu ao que a empresa veio a ser —, o website mais bem feito do mundo ",
-              )}
-              <Lit>{t("contradicts it.", "entra em contradição com ele.")}</Lit>
-            </p>
-          </SlideIn>
-          <SlideIn ready distance={0} delay={0.1}>
-            <p className="vi-say-p vi-say-p2">
-              {t(
-                "That is why this service is sold inside the web design: a compact visual identity, drawn at the same time as the look and the feel of the website, so that ",
-                "É por isso que este serviço se vende dentro do web design: uma identidade visual mais compacta, desenhada ao mesmo tempo que a estética e a aparência do website, para que ",
-              )}
-              <Lit>{t("everything speaks the same language.", "tudo fale a mesma linguagem.")}</Lit>
-            </p>
-          </SlideIn>
-        </div>
-
-        <SlideIn ready distance={0} delay={0.12}>
-          <Glance t={t} />
-        </SlideIn>
+        {/* The two paragraphs, every word kept, in three ways to read
+            them lighter (user, 2026-11-19: pick one). Each after a site
+            found through Inspo, the composition only. */}
+        <WorthOptions t={t} />
       </div>
     </section>
+  );
+}
+
+/** The words of the two paragraphs, cut where each fact ends, so the
+    three options below share them exactly. */
+function worth(t: T) {
+  return {
+    core: t("It rests on the core of an organisational identity: ", "Assenta no núcleo de uma identidade organizacional: "),
+    mark: t("the logo, and the symbol beside it.", "o logótipo e o símbolo ao lado dele."),
+    when: t(
+      "When that core is out of date — or never matched what the company became — the best-built website in the world ",
+      "Quando esse núcleo está desatualizado — ou nunca correspondeu ao que a empresa veio a ser —, o website mais bem feito do mundo ",
+    ),
+    against: t("contradicts it.", "entra em contradição com ele."),
+    why: t(
+      "That is why this service is sold inside the web design: a compact visual identity, drawn at the same time as the look and the feel of the website, so that ",
+      "É por isso que este serviço se vende dentro do web design: uma identidade visual mais compacta, desenhada ao mesmo tempo que a estética e a aparência do website, para que ",
+    ),
+    same: t("everything speaks the same language.", "tudo fale a mesma linguagem."),
+  };
+}
+
+/** One option, framed and labelled, so the three can be told apart and
+    one chosen. Taken off once the choice is made. */
+function Option({ id, name, from, children }: { id: string; name: string; from: string; children: ReactNode }) {
+  return (
+    <section className="vi-opt" aria-label={name}>
+      <p className="vi-opt-tag mono-label">
+        <b>{id}</b> {name} <span>· {from}</span>
+      </p>
+      {children}
+    </section>
+  );
+}
+
+function WorthOptions({ t }: { t: T }) {
+  const w = worth(t);
+  const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+  return (
+    <div className="vi-opts">
+      {/* A - two columns under a hairline, each with a small label,
+          after Frontier Climate's "Buyers / Suppliers". */}
+      <Option id="A" name={t("Two columns", "Duas colunas")} from="Frontier Climate">
+        <div className="vi-wa">
+          <div className="vi-wa-col">
+            <p className="mono-label vi-wa-label">{t("The problem", "O problema")}</p>
+            <p className="vi-wa-body">
+              {w.core}
+              <b>{w.mark}</b> {w.when}
+              <Lit>{w.against}</Lit>
+            </p>
+          </div>
+          <div className="vi-wa-col">
+            <p className="mono-label vi-wa-label">{t("Our answer", "A nossa resposta")}</p>
+            <p className="vi-wa-body">
+              {w.why}
+              <Lit>{w.same}</Lit>
+            </p>
+          </div>
+        </div>
+      </Option>
+
+      {/* B - one line large, the rest small and narrow, set off to the
+          right under it, after NB Studio's and Linked by Air's openings. */}
+      <Option id="B" name={t("One line, then the detail", "Uma frase, depois o detalhe")} from="NB Studio · Linked by Air">
+        <div className="vi-wb">
+          <p className="display vi-wb-big">
+            {cap(w.same)}
+          </p>
+          <div className="vi-wb-small">
+            <p>
+              {w.core}
+              <b>{w.mark}</b> {w.when}
+              <b>{w.against}</b>
+            </p>
+            <p>
+              {w.why}
+              <b>{w.same}</b>
+            </p>
+          </div>
+        </div>
+      </Option>
+
+      {/* C - three numbered points, each headed by one of the three ideas
+          the text turns on, after Dia & Co's "How it works". */}
+      <Option id="C" name={t("Three points", "Três pontos")} from="Dia & Co">
+        <ol className="vi-wc">
+          <li>
+            <span className="mono-label vi-wc-n">01</span>
+            <h3 className="vi-wc-head">{cap(w.mark)}</h3>
+            <p className="vi-wc-body">{w.core}{w.mark}</p>
+          </li>
+          <li>
+            <span className="mono-label vi-wc-n">02</span>
+            <h3 className="vi-wc-head">{t("The website contradicts it.", "O website entra em contradição com ele.")}</h3>
+            <p className="vi-wc-body">{w.when}{w.against}</p>
+          </li>
+          <li>
+            <span className="mono-label vi-wc-n">03</span>
+            <h3 className="vi-wc-head">{cap(w.same)}</h3>
+            <p className="vi-wc-body">{w.why}{w.same}</p>
+          </li>
+        </ol>
+      </Option>
+    </div>
   );
 }
 

@@ -8900,6 +8900,42 @@
   }
 }
 
+/* ---- visual identity: the film in the header, and the words in three
+   options to choose from (user, 2026-11-19) ------------------------ */
+@layer components {
+  .vi-head-film .vi-mg { margin-top: clamp(2.5rem, 5vw, 4rem); }
+
+  /* each option framed and tagged, so the three read apart */
+  .vi-opts { display: grid; gap: clamp(2.5rem, 5vw, 4rem); margin-top: clamp(2.5rem, 5vw, 4rem); }
+  .vi-opt { position: relative; padding: clamp(1.75rem, 4vw, 3.5rem) clamp(1.25rem, 3.5vw, 3rem) clamp(2rem, 4.5vw, 3.75rem); outline: 1px dashed rgb(0 0 0 / 0.28); outline-offset: -1px; }
+  .vi-opt-tag { position: absolute; left: clamp(1.25rem, 3.5vw, 3rem); top: 0; translate: 0 -50%; padding: 0.35rem 0.6rem; background: var(--color-ink); color: #ffffff; letter-spacing: 0.06em; }
+  .vi-opt-tag b { font-weight: 600; margin-right: 0.35em; }
+  .vi-opt-tag span { color: rgb(255 255 255 / 0.55); }
+
+  /* A: two columns under a hairline */
+  .vi-wa { display: grid; gap: clamp(1.75rem, 3.5vw, 2.5rem); }
+  @media (min-width: 900px) { .vi-wa { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(2.5rem, 5vw, 4.5rem); } }
+  .vi-wa-col { padding-top: 1.1rem; border-top: 1px solid var(--color-ink); }
+  .vi-wa-label { color: var(--color-ash-2); }
+  .vi-wa-body { max-width: 46ch; margin-top: 0.9rem; font-size: clamp(1.0625rem, 1.35vw, 1.25rem); line-height: 1.55; color: var(--color-ash); text-wrap: pretty; }
+  .vi-wa-body b { font-weight: 500; color: var(--color-ink); }
+
+  /* B: one line large, the detail small and to the right */
+  .vi-wb-big { max-width: 16ch; font-size: clamp(2.25rem, 5.4vw, 4.5rem); font-weight: 400; line-height: 1; letter-spacing: -0.035em; text-wrap: balance; }
+  .vi-wb-small { display: grid; gap: 1.25rem; margin-top: clamp(1.75rem, 3.5vw, 2.75rem); }
+  @media (min-width: 900px) { .vi-wb-small { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(1.75rem, 3vw, 2.5rem); margin-left: 33%; } }
+  .vi-wb-small p { max-width: 40ch; font-size: 1rem; line-height: 1.6; color: var(--color-ash); text-wrap: pretty; }
+  .vi-wb-small b { font-weight: 500; color: var(--color-ink); }
+
+  /* C: three numbered points */
+  .vi-wc { display: grid; gap: clamp(1.75rem, 3.5vw, 2.5rem); margin: 0; padding: 0; list-style: none; }
+  @media (min-width: 900px) { .vi-wc { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: clamp(1.5rem, 3vw, 2.5rem); } }
+  .vi-wc li { padding-top: 1rem; border-top: 1px solid var(--color-hair); }
+  .vi-wc-n { color: var(--color-ash-2); }
+  .vi-wc-head { margin-top: 1.5rem; font-family: var(--font-title); font-size: clamp(1.375rem, 2.1vw, 1.75rem); font-weight: 500; line-height: 1.12; letter-spacing: -0.025em; text-wrap: balance; }
+  .vi-wc-body { max-width: 38ch; margin-top: 0.85rem; font-size: 1rem; line-height: 1.6; color: var(--color-ash); text-wrap: pretty; }
+}
+
 /* ---- back-end: "Why" on white, its cards black (user, 2026-11-19) ---
    The section turns light; the three cards keep the drawings' dark, now
    solid black, and the meteor that runs between them goes ink. */
