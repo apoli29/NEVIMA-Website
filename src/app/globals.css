@@ -9209,3 +9209,69 @@
     .vi-lit, .vi-mg-cam, .vi-mg-arm, .vi-mg-say, .vi-mg-feel, .vi-site, .vi-mg-screen, .vi-morph .vi-morph-stage { transition: none; }
   }
 }
+
+/* ---- the service pages' black cards, on the about page's folds -------
+   Every black or near-black card on the service pages takes the ground
+   of the about page's first section (user, 2026-11-19): the same
+   photograph of soft black-and-white folds (public/about/folds-*.webp),
+   dimmed by half on black as .abt-hero-photo is, under the same
+   vignette as .abt-hero-scrim. Only the ground changes; the cards keep
+   their own edges and contents. The grey cards (.vi-trio-card,
+   .vi-sure) and the photographic plates are not black and stay. */
+@layer components {
+  :is(
+    .be-pc,
+    .be-card,
+    .be-dc,
+    .be-ds,
+    .be-sols .be-sol,
+    .be-slab-in .be-slab,
+    .be-why-light .be-card,
+    .vi-mg,
+    .sg-card-dark,
+    .sg-ai,
+    .ps-pack:not([data-lit])
+  ) {
+    background:
+      radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(0 0 0 / 0.35)),
+      linear-gradient(rgb(0 0 0 / 0.5), rgb(0 0 0 / 0.5)),
+      url("/about/folds-1600.webp") center / cover no-repeat,
+      #000000;
+  }
+}
+
+/* Legibility on the folds, the about page's own way: the photograph is
+   left exactly as it is, and the words carry a soft dark shade
+   (.abt-statement does the same over the same picture). The faintest
+   greys come up a step where they sit straight on the ground; white
+   sheets inside the cards drop the shade. */
+@layer components {
+  :is(.be-card, .be-sols .be-sol, .be-slab-in .be-slab, .be-why-light .be-card, .vi-mg, .sg-card-dark, .sg-ai, .ps-pack:not([data-lit])) {
+    text-shadow: 0 0 14px rgb(0 0 0 / 0.7), 0 0 2px rgb(0 0 0 / 0.35);
+  }
+  /* measured against the brightest fold behind each line (#646464 at
+     worst): every line at 4.5:1 or better */
+  :is(.be-card, .be-why-light .be-card) :is(.bef, .bef-saved) { --bef-dim: rgb(255 255 255 / 0.86); }
+  :is(.be-card, .be-why-light .be-card) .bef-saved-say { color: rgb(255 255 255 / 0.9); }
+  :is(.be-card, .be-why-light .be-card) :is(.bef-mark, .bef-saved .mono-label) { color: rgb(255 255 255 / 0.84); }
+  .be-sols .be-sol-body { color: rgb(255 255 255 / 0.88); }
+  :is(.be-card, .be-why-light .be-card) .bef-card { background: transparent; }
+  .sg-card-dark :is(.sg-calc, .sg-calc *),
+  .vi-mg :is(.vi-mg-screen, .vi-mg-screen *),
+  :is(.be-sols .be-sol) :is(.be-draw, .be-draw *) { text-shadow: none; }
+}
+/* the SEO & GEO cards' faintest labels, a step up on the folds; out of
+   any layer, since they are Tailwind utilities and the utilities layer
+   would win over components */
+:is(.sg-card-dark, .sg-ai) :is(.text-paper\/40, .text-paper\/45, .text-paper\/55) { color: rgb(255 255 255 / 0.82); }
+@layer components {
+  .sg-ai .sg-ai-answer { color: rgb(255 255 255 / 0.86); }
+}
+@layer components {
+  /* the head was filled with the old ground's grey; on the folds it
+     read as a hole, so the folds show through it */
+  .vi-mg .vi-mg-head { fill: none; }
+}
+@layer components {
+  .ps-pack:not([data-lit]) :is(.ps-pack-rows dt, .ps-pack-kicker) { color: rgb(255 255 255 / 0.82); }
+}
