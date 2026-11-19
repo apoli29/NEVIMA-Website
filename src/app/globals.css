@@ -8036,14 +8036,26 @@
      margin reset above; the second round lost them to it.) */
   @media (min-width: 900px) {
     .be-trail { grid-template-columns: repeat(24, minmax(0, 1fr)); column-gap: clamp(0.75rem, 1.4vw, 1.25rem); row-gap: clamp(1.5rem, 2.6vw, 2.25rem); }
-    .be-trail .be-trail-card[data-n="0"] { grid-column: 1 / 15; }
-    .be-trail .be-trail-card[data-n="1"] { grid-column: 11 / 25; }
-    .be-trail .be-trail-card[data-n="2"] { grid-column: 6 / 20; }
+    /* wider (16 of 24) so the drawings can grow (user, 2026-11-19, tenth
+       round), on the same rule: flush left, flush right, the third
+       exactly between them */
+    .be-trail .be-trail-card[data-n="0"] { grid-column: 1 / 17; }
+    .be-trail .be-trail-card[data-n="1"] { grid-column: 9 / 25; }
+    .be-trail .be-trail-card[data-n="2"] { grid-column: 5 / 21; }
+    .be-trail .be-trail-card { padding: clamp(1.75rem, 3vw, 3rem); }
+    /* the drawings themselves, larger */
+    .be-trail .bef-stems { height: clamp(200px, 21vw, 300px); }
+    .be-trail .bef-group-name { margin-top: 0.85rem; font-size: 0.9375rem; }
+    .be-trail .bef-group-v { font-size: 0.6875rem; }
+    .be-trail .bef-ring-mid b { font-size: clamp(2.5rem, 4.2vw, 3.75rem); }
+    .be-trail .bef-parts { font-size: 1rem; }
+    .be-trail .bef-saved-say { max-width: 52ch; font-size: clamp(1.0625rem, 1.4vw, 1.25rem); }
+    .be-trail .bef-saved-big b { font-size: clamp(6rem, 12vw, 11.5rem); }
     /* the ring's card is as wide as the others now: the ring and its
        three parts side by side, so it is not a ring in an empty card */
     .be-trail .be-trail-card[data-n="1"] .bef {
       display: grid;
-      grid-template-columns: clamp(10rem, 15vw, 12.5rem) minmax(0, 1fr);
+      grid-template-columns: clamp(13rem, 21vw, 18rem) minmax(0, 1fr);
       grid-template-areas: "name name" "ring parts" "mark mark";
       column-gap: clamp(1.75rem, 3.2vw, 3rem);
       align-items: center;

@@ -492,3 +492,10 @@ O que a tornou exata, em vez de estranha:
 A segunda volta perdia as margens para uma regra posterior
 (`.be-trail .be-trail-card { margin-top: 0 }`, da mesma força); as
 posições estão agora debaixo de `.be-trail .be-trail-card[...]`.
+
+**Os gráficos maiores** (2026-11-19, décimo pedido). As posições ficaram;
+os cards passaram de 14 para 16 das 24 colunas, na mesma regra (encostado
+à esquerda, encostado à direita, o terceiro exatamente ao meio), e o que
+está dentro cresceu: as barras até 300px de altura (eram 180), o anel até
+288px (era cerca de 200), o número do contador até 11,5rem (era 8,5), e os
+nomes e valores que os acompanham um passo acima.
