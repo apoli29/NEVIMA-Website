@@ -176,11 +176,12 @@ const TAKE: { shot: Shot; ms: number }[] = [
 
 /** Where the camera points, in percent of the stage, and how close.
     The figure is drawn in an 800 by 450 field: the phone in the hand at
-    (452, 236), the face at (330, 140). */
+    (453, 227), the face at (330, 140). Close on the phone, it fills 80%
+    of the stage's height (62 units, 5.8 times over). */
 const CAMERA: Record<Shot, { x: number; y: number; s: number }> = {
   wide: { x: 50, y: 50, s: 1 },
   raise: { x: 50, y: 50, s: 1 },
-  screen: { x: 56.5, y: 52.4, s: 6.5 },
+  screen: { x: 56.625, y: 50.444, s: 5.8 },
   face: { x: 44, y: 32, s: 2.3 },
 };
 
@@ -208,29 +209,12 @@ function useTyped(text: string, on: boolean, still: boolean) {
   return text.slice(0, n);
 }
 
-/** What the phone shows, close up: Pilar's website with the identity it
-    had, or with the one it has. */
+/** What the phone shows, close up: only the logo (user, 2026-11-19),
+    the one it had on its white or the one it has on Pilar's Noite. */
 function Site({ t, side, on }: { t: T; side: "old" | "new"; on: boolean }) {
   return (
     <span className="vi-site" data-side={side} data-on={on || undefined}>
-      <span className="vi-site-bar">
-        <span className="vi-site-logo">{side === "old" ? <PilarOldLogo t={t} /> : <PilarNewLogo t={t} />}</span>
-        <span className="vi-site-burger">
-          <i />
-          <i />
-          {side === "old" && <i />}
-        </span>
-      </span>
-      <span className="vi-site-pic" />
-      <span className="vi-site-lines">
-        <i />
-        <i />
-        <i />
-      </span>
-      <span className="vi-site-cards">
-        <i />
-        <i />
-      </span>
+      <span className="vi-site-logo">{side === "old" ? <PilarOldLogo t={t} /> : <PilarNewLogo t={t} />}</span>
     </span>
   );
 }
@@ -300,8 +284,14 @@ function Glance({ t }: { t: T }) {
             {/* the arm and the phone in its hand, raised from the shoulder */}
             <g className="vi-mg-arm" data-up={up || undefined}>
               <path d="M374 232 Q404 318 412 326 Q432 300 448 262" className="vi-mg-line" />
-              <rect x="439" y="212" width="27" height="48" rx="5" className="vi-mg-phone" />
-              <rect x="442" y="217" width="21" height="38" rx="2" className="vi-mg-glass" data-side={side} />
+              {/* Larger, with a thin bezel (user, 2026-11-19): 34 by 62
+                  units, the glass 1.5 units in from every edge. */}
+              {/* The edge is a shape a quarter unit proud of the body,
+                  not a stroke: a stroke would thicken as the camera,
+                  moved by CSS, closes in. */}
+              <rect x="435.75" y="195.75" width="34.5" height="62.5" rx="6.2" className="vi-mg-edge" />
+              <rect x="436" y="196" width="34" height="62" rx="6" className="vi-mg-phone" />
+              <rect x="437.5" y="197.5" width="31" height="59" rx="4.8" className="vi-mg-glass" data-side={side} />
             </g>
           </svg>
         </div>
