@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useReducedMotion } from "motion/react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { SlideIn } from "./enter";
 import { BeforeAfter } from "./project-report";
 import { ToneRoom } from "./tone-veil";
 import { ProposalAsk } from "./about-faq";
 import { useInView, type T } from "./sbs-shared";
-import { BRANDS, Mark } from "./vi-brands";
+import { BRANDS, Mark, PilarNewLogo, PilarOldLogo } from "./vi-brands";
 import { TO_FILL } from "@/lib/work";
 import { useT } from "@/lib/use-lang";
 
@@ -15,26 +15,32 @@ import { useT } from "@/lib/use-lang";
    Visual Identity
 
    The service's own page (user, 2026-11-17), set as the photo shoot's
-   and SEO & GEO's are, so the three read as one system: the same
-   header, one ToneRoom whose sections turn from light to dark under
-   the tonal veil, the same SlideIn on every heading, the same
-   free-proposal drop.
+   and SEO & GEO's are, so the three read as one system: one ToneRoom
+   whose sections turn from light to dark under the tonal veil, the same
+   SlideIn on every heading.
 
-   Two sections, from the studio's brief:
+   Reshaped by the user on 2026-11-19, twice:
 
-   1. The proposal. Said in three things seen rather than described:
-      the old mark against the new one on the slider the project
-      reports already carry; the symbol drawn on its construction grid,
-      which draws itself as the section is reached; and the two of them
-      applied on the website they were made with.
-   2. Whether it makes sense at all, which is answered "no" for a
-      business that already has an identity worth the name, with the
-      cases cycling in place rather than listed.
+   1. The header: the title and three grey cards, each the card of
+      "Not sure?" - the mark taken apart and built again on its own
+      brand's ground. Only the first is filled (Pilar); the other two
+      wait for the cases the studio is adding.
+   2. Why it is worth it: the text set as one large statement, its key
+      ideas lit by black blocks as they are reached (after Bandcamp,
+      through Inspo), and under it a short piece of motion graphics: the
+      client takes the phone out, the camera goes into the screen, and
+      back to the face, which reacts and speaks - once to the old
+      identity, once to the new.
+   3. Does it make sense for every business? On the dark ground, the
+      question held in the middle of the screen until the scroll turns
+      it into "No.", which then goes to the left under the question, now
+      the section's title; the two lists of cases and the grey card come
+      up close under them.
+   4. How the price works.
 
-   PLACES FOR THE WORK. Every image is a named, empty place under
-   public/visual-identity/ (see its README). While a file is missing,
-   its place says what belongs there and holds its shape, so dropping
-   the real work in is the whole of the work.
+   The proposal in three things seen (the slider, the symbol on its
+   grid, the website mockup) was taken off the page as a near repeat of
+   section 2; it is kept whole below, out of use, in Proposal.
 
    The construction grid around the symbol is ours and generic — the
    guides a mark is built on — not any client's geometry. References
@@ -43,96 +49,47 @@ import { useT } from "@/lib/use-lang";
    ruled cell). Their colour and type stay with them.
    ================================================================== */
 
-/* ---- the three businesses, before and after ---------------------- */
+/* ---- the header -------------------------------------------------- */
 
-/** One turn of the three, in milliseconds. */
-const PAIR_MS = 3400;
-
-/** Two cards, side by side: on one the mark the business had, on the
-    other the mark it ends up with. Only Pilar is shown (user,
-    2026-11-18), so nothing turns; were another business ever added to
-    BRANDS, the two cards would turn off one clock, the before and the
-    after on screen always belonging to each other. On a phone one card
-    sits over the other. */
-function Pair({ t }: { t: T }) {
-  const reduce = useReducedMotion() ?? false;
-  const [ref, inView] = useInView<HTMLDivElement>(0.3);
-  const [at, setAt] = useState(0);
-
-  useEffect(() => {
-    if (!inView || reduce || BRANDS.length < 2) return;
-    const tick = window.setInterval(() => setAt((n) => n + 1), PAIR_MS);
-    return () => window.clearInterval(tick);
-  }, [inView, reduce]);
-
-  const i = at % BRANDS.length;
-  const sides = [
-    { key: "before" as const, head: t("The mark they had", "A marca que tinham") },
-    { key: "after" as const, head: t("The mark they have", "A marca que passam a ter") },
+/** Three of the grey card that closes "Does it make sense?" (user,
+    2026-11-19): the first carries Pilar's loop, the other two stand
+    empty for the two cases the studio is about to add. One over the
+    other on a phone. */
+function Cases3({ t }: { t: T }) {
+  const pilar = BRANDS[0]!;
+  // The mark exactly as the grey card of "Not sure?" shows it, in a much
+  // thinner rim of grey; the trade over it and the name under it, both
+  // outside the card (user, 2026-11-19).
+  const items = [
+    { key: "pilar", trade: pilar.trade(t), name: pilar.name, body: <Morph t={t} bare /> },
+    { key: "next-1", trade: TO_FILL, name: TO_FILL, body: <span className="vi-trio-wait" aria-hidden="true" /> },
+    { key: "next-2", trade: TO_FILL, name: TO_FILL, body: <span className="vi-trio-wait" aria-hidden="true" /> },
   ];
-
   return (
-    <div ref={ref} className="vi-pair">
-      {sides.map((side) => (
-        <figure key={side.key} className="vi-pair-card" data-side={side.key}>
-          <figcaption className="mono-label vi-pair-head">{side.head}</figcaption>
-          <div className="vi-pair-stage">
-            {BRANDS.map((brand, n) => (
-              <div key={brand.id} className="vi-pair-one" data-on={n === i || undefined}>
-                <span className="vi-pair-mark">
-                  <Mark brand={brand} side={side.key} />
-                </span>
-                <span className="vi-pair-name">{brand.name}</span>
-                <span className="mono-label vi-pair-trade">{brand.trade(t)}</span>
-              </div>
-            ))}
-          </div>
+    <div className="vi-trio">
+      {items.map((it) => (
+        <figure key={it.key} className="vi-trio-item" data-empty={it.key !== "pilar" || undefined}>
+          <span className="mono-label vi-trio-trade">{it.trade}</span>
+          <div className="vi-trio-card">{it.body}</div>
+          <figcaption className="vi-trio-name">{it.name}</figcaption>
         </figure>
       ))}
     </div>
   );
 }
 
-/* ---- the header, as the other service pages carry it ------------- */
-
+/** The title and the three cards, and nothing else. */
 function Head({ t }: { t: T }) {
-  const facts = [
-    { v: t("The logo", "O logotipo"), l: t("Included", "Incluído") },
-    { v: t("The symbol", "O símbolo"), l: t("Where it applies", "Se aplicável") },
-    { v: t("The website's look", "A estética do website"), l: t("Thought out with them", "Pensada com eles") },
-  ];
   return (
     <section data-tone="dark" className="relative isolate text-paper">
-      {/* No drop of its own (user, 2026-11-17): the bar carries one all
-          the way down and the page ends on "Let's work together". */}
       <header className="shell ps-head" data-tone-body>
         <SlideIn ready>
-          <p className="mono-label text-paper/55">{t("Additional service", "Serviço adicional")}</p>
-          <h1 className="display mt-7 max-w-[18ch] text-[clamp(2.5rem,6vw,4.75rem)] leading-[0.98] font-light">
+          <h1 className="display max-w-[18ch] text-[clamp(2.5rem,6vw,4.75rem)] leading-[0.98] font-light">
             {t("Visual identity", "Identidade visual")}
           </h1>
         </SlideIn>
-        <SlideIn ready distance={0} delay={0.08}>
-          <p className="ps-head-say">
-            <span className="font-light sm:block">{t("An outdated logo", "Um logótipo antiquado")}</span>{" "}
-            <span className="font-medium sm:block">{t("undoes a first-rate website.", "desfaz um website de topo.")}</span>
-          </p>
-        </SlideIn>
-        <SlideIn ready distance={0} delay={0.16}>
-          <dl className="ps-head-facts">
-            {facts.map((f) => (
-              <div key={f.l}>
-                <dt>{f.v}</dt>
-                <dd className="mono-label">{f.l}</dd>
-              </div>
-            ))}
-          </dl>
-        </SlideIn>
-        {/* The words first, and the cards after them (user,
-            2026-11-18): the mark the business had against the mark it
-            ends up with, side by side, one over the other on a phone. */}
-        <SlideIn ready distance={0} delay={0.22}>
-          <Pair t={t} />
+        <SlideIn ready distance={0} delay={0.12}>
+          <Cases3 t={t} />
         </SlideIn>
       </header>
     </section>
@@ -141,10 +98,27 @@ function Head({ t }: { t: T }) {
 
 /* ---- the opening ------------------------------------------------- */
 
+/** A key idea of the statement: a black block draws itself behind it,
+    from the left and line by line, once it is reached, and its words
+    turn white over it - the way the back-end page lights "hours". */
+function Lit({ children }: { children: ReactNode }) {
+  const reduce = useReducedMotion() ?? false;
+  const [ref, inView] = useInView<HTMLSpanElement>(0.9);
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    if (inView) setOn(true);
+  }, [inView]);
+  return (
+    <span ref={ref} className="vi-lit" data-on={on || reduce || undefined}>
+      {children}
+    </span>
+  );
+}
+
 function Opening({ t }: { t: T }) {
   return (
     <section data-tone="light" className="relative">
-      <div className="shell ps-open" data-tone-body>
+      <div className="shell ps-open vi-open" data-tone-body>
         <SlideIn ready>
           <p className="mono-label text-ash-2">{t("Why it is worth it", "Porque vale a pena")}</p>
           <h2 className="display ps-open-title">
@@ -152,26 +126,210 @@ function Opening({ t }: { t: T }) {
             <span className="font-medium sm:block">{t("rests on a mark.", "assenta numa marca.")}</span>
           </h2>
         </SlideIn>
-        <SlideIn ready distance={0} delay={0.08} className="ps-open-say">
-          <p>
-            {t(
-              "It rests on the core of an organisational identity: the logo, and the symbol beside it. When that core is out of date — or never matched what the company became — the best-built website in the world contradicts it.",
-              "Assenta no núcleo de uma identidade organizacional: o logótipo e o símbolo ao lado dele. Quando esse núcleo está desatualizado — ou nunca correspondeu ao que a empresa veio a ser —, o website mais bem feito do mundo entra em contradição com ele.",
-            )}
-          </p>
-          <p>
-            {t(
-              "That is why this service is sold inside the web design: a compact visual identity, drawn at the same time as the look and the feel of the website, so that everything speaks the same language.",
-              "É por isso que este serviço se vende dentro do web design: uma identidade visual mais compacta, desenhada ao mesmo tempo que a estética e a aparência do website, para que tudo fale a mesma linguagem.",
-            )}
-          </p>
+
+        {/* The two paragraphs, every word kept, set as one statement
+            (after Bandcamp's, through Inspo): large, and the three ideas
+            that carry it lit as they are reached. */}
+        <div className="vi-say">
+          <SlideIn ready distance={0} delay={0.06}>
+            <p className="vi-say-p">
+              {t("It rests on the core of an organisational identity: ", "Assenta no núcleo de uma identidade organizacional: ")}
+              <Lit>{t("the logo, and the symbol beside it.", "o logótipo e o símbolo ao lado dele.")}</Lit>{" "}
+              {t(
+                "When that core is out of date — or never matched what the company became — the best-built website in the world ",
+                "Quando esse núcleo está desatualizado — ou nunca correspondeu ao que a empresa veio a ser —, o website mais bem feito do mundo ",
+              )}
+              <Lit>{t("contradicts it.", "entra em contradição com ele.")}</Lit>
+            </p>
+          </SlideIn>
+          <SlideIn ready distance={0} delay={0.1}>
+            <p className="vi-say-p vi-say-p2">
+              {t(
+                "That is why this service is sold inside the web design: a compact visual identity, drawn at the same time as the look and the feel of the website, so that ",
+                "É por isso que este serviço se vende dentro do web design: uma identidade visual mais compacta, desenhada ao mesmo tempo que a estética e a aparência do website, para que ",
+              )}
+              <Lit>{t("everything speaks the same language.", "tudo fale a mesma linguagem.")}</Lit>
+            </p>
+          </SlideIn>
+        </div>
+
+        <SlideIn ready distance={0} delay={0.12}>
+          <Glance t={t} />
         </SlideIn>
       </div>
     </section>
   );
 }
 
-/* ---- 1. the proposal, in three things seen ----------------------- */
+/* ---- the client, looking it up: motion graphics ------------------ */
+
+type Shot = "wide" | "raise" | "screen" | "face";
+
+/** One take, as it is seen: where the camera is and for how long. Run
+    twice - the old identity, then the new - and then again. */
+const TAKE: { shot: Shot; ms: number }[] = [
+  { shot: "wide", ms: 900 }, // the client, the phone down
+  { shot: "raise", ms: 1100 }, // the phone comes up
+  { shot: "screen", ms: 2300 }, // into the screen: the website
+  { shot: "face", ms: 3300 }, // back to the face, which reacts and speaks
+];
+
+/** Where the camera points, in percent of the stage, and how close.
+    The figure is drawn in an 800 by 500 field running from y = -25: the
+    phone in the hand at (453, 223.25), the face at (330, 140). Close on
+    the phone, it fills 89% of the stage's height (77.5 units, 5.74 times
+    over) - a quarter larger than before (user, 2026-11-19), which is why
+    the stage went from 16:9 to 16:10. */
+const CAMERA: Record<Shot, { x: number; y: number; s: number }> = {
+  wide: { x: 50, y: 50, s: 1 },
+  raise: { x: 50, y: 50, s: 1 },
+  screen: { x: 56.625, y: 49.65, s: 5.74 },
+  face: { x: 44, y: 33.8, s: 2.3 },
+};
+
+/** The words typed in as they are said, as the call types them. */
+function useTyped(text: string, on: boolean, still: boolean) {
+  const [n, setN] = useState(still ? text.length : 0);
+  useEffect(() => {
+    if (still) {
+      setN(text.length);
+      return;
+    }
+    if (!on) {
+      setN(0);
+      return;
+    }
+    setN(0);
+    let i = 0;
+    const id = window.setInterval(() => {
+      i += 1;
+      setN(i);
+      if (i >= text.length) window.clearInterval(id);
+    }, 40);
+    return () => window.clearInterval(id);
+  }, [text, on, still]);
+  return text.slice(0, n);
+}
+
+/** What the phone shows, close up: only the logo (user, 2026-11-19),
+    the one it had on its white or the one it has on Pilar's Noite. */
+function Site({ t, side, on }: { t: T; side: "old" | "new"; on: boolean }) {
+  return (
+    <span className="vi-site" data-side={side} data-on={on || undefined}>
+      <span className="vi-site-logo">{side === "old" ? <PilarOldLogo t={t} /> : <PilarNewLogo t={t} />}</span>
+    </span>
+  );
+}
+
+/** The client and the phone, as a short film (user, 2026-11-19: not the
+    call card's structure, only its figure and its words). The figure is
+    a white line on the dark ground: the phone comes up, the camera goes
+    into the screen, then back to the face, which frowns and speaks at
+    the old identity, and the same again smiling at the new one. One
+    camera, moved by transform; the scenes overlap so no frame is empty.
+    With less motion it holds on the last shot: the face, smiling, and
+    what it says. */
+function Glance({ t }: { t: T }) {
+  const reduce = useReducedMotion() ?? false;
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const still = reduce || !mounted;
+  const [ref, inView] = useInView<HTMLDivElement>(0.45);
+  const [beat, setBeat] = useState(0);
+
+  useEffect(() => {
+    if (still || !inView) return;
+    const id = window.setTimeout(() => setBeat((b) => (b + 1) % (TAKE.length * 2)), TAKE[beat % TAKE.length]!.ms);
+    return () => window.clearTimeout(id);
+  }, [beat, inView, still]);
+
+  const round = still ? 1 : Math.floor(beat / TAKE.length);
+  const shot: Shot = still ? "face" : TAKE[beat % TAKE.length]!.shot;
+  const side = round === 0 ? "old" : "new";
+  const up = shot !== "wide";
+  const mood = shot === "face" ? (side === "old" ? "bad" : "good") : "none";
+  const words = side === "old" ? t("Are they even still around?", "Será que ainda existem?") : t("These I’d trust.", "Nestes confiava.");
+  const typed = useTyped(words, mood !== "none", still);
+  const cam = CAMERA[shot];
+  const camStyle = {
+    transform: `translate(${50 - cam.s * cam.x}%, ${50 - cam.s * cam.y}%) scale(${cam.s})`,
+  };
+
+  return (
+    <div
+      ref={ref}
+      className="vi-mg"
+      data-shot={shot}
+      data-still={still || undefined}
+      role="img"
+      aria-label={t(
+        "A client looks Pilar up on a phone: the old identity puts them off, the new one wins them over.",
+        "Um cliente procura a Pilar no telemóvel: a identidade antiga afasta-o, a nova convence-o.",
+      )}
+    >
+      <div className="vi-mg-stage" aria-hidden="true">
+        <div className="vi-mg-cam" style={camStyle}>
+          <svg viewBox="0 -25 800 500" className="vi-mg-art">
+            <line x1="120" y1="430" x2="680" y2="430" className="vi-mg-floor" />
+            {/* the figure */}
+            <path d="M258 430 C262 300 290 196 330 196 C370 196 398 300 402 430" className="vi-mg-line" />
+            <circle cx="330" cy="140" r="36" className="vi-mg-line vi-mg-head" />
+            {/* the face */}
+            <g className="vi-mg-face" data-mood={mood}>
+              <circle cx="318" cy="134" r="3.2" className="vi-mg-dot" />
+              <circle cx="342" cy="134" r="3.2" className="vi-mg-dot" />
+              <path d="M307 120l12 4M353 120l-12 4" className="vi-mg-feel" data-for="bad" />
+              <path d="M318 159q12-8 24 0" className="vi-mg-feel" data-for="bad" />
+              <path d="M316 152q14 12 28 0" className="vi-mg-feel" data-for="good" />
+              <path d="M319 156h22" className="vi-mg-feel" data-for="none" />
+            </g>
+            {/* the arm and the phone in its hand, raised from the shoulder */}
+            <g className="vi-mg-arm" data-up={up || undefined}>
+              <path d="M374 232 Q404 318 412 326 Q432 300 448 262" className="vi-mg-line" />
+              {/* Large, with a thin bezel (user, 2026-11-19): 42.5 by
+                  77.5 units, the glass 1.6 units in from every edge. The
+                  edge is a shape a quarter unit proud of the body, not a
+                  stroke: a stroke would thicken as the camera, moved by
+                  CSS, closes in. */}
+              <rect x="431.5" y="184.25" width="43" height="78" rx="7.7" className="vi-mg-edge" />
+              <rect x="431.75" y="184.5" width="42.5" height="77.5" rx="7.5" className="vi-mg-phone" />
+              <rect x="433.35" y="186.1" width="39.3" height="74.3" rx="6" className="vi-mg-glass" data-side={side} />
+            </g>
+          </svg>
+        </div>
+
+        {/* Inside the phone: the screen, crisp, once the camera is in. */}
+        <div className="vi-mg-screen" data-on={shot === "screen" || undefined}>
+          <span className="vi-mg-frame">
+            <Site t={t} side="old" on={side === "old"} />
+            <Site t={t} side="new" on={side === "new"} />
+          </span>
+        </div>
+
+        {/* What the face says, beside it. */}
+        <div className="vi-mg-say" data-on={mood !== "none" || undefined}>
+          <span className="vi-mg-say-text">
+            {typed}
+            {!still && typed.length < words.length && <span className="sbc-caret" />}
+          </span>
+        </div>
+      </div>
+
+      <div className="vi-mg-foot">
+        <span className="vi-mg-steps" aria-hidden="true">
+          {[0, 1].map((n) => (
+            <i key={n} data-on={n === round || undefined} />
+          ))}
+        </span>
+        <span className="mono-label vi-mg-cap">
+          {side === "old" ? t("The identity they had", "A identidade que tinham") : t("The identity they have", "A identidade que passam a ter")}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ---- kept, out of use: the proposal, in three things seen -------- */
 
 /** The guides a mark is built on: the square, its halves, its
     diagonals and the circle inscribed in it. Ours and generic — no
@@ -223,7 +381,10 @@ function Slot({ src, label, ratio, dark }: { src: string; label: string; ratio: 
   );
 }
 
-function Proposal({ t }: { t: T }) {
+/** Taken off the page on 2026-11-19 (user: a near repeat of the client
+    looking it up), kept whole so it can come back: a line in
+    VisualIdentity below and nothing else. */
+export function Proposal({ t }: { t: T }) {
   const reduce = useReducedMotion() ?? false;
   const [ref, inView] = useInView<HTMLDivElement>(0.3);
   const drawn = inView || reduce;
@@ -249,7 +410,6 @@ function Proposal({ t }: { t: T }) {
         </SlideIn>
 
         <div ref={ref} className="vi-three">
-          {/* One: the mark that was, and the mark that is. */}
           <SlideIn ready distance={0} delay={0.12}>
             <figure className="vi-piece">
               <BeforeAfter
@@ -269,18 +429,12 @@ function Proposal({ t }: { t: T }) {
             </figure>
           </SlideIn>
 
-          {/* Two: the symbol, on the guides it was built on. */}
           <SlideIn ready distance={0} delay={0.18}>
             <figure className="vi-piece">
               <span className="vi-mark">
                 <Grid drawn={drawn} />
                 <span className="vi-mark-slot">
-                  <Slot
-                    src="/visual-identity/simbolo/simbolo.webp"
-                    label={t("Image: the symbol", "Imagem: o símbolo")}
-                    ratio="1 / 1"
-                    dark
-                  />
+                  <Slot src="/visual-identity/simbolo/simbolo.webp" label={t("Image: the symbol", "Imagem: o símbolo")} ratio="1 / 1" dark />
                 </span>
               </span>
               <figcaption className="vi-cap">
@@ -290,7 +444,6 @@ function Proposal({ t }: { t: T }) {
             </figure>
           </SlideIn>
 
-          {/* Three: the two of them, where they end up. */}
           <SlideIn ready distance={0} delay={0.24}>
             <figure className="vi-piece">
               <Slot
@@ -311,7 +464,7 @@ function Proposal({ t }: { t: T }) {
   );
 }
 
-/* ---- 2. does it make sense for every business? ------------------- */
+/* ---- does it make sense for every business? ---------------------- */
 
 /** One run of the cases, in milliseconds. */
 const CASE_MS = 2800;
@@ -346,31 +499,85 @@ function Cases({ lead, items, at, muted }: { lead: string; items: string[]; at: 
   );
 }
 
+/** A share of the way from a to b, held between 0 and 1. */
+const span = (p: number, a: number, b: number) => Math.min(1, Math.max(0, (p - a) / (b - a)));
+const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+
+/** Does it make sense for every business? (user, 2026-11-19) On the
+    dark ground, held by the scroll: the question in the middle of the
+    screen fades; "No." comes in where it stood, uncovered by the bar of
+    How we work; then "No." goes to the left and the question comes back
+    over it as the section's title, the normal structure of a section.
+    The two lists of cases and the grey card come up into the room left
+    under them, so the pin lets go with them already close by.
+
+    The scroll values are functions, not ranges: Motion hands a ranged
+    opacity to the browser's own scroll timeline, which measured this
+    held section wrongly. With less motion, the title, "No." and the
+    rest simply stand in order. */
 function Fits({ t }: { t: T }) {
   const reduce = useReducedMotion() ?? false;
+  const run = useRef<HTMLDivElement>(null);
+  const pin = useRef<HTMLDivElement>(null);
+  const head = useRef<HTMLDivElement>(null);
+  const no = useRef<HTMLSpanElement>(null);
   const [ref, inView] = useInView<HTMLDivElement>(0.3);
-  const [answer, answerIn] = useInView<HTMLDivElement>(0.6);
   const [said, setSaid] = useState(false);
   const [at, setAt] = useState(0);
+  // How far "No." sits, in its place, from the middle of the screen; and
+  // how much room the pinned screen leaves under the title.
+  const [room, setRoom] = useState(0);
+  const gap = useRef({ dx: 0, dy: 0 });
 
-  /* The answer waits to be reached and is then uncovered once, by a
-     black bar running across it: the marker of How we work, which
-     fills its rail from the left as the row goes by. */
-  useEffect(() => {
-    if (answerIn) setSaid(true);
-  }, [answerIn]);
+  useLayoutEffect(() => {
+    if (reduce) return;
+    const measure = () => {
+      const p = pin.current;
+      const n = no.current;
+      const h = head.current;
+      if (!p || !n || !h) return;
+      const pb = p.getBoundingClientRect();
+      const nb = n.getBoundingClientRect();
+      // Its centre, measured without the move the scroll puts on it (a
+      // scale about the centre leaves the centre where it is).
+      const m = new DOMMatrixReadOnly(getComputedStyle(n).transform);
+      gap.current = {
+        dx: pb.left + pb.width / 2 - (nb.left + nb.width / 2 - m.m41),
+        dy: pb.top + pb.height / 2 - (nb.top + nb.height / 2 - m.m42),
+      };
+      setRoom(Math.max(0, p.offsetHeight - (h.offsetTop + h.offsetHeight)));
+    };
+    measure();
+    const watch = new ResizeObserver(measure);
+    if (pin.current) watch.observe(pin.current);
+    return () => watch.disconnect();
+  }, [reduce]);
+
+  const { scrollYProgress } = useScroll({ target: run, offset: ["start start", "end end"] });
+  const qCentre = useTransform(scrollYProgress, (p) => 1 - span(p, 0.12, 0.26));
+  const qCentreY = useTransform(scrollYProgress, (p) => -32 * span(p, 0.12, 0.26));
+  const noIn = useTransform(scrollYProgress, (p) => span(p, 0.28, 0.4));
+  const noMove = (p: number) => ease(span(p, 0.46, 0.68));
+  const noX = useTransform(scrollYProgress, (p) => gap.current.dx * (1 - noMove(p)));
+  const noY = useTransform(scrollYProgress, (p) => gap.current.dy * (1 - noMove(p)));
+  const noScale = useTransform(scrollYProgress, (p) => 1.5 - 0.5 * noMove(p));
+  const title = useTransform(scrollYProgress, (p) => span(p, 0.6, 0.74));
+  const titleY = useTransform(scrollYProgress, (p) => 18 * (1 - span(p, 0.6, 0.74)));
+  useMotionValueEvent(scrollYProgress, "change", (p) => {
+    if (p > 0.32) setSaid(true);
+  });
 
   const fits = [
-    t("no symbol at all", "nenhum s\u00edmbolo"),
-    t("a logo that looks dated", "um log\u00f3tipo com ar antiquado"),
-    t("a mark that says nothing about the business", "uma marca que n\u00e3o diz nada sobre o neg\u00f3cio"),
-    t("a logo that does not match what the company is today", "um log\u00f3tipo que n\u00e3o corresponde ao que a empresa \u00e9 hoje"),
+    t("no symbol at all", "nenhum símbolo"),
+    t("a logo that looks dated", "um logótipo com ar antiquado"),
+    t("a mark that says nothing about the business", "uma marca que não diz nada sobre o negócio"),
+    t("a logo that does not match what the company is today", "um logótipo que não corresponde ao que a empresa é hoje"),
   ];
   const doesNot = [
-    t("a professional visual identity already in place", "uma identidade visual profissional j\u00e1 feita"),
-    t("a logo consistent with its corporate identity", "um log\u00f3tipo coerente com a identidade corporativa"),
-    t("a mark drawn for the website it already has", "uma marca desenhada para o website que j\u00e1 tem"),
-    t("a symbol that still says what it was made to say", "um s\u00edmbolo que ainda diz o que foi feito para dizer"),
+    t("a professional visual identity already in place", "uma identidade visual profissional já feita"),
+    t("a logo consistent with its corporate identity", "um logótipo coerente com a identidade corporativa"),
+    t("a mark drawn for the website it already has", "uma marca desenhada para o website que já tem"),
+    t("a symbol that still says what it was made to say", "um símbolo que ainda diz o que foi feito para dizer"),
   ];
 
   useEffect(() => {
@@ -379,56 +586,95 @@ function Fits({ t }: { t: T }) {
     return () => window.clearInterval(tick);
   }, [inView, reduce]);
 
+  const question = t("Does it make sense for every business?", "Faz sentido para todos os negócios?");
+  const answer = (
+    <span className="vi-no" data-said={said || reduce || undefined} data-still={reduce || undefined}>
+      <span className="vi-no-word">{t("No.", "Não.")}</span>
+      <span aria-hidden="true" className="vi-no-bar" />
+    </span>
+  );
+
+  const rest = (
+    <>
+      <div className="vi-cases">
+        <Cases at={at} lead={t("It makes sense for a business with:", "Faz sentido para um negócio com:")} items={fits} />
+        <Cases at={at} muted lead={t("It doesn’t make sense for a business with:", "Não faz sentido para um negócio com:")} items={doesNot} />
+      </div>
+      <NotSure t={t} />
+    </>
+  );
+
   return (
-    <section aria-labelledby="vi-fit-title" data-tone="light" className="relative">
-      <div ref={ref} className="shell ps-sec" data-tone-body>
-        <SlideIn ready>
-          <p className="mono-label text-ash-2">{t("Who it is for", "Para quem \u00e9")}</p>
-          <h2 id="vi-fit-title" className="display ps-title">
-            {t("Does it make sense for every business?", "Faz sentido para todos os neg\u00f3cios?")}
-          </h2>
-        </SlideIn>
-
-        <SlideIn ready distance={0} delay={0.08}>
-          <div ref={answer} className="vi-answer">
-            <p className="vi-no" data-said={said || reduce || undefined} data-still={reduce || undefined}>
-              <span className="vi-no-word">{t("No.", "N\u00e3o.")}</span>
-              <span aria-hidden="true" className="vi-no-bar" />
-            </p>
-            <p className="vi-no-say">
-              {t(
-                "A business that already presents a professional visual identity, coherent with the corporate identity of the company itself, does not need this service.",
-                "Um neg\u00f3cio que j\u00e1 apresente uma identidade visual profissional e coesa com a identidade corporativa da pr\u00f3pria empresa n\u00e3o precisa deste servi\u00e7o.",
-              )}
-            </p>
+    <section aria-labelledby="vi-fit-title" data-tone="dark" className="vi-fit relative text-paper">
+      <div data-tone-body>
+        {reduce ? (
+          <div className="shell vi-fit-still">
+            <div className="vi-fit-head">
+              <p className="mono-label text-paper/55">{t("Who it is for", "Para quem é")}</p>
+              <h2 id="vi-fit-title" className="display vi-fit-title">
+                {question}
+              </h2>
+              <p className="vi-fit-no">{answer}</p>
+            </div>
+            <div ref={ref}>{rest}</div>
           </div>
-        </SlideIn>
+        ) : (
+          <>
+            <div ref={run} className="vi-ask-run">
+              <div ref={pin} className="vi-ask-pin">
+                {/* The question, alone in the middle of the screen. */}
+                <motion.p aria-hidden="true" className="display vi-ask-q" style={{ opacity: qCentre, y: qCentreY }}>
+                  {question}
+                </motion.p>
 
-        <SlideIn ready distance={0} delay={0.14}>
-          <div className="vi-cases">
-            <Cases at={at} lead={t("It makes sense for a business with:", "Faz sentido para um neg\u00f3cio com:")} items={fits} />
-            <Cases at={at} muted lead={t("It doesn\u2019t make sense for a business with:", "N\u00e3o faz sentido para um neg\u00f3cio com:")} items={doesNot} />
-          </div>
-        </SlideIn>
+                {/* Where the section's head ends up: the label and the
+                    question as its title, and "No." under them, brought
+                    here from the middle of the screen. */}
+                <div ref={head} className="shell vi-fit-head">
+                  <motion.div style={{ opacity: title, y: titleY }}>
+                    <p className="mono-label text-paper/55">{t("Who it is for", "Para quem é")}</p>
+                    <h2 id="vi-fit-title" className="display vi-fit-title">
+                      {question}
+                    </h2>
+                  </motion.div>
+                  <p className="vi-fit-no">
+                    <motion.span
+                      ref={no}
+                      className="vi-fit-no-move"
+                      style={{ opacity: noIn, x: noX, y: noY, scale: noScale }}
+                    >
+                      {answer}
+                    </motion.span>
+                  </p>
+                </div>
+              </div>
+            </div>
+            {/* Pulled up into the room the pinned screen leaves under the
+                title, so it arrives as the pin lets go. */}
+            <div ref={ref} className="shell vi-fit-rest" style={{ marginTop: `${-Math.max(0, room - 48)}px` }}>
+              {rest}
+            </div>
+          </>
+        )}
       </div>
     </section>
   );
 }
 
-/* ---- 3. not sure? ------------------------------------------------ */
+/* ---- not sure? --------------------------------------------------- */
 
 /** How long each step of the change holds, in milliseconds. */
 const MORPH_MS = 1250;
 
-/** The mark a business had, taken apart over the guides a mark is
-    built on, and the mark it ends up with put together on them - then
-    the next business. Four steps: it stands, it comes apart, the
-    guides draw and it is built again, it stands.
+/** The mark the business had, taken apart over the guides a mark is
+    built on, and the mark it ends up with put together on them. Four
+    steps: it stands on the white of its old website, it comes apart, the
+    guides draw and the new one is built on Pilar's Noite, it stands.
 
     References through Inspo: Geex (forms sculpted and resolved on an
     empty ground) and Portal One (the construction geometry left in
     view). The composition only - the colour and the type are ours. */
-function Morph({ t }: { t: T }) {
+function Morph({ t, bare = false }: { t: T; bare?: boolean }) {
   const reduce = useReducedMotion() ?? false;
   const [ref, inView] = useInView<HTMLDivElement>(0.35);
   const [n, setN] = useState(0);
@@ -440,7 +686,7 @@ function Morph({ t }: { t: T }) {
   }, [inView, reduce]);
 
   const step = reduce ? 3 : n % 4;
-  const brand = BRANDS[Math.floor(n / 4) % BRANDS.length];
+  const brand = BRANDS[Math.floor(n / 4) % BRANDS.length]!;
 
   return (
     <div
@@ -449,8 +695,8 @@ function Morph({ t }: { t: T }) {
       data-step={step}
       role="img"
       aria-label={t(
-        "Three invented businesses, each one's old mark taken apart and its new mark built on the guides.",
-        "Tr\u00eas neg\u00f3cios inventados, cada marca antiga desfeita e a nova constru\u00edda sobre as guias.",
+        "Pilar's old mark taken apart and its new mark built on the guides.",
+        "A marca antiga da Pilar desfeita e a nova construída sobre as guias.",
       )}
     >
       <span className="vi-morph-stage" aria-hidden="true">
@@ -464,43 +710,36 @@ function Morph({ t }: { t: T }) {
           <Mark brand={brand} side="after" />
         </span>
       </span>
-      <p className="vi-morph-say">
-        <span className="vi-morph-name">{brand.name}</span>
-        <span className="mono-label vi-morph-trade">{brand.trade(t)}</span>
-      </p>
+      {/* Bare in the header, where the name and the trade stand outside the card. */}
+      {!bare && (
+        <p className="vi-morph-say">
+          <span className="vi-morph-name">{brand.name}</span>
+          <span className="mono-label vi-morph-trade">{brand.trade(t)}</span>
+        </p>
+      )}
     </div>
   );
 }
 
+/** The grey card, inside the section above it (user, 2026-11-19): the
+    doubt, the answer to it, and the mark taken apart and built again on
+    its own brand's ground. */
 function NotSure({ t }: { t: T }) {
   return (
-    <section aria-labelledby="vi-sure-title" data-tone="light" className="relative">
-      <div className="shell ps-sec" data-tone-body>
-        <SlideIn ready>
-          <p className="mono-label text-ash-2">{t("Not sure?", "Com d\u00favidas?")}</p>
-          <h2 id="vi-sure-title" className="display vi-sure-title">
-            {t(
-              "Not sure whether you need a new visual identity or not?",
-              "Com d\u00favidas sobre se \u00e9 precisa uma nova identidade visual?",
-            )}
-          </h2>
-        </SlideIn>
-
-        <SlideIn ready distance={0} delay={0.1}>
-          <div className="vi-sure">
-            <div className="vi-sure-words">
-              <p className="vi-sure-say">
-                {t(
-                  "Don\u2019t worry. We\u2019ll help you make the best decision on our first call. Fill in our form so we can help you.",
-                  "N\u00e3o h\u00e1 problema. Ajudamos a tomar a melhor decis\u00e3o logo na primeira reuni\u00e3o. Basta preencher o formul\u00e1rio para podermos ajudar.",
-                )}
-              </p>
-            </div>
-            <Morph t={t} />
-          </div>
-        </SlideIn>
+    <div className="vi-sure">
+      <div className="vi-sure-words">
+        <h3 className="display vi-sure-title">
+          {t("Not sure whether you need a new visual identity or not?", "Com dúvidas sobre se é precisa uma nova identidade visual?")}
+        </h3>
+        <p className="vi-sure-say">
+          {t(
+            "Don’t worry. We’ll help you make the best decision on our first call. Fill in our form so we can help you.",
+            "Não há problema. Ajudamos a tomar a melhor decisão logo na primeira reunião. Basta preencher o formulário para podermos ajudar.",
+          )}
+        </p>
       </div>
-    </section>
+      <Morph t={t} />
+    </div>
   );
 }
 
@@ -510,10 +749,10 @@ function Prices({ t }: { t: T }) {
   const rows = [
     {
       n: "01",
-      head: t("What the service is", "O que inclui o servi\u00e7o"),
+      head: t("What the service is", "O que inclui o serviço"),
       body: t(
         "The logo and the symbol, drawn at the same time as the look of the website, so the two are thought out together rather than one after the other.",
-        "O log\u00f3tipo e o s\u00edmbolo, desenhados ao mesmo tempo que a est\u00e9tica do website, para os dois serem pensados em conjunto e n\u00e3o um depois do outro.",
+        "O logótipo e o símbolo, desenhados ao mesmo tempo que a estética do website, para os dois serem pensados em conjunto e não um depois do outro.",
       ),
     },
     {
@@ -521,23 +760,23 @@ function Prices({ t }: { t: T }) {
       head: t("What it costs", "Quanto custa"),
       body: t(
         `${TO_FILL}. Whether it is charged on its own or inside a package with the website: ${TO_FILL}.`,
-        `${TO_FILL}. Se \u00e9 cobrado \u00e0 parte ou inclu\u00eddo num pacote com o website: ${TO_FILL}.`,
+        `${TO_FILL}. Se é cobrado à parte ou incluído num pacote com o website: ${TO_FILL}.`,
       ),
     },
     {
       n: "03",
-      head: t("Proposals and revisions", "Propostas e revis\u00f5es"),
+      head: t("Proposals and revisions", "Propostas e revisões"),
       body: t(
         `${TO_FILL} proposals and ${TO_FILL} rounds of revisions are included.`,
-        `Est\u00e3o inclu\u00eddas ${TO_FILL} propostas e ${TO_FILL} rondas de revis\u00f5es.`,
+        `Estão incluídas ${TO_FILL} propostas e ${TO_FILL} rondas de revisões.`,
       ),
     },
     {
       n: "04",
-      head: t("The first meeting, free", "A reuni\u00e3o inicial, gratuita"),
+      head: t("The first meeting, free", "A reunião inicial, gratuita"),
       body: t(
         "Before any of that, we sit down and work out whether a new identity makes sense at all. It costs nothing and it commits to nothing.",
-        "Antes disso, reunimos para perceber se uma nova identidade faz sequer sentido. N\u00e3o custa nada e n\u00e3o compromete a nada.",
+        "Antes disso, reunimos para perceber se uma nova identidade faz sequer sentido. Não custa nada e não compromete a nada.",
       ),
     },
   ];
@@ -546,10 +785,10 @@ function Prices({ t }: { t: T }) {
     <section aria-labelledby="vi-price-title" data-tone="dark" className="relative text-paper">
       <div className="shell ps-sec" data-tone-body>
         <SlideIn ready>
-          <p className="mono-label text-paper/55">{t("How the price works", "Como funcionam os pre\u00e7os")}</p>
+          <p className="mono-label text-paper/55">{t("How the price works", "Como funcionam os preços")}</p>
           <h2 id="vi-price-title" className="display ps-title">
             <span className="font-light sm:block">{t("The mark and the website", "A marca e o website")}</span>{" "}
-            <span className="font-medium sm:block">{t("are priced as one piece of work.", "s\u00e3o or\u00e7amentados como um s\u00f3 trabalho.")}</span>
+            <span className="font-medium sm:block">{t("are priced as one piece of work.", "são orçamentados como um só trabalho.")}</span>
           </h2>
         </SlideIn>
 
@@ -574,7 +813,7 @@ function Prices({ t }: { t: T }) {
             <p className="mono-label">
               {t(
                 "The figures are the studio's to set; the form works an estimate out meanwhile.",
-                "Os valores s\u00e3o definidos pelo est\u00fadio; entretanto, o formul\u00e1rio calcula uma estimativa.",
+                "Os valores são definidos pelo estúdio; entretanto, o formulário calcula uma estimativa.",
               )}
             </p>
             <ProposalAsk label={t("Get your free proposal", "Pedir proposta gratuita")} />
@@ -593,9 +832,7 @@ export function VisualIdentity() {
     <ToneRoom>
       <Head t={t} />
       <Opening t={t} />
-      <Proposal t={t} />
       <Fits t={t} />
-      <NotSure t={t} />
       <Prices t={t} />
     </ToneRoom>
   );

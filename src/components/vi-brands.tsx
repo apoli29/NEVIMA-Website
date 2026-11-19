@@ -1,6 +1,8 @@
 "use client";
 
+import { useId } from "react";
 import type { T } from "./sbs-shared";
+import { pilarSans } from "./sbs-pilar";
 
 /* ==================================================================
    Three invented businesses, each with the mark it had and the mark
@@ -46,31 +48,28 @@ const sh = (n: number) => ({ className: "vi-sh", style: { ["--n" as string]: n }
 
 /* ---- 1. Pilar, an insurance broker ------------------------------- */
 
-/** What it had: a shield with a letter in it, a star over the top and
-    a rule under the whole thing. */
+/** What it had: the badge the template website carries (side-by-side.tsx,
+    CLogo) - a blue disc graded top to bottom, an orange ring round it and
+    an umbrella in white - drawn again here in the hundred-unit square so
+    its shapes can be taken apart one by one (user, 2026-11-19: the mark
+    shown as the old one is the one the template website already uses). */
 function PilarBefore() {
+  const id = useId().replace(/:/g, "");
   return (
-    <g>
-      <path
-        {...sh(0)}
-        d="M50 6 L88 20 V52 C88 72 70 86 50 94 C30 86 12 72 12 52 V20 Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="5"
-      />
+    <g transform="scale(2.0833)">
+      <defs>
+        <linearGradient id={`vi-badge-${id}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#5b9be0" />
+          <stop offset="1" stopColor="#173f86" />
+        </linearGradient>
+      </defs>
+      <circle {...sh(0)} cx="24" cy="24" r="22" fill={`url(#vi-badge-${id})`} stroke="#f39200" strokeWidth="2" />
       <path
         {...sh(1)}
-        d="M50 15 L80 26 V52 C80 67 66 79 50 85 C34 79 20 67 20 52 V26 Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
+        d="M10 25a14 12 0 0 1 28 0c-2.3-1.8-4.7-1.8-7 0-2.3-1.8-4.7-1.8-7 0-2.3-1.8-4.7-1.8-7 0-2.3-1.8-4.7-1.8-7 0z"
+        fill="#fff"
       />
-      <path {...sh(2)} d="M50 0 L53.5 7.5 L61.5 8.5 L55.5 14 L57 22 L50 18 L43 22 L44.5 14 L38.5 8.5 L46.5 7.5 Z" />
-      <path
-        {...sh(3)}
-        d="M42 36 h14 a11 11 0 0 1 0 22 h-6 v14 h-8 Z M50 44 v6 h6 a3 3 0 0 0 0 -6 Z"
-        fillRule="evenodd"
-      />
+      <path {...sh(2)} d="M24 25v10c0 2.6 3.6 2.6 3.6 0" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
     </g>
   );
 }
@@ -196,5 +195,41 @@ export function Mark({ brand, side }: { brand: Brand; side: "before" | "after" }
     <svg className="vi-mark-svg" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">
       <Draw />
     </svg>
+  );
+}
+
+/* ---- Pilar's two identities, whole ------------------------------- */
+
+/** The logo the template website carries, as it carries it: the badge,
+    "Pilar" in a slanted serif with the descriptor in orange capitals
+    beside it, and the company's full name under them. On the white of
+    that website's header. */
+export function PilarOldLogo({ t }: { t: T }) {
+  return (
+    <span className="vi-logo vi-logo-old">
+      <span className="vi-logo-mark">
+        <Mark brand={BRANDS[0]!} side="before" />
+      </span>
+      <span className="vi-logo-words">
+        <span className="vi-logo-old-name">
+          <b>Pilar</b>
+          <i>{t("INSURANCE", "SEGUROS")}</i>
+        </span>
+        <small>{t("Insurance Brokerage, Lda.", "Mediação de Seguros, Lda.")}</small>
+      </span>
+    </span>
+  );
+}
+
+/** The signature our website carries (sbs-pilar.tsx, PilarLogo): the
+    symbol and the name in Pilar's own face, in white on its Noite. */
+export function PilarNewLogo({ t }: { t: T }) {
+  return (
+    <span className={`vi-logo vi-logo-new ${pilarSans.variable}`}>
+      <span className="vi-logo-mark">
+        <Mark brand={BRANDS[0]!} side="after" />
+      </span>
+      <span className="vi-logo-new-name">{t("Pilar Insurance", "Pilar Seguros")}</span>
+    </span>
   );
 }
