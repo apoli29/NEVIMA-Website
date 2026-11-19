@@ -898,7 +898,7 @@ const StepCard = memo(function StepCard({ step, n, count, on }: { step: Step; n:
                 key={cta.href}
                 href={href(cta.href)}
                 label={<Label>{cta.label}</Label>}
-                className="cta-drop inline-flex text-[0.875rem] leading-none"
+                className="cta-drop cta-drop-light inline-flex text-[0.875rem] leading-none"
               />
             ),
           )}
@@ -950,7 +950,7 @@ function ProposalCta() {
         setLaunched(true);
         proposal.show(button.current, button.current, false);
       }}
-      className="cta-drop relative isolate inline-flex items-center justify-center text-[0.875rem] leading-none whitespace-nowrap"
+      className="cta-drop cta-drop-light relative isolate inline-flex items-center justify-center text-[0.875rem] leading-none whitespace-nowrap"
           >
       <Glass />
       <span className="btn-neu-face">

@@ -9602,3 +9602,42 @@
 @layer components {
   @container (max-height: 13rem) { .svk-sg-ours .svk-sg-url { display: none; } }
 }
+
+/* ---- How we work's row on the about page's folds ---------------------
+   The row of How we work (the phases' headings, the rail with its stops
+   and the steps' columns, user 2026-11-19: "o gráfico é o conjunto
+   destes dois") stands on the same ground as the service cards'
+   drawings: the about page's folds dimmed by half, the same vignette.
+   The ground is on the viewport, so it holds still while the row
+   slides (or is swiped) across it. On it everything turns over: the
+   words white with the soft shade, the rail and the rules in white
+   hairlines, the stops white rings, the markers white with black words,
+   the buttons the light drops (process.tsx). Out of any layer where
+   it has to beat Tailwind's colour utilities. */
+@layer components {
+  .prc-viewport {
+    padding-block: clamp(1.25rem, 3svh, 2rem) clamp(0.5rem, 1.5svh, 1rem);
+    background:
+      radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(0 0 0 / 0.35)),
+      linear-gradient(rgb(0 0 0 / 0.5), rgb(0 0 0 / 0.5)),
+      url("/about/folds-1600.webp") center / cover no-repeat,
+      #000000;
+    text-shadow: 0 0 14px rgb(0 0 0 / 0.7), 0 0 2px rgb(0 0 0 / 0.35);
+  }
+  .prc-viewport .prc-rail { background: rgb(255 255 255 / 0.25); }
+  .prc-viewport .prc-rail-fill { background: #ffffff; }
+  .prc-viewport .prc-phase { border-left-color: rgb(255 255 255 / 0.45); }
+  .prc-viewport .prc-stage { border-left-color: rgb(255 255 255 / 0.16); }
+  .prc-viewport .prc-steps > .prc-stage:first-child { border-left-color: transparent; }
+  .prc-viewport .prc-stage::after { border-color: #ffffff; background: rgb(255 255 255 / 0.08); }
+  .prc-viewport .abt-stop { background: #000000; box-shadow: inset 0 0 0 1px #ffffff; }
+  .prc-viewport .abt-stop[data-on] { background: #ffffff; }
+  .prc-viewport .prc-partner { color: rgb(255 255 255 / 0.82); text-decoration-color: rgb(255 255 255 / 0.4); }
+  .prc-viewport .prc-partner:hover { color: #ffffff; text-decoration-color: currentColor; }
+}
+.prc-viewport .text-ink { color: #ffffff; }
+.prc-viewport .text-ash { color: rgb(255 255 255 / 0.86); }
+.prc-viewport .text-ash-2 { color: rgb(255 255 255 / 0.72); }
+.prc-viewport .border-ink\/15 { border-color: rgb(255 255 255 / 0.22); }
+.prc-viewport .idx-title { background: #ffffff; color: var(--color-ink); text-shadow: none; }
+.prc-viewport .cta-drop { text-shadow: none; }
