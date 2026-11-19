@@ -175,14 +175,16 @@ const TAKE: { shot: Shot; ms: number }[] = [
 ];
 
 /** Where the camera points, in percent of the stage, and how close.
-    The figure is drawn in an 800 by 450 field: the phone in the hand at
-    (453, 227), the face at (330, 140). Close on the phone, it fills 80%
-    of the stage's height (62 units, 5.8 times over). */
+    The figure is drawn in an 800 by 500 field running from y = -25: the
+    phone in the hand at (453, 223.25), the face at (330, 140). Close on
+    the phone, it fills 89% of the stage's height (77.5 units, 5.74 times
+    over) - a quarter larger than before (user, 2026-11-19), which is why
+    the stage went from 16:9 to 16:10. */
 const CAMERA: Record<Shot, { x: number; y: number; s: number }> = {
   wide: { x: 50, y: 50, s: 1 },
   raise: { x: 50, y: 50, s: 1 },
-  screen: { x: 56.625, y: 50.444, s: 5.8 },
-  face: { x: 44, y: 32, s: 2.3 },
+  screen: { x: 56.625, y: 49.65, s: 5.74 },
+  face: { x: 44, y: 33.8, s: 2.3 },
 };
 
 /** The words typed in as they are said, as the call types them. */
@@ -267,7 +269,7 @@ function Glance({ t }: { t: T }) {
     >
       <div className="vi-mg-stage" aria-hidden="true">
         <div className="vi-mg-cam" style={camStyle}>
-          <svg viewBox="0 0 800 450" className="vi-mg-art">
+          <svg viewBox="0 -25 800 500" className="vi-mg-art">
             <line x1="120" y1="430" x2="680" y2="430" className="vi-mg-floor" />
             {/* the figure */}
             <path d="M258 430 C262 300 290 196 330 196 C370 196 398 300 402 430" className="vi-mg-line" />
@@ -284,14 +286,14 @@ function Glance({ t }: { t: T }) {
             {/* the arm and the phone in its hand, raised from the shoulder */}
             <g className="vi-mg-arm" data-up={up || undefined}>
               <path d="M374 232 Q404 318 412 326 Q432 300 448 262" className="vi-mg-line" />
-              {/* Larger, with a thin bezel (user, 2026-11-19): 34 by 62
-                  units, the glass 1.5 units in from every edge. */}
-              {/* The edge is a shape a quarter unit proud of the body,
-                  not a stroke: a stroke would thicken as the camera,
-                  moved by CSS, closes in. */}
-              <rect x="435.75" y="195.75" width="34.5" height="62.5" rx="6.2" className="vi-mg-edge" />
-              <rect x="436" y="196" width="34" height="62" rx="6" className="vi-mg-phone" />
-              <rect x="437.5" y="197.5" width="31" height="59" rx="4.8" className="vi-mg-glass" data-side={side} />
+              {/* Large, with a thin bezel (user, 2026-11-19): 42.5 by
+                  77.5 units, the glass 1.6 units in from every edge. The
+                  edge is a shape a quarter unit proud of the body, not a
+                  stroke: a stroke would thicken as the camera, moved by
+                  CSS, closes in. */}
+              <rect x="431.5" y="184.25" width="43" height="78" rx="7.7" className="vi-mg-edge" />
+              <rect x="431.75" y="184.5" width="42.5" height="77.5" rx="7.5" className="vi-mg-phone" />
+              <rect x="433.35" y="186.1" width="39.3" height="74.3" rx="6" className="vi-mg-glass" data-side={side} />
             </g>
           </svg>
         </div>
