@@ -7,7 +7,8 @@ import { ToneRoom } from "./tone-veil";
 import { ProposalAsk } from "./about-faq";
 import { useInView, type T } from "./sbs-shared";
 import { HoursBars, SavedHours, WeekDonut } from "./back-end-charts";
-import { DepthCard, DragRun, GainStory, GlowTrail, PriceLine, SceneClient, SceneDay, SceneKept } from "./back-end-motion";
+import { DepthSystem } from "./back-end-depth";
+import { DragRun, GainStory, GlowTrail, PriceLine, SceneClient, SceneDay, SceneKept } from "./back-end-motion";
 import { TO_FILL } from "@/lib/work";
 import { useT } from "@/lib/use-lang";
 
@@ -72,7 +73,7 @@ function Head({ t }: { t: T }) {
             in depth: the three facts that stood here are what it shows,
             so they left. */}
         <SlideIn ready distance={0} delay={0.12}>
-          <DepthCard t={t} />
+          <DepthSystem t={t} />
         </SlideIn>
       </header>
     </section>
@@ -221,6 +222,7 @@ function Solutions({ t }: { t: T }) {
             // One title: the label above it said the same words
             // (2026-11-19).
             <SlideIn ready>
+              <p className="mono-label text-ash-2">{t("What we build", "O que construímos")}</p>
               <h2 id="be-sol-title" className="display be-why-title">
                 {t("Our three main back end solutions", "As nossas três principais soluções de back end")}
               </h2>
@@ -271,30 +273,36 @@ export function gains(t: T) {
     looking like a company. The nine are kept above, in gains(), in case
     they are wanted again. */
 function three(t: T) {
+  // A lead and keyed lines (2026-11-19, second round): the same words
+  // as the paragraphs they replace, cut where each fact ends.
   return [
     {
       id: "day",
       name: t("The day is run, not chased", "O dia é gerido, não corrido"),
-      body: t(
-        "Time and activity are organised in one place, so what is left at the end of the day can go into the work that grows the company. Decisions rest on the business's own numbers rather than on an impression of them, and what is built holds more as more comes in, without starting again from nothing.",
-        "O tempo e as atividades ficam organizados num só sítio, e o que sobra ao fim do dia pode ir para o trabalho que faz a empresa crescer. As decisões assentam nos números do próprio negócio, e não na impressão que se tem deles, e o que se constrói aguenta mais à medida que mais entra, sem recomeçar do zero.",
-      ),
+      lead: t("Time and activity, organised in one place.", "O tempo e as atividades, organizados num só sítio."),
+      items: [
+        { key: t("What is left of the day", "O que sobra do dia"), rest: t("can go into the work that grows the company.", "pode ir para o trabalho que faz a empresa crescer.") },
+        { key: t("Decisions", "As decisões"), rest: t("rest on the business's own numbers, not on an impression of them.", "assentam nos números do próprio negócio, e não na impressão que se tem deles.") },
+        { key: t("What is built", "O que se constrói"), rest: t("holds more as more comes in, without starting again from nothing.", "aguenta mais à medida que mais entra, sem recomeçar do zero.") },
+      ],
     },
     {
       id: "kept",
       name: t("Nothing is lost", "Nada se perde"),
-      body: t(
-        "No request and no contact goes missing: everything is kept, and all in the same place. What is known about each client is kept in interfaces that give it back (what was asked, when, and what was done about it), and nothing is copied by hand from one place to another, which is where mistakes come from.",
-        "Nenhum pedido e nenhum contacto se perde: fica tudo guardado e tudo no mesmo sítio. O que se sabe de cada cliente fica em interfaces que o devolvem (o que foi pedido, quando, e o que se fez a respeito), e nada é copiado à mão de um lado para o outro, que é de onde vêm os erros.",
-      ),
+      lead: t("No request and no contact goes missing: everything is kept, all in the same place.", "Nenhum pedido e nenhum contacto se perde: fica tudo guardado, tudo no mesmo sítio."),
+      items: [
+        { key: t("Each client's history", "O histórico de cada cliente"), rest: t("what was asked, when, and what was done about it, in interfaces that give it back.", "o que foi pedido, quando, e o que se fez a respeito, em interfaces que o devolvem.") },
+        { key: t("Nothing copied by hand", "Nada copiado à mão"), rest: t("from one place to another, which is where mistakes come from.", "de um lado para o outro, que é de onde vêm os erros.") },
+      ],
     },
     {
       id: "client",
       name: t("The client feels the difference", "O cliente sente a diferença"),
-      body: t(
-        "A confirmation goes out the moment a request arrives, outside working hours included, and reminders go out on their own, so a booking is not forgotten on either side. A confirmation that arrives, a reminder that comes, an answer that knows the history: that is what reads as professional.",
-        "Uma confirmação sai no momento em que o pedido chega, incluindo fora do horário de trabalho, e os lembretes saem sozinhos, para a marcação não ser esquecida de nenhum dos lados. Uma confirmação que chega, um lembrete que aparece, uma resposta que conhece o histórico: é isso que se lê como profissional.",
-      ),
+      lead: t("A confirmation that arrives, a reminder that comes, an answer that knows the history: that is what reads as professional.", "Uma confirmação que chega, um lembrete que aparece, uma resposta que conhece o histórico: é isso que se lê como profissional."),
+      items: [
+        { key: t("The confirmation", "A confirmação"), rest: t("goes out the moment a request arrives, outside working hours included.", "sai no momento em que o pedido chega, incluindo fora do horário de trabalho.") },
+        { key: t("The reminders", "Os lembretes"), rest: t("go out on their own, so a booking is not forgotten on either side.", "saem sozinhos, para a marcação não ser esquecida de nenhum dos lados.") },
+      ],
     },
   ];
 }
@@ -333,7 +341,6 @@ function Prices({ t }: { t: T }) {
     {
       id: "meet",
       glyph: "meet" as const,
-      when: t("First", "Primeiro"),
       name: t("The first meeting", "A reunião inicial"),
       value: t("Free", "Gratuita"),
       body: t(
@@ -344,9 +351,9 @@ function Prices({ t }: { t: T }) {
     {
       id: "build",
       glyph: "build" as const,
-      when: t("Once", "Uma vez"),
       name: t("A one-off build", "Um valor de implementação"),
       value: TO_FILL,
+      per: t("once", "uma vez"),
       body: t(
         "It follows from which solutions are chosen and from how much they have to be tied to one another.",
         "Depende das soluções escolhidas e de quanto têm de ser interligadas.",
@@ -359,9 +366,9 @@ function Prices({ t }: { t: T }) {
     {
       id: "month",
       glyph: "month" as const,
-      when: t("Every month", "Todos os meses"),
       name: t("A monthly service", "Um serviço mensal"),
-      value: t(`${TO_FILL} a month`, `${TO_FILL} por mês`),
+      value: TO_FILL,
+      per: t("a month", "por mês"),
       body: t(
         "A token figure on purpose, and it can be one because what we build is thought out so that the upkeep it needs is low.",
         "Simbólico de propósito, e pode sê-lo porque o que construímos já é pensado para que a manutenção necessária seja baixa.",

@@ -349,3 +349,56 @@ continuam `[a preencher]`. Deitada no computador, em pé no telemóvel.
 
 Fica por correr `node audit/seo-check.mjs` contra uma build de produção
 (a build parte o servidor de desenvolvimento enquanto ele corre).
+
+## Segunda volta (2026-11-19, sexto pedido)
+
+**O card do cabeçalho, mais fundo.** Passou para
+`src/components/back-end-depth.tsx` (`DepthSystem`, estilos `.be-ds-*` e
+`.be-x-*`); o `DepthCard` da primeira volta fica no código, sem uso. As
+folhas são interfaces a sério, com nomes, horas e estados inventados:
+
+- **Base de dados**: seis pedidos a entrar um por linha, com cliente e
+  e-mail, pedido, origem, hora e estado, debaixo de uma pesquisa, um
+  filtro e a contagem; o mais recente realçado; "Guardado à chegada".
+- **Calendário**: a semana (seg–sex, 9h–13h) com as marcações; a nova
+  cai no seu lugar e abre-se, a mostrar tudo o que fica guardado
+  (cliente, quando, com quem e em que sala, contacto mascarado, lembrete,
+  notas, de onde veio). Depois, um passo próprio: o mesmo calendário como
+  reservas de um restaurante, por mesa e por meia hora, com os lugares
+  ocupados e os livres.
+- **E-mail**: os e-mails que saíram sozinhos, um por linha (para quem,
+  assunto, modelo, hora, estado); depois o que acabou de sair, aberto,
+  com os espaços do modelo ({nome}, {serviço}, {data}, {quem}) a
+  preencherem-se, e quanto tempo depois do pedido saiu.
+- **No fim** as três encolhem lado a lado, ligadas, e depois ficam no
+  meio de um back end maior, desenhado quase sem pormenor (pagamentos,
+  faturação, área de cliente, avaliações, stock, escalas, SMS,
+  relatórios): "E outras, feitas à medida de cada negócio".
+
+Sete passos, sete legendas. O tamanho das folhas lê-se pela largura do
+próprio card (abaixo de 600px as folhas ocupam quase tudo e as colunas
+menos importantes saem).
+
+**Porque investir.** O esboço era um esboço: os três cards encaixam
+agora em ziguezague — o largo à esquerda, o anel à direita e mais
+abaixo, ao lado dele, e o contador debaixo do primeiro, um pouco para
+dentro — em vez de três linhas separadas.
+
+**As três soluções.** Ganhou o eyebrow "O que construímos"; a secção
+fica presa mais acima; os três cards descem em degraus da esquerda para
+a direita; "É preciso algo mais específico?" ficou mais pequeno.
+
+**O que a empresa ganha.** Mais compacta: cada ganho tem o nome, uma
+frase que o abre, e o resto em linhas curtas com a palavra-chave a negro,
+que só se desdobram no ganho que está a ser lido (pelo Inspo: os termos
+em destaque da The Equity Fund e a lista que se dobra das Features do
+GitHub; só a composição). As palavras são as mesmas dos parágrafos,
+cortadas onde cada facto acaba. O card de fundo toma o tamanho do desenho
+que segura (largo para a semana, alto para o telemóvel), com a mesma
+margem à volta.
+
+**Como funcionam os preços.** A linha responde mais cedo (começa quando
+a secção entra no fundo do ecrã) e cada paragem acende um pouco antes de
+a linha lá chegar. O tipo passou de cinco níveis a três: o nome pequeno,
+o valor grande (com "uma vez" / "por mês" ao lado, pequeno), e a linha
+por baixo. O rótulo mono por cima saiu.
