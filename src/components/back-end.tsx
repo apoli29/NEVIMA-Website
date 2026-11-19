@@ -6,7 +6,8 @@ import { SlideIn } from "./enter";
 import { ToneRoom } from "./tone-veil";
 import { ProposalAsk } from "./about-faq";
 import { useInView, type T } from "./sbs-shared";
-import { HoursBars, ProcessCard, SavedHours, WeekDonut } from "./back-end-charts";
+import { HoursBars, SavedHours, WeekDonut } from "./back-end-charts";
+import { DepthCard, DragRun, GainStory, GlowTrail, PriceLine, SceneClient, SceneDay, SceneKept } from "./back-end-motion";
 import { TO_FILL } from "@/lib/work";
 import { useT } from "@/lib/use-lang";
 
@@ -45,11 +46,6 @@ import { useT } from "@/lib/use-lang";
 /* ---- the header -------------------------------------------------- */
 
 function Head({ t }: { t: T }) {
-  const facts = [
-    { v: t("Requests and contacts", "Pedidos e contactos"), l: t("Kept on their own", "Guardados sozinhos") },
-    { v: t("Calendars and bookings", "Calendários e reservas"), l: t("The company's activity", "A atividade da empresa") },
-    { v: t("Emails", "E-mails"), l: t("Automatic or pre-written", "Automáticos ou pré-preenchidos") },
-  ];
   return (
     <section data-tone="dark" className="relative isolate text-paper">
       {/* Black, as it was and as the other service headers are (user,
@@ -71,19 +67,12 @@ function Head({ t }: { t: T }) {
               </p>
             </SlideIn>
           </div>
-          <SlideIn ready distance={0} delay={0.12}>
-            <ProcessCard t={t} />
-          </SlideIn>
         </div>
-        <SlideIn ready distance={0} delay={0.16}>
-          <dl className="ps-head-facts be-head-facts">
-            {facts.map((f) => (
-              <div key={f.l}>
-                <dt>{f.v}</dt>
-                <dd className="mono-label">{f.l}</dd>
-              </div>
-            ))}
-          </dl>
+        {/* Under the title now, the whole width (user, 2026-11-19), and
+            in depth: the three facts that stood here are what it shows,
+            so they left. */}
+        <SlideIn ready distance={0} delay={0.12}>
+          <DepthCard t={t} />
         </SlideIn>
       </header>
     </section>
@@ -137,18 +126,16 @@ function Why({ t }: { t: T }) {
           </p>
         </SlideIn>
 
-        {/* The week, in one card: where the hours go by hand and with a
-            back end, how the week is left afterwards, and how much of it
-            comes back. */}
-        <SlideIn ready distance={0} delay={0.14}>
-          <div className="be-card be-card-week">
-            <div className="be-card-two">
-              <HoursBars t={t} dark />
-              <WeekDonut t={t} dark />
-            </div>
-            <SavedHours t={t} dark />
-          </div>
-        </SlideIn>
+        {/* The week in three cards, set off as the user's sketch has
+            them (2026-11-19), with a light that goes from one to the
+            next as the page is scrolled. */}
+        <GlowTrail
+          cards={[
+            <HoursBars key="bars" t={t} dark />,
+            <WeekDonut key="ring" t={t} dark />,
+            <SavedHours key="saved" t={t} dark />,
+          ]}
+        />
       </div>
     </section>
   );
@@ -192,10 +179,6 @@ function Draw({ kind }: { kind: "base" | "when" | "mail" }) {
 }
 
 function Solutions({ t }: { t: T }) {
-  const reduce = useReducedMotion() ?? false;
-  const [ref, inView] = useInView<HTMLDivElement>(0.25);
-  const drawn = inView || reduce;
-
   const cards = [
     {
       id: "base",
@@ -229,46 +212,35 @@ function Solutions({ t }: { t: T }) {
   return (
     <section aria-labelledby="be-sol-title" data-tone="light" className="relative">
       <div className="shell ps-sec" data-tone-body>
-        <SlideIn ready>
-          <p className="mono-label text-ash-2">
-            {t("Our three main back end solutions", "As nossas três principais soluções de back end")}
-          </p>
-          <h2 id="be-sol-title" className="display be-why-title">
-            {t("Our three back end solutions", "As nossas três soluções de back end")}
-          </h2>
-        </SlideIn>
-
-        {/* The thread of the photo shoot's map, brought here (user,
-            2026-11-18): it draws itself from the name down to the
-            drawing when the three are reached, and again under the
-            pointer. */}
-        <div ref={ref} className="be-sols" data-drawn={drawn || undefined} data-still={reduce || undefined}>
-          {cards.map((card, i) => (
-            <article key={card.id} className="be-sol" style={{ ["--i" as string]: i }}>
-              <h3 className="be-sol-name">{card.name}</h3>
-              {/* The map's leader line, brought here: down from the
-                  name, across to the drawing, and a dot where it
-                  lands. It draws itself once the three are reached. */}
-              <svg className="be-sol-thread" viewBox="0 0 160 44" aria-hidden="true">
-                <path className="be-sol-lead" d="M 1 1 L 1 30 L 74 30" />
-                <circle className="be-sol-dot" cx="74" cy="30" r="2.6" />
-              </svg>
-              <Draw kind={card.kind} />
-              <p className="be-sol-body">{card.body}</p>
-            </article>
-          ))}
-        </div>
-
-        <SlideIn ready distance={0} delay={0.2}>
-          <div className="be-slab">
-            <h3 className="be-slab-say display">
-              <span className="font-light sm:block">{t("Need something more specific? Don’t worry.", "É preciso algo mais específico? Não há problema.")}</span>{" "}
-              <span className="font-medium sm:block">
-                {t("Tell us what you need in our form and we’ll find a solution for you.", "Basta dizer o que falta no formulário e encontramos uma solução.")}
-              </span>
-            </h3>
-          </div>
-        </SlideIn>
+        {/* Dark grey cards now (user, 2026-11-19). On a desk the scroll
+            pulls them out of one another from left to right, and the
+            block for anything else is born from under them; the thread
+            of the photo shoot's map draws itself as each one lands. */}
+        <DragRun
+          head={
+            // One title: the label above it said the same words
+            // (2026-11-19).
+            <SlideIn ready>
+              <h2 id="be-sol-title" className="display be-why-title">
+                {t("Our three main back end solutions", "As nossas três principais soluções de back end")}
+              </h2>
+            </SlideIn>
+          }
+          solutions={cards.map((card) => ({ id: card.id, name: card.name, body: card.body, draw: <Draw kind={card.kind} /> }))}
+          slab={
+            <div className="be-slab">
+              <h3 className="be-slab-say display">
+                {t("Need something more specific?", "É preciso algo mais específico?")}
+              </h3>
+              <p className="be-slab-body">
+                {t(
+                  "Don’t worry. Tell us what you need in our form and we’ll find a solution for you.",
+                  "Não há problema. Basta dizer o que falta no formulário e encontramos uma solução.",
+                )}
+              </p>
+            </div>
+          }
+        />
       </div>
     </section>
   );
@@ -276,7 +248,9 @@ function Solutions({ t }: { t: T }) {
 
 /* ---- what a company gains ---------------------------------------- */
 
-function gains(t: T) {
+/** The nine as the studio wrote them, before they were drawn into
+    three (2026-11-19). Kept, not shown. */
+export function gains(t: T) {
   return [
     [t("The day is run, not chased", "O dia é gerido, não corrido"), t("Time and activity are organised in one place, and what is left at the end of the day can go into the work that grows the company.", "O tempo e as atividades ficam organizados num só sítio, e o que sobra ao fim do dia pode ir para o trabalho que faz a empresa crescer.")],
     [t("Nothing is lost", "Nada se perde"), t("No request and no contact goes missing: everything is kept and everything is in the same place.", "Nenhum pedido e nenhum contacto se perde: fica tudo guardado e tudo no mesmo sítio.")],
@@ -290,6 +264,41 @@ function gains(t: T) {
   ];
 }
 
+/** The nine gains, drawn together into three (user, 2026-11-19: many
+    of them said the same thing). Every piece of the nine is still in
+    one of the three: the day, decisions and growth; nothing lost, the
+    client's history and fewer mistakes; the answer, the reminder and
+    looking like a company. The nine are kept above, in gains(), in case
+    they are wanted again. */
+function three(t: T) {
+  return [
+    {
+      id: "day",
+      name: t("The day is run, not chased", "O dia é gerido, não corrido"),
+      body: t(
+        "Time and activity are organised in one place, so what is left at the end of the day can go into the work that grows the company. Decisions rest on the business's own numbers rather than on an impression of them, and what is built holds more as more comes in, without starting again from nothing.",
+        "O tempo e as atividades ficam organizados num só sítio, e o que sobra ao fim do dia pode ir para o trabalho que faz a empresa crescer. As decisões assentam nos números do próprio negócio, e não na impressão que se tem deles, e o que se constrói aguenta mais à medida que mais entra, sem recomeçar do zero.",
+      ),
+    },
+    {
+      id: "kept",
+      name: t("Nothing is lost", "Nada se perde"),
+      body: t(
+        "No request and no contact goes missing: everything is kept, and all in the same place. What is known about each client is kept in interfaces that give it back (what was asked, when, and what was done about it), and nothing is copied by hand from one place to another, which is where mistakes come from.",
+        "Nenhum pedido e nenhum contacto se perde: fica tudo guardado e tudo no mesmo sítio. O que se sabe de cada cliente fica em interfaces que o devolvem (o que foi pedido, quando, e o que se fez a respeito), e nada é copiado à mão de um lado para o outro, que é de onde vêm os erros.",
+      ),
+    },
+    {
+      id: "client",
+      name: t("The client feels the difference", "O cliente sente a diferença"),
+      body: t(
+        "A confirmation goes out the moment a request arrives, outside working hours included, and reminders go out on their own, so a booking is not forgotten on either side. A confirmation that arrives, a reminder that comes, an answer that knows the history: that is what reads as professional.",
+        "Uma confirmação sai no momento em que o pedido chega, incluindo fora do horário de trabalho, e os lembretes saem sozinhos, para a marcação não ser esquecida de nenhum dos lados. Uma confirmação que chega, um lembrete que aparece, uma resposta que conhece o histórico: é isso que se lê como profissional.",
+      ),
+    },
+  ];
+}
+
 function Gains({ t }: { t: T }) {
   return (
     <section aria-labelledby="be-gain-title" data-tone="light" className="relative">
@@ -297,31 +306,20 @@ function Gains({ t }: { t: T }) {
         <SlideIn ready>
           <p className="mono-label text-ash-2">{t("What a company gains", "O que a empresa ganha")}</p>
           <h2 id="be-gain-title" className="display be-why-title">
-            <span className="font-light sm:block">{t("Nine things,", "Nove coisas,")}</span>{" "}
+            <span className="font-light sm:block">{t("Three things,", "Três coisas,")}</span>{" "}
             <span className="font-medium sm:block">{t("and time is only the first.", "e o tempo é só a primeira.")}</span>
           </h2>
         </SlideIn>
 
-        {/* The nine fit on one screen now (user, 2026-11-18): the names
-            stay in view and a row opens when it is asked to. Built on
-            <details>, so it works with the keyboard and without any
-            script at all. */}
-        <SlideIn ready distance={0} delay={0.08}>
-          <div className="be-nine">
-            {gains(t).map(([name, body], i) => (
-              <details key={name} className="be-nine-row" name="be-nine">
-                <summary>
-                  <span className="mono-label be-nine-n" aria-hidden="true">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="be-nine-name">{name}</span>
-                  <span className="be-nine-mark" aria-hidden="true" />
-                </summary>
-                <p className="be-nine-body">{body}</p>
-              </details>
-            ))}
-          </div>
-        </SlideIn>
+        {/* Option A of 2026-11-19: the three on the left, and on the
+            right a card held in place whose drawing changes to the gain
+            being read (Linear's features page, through Inspo: only the
+            composition). */}
+        <GainStory
+          t={t}
+          gains={three(t)}
+          scenes={[<SceneDay key="day" t={t} />, <SceneKept key="kept" t={t} />, <SceneClient key="client" t={t} />]}
+        />
       </div>
     </section>
   );
@@ -330,29 +328,43 @@ function Gains({ t }: { t: T }) {
 /* ---- how the price works ----------------------------------------- */
 
 function Prices({ t }: { t: T }) {
-  const rows = [
+  // In the order they happen now (2026-11-19): the meeting first.
+  const stops = [
     {
-      n: "01",
-      head: t("A one-off build", "Um valor de implementação"),
+      id: "meet",
+      glyph: "meet" as const,
+      when: t("First", "Primeiro"),
+      name: t("The first meeting", "A reunião inicial"),
+      value: t("Free", "Gratuita"),
       body: t(
-        `${TO_FILL}. It follows from which solutions are chosen and from how much they have to be tied to one another: two that stand on their own cost less to put in than two that have to answer each other.`,
-        `${TO_FILL}. Depende das soluções escolhidas e de quanto têm de ser interligadas: duas que vivem sozinhas custam menos a montar do que duas que têm de responder uma à outra.`,
+        "We work out which solutions a business actually needs. It costs nothing and commits to nothing.",
+        "Para perceber de que soluções o negócio precisa mesmo. Não custa nada e não compromete a nada.",
       ),
     },
     {
-      n: "02",
-      head: t("A monthly service", "Um serviço mensal"),
+      id: "build",
+      glyph: "build" as const,
+      when: t("Once", "Uma vez"),
+      name: t("A one-off build", "Um valor de implementação"),
+      value: TO_FILL,
       body: t(
-        `${TO_FILL} a month. It is a token figure on purpose, and it can be one because what we build is already thought out so that the upkeep it needs is low.`,
-        `${TO_FILL} por mês. O valor é simbólico de propósito, e pode sê-lo porque o que construímos já é pensado para que a manutenção necessária seja baixa.`,
+        "It follows from which solutions are chosen and from how much they have to be tied to one another.",
+        "Depende das soluções escolhidas e de quanto têm de ser interligadas.",
+      ),
+      note: t(
+        "Two that stand on their own cost less to put in than two that have to answer each other.",
+        "Duas que vivem sozinhas custam menos a montar do que duas que têm de responder uma à outra.",
       ),
     },
     {
-      n: "03",
-      head: t("The first meeting, free", "A reunião inicial, gratuita"),
+      id: "month",
+      glyph: "month" as const,
+      when: t("Every month", "Todos os meses"),
+      name: t("A monthly service", "Um serviço mensal"),
+      value: t(`${TO_FILL} a month`, `${TO_FILL} por mês`),
       body: t(
-        "Before any of that, we sit down and work out which solutions a business actually needs. It costs nothing and it commits to nothing.",
-        "Antes disso, reunimos para perceber de que soluções o negócio precisa mesmo. Não custa nada e não compromete a nada.",
+        "A token figure on purpose, and it can be one because what we build is thought out so that the upkeep it needs is low.",
+        "Simbólico de propósito, e pode sê-lo porque o que construímos já é pensado para que a manutenção necessária seja baixa.",
       ),
     },
   ];
@@ -368,21 +380,9 @@ function Prices({ t }: { t: T }) {
           </h2>
         </SlideIn>
 
-        <SlideIn ready distance={0} delay={0.08}>
-          <dl className="be-price">
-            {rows.map((row) => (
-              <div key={row.n} className="be-price-row">
-                <dt>
-                  <span className="mono-label be-price-n" aria-hidden="true">
-                    {row.n}
-                  </span>
-                  <span className="be-price-head">{row.head}</span>
-                </dt>
-                <dd className="be-price-body">{row.body}</dd>
-              </div>
-            ))}
-          </dl>
-        </SlideIn>
+        {/* Option A of 2026-11-19: a line the scroll draws from one
+            stop to the next. */}
+        <PriceLine stops={stops} />
 
         <SlideIn ready distance={0} delay={0.16}>
           <div className="be-price-foot">
