@@ -39,3 +39,8 @@ References through Awwwards: Miguel Recio (editorial figure captions in mono), C
 
 - Whether the page should say how the price is worked out in percentages, as the form does (it says it only in words now).
 - The chart's curves are illustrative; replace them with real figures once the studio has some.
+
+## 2026-11-19 — the price no longer shown at once (user)
+
+- The calculator with the figures left the page: the card now says what each level includes (basic, one-off, monthly), each with a tag ("Included" / "In the proposal"), and that the figures are set in the free proposal from the size of the website. The user picked this over hiding the figures behind a button or showing only "from €80".
+- The calculator is kept whole, out of use, as `PriceCalculator` in `seo-geo.tsx`; putting it back is one line in `SeoGeo`.

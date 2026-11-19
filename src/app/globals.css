@@ -8466,6 +8466,9 @@
   }
   .vi-no[data-still] .vi-no-word { clip-path: inset(0 0 0 0); transition: none; }
   .vi-no[data-still] .vi-no-bar { animation: none; }
+  /* driven by the scroll (Fits): no transition, no animation */
+  .vi-no[data-scroll] .vi-no-word { transition: none; }
+  .vi-no[data-scroll] .vi-no-bar { animation: none; }
 
   /* ---- the two lists of cases ------------------------------------- */
   .vi-cases { display: grid; gap: clamp(2rem, 4vw, 3rem); }
@@ -8834,11 +8837,12 @@
    has three steps, not five.                                           */
 @layer components {
   .be-gs-row { padding-block: clamp(1.25rem, 2.2vw, 1.75rem); }
-  .be-gs-name { font-size: clamp(1.375rem, 2.2vw, 1.875rem); }
-  .be-gs-lead { max-width: 44ch; margin-top: 0.55rem; font-size: 1.0625rem; line-height: 1.45; color: var(--color-ink); text-wrap: pretty; }
+  .be-gs-name { font-size: clamp(1.5rem, 2.4vw, 2.125rem); }
+  /* larger (user, 2026-11-19: the body read too small) */
+  .be-gs-lead { max-width: 44ch; margin-top: 0.65rem; font-size: clamp(1.125rem, 1.5vw, 1.3125rem); line-height: 1.45; color: var(--color-ink); text-wrap: pretty; }
   .be-gs-fold { display: grid; grid-template-rows: 1fr; }
   .be-gs-items { display: grid; gap: 0.5rem; min-height: 0; margin: 0; padding: 0.85rem 0 0; overflow: hidden; list-style: none; }
-  .be-gs-items li { position: relative; max-width: 52ch; padding-left: 1.1rem; font-size: 0.9375rem; line-height: 1.5; color: var(--color-ash); text-wrap: pretty; }
+  .be-gs-items li { position: relative; max-width: 52ch; padding-left: 1.1rem; font-size: clamp(1rem, 1.25vw, 1.125rem); line-height: 1.5; color: var(--color-ash); text-wrap: pretty; }
   .be-gs-items li::before { content: ""; position: absolute; left: 0; top: 0.72em; width: 0.45rem; height: 1px; background: var(--color-ink); }
   .be-gs-items b { font-weight: 500; color: var(--color-ink); }
   @media (min-width: 1024px) {
@@ -8877,6 +8881,91 @@
   .be-pl-body { margin-top: 0.75rem; font-size: 0.9375rem; color: rgb(255 255 255 / 0.6); }
   .be-pl-note { margin-top: 0.5rem; padding-left: 0; font-size: 0.9375rem; line-height: 1.6; color: rgb(255 255 255 / 0.6); box-shadow: none; }
   .be-pl-stop { opacity: 0.32; transition: opacity 0.45s ease; }
+}
+
+/* ---- visual identity: the header's cards show the whole logo -------
+   The symbol and the words together (user, 2026-11-19), sized by the
+   card; the shapes come apart and are built as before, the words go
+   with the old symbol and arrive after the new one. */
+@layer components {
+  .vi-morph[data-whole] .vi-morph-stage { container-type: inline-size; }
+  .vi-morph[data-whole] .vi-morph-face { inset: 0; display: grid; place-items: center; }
+  .vi-morph[data-whole] .vi-morph-old .vi-logo { font-size: 10.5cqw; }
+  .vi-morph[data-whole] .vi-morph-new .vi-logo { font-size: 9.25cqw; }
+  .vi-morph[data-whole] .vi-logo-words,
+  .vi-morph[data-whole] .vi-logo-new-name { transition: opacity 0.5s ease, translate 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+  .vi-morph[data-whole]:is([data-step="1"], [data-step="2"], [data-step="3"]) .vi-morph-old .vi-logo-words { opacity: 0; translate: 0.6em 0; }
+  .vi-morph[data-whole] .vi-morph-new .vi-logo-new-name { opacity: 0; translate: -0.4em 0; }
+  .vi-morph[data-whole][data-step="3"] .vi-morph-new .vi-logo-new-name,
+  .vi-morph[data-whole][data-step="2"] .vi-morph-new .vi-logo-new-name { opacity: 1; translate: 0 0; transition-delay: 0.3s; }
+  @media (prefers-reduced-motion: reduce) {
+    .vi-morph[data-whole] .vi-logo-words, .vi-morph[data-whole] .vi-logo-new-name { transition: none; }
+  }
+}
+
+/* ---- visual identity: the film in the header, and the words in three
+   options to choose from (user, 2026-11-19) ------------------------ */
+@layer components {
+  .vi-head-film .vi-mg { margin-top: clamp(2.5rem, 5vw, 4rem); }
+
+  /* each option framed and tagged, so the three read apart */
+  .vi-opts { display: grid; gap: clamp(2.5rem, 5vw, 4rem); margin-top: clamp(2.5rem, 5vw, 4rem); }
+  .vi-opt { position: relative; padding: clamp(1.75rem, 4vw, 3.5rem) clamp(1.25rem, 3.5vw, 3rem) clamp(2rem, 4.5vw, 3.75rem); outline: 1px dashed rgb(0 0 0 / 0.28); outline-offset: -1px; }
+  .vi-opt-tag { position: absolute; left: clamp(1.25rem, 3.5vw, 3rem); top: 0; translate: 0 -50%; padding: 0.35rem 0.6rem; background: var(--color-ink); color: #ffffff; letter-spacing: 0.06em; }
+  .vi-opt-tag b { font-weight: 600; margin-right: 0.35em; }
+  .vi-opt-tag span { color: rgb(255 255 255 / 0.55); }
+
+  /* A: two columns under a hairline */
+  .vi-wa { display: grid; gap: clamp(1.75rem, 3.5vw, 2.5rem); }
+  @media (min-width: 900px) { .vi-wa { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(2.5rem, 5vw, 4.5rem); } }
+  .vi-wa-col { padding-top: 1.1rem; border-top: 1px solid var(--color-ink); }
+  .vi-wa-label { color: var(--color-ash-2); }
+  .vi-wa-body { max-width: 46ch; margin-top: 0.9rem; font-size: clamp(1.0625rem, 1.35vw, 1.25rem); line-height: 1.55; color: var(--color-ash); text-wrap: pretty; }
+  .vi-wa-body b { font-weight: 500; color: var(--color-ink); }
+
+  /* B: one line large, the detail small and to the right */
+  .vi-wb-big { max-width: 16ch; font-size: clamp(2.25rem, 5.4vw, 4.5rem); font-weight: 400; line-height: 1; letter-spacing: -0.035em; text-wrap: balance; }
+  .vi-wb-small { display: grid; gap: 1.25rem; margin-top: clamp(1.75rem, 3.5vw, 2.75rem); }
+  @media (min-width: 900px) { .vi-wb-small { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(1.75rem, 3vw, 2.5rem); margin-left: 33%; } }
+  .vi-wb-small p { max-width: 40ch; font-size: 1rem; line-height: 1.6; color: var(--color-ash); text-wrap: pretty; }
+  .vi-wb-small b { font-weight: 500; color: var(--color-ink); }
+
+  /* C: three numbered points */
+  .vi-wc { display: grid; gap: clamp(1.75rem, 3.5vw, 2.5rem); margin: 0; padding: 0; list-style: none; }
+  @media (min-width: 900px) { .vi-wc { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: clamp(1.5rem, 3vw, 2.5rem); } }
+  .vi-wc li { padding-top: 1rem; border-top: 1px solid var(--color-hair); }
+  .vi-wc-n { color: var(--color-ash-2); }
+  .vi-wc-head { margin-top: 1.5rem; font-family: var(--font-title); font-size: clamp(1.375rem, 2.1vw, 1.75rem); font-weight: 500; line-height: 1.12; letter-spacing: -0.025em; text-wrap: balance; }
+  .vi-wc-body { max-width: 38ch; margin-top: 0.85rem; font-size: 1rem; line-height: 1.6; color: var(--color-ash); text-wrap: pretty; }
+}
+
+/* ---- SEO & GEO: the price card without figures (user, 2026-11-19) -- */
+@layer components {
+  .sg-ledger-plain { margin-top: 1rem; }
+  .sg-ledger-plain .sg-ledger-row { align-items: start; padding: 1.35rem 0; }
+  .sg-ledger-plain .sg-ledger-name { font-size: clamp(1.0625rem, 1.3vw, 1.1875rem); }
+  .sg-ledger-says { max-width: 36ch; margin-top: 0.35rem; font-size: 0.9375rem; line-height: 1.5; color: var(--color-ash); text-wrap: pretty; }
+  .sg-ledger-tag { flex: none; margin: 0.2rem 0 0; padding: 0.4rem 0.6rem; color: var(--color-ink); box-shadow: inset 0 0 0 1px var(--color-hair-strong); white-space: nowrap; }
+  .sg-ledger-tag[data-in] { color: #ffffff; background: var(--color-ink); box-shadow: none; }
+}
+
+/* ---- back-end: "Why" on white, its cards black (user, 2026-11-19) ---
+   The section turns light; the three cards keep the drawings' dark, now
+   solid black, and the meteor that runs between them goes ink. */
+@layer components {
+  .be-why-light .be-why-say { color: var(--color-ash); }
+  .be-why-light .be-lit { color: var(--color-ink); }
+  .be-why-light .be-lit-block { background: var(--color-ink); }
+  .be-why-light .be-lit[data-on] .be-lit-word { color: #ffffff; }
+  .be-why-light .be-card { color: var(--color-paper); background: #0b0b0b; box-shadow: none; }
+  .be-why-light .be-card .bef,
+  .be-why-light .be-card .bef-saved { --bef-ground: #0b0b0b; }
+  .be-why-light .be-trail .be-trail-card[data-lit] { box-shadow: 0 30px 70px -36px rgb(0 0 0 / 0.55); }
+  .be-why-light .be-trail-track { stroke: rgb(0 0 0 / 0.08); }
+  .be-why-light .be-trail-tail { stroke: rgb(0 0 0 / 0.25); }
+  .be-why-light .be-trail-line { stroke: var(--color-ink); }
+  .be-why-light .be-trail-head { fill: var(--color-ink); filter: drop-shadow(0 0 4px rgb(0 0 0 / 0.35)); }
+  .be-slab-ask { margin-top: clamp(1.25rem, 2.4vw, 1.75rem); }
 }
 
 /* ---- visual identity, reshaped on 2026-11-19 -------------------------
@@ -9119,4 +9208,104 @@
   @media (prefers-reduced-motion: reduce) {
     .vi-lit, .vi-mg-cam, .vi-mg-arm, .vi-mg-say, .vi-mg-feel, .vi-site, .vi-mg-screen, .vi-morph .vi-morph-stage { transition: none; }
   }
+}
+
+/* ---- the service pages' black cards, on the about page's folds -------
+   Every black or near-black card on the service pages takes the ground
+   of the about page's first section (user, 2026-11-19): the same
+   photograph of soft black-and-white folds (public/about/folds-*.webp),
+   dimmed by half on black as .abt-hero-photo is, under the same
+   vignette as .abt-hero-scrim. Only the ground changes; the cards keep
+   their own edges and contents. The grey cards (.vi-trio-card,
+   .vi-sure) and the photographic plates are not black and stay. */
+@layer components {
+  :is(
+    .be-pc,
+    .be-card,
+    .be-dc,
+    .be-ds,
+    .be-sols .be-sol,
+    .be-slab-in .be-slab,
+    .be-why-light .be-card,
+    .vi-mg,
+    .sg-card-dark,
+    .sg-ai,
+    .ps-pack:not([data-lit])
+  ) {
+    background:
+      radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(0 0 0 / 0.35)),
+      linear-gradient(rgb(0 0 0 / 0.5), rgb(0 0 0 / 0.5)),
+      url("/about/folds-1600.webp") center / cover no-repeat,
+      #000000;
+  }
+}
+
+/* Legibility on the folds, the about page's own way: the photograph is
+   left exactly as it is, and the words carry a soft dark shade
+   (.abt-statement does the same over the same picture). The faintest
+   greys come up a step where they sit straight on the ground; white
+   sheets inside the cards drop the shade. */
+@layer components {
+  :is(.be-card, .be-sols .be-sol, .be-slab-in .be-slab, .be-why-light .be-card, .vi-mg, .sg-card-dark, .sg-ai, .ps-pack:not([data-lit])) {
+    text-shadow: 0 0 14px rgb(0 0 0 / 0.7), 0 0 2px rgb(0 0 0 / 0.35);
+  }
+  /* measured against the brightest fold behind each line (#646464 at
+     worst): every line at 4.5:1 or better */
+  :is(.be-card, .be-why-light .be-card) :is(.bef, .bef-saved) { --bef-dim: rgb(255 255 255 / 0.86); }
+  :is(.be-card, .be-why-light .be-card) .bef-saved-say { color: rgb(255 255 255 / 0.9); }
+  :is(.be-card, .be-why-light .be-card) :is(.bef-mark, .bef-saved .mono-label) { color: rgb(255 255 255 / 0.84); }
+  .be-sols .be-sol-body { color: rgb(255 255 255 / 0.88); }
+  :is(.be-card, .be-why-light .be-card) .bef-card { background: transparent; }
+  .sg-card-dark :is(.sg-calc, .sg-calc *),
+  .vi-mg :is(.vi-mg-screen, .vi-mg-screen *),
+  :is(.be-sols .be-sol) :is(.be-draw, .be-draw *) { text-shadow: none; }
+}
+/* the SEO & GEO cards' faintest labels, a step up on the folds; out of
+   any layer, since they are Tailwind utilities and the utilities layer
+   would win over components */
+:is(.sg-card-dark, .sg-ai) :is(.text-paper\/40, .text-paper\/45, .text-paper\/55) { color: rgb(255 255 255 / 0.82); }
+@layer components {
+  .sg-ai .sg-ai-answer { color: rgb(255 255 255 / 0.86); }
+}
+@layer components {
+  /* the head was filled with the old ground's grey; on the folds it
+     read as a hole, so the folds show through it */
+  .vi-mg .vi-mg-head { fill: none; }
+}
+@layer components {
+  .ps-pack:not([data-lit]) :is(.ps-pack-rows dt, .ps-pack-kicker) { color: rgb(255 255 255 / 0.82); }
+}
+@layer components {
+  /* The guides never cross the whole logo (user, 2026-11-19): a band
+     across the middle of the card, where the lockup stands, is left
+     clear of them, its edges soft. */
+  .vi-morph[data-whole] .vi-morph-grid {
+    -webkit-mask-image: linear-gradient(to bottom, #000 0 37.5%, transparent 41.5% 58.5%, #000 62.5% 100%);
+    mask-image: linear-gradient(to bottom, #000 0 37.5%, transparent 41.5% 58.5%, #000 62.5% 100%);
+  }
+}
+
+/* ---- visual identity, 2026-11-19 (user): "why it is worth it" in the
+   header, a fifth of its old room; everything after it on white ------ */
+@layer components {
+  .vi-worth { display: grid; gap: 1rem 2.5rem; margin-top: clamp(2rem, 4vw, 3rem); padding-top: clamp(1.25rem, 2.4vw, 1.75rem); border-top: 1px solid rgb(255 255 255 / 0.16); }
+  @media (min-width: 900px) { .vi-worth { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: end; } }
+  .vi-worth-title { max-width: 22ch; margin-top: 0.75rem; font-size: clamp(1.5rem, 2.6vw, 2.25rem); font-weight: 300; line-height: 1.08; letter-spacing: -0.03em; text-wrap: balance; }
+  .vi-worth-say { max-width: 50ch; font-size: clamp(1rem, 1.2vw, 1.125rem); line-height: 1.55; color: rgb(255 255 255 / 0.72); text-wrap: pretty; }
+  .vi-worth-say b { font-weight: 500; color: #ffffff; }
+
+  /* Does it make sense? on white */
+  .vi-fit .vi-no-bar { background: var(--color-ink); }
+  .vi-fit .vi-case { border-top-color: var(--color-hair); }
+  .vi-fit .vi-case-lead { color: var(--color-ash-2); }
+  .vi-fit .vi-case-word { color: var(--color-ink); }
+  .vi-fit .vi-case[data-muted] .vi-case-lead,
+  .vi-fit .vi-case[data-muted] .vi-case-word { color: rgb(0 0 0 / 0.38); }
+
+  /* How the price works, on white */
+  .vi-price-light .vi-price { border-top-color: var(--color-ink); }
+  .vi-price-light .vi-price-row { border-color: var(--color-hair); }
+  .vi-price-light .vi-price-n { color: var(--color-ash-2); }
+  .vi-price-light .vi-price-body { color: var(--color-ash); }
+  .vi-price-light .vi-price-foot .mono-label { color: var(--color-ash-2); }
 }

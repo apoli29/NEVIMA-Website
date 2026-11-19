@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { SlideIn } from "./enter";
 import { BeforeAfter } from "./project-report";
 import { ToneRoom } from "./tone-veil";
@@ -61,7 +61,7 @@ function Cases3({ t }: { t: T }) {
   // thinner rim of grey; the trade over it and the name under it, both
   // outside the card (user, 2026-11-19).
   const items = [
-    { key: "pilar", trade: pilar.trade(t), name: pilar.name, body: <Morph t={t} bare /> },
+    { key: "pilar", trade: pilar.trade(t), name: pilar.name, body: <Morph t={t} bare whole /> },
     { key: "next-1", trade: TO_FILL, name: TO_FILL, body: <span className="vi-trio-wait" aria-hidden="true" /> },
     { key: "next-2", trade: TO_FILL, name: TO_FILL, body: <span className="vi-trio-wait" aria-hidden="true" /> },
   ];
@@ -91,6 +91,34 @@ function Head({ t }: { t: T }) {
         <SlideIn ready distance={0} delay={0.12}>
           <Cases3 t={t} />
         </SlideIn>
+        {/* The film, up here under the three cards (user, 2026-11-19);
+            the words it used to follow come after it, in Opening. */}
+        <SlideIn ready distance={0} delay={0.16}>
+          <div className="vi-head-film">
+            <Glance t={t} />
+          </div>
+        </SlideIn>
+        {/* Why it is worth it, cut to one line of title and one of text
+            and set under the film (user, 2026-11-19: a fifth of what the
+            section took). The full text and its three options are kept,
+            out of use, in Opening and WorthOptions below. */}
+        <SlideIn ready distance={0} delay={0.2}>
+          <div className="vi-worth">
+            <div>
+              <p className="mono-label text-paper/55">{t("Why it is worth it", "Porque vale a pena")}</p>
+              <h2 className="display vi-worth-title">
+                {t("A client's first impression rests on a mark.", "A primeira impressão de um cliente assenta numa marca.")}
+              </h2>
+            </div>
+            <p className="vi-worth-say">
+              {t(
+                "When the logo and the symbol are out of date, even the best-built website contradicts them. So we draw them with the website, ",
+                "Quando o logótipo e o símbolo estão desatualizados, até o website mais bem feito entra em contradição com eles. Por isso são desenhados com o website, ",
+              )}
+              <b>{t("so everything speaks the same language.", "para que tudo fale a mesma linguagem.")}</b>
+            </p>
+          </div>
+        </SlideIn>
       </header>
     </section>
   );
@@ -115,7 +143,9 @@ function Lit({ children }: { children: ReactNode }) {
   );
 }
 
-function Opening({ t }: { t: T }) {
+/** The section as it stood until 2026-11-19, with the three options;
+    out of use (the header carries the short version). */
+export function Opening({ t }: { t: T }) {
   return (
     <section data-tone="light" className="relative">
       <div className="shell ps-open vi-open" data-tone-body>
@@ -127,37 +157,117 @@ function Opening({ t }: { t: T }) {
           </h2>
         </SlideIn>
 
-        {/* The two paragraphs, every word kept, set as one statement
-            (after Bandcamp's, through Inspo): large, and the three ideas
-            that carry it lit as they are reached. */}
-        <div className="vi-say">
-          <SlideIn ready distance={0} delay={0.06}>
-            <p className="vi-say-p">
-              {t("It rests on the core of an organisational identity: ", "Assenta no núcleo de uma identidade organizacional: ")}
-              <Lit>{t("the logo, and the symbol beside it.", "o logótipo e o símbolo ao lado dele.")}</Lit>{" "}
-              {t(
-                "When that core is out of date — or never matched what the company became — the best-built website in the world ",
-                "Quando esse núcleo está desatualizado — ou nunca correspondeu ao que a empresa veio a ser —, o website mais bem feito do mundo ",
-              )}
-              <Lit>{t("contradicts it.", "entra em contradição com ele.")}</Lit>
-            </p>
-          </SlideIn>
-          <SlideIn ready distance={0} delay={0.1}>
-            <p className="vi-say-p vi-say-p2">
-              {t(
-                "That is why this service is sold inside the web design: a compact visual identity, drawn at the same time as the look and the feel of the website, so that ",
-                "É por isso que este serviço se vende dentro do web design: uma identidade visual mais compacta, desenhada ao mesmo tempo que a estética e a aparência do website, para que ",
-              )}
-              <Lit>{t("everything speaks the same language.", "tudo fale a mesma linguagem.")}</Lit>
-            </p>
-          </SlideIn>
-        </div>
-
-        <SlideIn ready distance={0} delay={0.12}>
-          <Glance t={t} />
-        </SlideIn>
+        {/* The two paragraphs, every word kept, in three ways to read
+            them lighter (user, 2026-11-19: pick one). Each after a site
+            found through Inspo, the composition only. */}
+        <WorthOptions t={t} />
       </div>
     </section>
+  );
+}
+
+/** The words of the two paragraphs, cut where each fact ends, so the
+    three options below share them exactly. */
+function worth(t: T) {
+  return {
+    core: t("It rests on the core of an organisational identity: ", "Assenta no núcleo de uma identidade organizacional: "),
+    mark: t("the logo, and the symbol beside it.", "o logótipo e o símbolo ao lado dele."),
+    when: t(
+      "When that core is out of date — or never matched what the company became — the best-built website in the world ",
+      "Quando esse núcleo está desatualizado — ou nunca correspondeu ao que a empresa veio a ser —, o website mais bem feito do mundo ",
+    ),
+    against: t("contradicts it.", "entra em contradição com ele."),
+    why: t(
+      "That is why this service is sold inside the web design: a compact visual identity, drawn at the same time as the look and the feel of the website, so that ",
+      "É por isso que este serviço se vende dentro do web design: uma identidade visual mais compacta, desenhada ao mesmo tempo que a estética e a aparência do website, para que ",
+    ),
+    same: t("everything speaks the same language.", "tudo fale a mesma linguagem."),
+  };
+}
+
+/** One option, framed and labelled, so the three can be told apart and
+    one chosen. Taken off once the choice is made. */
+function Option({ id, name, from, children }: { id: string; name: string; from: string; children: ReactNode }) {
+  return (
+    <section className="vi-opt" aria-label={name}>
+      <p className="vi-opt-tag mono-label">
+        <b>{id}</b> {name} <span>· {from}</span>
+      </p>
+      {children}
+    </section>
+  );
+}
+
+function WorthOptions({ t }: { t: T }) {
+  const w = worth(t);
+  const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+  return (
+    <div className="vi-opts">
+      {/* A - two columns under a hairline, each with a small label,
+          after Frontier Climate's "Buyers / Suppliers". */}
+      <Option id="A" name={t("Two columns", "Duas colunas")} from="Frontier Climate">
+        <div className="vi-wa">
+          <div className="vi-wa-col">
+            <p className="mono-label vi-wa-label">{t("The problem", "O problema")}</p>
+            <p className="vi-wa-body">
+              {w.core}
+              <b>{w.mark}</b> {w.when}
+              <Lit>{w.against}</Lit>
+            </p>
+          </div>
+          <div className="vi-wa-col">
+            <p className="mono-label vi-wa-label">{t("Our answer", "A nossa resposta")}</p>
+            <p className="vi-wa-body">
+              {w.why}
+              <Lit>{w.same}</Lit>
+            </p>
+          </div>
+        </div>
+      </Option>
+
+      {/* B - one line large, the rest small and narrow, set off to the
+          right under it, after NB Studio's and Linked by Air's openings. */}
+      <Option id="B" name={t("One line, then the detail", "Uma frase, depois o detalhe")} from="NB Studio · Linked by Air">
+        <div className="vi-wb">
+          <p className="display vi-wb-big">
+            {cap(w.same)}
+          </p>
+          <div className="vi-wb-small">
+            <p>
+              {w.core}
+              <b>{w.mark}</b> {w.when}
+              <b>{w.against}</b>
+            </p>
+            <p>
+              {w.why}
+              <b>{w.same}</b>
+            </p>
+          </div>
+        </div>
+      </Option>
+
+      {/* C - three numbered points, each headed by one of the three ideas
+          the text turns on, after Dia & Co's "How it works". */}
+      <Option id="C" name={t("Three points", "Três pontos")} from="Dia & Co">
+        <ol className="vi-wc">
+          <li>
+            <span className="mono-label vi-wc-n">01</span>
+            <h3 className="vi-wc-head">{cap(w.mark)}</h3>
+            <p className="vi-wc-body">{w.core}{w.mark}</p>
+          </li>
+          <li>
+            <span className="mono-label vi-wc-n">02</span>
+            <h3 className="vi-wc-head">{t("The website contradicts it.", "O website entra em contradição com ele.")}</h3>
+            <p className="vi-wc-body">{w.when}{w.against}</p>
+          </li>
+          <li>
+            <span className="mono-label vi-wc-n">03</span>
+            <h3 className="vi-wc-head">{cap(w.same)}</h3>
+            <p className="vi-wc-body">{w.why}{w.same}</p>
+          </li>
+        </ol>
+      </Option>
+    </div>
   );
 }
 
@@ -522,7 +632,6 @@ function Fits({ t }: { t: T }) {
   const head = useRef<HTMLDivElement>(null);
   const no = useRef<HTMLSpanElement>(null);
   const [ref, inView] = useInView<HTMLDivElement>(0.3);
-  const [said, setSaid] = useState(false);
   const [at, setAt] = useState(0);
   // How far "No." sits, in its place, from the middle of the screen; and
   // how much room the pinned screen leaves under the title.
@@ -563,9 +672,15 @@ function Fits({ t }: { t: T }) {
   const noScale = useTransform(scrollYProgress, (p) => 1.5 - 0.5 * noMove(p));
   const title = useTransform(scrollYProgress, (p) => span(p, 0.6, 0.74));
   const titleY = useTransform(scrollYProgress, (p) => 18 * (1 - span(p, 0.6, 0.74)));
-  useMotionValueEvent(scrollYProgress, "change", (p) => {
-    if (p > 0.32) setSaid(true);
-  });
+  // "No." is uncovered by the scroll itself, not by a timed transition
+  // set off when a threshold is crossed (user, 2026-11-19: on a long,
+  // fast scroll the transition could be left unplayed and "No." never
+  // showed). Wherever the scroll stands, the word stands as far revealed
+  // as that point says, and whole from 0.42 on.
+  const reveal = useTransform(scrollYProgress, (p) => ease(span(p, 0.28, 0.42)));
+  const noClip = useTransform(reveal, (r) => `inset(0 ${(1 - r) * 100}% 0 0)`);
+  const barLeft = useTransform(reveal, (r) => `${r * 100}%`);
+  const barShow = useTransform(reveal, (r) => (r > 0.001 && r < 0.999 ? 1 : 0));
 
   const fits = [
     t("no symbol at all", "nenhum símbolo"),
@@ -587,10 +702,17 @@ function Fits({ t }: { t: T }) {
   }, [inView, reduce]);
 
   const question = t("Does it make sense for every business?", "Faz sentido para todos os negócios?");
-  const answer = (
-    <span className="vi-no" data-said={said || reduce || undefined} data-still={reduce || undefined}>
+  const answer = reduce ? (
+    <span className="vi-no" data-said data-still>
       <span className="vi-no-word">{t("No.", "Não.")}</span>
       <span aria-hidden="true" className="vi-no-bar" />
+    </span>
+  ) : (
+    <span className="vi-no" data-scroll>
+      <motion.span className="vi-no-word" style={{ clipPath: noClip }}>
+        {t("No.", "Não.")}
+      </motion.span>
+      <motion.span aria-hidden="true" className="vi-no-bar" style={{ left: barLeft, opacity: barShow }} />
     </span>
   );
 
@@ -605,12 +727,12 @@ function Fits({ t }: { t: T }) {
   );
 
   return (
-    <section aria-labelledby="vi-fit-title" data-tone="dark" className="vi-fit relative text-paper">
+    <section aria-labelledby="vi-fit-title" data-tone="light" className="vi-fit relative">
       <div data-tone-body>
         {reduce ? (
           <div className="shell vi-fit-still">
             <div className="vi-fit-head">
-              <p className="mono-label text-paper/55">{t("Who it is for", "Para quem é")}</p>
+              <p className="mono-label text-ash-2">{t("Who it is for", "Para quem é")}</p>
               <h2 id="vi-fit-title" className="display vi-fit-title">
                 {question}
               </h2>
@@ -632,7 +754,7 @@ function Fits({ t }: { t: T }) {
                     here from the middle of the screen. */}
                 <div ref={head} className="shell vi-fit-head">
                   <motion.div style={{ opacity: title, y: titleY }}>
-                    <p className="mono-label text-paper/55">{t("Who it is for", "Para quem é")}</p>
+                    <p className="mono-label text-ash-2">{t("Who it is for", "Para quem é")}</p>
                     <h2 id="vi-fit-title" className="display vi-fit-title">
                       {question}
                     </h2>
@@ -674,7 +796,7 @@ const MORPH_MS = 1250;
     References through Inspo: Geex (forms sculpted and resolved on an
     empty ground) and Portal One (the construction geometry left in
     view). The composition only - the colour and the type are ours. */
-function Morph({ t, bare = false }: { t: T; bare?: boolean }) {
+function Morph({ t, bare = false, whole = false }: { t: T; bare?: boolean; whole?: boolean }) {
   const reduce = useReducedMotion() ?? false;
   const [ref, inView] = useInView<HTMLDivElement>(0.35);
   const [n, setN] = useState(0);
@@ -693,6 +815,7 @@ function Morph({ t, bare = false }: { t: T; bare?: boolean }) {
       ref={ref}
       className="vi-morph"
       data-step={step}
+      data-whole={whole || undefined}
       role="img"
       aria-label={t(
         "Pilar's old mark taken apart and its new mark built on the guides.",
@@ -703,11 +826,14 @@ function Morph({ t, bare = false }: { t: T; bare?: boolean }) {
         <span className="vi-morph-grid">
           <Grid drawn={step === 1 || step === 2} />
         </span>
+        {/* Whole in the header (user, 2026-11-19): the logo and the
+            symbol together, the words leaving and arriving with the
+            shapes. Only Pilar has both lockups drawn. */}
         <span className="vi-morph-face vi-morph-old">
-          <Mark brand={brand} side="before" />
+          {whole ? <PilarOldLogo t={t} /> : <Mark brand={brand} side="before" />}
         </span>
         <span className="vi-morph-face vi-morph-new">
-          <Mark brand={brand} side="after" />
+          {whole ? <PilarNewLogo t={t} /> : <Mark brand={brand} side="after" />}
         </span>
       </span>
       {/* Bare in the header, where the name and the trade stand outside the card. */}
@@ -782,10 +908,10 @@ function Prices({ t }: { t: T }) {
   ];
 
   return (
-    <section aria-labelledby="vi-price-title" data-tone="dark" className="relative text-paper">
+    <section aria-labelledby="vi-price-title" data-tone="light" className="relative vi-price-light">
       <div className="shell ps-sec" data-tone-body>
         <SlideIn ready>
-          <p className="mono-label text-paper/55">{t("How the price works", "Como funcionam os preços")}</p>
+          <p className="mono-label text-ash-2">{t("How the price works", "Como funcionam os preços")}</p>
           <h2 id="vi-price-title" className="display ps-title">
             <span className="font-light sm:block">{t("The mark and the website", "A marca e o website")}</span>{" "}
             <span className="font-medium sm:block">{t("are priced as one piece of work.", "são orçamentados como um só trabalho.")}</span>
@@ -831,7 +957,6 @@ export function VisualIdentity() {
   return (
     <ToneRoom>
       <Head t={t} />
-      <Opening t={t} />
       <Fits t={t} />
       <Prices t={t} />
     </ToneRoom>
