@@ -17,6 +17,7 @@ import { PassLink } from "./floating-nav";
 import { useInkAlign } from "./ink-align";
 import { foldProcess } from "./process";
 import { RewriteTitle } from "./rewrite-title";
+import { ServiceCard } from "./service-cards";
 import { getLenis, jumpTo } from "./smooth-scroll";
 
 /* ==================================================================
@@ -32,14 +33,15 @@ import { getLenis, jumpTo } from "./smooth-scroll";
    right.
 
    The showcase answers the list. Pointing at a service puts its
-   picture in the frame; opening one keeps it there and runs through its
-   three pictures, one after another, for as long as it stays open. Only
+   card in the frame (an animated loop for each service since
+   2026-11-19, in place of its photographs: service-cards.tsx); opening
+   one keeps it there. Only
    one service is open at a time, and it opens in place, like a drawer:
    the description hangs from the line the name starts on, lit rather
    than faded in, with the way to the service's own page under it.
 
    Below lg there is no room for the frame beside the list, so an open
-   drawer carries its own three pictures instead.
+   drawer carries its own card instead.
    ================================================================== */
 
 /** The light starts once the drawer is mostly open, in milliseconds. */
@@ -50,8 +52,6 @@ const LIGHT_OVERLAP = 0.6;
 
 /** Between one row's entrance and the next, in s. */
 const ROW_STAGGER_S = 0.09;
-/** How long an open service's picture stays before the next, in ms. */
-const SLIDE_MS = 3200;
 
 /** Where the services' title is put when the foot sends a visitor to a
     service: clear of the bar, in px from the top of the screen. */
@@ -61,14 +61,6 @@ const FRAME_TOP = () => Math.min(Math.max(window.innerHeight * 0.15, 112), 152);
     description, in s, and follow one another at this pace. */
 const TICK_DELAY_S = (LIGHT_DELAY_MS + LIGHT_MS * 0.8) / 1000;
 const TICK_STAGGER_S = 0.16;
-
-/** The same Unsplash photo, cut to another size. */
-function sized(src: string, w: number, h: number) {
-  const url = new URL(src);
-  url.searchParams.set("w", String(w));
-  url.searchParams.set("h", String(h));
-  return url.toString();
-}
 
 /* ================================================================== */
 
@@ -208,7 +200,6 @@ export function Services({ ready }: { ready: boolean }) {
           <Showcase
             service={services[shown]}
             index={shown}
-            open={openIndex >= 0 && pointed === null}
             seen={seen}
             reduce={reduce}
           />
@@ -274,52 +265,36 @@ function PortfolioCall() {
 /* Showcase: the framed picture beside the list                         */
 /* ================================================================== */
 
-/* Each new picture is uncovered over the one before it, from the foot up,
-   settling as it comes, and the one under it is let go once it is
-   covered. */
+/* Since 2026-11-19 (user) the frame holds each service's animated card
+   (service-cards.tsx) in place of its photographs. Each new card is
+   uncovered over the one before it, from the foot up, settling as it
+   comes, and the one under it is let go once it is covered. */
 function Showcase({
   service,
   index,
-  open,
   seen,
   reduce,
 }: {
   service: Service;
   index: number;
-  /** The service shown is the open one: run through its pictures. */
-  open: boolean;
   seen: boolean;
   reduce: boolean;
 }) {
-  const t = useT();
-  const [slide, setSlide] = useState(0);
-
-  // Back to the first picture whenever the service changes; through the
-  // three for as long as an open one is shown.
-  useEffect(() => setSlide(0), [index]);
-  const count = service.photos.length;
-  useEffect(() => {
-    if (!open || reduce || count < 2) return;
-    const id = window.setInterval(() => setSlide((n) => (n + 1) % count), SLIDE_MS);
-    return () => window.clearInterval(id);
-  }, [open, reduce, index, count]);
-
-  // A service with no pictures yet leaves the frame empty.
-  const src = service.photos[slide] ?? "";
-  const [layers, setLayers] = useState([{ src, key: 0 }]);
+  const slug = service.slug;
+  const [layers, setLayers] = useState([{ slug, key: 0 }]);
   useEffect(() => {
     setLayers((now) =>
-      now[now.length - 1].src === src
+      now[now.length - 1].slug === slug
         ? now
-        : [...now.slice(-2), { src, key: now[now.length - 1].key + 1 }],
+        : [...now.slice(-2), { slug, key: now[now.length - 1].key + 1 }],
     );
-  }, [src]);
+  }, [slug]);
 
   return (
     <figure className="hidden lg:col-span-4 lg:block">
       <div className="sticky top-28 pt-10">
-        <Uncover shown={seen} className="relative aspect-[4/5] bg-ink/5">
-          {layers.filter((layer) => layer.src).map((layer, i, shownLayers) => (
+        <Uncover shown={seen} className="relative aspect-[4/5] bg-ink">
+          {layers.map((layer, i, shownLayers) => (
             <motion.div
               key={layer.key}
               className="absolute inset-0"
@@ -333,14 +308,7 @@ function Showcase({
                 if (i === shownLayers.length - 1 && i > 0) setLayers((now) => now.slice(-1));
               }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={sized(layer.src, 800, 1000)}
-                alt=""
-                decoding="async"
-                draggable={false}
-                className="block size-full object-cover select-none"
-              />
+              <ServiceCard slug={layer.slug} />
             </motion.div>
           ))}
         </Uncover>
@@ -349,9 +317,6 @@ function Showcase({
             <span aria-hidden="true" className="block size-[7px] bg-ink" />
             <span className="text-ink tabular-nums">Fig. 0{index + 1}</span>
             <span>— {service.title}</span>
-          </span>
-          <span className="tabular-nums">
-            {count ? `${slide + 1} / ${count}` : t("Photos to come", "Fotografias em breve")}
           </span>
         </figcaption>
       </div>
@@ -500,27 +465,11 @@ function Row({
               />
             )}
 
-            {/* Where there is no showcase, the drawer carries the pictures. */}
-            <div className="mt-6 grid grid-cols-3 gap-2 lg:hidden">
-              {service.photos.map((photo, i) => (
-                <Uncover
-                  key={photo}
-                  shown={open}
-                  delay={open ? 0.3 + i * 0.1 : 0}
-                  className="aspect-[4/5] bg-ink/5"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={sized(photo, 360, 450)}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    draggable={false}
-                    className="block size-full object-cover select-none"
-                  />
-                </Uncover>
-              ))}
-            </div>
+            {/* Where there is no showcase, the drawer carries the card,
+                wider than tall, playing only while it is open. */}
+            <Uncover shown={open} delay={open ? 0.3 : 0} className="mt-6 aspect-[5/4] max-w-[34rem] bg-ink lg:hidden">
+              <ServiceCard slug={service.slug} play={open} />
+            </Uncover>
 
             {/* The way out of the index and into the service's own page.
                 Web design has none any more: its work is in the portfolio,

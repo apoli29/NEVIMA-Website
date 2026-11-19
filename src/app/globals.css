@@ -9210,6 +9210,261 @@
   }
 }
 
+/* ==================================================================
+   The services' cards (service-cards.tsx, user 2026-11-19): one short
+   loop per service on the back end page's dark ground, in place of the
+   photographs in "Our Services".
+   ================================================================== */
+@layer components {
+  .svk {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: clamp(0.85rem, 1.6vw, 1.15rem);
+    color: #ffffff;
+    background: linear-gradient(155deg, #3a3a3d 0%, #18181a 48%, #080809 100%);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+    overflow: hidden;
+  }
+  .svk-kicker { color: rgb(255 255 255 / 0.5); }
+  .svk-stage { position: relative; min-height: 0; margin-block: 0.75rem; container-type: size; }
+  .svk-foot { display: flex; justify-content: space-between; gap: 1rem; color: rgb(255 255 255 / 0.5); }
+  .svk-phase { color: #ffffff; animation: svk-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  @keyframes svk-in { from { opacity: 0; translate: 0 0.35em; } }
+
+  /* ---- web design ---- */
+  .svk-wd { position: absolute; inset: 0; }
+  .svk-wd-page {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(100cqw, 140cqh);
+    height: calc(min(100cqw, 140cqh) * 0.7);
+    translate: -50% -50%;
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.28);
+    transition: width 0.9s cubic-bezier(0.65, 0, 0.35, 1), height 0.9s cubic-bezier(0.65, 0, 0.35, 1), border-radius 0.9s ease;
+  }
+  .svk-wd[data-at="3"] .svk-wd-page { width: calc(min(92cqh, 120cqw) * 0.5); height: min(92cqh, 120cqw); border-radius: 12px; }
+  .svk-wd-dots { position: absolute; left: 4%; top: 3.5%; display: flex; gap: 3px; transition: opacity 0.4s ease; }
+  .svk-wd-dots i { width: 4px; height: 4px; border-radius: 50%; background: rgb(255 255 255 / 0.35); }
+  .svk-wd[data-at="3"] .svk-wd-dots { opacity: 0; }
+  .svk-wd-guides { position: absolute; inset: 0 6%; display: grid; grid-template-columns: repeat(12, 1fr); gap: 3%; transition: opacity 0.6s ease; }
+  .svk-wd-guides i { background: rgb(255 255 255 / 0.07); transform-origin: top; scale: 1 0; transition: scale 0.7s cubic-bezier(0.65, 0, 0.35, 1) calc(var(--i) * 40ms); }
+  .svk-wd[data-at="0"] .svk-wd-guides i,
+  .svk-wd[data-at="1"] .svk-wd-guides i { scale: 1 1; }
+  .svk-wd[data-at="2"] .svk-wd-guides,
+  .svk-wd[data-at="3"] .svk-wd-guides { opacity: 0; }
+  .svk-wd-b {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+    height: var(--h);
+    opacity: 0;
+    translate: 0 6px;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.55);
+    transition:
+      opacity 0.45s ease calc(var(--i) * 90ms),
+      translate 0.55s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i) * 90ms),
+      background-color 0.5s ease calc(var(--i) * 70ms),
+      box-shadow 0.5s ease calc(var(--i) * 70ms),
+      left 0.9s cubic-bezier(0.65, 0, 0.35, 1), top 0.9s cubic-bezier(0.65, 0, 0.35, 1),
+      width 0.9s cubic-bezier(0.65, 0, 0.35, 1), height 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .svk-wd:not([data-at="0"]) .svk-wd-b { opacity: 1; translate: 0 0; }
+  .svk-wd[data-at="2"] .svk-wd-b,
+  .svk-wd[data-at="3"] .svk-wd-b { box-shadow: inset 0 0 0 1px transparent; background: rgb(255 255 255 / 0.3); }
+  .svk-wd[data-at="2"] :is(.svk-wd-h1, .svk-wd-h2, .svk-wd-btn),
+  .svk-wd[data-at="3"] :is(.svk-wd-h1, .svk-wd-h2, .svk-wd-btn) { background: #ffffff; }
+  .svk-wd[data-at="2"] .svk-wd-img,
+  .svk-wd[data-at="3"] .svk-wd-img { background: linear-gradient(160deg, rgb(255 255 255 / 0.32), rgb(255 255 255 / 0.08)); }
+  .svk-wd-btn { border-radius: 999px; }
+  /* the page on a computer */
+  .svk-wd-nav { --x: 6%; --y: 11%; --w: 88%; --h: 3%; }
+  .svk-wd-h1 { --x: 6%; --y: 26%; --w: 42%; --h: 8%; }
+  .svk-wd-h2 { --x: 6%; --y: 37%; --w: 30%; --h: 8%; }
+  .svk-wd-p1 { --x: 6%; --y: 52%; --w: 38%; --h: 2.6%; }
+  .svk-wd-p2 { --x: 6%; --y: 58%; --w: 32%; --h: 2.6%; }
+  .svk-wd-btn { --x: 6%; --y: 69%; --w: 17%; --h: 8%; }
+  .svk-wd-img { --x: 55%; --y: 24%; --w: 39%; --h: 60%; }
+  /* the same page on a phone */
+  .svk-wd[data-at="3"] .svk-wd-nav { --x: 8%; --y: 5%; --w: 84%; --h: 2%; }
+  .svk-wd[data-at="3"] .svk-wd-img { --x: 8%; --y: 11%; --w: 84%; --h: 33%; }
+  .svk-wd[data-at="3"] .svk-wd-h1 { --x: 8%; --y: 50%; --w: 78%; --h: 5%; }
+  .svk-wd[data-at="3"] .svk-wd-h2 { --x: 8%; --y: 57%; --w: 56%; --h: 5%; }
+  .svk-wd[data-at="3"] .svk-wd-p1 { --x: 8%; --y: 67%; --w: 84%; --h: 1.6%; }
+  .svk-wd[data-at="3"] .svk-wd-p2 { --x: 8%; --y: 71%; --w: 70%; --h: 1.6%; }
+  .svk-wd[data-at="3"] .svk-wd-btn { --x: 8%; --y: 80%; --w: 52%; --h: 6%; }
+
+  /* ---- visual identity: the identity page's Morph, in grey ---- */
+  .svk-vi { position: absolute; inset: 0; display: grid; place-items: center; }
+  .svk-vi .vi-morph-stage { width: min(88cqw, 92cqh); filter: grayscale(1); }
+
+  /* ---- back-end features ---- */
+  .svk-be { position: absolute; inset: 0; display: grid; grid-template-rows: repeat(4, 1fr); margin: 0; padding: 0; list-style: none; }
+  .svk-be-wire { position: absolute; left: 0.2rem; top: 12.5%; bottom: 12.5%; width: 1px; background: rgb(255 255 255 / 0.18); }
+  .svk-be-bead {
+    position: absolute;
+    left: -3px;
+    top: calc(var(--at) * 33.333%);
+    width: 7px;
+    height: 7px;
+    margin-top: -3.5px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgb(255 255 255 / 0.12);
+    transition: top 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .svk-be-row {
+    display: grid;
+    grid-template-columns: 1.25rem minmax(0, 1fr) min(38%, 7.5rem);
+    align-items: center;
+    gap: 0.6rem;
+    padding-left: 1rem;
+    border-top: 1px solid rgb(255 255 255 / 0.1);
+    color: rgb(255 255 255 / 0.35);
+    transition: color 0.5s ease;
+  }
+  .svk-be-row:first-of-type { border-top: 0; }
+  .svk-be-row[data-done] { color: rgb(255 255 255 / 0.6); }
+  .svk-be-row[data-on] { color: #ffffff; }
+  .svk-be-n { position: relative; z-index: 1; font-size: 0.625rem; }
+  .svk-be-name { font-size: clamp(0.8125rem, 1.15vw, 0.9375rem); line-height: 1.2; letter-spacing: -0.01em; }
+  .svk-be-sheet {
+    position: relative;
+    display: grid;
+    align-content: center;
+    gap: 3px;
+    height: 72%;
+    max-height: 3.25rem;
+    padding: 6px;
+    background: rgb(255 255 255 / 0.05);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+    opacity: 0.45;
+    transition: opacity 0.5s ease, box-shadow 0.5s ease;
+  }
+  .svk-be-row[data-done] .svk-be-sheet { opacity: 0.7; }
+  .svk-be-row[data-on] .svk-be-sheet { opacity: 1; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.4); }
+  .svk-be-sheet i, .svk-be-sheet b { display: block; height: 3px; background: rgb(255 255 255 / 0.3); }
+  /* the form: its fields fill in */
+  .svk-be-form i { transform-origin: left; }
+  .svk-be-row[data-on] .svk-be-form i { animation: svk-fill 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .svk-be-row[data-on] .svk-be-form i:nth-child(2) { animation-delay: 0.35s; }
+  .svk-be-row[data-on] .svk-be-form i:nth-child(3) { animation-delay: 0.7s; }
+  @keyframes svk-fill { from { scale: 0 1; } }
+  /* the table: the new line comes in at its head */
+  .svk-be-table b { background: rgb(255 255 255 / 0.55); }
+  .svk-be-row[data-on] .svk-be-table i:first-of-type { animation: svk-row 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both; background: #ffffff; }
+  @keyframes svk-row { from { opacity: 0; translate: -30% 0; } }
+  /* the calendar: one slot is taken */
+  .svk-be-cal { grid-template-columns: repeat(7, 1fr); }
+  .svk-be-cal i { height: auto; aspect-ratio: 1.6; background: rgb(255 255 255 / 0.12); }
+  .svk-be-row:is([data-on], [data-done]) .svk-be-cal i[data-take] { background: #ffffff; transition: background-color 0.4s ease 0.4s; }
+  /* the email: it goes, with its tick */
+  .svk-be-mail i:first-child { width: 70%; }
+  .svk-be-mail i:nth-child(2) { width: 50%; }
+  .svk-be-mail svg { position: absolute; right: 6px; bottom: 5px; width: 13px; height: 13px; fill: none; stroke: #ffffff; stroke-width: 2; stroke-dasharray: 20; stroke-dashoffset: 20; }
+  .svk-be-row:is([data-on], [data-done]) .svk-be-mail svg { stroke-dashoffset: 0; transition: stroke-dashoffset 0.5s ease 0.35s; }
+
+  /* ---- SEO & GEO ---- */
+  .svk-sg { position: absolute; inset: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 0.6rem; }
+  .svk-sg-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    padding: 0.45rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .svk-sg-lens { width: 13px; height: 13px; flex: none; fill: none; stroke: rgb(255 255 255 / 0.6); stroke-width: 1.5; }
+  .svk-sg-list { position: relative; margin: 0; padding: 0; list-style: none; transition: opacity 0.6s ease; }
+  .svk-sg[data-at="2"] .svk-sg-list,
+  .svk-sg[data-at="3"] .svk-sg-list { opacity: 0.3; }
+  .svk-sg-res {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(var(--r) * 20%);
+    height: 20%;
+    display: grid;
+    align-content: center;
+    gap: 5px;
+    border-top: 1px solid rgb(255 255 255 / 0.08);
+    transition: top 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .svk-sg-res i { display: block; height: 4px; background: rgb(255 255 255 / 0.22); }
+  .svk-sg-res i:last-child { width: 40%; height: 3px; background: rgb(255 255 255 / 0.12); }
+  .svk-sg-ours { border-top-color: transparent; }
+  .svk-sg-title { font-size: clamp(0.8125rem, 1.15vw, 0.9375rem); font-weight: 500; line-height: 1.15; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .svk-sg-url { color: rgb(255 255 255 / 0.5); text-transform: none; }
+  .svk-sg-ai {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: grid;
+    gap: 0.55rem;
+    padding: 0.85rem 0.9rem;
+    background: #0c0c0d;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.22);
+    opacity: 0;
+    translate: 0 1rem;
+    transition: opacity 0.5s ease, translate 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .svk-sg-ai[data-on] { opacity: 1; translate: 0 0; }
+  .svk-sg-ai-top { display: flex; align-items: center; gap: 0.45rem; color: rgb(255 255 255 / 0.55); }
+  .svk-sg-mark { width: 8px; height: 8px; border-radius: 50%; background: #ffffff; }
+  .svk-sg-answer { font-size: clamp(0.875rem, 1.25vw, 1rem); line-height: 1.35; letter-spacing: -0.01em; }
+  .svk-sg-source { display: flex; align-items: center; gap: 0.4rem; width: fit-content; padding: 0.25rem 0.5rem; text-transform: none; color: #ffffff; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.35); opacity: 0; transition: opacity 0.5s ease; }
+  .svk-sg-source[data-on] { opacity: 1; }
+  .svk-sg-dot { width: 5px; height: 5px; border-radius: 50%; background: #ffffff; }
+  .svk-word { opacity: 0; }
+  .svk-word[data-on] { animation: svk-word 0.25s ease calc(0.35s + var(--w) * 70ms) forwards; }
+  @keyframes svk-word { to { opacity: 1; } }
+
+  /* ---- photo shoot ---- */
+  .svk-ps { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .svk-ps-floor { stroke: rgb(255 255 255 / 0.25); stroke-width: 1; }
+  .svk-ps-line { fill: none; stroke: #ffffff; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+  .svk-ps-fill { fill: rgb(255 255 255 / 0.28); }
+  .svk-ps-dotfill { fill: #ffffff; }
+  .svk-ps-cam { fill: #0c0c0d; stroke: #ffffff; stroke-width: 1.6; stroke-linejoin: round; }
+  .svk-ps-frame { fill: none; stroke: rgb(255 255 255 / 0.7); stroke-width: 1.4; }
+  .svk-ps-scene, .svk-ps-pose { opacity: 0; transition: opacity 0.6s ease; }
+  .svk-ps-scene[data-on], .svk-ps-pose[data-on] { opacity: 1; }
+  .svk-ps-thumb { fill: none; stroke: rgb(255 255 255 / 0.4); stroke-width: 1; transition: fill 0.4s ease 0.3s; }
+  .svk-ps-thumb[data-taken] { fill: rgb(255 255 255 / 0.85); }
+  .svk-ps-mini { fill: #0c0c0d; opacity: 0; transition: opacity 0.4s ease 0.3s; }
+  .svk-ps-mini[data-on] { opacity: 1; }
+  .svk-ps-flash { fill: #ffffff; opacity: 0; pointer-events: none; }
+  .svk-ps[data-at="1"] .svk-ps-flash { animation: svk-flash 0.5s ease-out 0.15s; }
+  @keyframes svk-flash { 0% { opacity: 0; } 12% { opacity: 0.85; } 100% { opacity: 0; } }
+  .svk-ps-recdot { fill: #ffffff; }
+  .svk-ps-pose .svk-ps-recdot { opacity: 0.25; }
+  .svk-ps-recdot[data-on], .svk-ps-rec[data-on] .svk-ps-recdot { opacity: 1; animation: svk-blink 1s steps(1) infinite; }
+  @keyframes svk-blink { 50% { opacity: 0.15; } }
+  .svk-ps-rec { opacity: 0; transition: opacity 0.4s ease; }
+  .svk-ps-rec[data-on] { opacity: 1; }
+  .svk-ps-time { fill: #ffffff; font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.06em; }
+  .svk-ps-pan[data-on] { animation: svk-pan 3.2s ease-in-out infinite alternate; }
+  @keyframes svk-pan { to { translate: -6px 2px; } }
+
+  /* still, for anyone who asked for less motion: the last frame, held */
+  .svk[data-still] .svk-word { opacity: 1; animation: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .svk * { transition: none !important; animation: none !important; }
+    .svk-word { opacity: 1; }
+  }
+}
+
 /* ---- the service pages' black cards, on the about page's folds -------
    Every black or near-black card on the service pages takes the ground
    of the about page's first section (user, 2026-11-19): the same
