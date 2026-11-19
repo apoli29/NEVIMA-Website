@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { SlideIn } from "./enter";
 import { BeforeAfter } from "./project-report";
@@ -19,18 +19,23 @@ import { useT } from "@/lib/use-lang";
    whose sections turn from light to dark under the tonal veil, the same
    SlideIn on every heading.
 
-   Reshaped by the user on 2026-11-19:
+   Reshaped by the user on 2026-11-19, twice:
 
-   1. The header: the title and Pilar's two identities, each card on its
-      own brand's ground - the template website's logo on its white, and
-      ours on Pilar's Noite.
-   2. Why it is worth it, and under the words a card in the call's metal:
-      the client looks the business up on a phone, frowns at the old
-      identity and is won over by the new one.
-   3. Whether it makes sense at all, on the dark ground: the question
-      held in the middle of the screen until the scroll turns it into
-      "No.", then the two lists of cases and the grey card for whoever
-      is not sure.
+   1. The header: the title and three grey cards, each the card of
+      "Not sure?" - the mark taken apart and built again on its own
+      brand's ground. Only the first is filled (Pilar); the other two
+      wait for the cases the studio is adding.
+   2. Why it is worth it: the text set as one large statement, its key
+      ideas lit by black blocks as they are reached (after Bandcamp,
+      through Inspo), and under it a short piece of motion graphics: the
+      client takes the phone out, the camera goes into the screen, and
+      back to the face, which reacts and speaks - once to the old
+      identity, once to the new.
+   3. Does it make sense for every business? On the dark ground, the
+      question held in the middle of the screen until the scroll turns
+      it into "No.", which then goes to the left under the question, now
+      the section's title; the two lists of cases and the grey card come
+      up close under them.
    4. How the price works.
 
    The proposal in three things seen (the slider, the symbol on its
@@ -46,28 +51,27 @@ import { useT } from "@/lib/use-lang";
 
 /* ---- the header -------------------------------------------------- */
 
-/** Two cards, side by side, each on its own brand's ground: the logo
-    the template website carries, on that website's white, and the one
-    ours carries, on Pilar's Noite (user, 2026-11-19). One over the
+/** Three of the grey card that closes "Does it make sense?" (user,
+    2026-11-19): the first carries Pilar's loop, the other two stand
+    empty for the two cases the studio is about to add. One over the
     other on a phone. */
-function Pair({ t }: { t: T }) {
-  const sides = [
-    { key: "before" as const, head: t("The mark they had", "A marca que tinham"), logo: <PilarOldLogo t={t} /> },
-    { key: "after" as const, head: t("The mark they have", "A marca que passam a ter"), logo: <PilarNewLogo t={t} /> },
-  ];
+function Cases3({ t }: { t: T }) {
   return (
-    <div className="vi-pair">
-      {sides.map((side) => (
-        <figure key={side.key} className="vi-pair-card" data-side={side.key}>
-          <figcaption className="mono-label vi-pair-head">{side.head}</figcaption>
-          <div className="vi-pair-stage">{side.logo}</div>
-        </figure>
+    <div className="vi-trio">
+      <div className="vi-trio-card">
+        <Morph t={t} />
+      </div>
+      {[1, 2].map((n) => (
+        <div key={n} className="vi-trio-card" data-empty="">
+          <span className="vi-trio-wait" aria-hidden="true" />
+          <span className="mono-label vi-trio-say">{TO_FILL}</span>
+        </div>
       ))}
     </div>
   );
 }
 
-/** The title and the two cards, and nothing else (user, 2026-11-19). */
+/** The title and the three cards, and nothing else. */
 function Head({ t }: { t: T }) {
   return (
     <section data-tone="dark" className="relative isolate text-paper">
@@ -78,7 +82,7 @@ function Head({ t }: { t: T }) {
           </h1>
         </SlideIn>
         <SlideIn ready distance={0} delay={0.12}>
-          <Pair t={t} />
+          <Cases3 t={t} />
         </SlideIn>
       </header>
     </section>
@@ -87,10 +91,27 @@ function Head({ t }: { t: T }) {
 
 /* ---- the opening ------------------------------------------------- */
 
+/** A key idea of the statement: a black block draws itself behind it,
+    from the left and line by line, once it is reached, and its words
+    turn white over it - the way the back-end page lights "hours". */
+function Lit({ children }: { children: ReactNode }) {
+  const reduce = useReducedMotion() ?? false;
+  const [ref, inView] = useInView<HTMLSpanElement>(0.9);
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    if (inView) setOn(true);
+  }, [inView]);
+  return (
+    <span ref={ref} className="vi-lit" data-on={on || reduce || undefined}>
+      {children}
+    </span>
+  );
+}
+
 function Opening({ t }: { t: T }) {
   return (
     <section data-tone="light" className="relative">
-      <div className="shell ps-open" data-tone-body>
+      <div className="shell ps-open vi-open" data-tone-body>
         <SlideIn ready>
           <p className="mono-label text-ash-2">{t("Why it is worth it", "Porque vale a pena")}</p>
           <h2 className="display ps-open-title">
@@ -98,20 +119,33 @@ function Opening({ t }: { t: T }) {
             <span className="font-medium sm:block">{t("rests on a mark.", "assenta numa marca.")}</span>
           </h2>
         </SlideIn>
-        <SlideIn ready distance={0} delay={0.08} className="ps-open-say">
-          <p>
-            {t(
-              "It rests on the core of an organisational identity: the logo, and the symbol beside it. When that core is out of date — or never matched what the company became — the best-built website in the world contradicts it.",
-              "Assenta no núcleo de uma identidade organizacional: o logótipo e o símbolo ao lado dele. Quando esse núcleo está desatualizado — ou nunca correspondeu ao que a empresa veio a ser —, o website mais bem feito do mundo entra em contradição com ele.",
-            )}
-          </p>
-          <p>
-            {t(
-              "That is why this service is sold inside the web design: a compact visual identity, drawn at the same time as the look and the feel of the website, so that everything speaks the same language.",
-              "É por isso que este serviço se vende dentro do web design: uma identidade visual mais compacta, desenhada ao mesmo tempo que a estética e a aparência do website, para que tudo fale a mesma linguagem.",
-            )}
-          </p>
-        </SlideIn>
+
+        {/* The two paragraphs, every word kept, set as one statement
+            (after Bandcamp's, through Inspo): large, and the three ideas
+            that carry it lit as they are reached. */}
+        <div className="vi-say">
+          <SlideIn ready distance={0} delay={0.06}>
+            <p className="vi-say-p">
+              {t("It rests on the core of an organisational identity: ", "Assenta no núcleo de uma identidade organizacional: ")}
+              <Lit>{t("the logo, and the symbol beside it.", "o logótipo e o símbolo ao lado dele.")}</Lit>{" "}
+              {t(
+                "When that core is out of date — or never matched what the company became — the best-built website in the world ",
+                "Quando esse núcleo está desatualizado — ou nunca correspondeu ao que a empresa veio a ser —, o website mais bem feito do mundo ",
+              )}
+              <Lit>{t("contradicts it.", "entra em contradição com ele.")}</Lit>
+            </p>
+          </SlideIn>
+          <SlideIn ready distance={0} delay={0.1}>
+            <p className="vi-say-p vi-say-p2">
+              {t(
+                "That is why this service is sold inside the web design: a compact visual identity, drawn at the same time as the look and the feel of the website, so that ",
+                "É por isso que este serviço se vende dentro do web design: uma identidade visual mais compacta, desenhada ao mesmo tempo que a estética e a aparência do website, para que ",
+              )}
+              <Lit>{t("everything speaks the same language.", "tudo fale a mesma linguagem.")}</Lit>
+            </p>
+          </SlideIn>
+        </div>
+
         <SlideIn ready distance={0} delay={0.12}>
           <Glance t={t} />
         </SlideIn>
@@ -120,12 +154,28 @@ function Opening({ t }: { t: T }) {
   );
 }
 
-/* ---- the client, looking it up ----------------------------------- */
+/* ---- the client, looking it up: motion graphics ------------------ */
 
-/** How long each beat of the look holds, in milliseconds: the phone
-    shows the old identity, the client frowns and says so, the phone
-    turns to the new one, the client smiles and says so. */
-const GLANCE_MS = [1900, 3600, 1900, 4200];
+type Shot = "wide" | "raise" | "screen" | "face";
+
+/** One take, as it is seen: where the camera is and for how long. Run
+    twice - the old identity, then the new - and then again. */
+const TAKE: { shot: Shot; ms: number }[] = [
+  { shot: "wide", ms: 900 }, // the client, the phone down
+  { shot: "raise", ms: 1100 }, // the phone comes up
+  { shot: "screen", ms: 2300 }, // into the screen: the website
+  { shot: "face", ms: 3300 }, // back to the face, which reacts and speaks
+];
+
+/** Where the camera points, in percent of the stage, and how close.
+    The figure is drawn in an 800 by 450 field: the phone in the hand at
+    (452, 236), the face at (330, 140). */
+const CAMERA: Record<Shot, { x: number; y: number; s: number }> = {
+  wide: { x: 50, y: 50, s: 1 },
+  raise: { x: 50, y: 50, s: 1 },
+  screen: { x: 56.5, y: 52.4, s: 6.5 },
+  face: { x: 44, y: 32, s: 2.3 },
+};
 
 /** The words typed in as they are said, as the call types them. */
 function useTyped(text: string, on: boolean, still: boolean) {
@@ -135,41 +185,42 @@ function useTyped(text: string, on: boolean, still: boolean) {
       setN(text.length);
       return;
     }
-    if (!on) return;
+    if (!on) {
+      setN(0);
+      return;
+    }
     setN(0);
     let i = 0;
     const id = window.setInterval(() => {
       i += 1;
       setN(i);
       if (i >= text.length) window.clearInterval(id);
-    }, 38);
+    }, 40);
     return () => window.clearInterval(id);
   }, [text, on, still]);
   return text.slice(0, n);
 }
 
-/** One of the two screens the phone shows: Pilar's website header with
-    the identity it had, or with the one it has. */
-function Screen({ t, side, on }: { t: T; side: "old" | "new"; on: boolean }) {
+/** What the phone shows, close up: Pilar's website with the identity it
+    had, or with the one it has. */
+function Site({ t, side, on }: { t: T; side: "old" | "new"; on: boolean }) {
   return (
-    <span className="vi-phone-screen" data-side={side} data-on={on || undefined}>
-      <span className="vi-phone-bar">
-        <span className="vi-phone-logo">{side === "old" ? <PilarOldLogo t={t} /> : <PilarNewLogo t={t} />}</span>
-        <span className="vi-phone-burger">
+    <span className="vi-site" data-side={side} data-on={on || undefined}>
+      <span className="vi-site-bar">
+        <span className="vi-site-logo">{side === "old" ? <PilarOldLogo t={t} /> : <PilarNewLogo t={t} />}</span>
+        <span className="vi-site-burger">
           <i />
           <i />
           {side === "old" && <i />}
         </span>
       </span>
-      <span className="vi-phone-pic" />
-      <span className="vi-phone-lines">
+      <span className="vi-site-pic" />
+      <span className="vi-site-lines">
         <i />
         <i />
         <i />
       </span>
-      <span className="vi-phone-cards">
-        <i />
-        <i />
+      <span className="vi-site-cards">
         <i />
         <i />
       </span>
@@ -177,97 +228,103 @@ function Screen({ t, side, on }: { t: T; side: "old" | "new"; on: boolean }) {
   );
 }
 
-/** The side-by-side page's call card, its client alone with a phone
-    (user, 2026-11-19): the same metal, the same tile, the same line with
-    its point of light running from the phone to the one looking at it,
-    the same panel the words are typed in. What is its own is the face,
-    which has a mouth here, and the phone, which shows Pilar's website
-    with the identity it had and then with the one it has. */
+/** The client and the phone, as a short film (user, 2026-11-19: not the
+    call card's structure, only its figure and its words). The figure is
+    a white line on the dark ground: the phone comes up, the camera goes
+    into the screen, then back to the face, which frowns and speaks at
+    the old identity, and the same again smiling at the new one. One
+    camera, moved by transform; the scenes overlap so no frame is empty.
+    With less motion it holds on the last shot: the face, smiling, and
+    what it says. */
 function Glance({ t }: { t: T }) {
   const reduce = useReducedMotion() ?? false;
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const still = reduce || !mounted;
-  const [ref, inView] = useInView<HTMLDivElement>(0.4);
-  const [beat, setBeat] = useState(-1);
+  const [ref, inView] = useInView<HTMLDivElement>(0.45);
+  const [beat, setBeat] = useState(0);
 
   useEffect(() => {
     if (still || !inView) return;
-    const id = window.setTimeout(() => setBeat((b) => (b + 1) % 4), beat < 0 ? 700 : GLANCE_MS[beat]!);
+    const id = window.setTimeout(() => setBeat((b) => (b + 1) % (TAKE.length * 2)), TAKE[beat % TAKE.length]!.ms);
     return () => window.clearTimeout(id);
   }, [beat, inView, still]);
 
-  // Before it starts, the phone already shows the old identity.
-  const at = still ? 3 : beat;
-  const screen = at >= 2 ? "new" : "old";
-  const mood = at === 1 ? "bad" : at === 3 ? "good" : "none";
-  const words =
-    at === 1 ? t("Are they even still around?", "Será que ainda existem?") : at === 3 ? t("These I’d trust.", "Nestes confiava.") : "";
+  const round = still ? 1 : Math.floor(beat / TAKE.length);
+  const shot: Shot = still ? "face" : TAKE[beat % TAKE.length]!.shot;
+  const side = round === 0 ? "old" : "new";
+  const up = shot !== "wide";
+  const mood = shot === "face" ? (side === "old" ? "bad" : "good") : "none";
+  const words = side === "old" ? t("Are they even still around?", "Será que ainda existem?") : t("These I’d trust.", "Nestes confiava.");
   const typed = useTyped(words, mood !== "none", still);
-  const looking = !still && (at === 0 || at === 2);
+  const cam = CAMERA[shot];
+  const camStyle = {
+    transform: `translate(${50 - cam.s * cam.x}%, ${50 - cam.s * cam.y}%) scale(${cam.s})`,
+  };
 
   return (
     <div
       ref={ref}
-      className="vi-glance sbx-metal"
+      className="vi-mg"
+      data-shot={shot}
+      data-still={still || undefined}
       role="img"
       aria-label={t(
         "A client looks Pilar up on a phone: the old identity puts them off, the new one wins them over.",
         "Um cliente procura a Pilar no telemóvel: a identidade antiga afasta-o, a nova convence-o.",
       )}
     >
-      <div className="sbc vi-glance-call" aria-hidden="true">
-        <div className="sbc-row">
-          <div className="sbc-side">
-            <span className="sbc-seat">
-              <span className="sbc-panel" data-who="antonio" data-on={mood !== "none" || undefined}>
-                <span className="sbc-panel-text">
-                  {typed}
-                  {!still && typed.length < words.length && <span className="sbc-caret" />}
-                </span>
-              </span>
-              <span className="sbc-tile" data-speaking={mood !== "none" || undefined}>
-                <span className="sbc-ring" />
-                <span className="sbc-face vi-face" data-mood={mood}>
-                  {/* The call's figure, its head drawn larger so it can
-                      carry a face: two eyes, and a mouth that turns down
-                      (brows knitted) at the old mark and up at the new. */}
-                  <svg viewBox="0 0 40 40" className="vi-face-feel">
-                    <circle cx="20" cy="14" r="9" className="vi-face-head" />
-                    <path d="M6 39c1.5-7 6.5-11 14-11s12.5 4 14 11" className="vi-face-body" />
-                    <circle cx="16.8" cy="12.6" r="1.1" className="vi-face-eye" />
-                    <circle cx="23.2" cy="12.6" r="1.1" className="vi-face-eye" />
-                    <path d="M14.8 9.6l3.2 1.1M25.2 9.6l-3.2 1.1" className="vi-face-brow" />
-                    <path d="M16.6 18.9q3.4-2.6 6.8 0" className="vi-face-mouth" data-for="bad" />
-                    <path d="M16.6 16.6q3.4 2.8 6.8 0" className="vi-face-mouth" data-for="good" />
-                    <path d="M17.2 17.6h5.6" className="vi-face-mouth" data-for="none" />
-                  </svg>
-                </span>
-                <span className="sbc-name mono-label">{t("Client", "Cliente")}</span>
-              </span>
-            </span>
-          </div>
-
-          <div className="sbc-line" data-dir={looking ? "rtl" : "none"} key={`look-${at}`}>
-            <span className="sbc-line-fill" />
-            <span className="sbc-line-head" />
-          </div>
-
-          <div className="sbc-side">
-            <span className="vi-phone-seat">
-              <span className="vi-phone">
-                <span className="vi-phone-notch" />
-                <Screen t={t} side="old" on={screen === "old"} />
-                <Screen t={t} side="new" on={screen === "new"} />
-              </span>
-              <span className="sbc-name mono-label vi-phone-name">
-                {screen === "old"
-                  ? t("The identity they had", "A identidade que tinham")
-                  : t("The identity they have", "A identidade que passam a ter")}
-              </span>
-            </span>
-          </div>
+      <div className="vi-mg-stage" aria-hidden="true">
+        <div className="vi-mg-cam" style={camStyle}>
+          <svg viewBox="0 0 800 450" className="vi-mg-art">
+            <line x1="120" y1="430" x2="680" y2="430" className="vi-mg-floor" />
+            {/* the figure */}
+            <path d="M258 430 C262 300 290 196 330 196 C370 196 398 300 402 430" className="vi-mg-line" />
+            <circle cx="330" cy="140" r="36" className="vi-mg-line vi-mg-head" />
+            {/* the face */}
+            <g className="vi-mg-face" data-mood={mood}>
+              <circle cx="318" cy="134" r="3.2" className="vi-mg-dot" />
+              <circle cx="342" cy="134" r="3.2" className="vi-mg-dot" />
+              <path d="M307 120l12 4M353 120l-12 4" className="vi-mg-feel" data-for="bad" />
+              <path d="M318 159q12-8 24 0" className="vi-mg-feel" data-for="bad" />
+              <path d="M316 152q14 12 28 0" className="vi-mg-feel" data-for="good" />
+              <path d="M319 156h22" className="vi-mg-feel" data-for="none" />
+            </g>
+            {/* the arm and the phone in its hand, raised from the shoulder */}
+            <g className="vi-mg-arm" data-up={up || undefined}>
+              <path d="M374 232 Q404 318 412 326 Q432 300 448 262" className="vi-mg-line" />
+              <rect x="439" y="212" width="27" height="48" rx="5" className="vi-mg-phone" />
+              <rect x="442" y="217" width="21" height="38" rx="2" className="vi-mg-glass" data-side={side} />
+            </g>
+          </svg>
         </div>
+
+        {/* Inside the phone: the screen, crisp, once the camera is in. */}
+        <div className="vi-mg-screen" data-on={shot === "screen" || undefined}>
+          <span className="vi-mg-frame">
+            <Site t={t} side="old" on={side === "old"} />
+            <Site t={t} side="new" on={side === "new"} />
+          </span>
+        </div>
+
+        {/* What the face says, beside it. */}
+        <div className="vi-mg-say" data-on={mood !== "none" || undefined}>
+          <span className="vi-mg-say-text">
+            {typed}
+            {!still && typed.length < words.length && <span className="sbc-caret" />}
+          </span>
+        </div>
+      </div>
+
+      <div className="vi-mg-foot">
+        <span className="vi-mg-steps" aria-hidden="true">
+          {[0, 1].map((n) => (
+            <i key={n} data-on={n === round || undefined} />
+          ))}
+        </span>
+        <span className="mono-label vi-mg-cap">
+          {side === "old" ? t("The identity they had", "A identidade que tinham") : t("The identity they have", "A identidade que passam a ter")}
+        </span>
       </div>
     </div>
   );
@@ -443,30 +500,72 @@ function Cases({ lead, items, at, muted }: { lead: string; items: string[]; at: 
   );
 }
 
+/** A share of the way from a to b, held between 0 and 1. */
+const span = (p: number, a: number, b: number) => Math.min(1, Math.max(0, (p - a) / (b - a)));
+const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+
 /** Does it make sense for every business? (user, 2026-11-19) On the
-    dark ground, the question held in the middle of the screen; the
-    scroll fades it and brings "No." in where it stood, uncovered by the
-    bar of How we work, then lets the section go on to the two lists of
-    cases and the grey card for whoever is not sure. With less motion,
-    the question and the answer simply stand one over the other. */
+    dark ground, held by the scroll: the question in the middle of the
+    screen fades; "No." comes in where it stood, uncovered by the bar of
+    How we work; then "No." goes to the left and the question comes back
+    over it as the section's title, the normal structure of a section.
+    The two lists of cases and the grey card come up into the room left
+    under them, so the pin lets go with them already close by.
+
+    The scroll values are functions, not ranges: Motion hands a ranged
+    opacity to the browser's own scroll timeline, which measured this
+    held section wrongly. With less motion, the title, "No." and the
+    rest simply stand in order. */
 function Fits({ t }: { t: T }) {
   const reduce = useReducedMotion() ?? false;
   const run = useRef<HTMLDivElement>(null);
+  const pin = useRef<HTMLDivElement>(null);
+  const head = useRef<HTMLDivElement>(null);
+  const no = useRef<HTMLSpanElement>(null);
   const [ref, inView] = useInView<HTMLDivElement>(0.3);
   const [said, setSaid] = useState(false);
   const [at, setAt] = useState(0);
+  // How far "No." sits, in its place, from the middle of the screen; and
+  // how much room the pinned screen leaves under the title.
+  const [room, setRoom] = useState(0);
+  const gap = useRef({ dx: 0, dy: 0 });
+
+  useLayoutEffect(() => {
+    if (reduce) return;
+    const measure = () => {
+      const p = pin.current;
+      const n = no.current;
+      const h = head.current;
+      if (!p || !n || !h) return;
+      const pb = p.getBoundingClientRect();
+      const nb = n.getBoundingClientRect();
+      // Its centre, measured without the move the scroll puts on it (a
+      // scale about the centre leaves the centre where it is).
+      const m = new DOMMatrixReadOnly(getComputedStyle(n).transform);
+      gap.current = {
+        dx: pb.left + pb.width / 2 - (nb.left + nb.width / 2 - m.m41),
+        dy: pb.top + pb.height / 2 - (nb.top + nb.height / 2 - m.m42),
+      };
+      setRoom(Math.max(0, p.offsetHeight - (h.offsetTop + h.offsetHeight)));
+    };
+    measure();
+    const watch = new ResizeObserver(measure);
+    if (pin.current) watch.observe(pin.current);
+    return () => watch.disconnect();
+  }, [reduce]);
 
   const { scrollYProgress } = useScroll({ target: run, offset: ["start start", "end end"] });
-  // Written as functions, not ranges: Motion hands a ranged opacity to
-  // the browser's own scroll timeline, which measured this held section
-  // wrongly (the words moved and stayed lit).
-  const span = (p: number, a: number, b: number) => Math.min(1, Math.max(0, (p - a) / (b - a)));
-  const askOpacity = useTransform(scrollYProgress, (p) => 1 - span(p, 0.16, 0.4));
-  const askY = useTransform(scrollYProgress, (p) => -36 * span(p, 0.16, 0.4));
-  const noOpacity = useTransform(scrollYProgress, (p) => span(p, 0.42, 0.6));
-  const noY = useTransform(scrollYProgress, (p) => 28 * (1 - span(p, 0.42, 0.6)));
+  const qCentre = useTransform(scrollYProgress, (p) => 1 - span(p, 0.12, 0.26));
+  const qCentreY = useTransform(scrollYProgress, (p) => -32 * span(p, 0.12, 0.26));
+  const noIn = useTransform(scrollYProgress, (p) => span(p, 0.28, 0.4));
+  const noMove = (p: number) => ease(span(p, 0.46, 0.68));
+  const noX = useTransform(scrollYProgress, (p) => gap.current.dx * (1 - noMove(p)));
+  const noY = useTransform(scrollYProgress, (p) => gap.current.dy * (1 - noMove(p)));
+  const noScale = useTransform(scrollYProgress, (p) => 1.5 - 0.5 * noMove(p));
+  const title = useTransform(scrollYProgress, (p) => span(p, 0.6, 0.74));
+  const titleY = useTransform(scrollYProgress, (p) => 18 * (1 - span(p, 0.6, 0.74)));
   useMotionValueEvent(scrollYProgress, "change", (p) => {
-    if (p > 0.46) setSaid(true);
+    if (p > 0.32) setSaid(true);
   });
 
   const fits = [
@@ -488,58 +587,76 @@ function Fits({ t }: { t: T }) {
     return () => window.clearInterval(tick);
   }, [inView, reduce]);
 
-  const ask = (
-    <h2 id="vi-fit-title" className="display vi-ask-q">
-      {t("Does it make sense for every business?", "Faz sentido para todos os negócios?")}
-    </h2>
-  );
+  const question = t("Does it make sense for every business?", "Faz sentido para todos os negócios?");
   const answer = (
-    <div className="vi-answer">
-      <p className="vi-no" data-said={said || reduce || undefined} data-still={reduce || undefined}>
-        <span className="vi-no-word">{t("No.", "Não.")}</span>
-        <span aria-hidden="true" className="vi-no-bar" />
-      </p>
-      <p className="vi-no-say">
-        {t(
-          "A business that already presents a professional visual identity, coherent with the corporate identity of the company itself, does not need this service.",
-          "Um negócio que já apresente uma identidade visual profissional e coesa com a identidade corporativa da própria empresa não precisa deste serviço.",
-        )}
-      </p>
-    </div>
+    <span className="vi-no" data-said={said || reduce || undefined} data-still={reduce || undefined}>
+      <span className="vi-no-word">{t("No.", "Não.")}</span>
+      <span aria-hidden="true" className="vi-no-bar" />
+    </span>
+  );
+
+  const rest = (
+    <>
+      <div className="vi-cases">
+        <Cases at={at} lead={t("It makes sense for a business with:", "Faz sentido para um negócio com:")} items={fits} />
+        <Cases at={at} muted lead={t("It doesn’t make sense for a business with:", "Não faz sentido para um negócio com:")} items={doesNot} />
+      </div>
+      <NotSure t={t} />
+    </>
   );
 
   return (
     <section aria-labelledby="vi-fit-title" data-tone="dark" className="vi-fit relative text-paper">
       <div data-tone-body>
         {reduce ? (
-          <div className="shell vi-ask-still">
-            {ask}
-            {answer}
+          <div className="shell vi-fit-still">
+            <div className="vi-fit-head">
+              <p className="mono-label text-paper/55">{t("Who it is for", "Para quem é")}</p>
+              <h2 id="vi-fit-title" className="display vi-fit-title">
+                {question}
+              </h2>
+              <p className="vi-fit-no">{answer}</p>
+            </div>
+            <div ref={ref}>{rest}</div>
           </div>
         ) : (
-          <div ref={run} className="vi-ask-run">
-            <div className="shell vi-ask-pin">
-              <motion.div className="vi-ask-face" style={{ opacity: askOpacity, y: askY }}>
-                {ask}
-              </motion.div>
-              <motion.div className="vi-ask-face" style={{ opacity: noOpacity, y: noY }}>
-                {answer}
-              </motion.div>
-            </div>
-          </div>
-        )}
+          <>
+            <div ref={run} className="vi-ask-run">
+              <div ref={pin} className="vi-ask-pin">
+                {/* The question, alone in the middle of the screen. */}
+                <motion.p aria-hidden="true" className="display vi-ask-q" style={{ opacity: qCentre, y: qCentreY }}>
+                  {question}
+                </motion.p>
 
-        <div ref={ref} className="shell vi-fit-rest">
-          <SlideIn ready distance={0}>
-            <div className="vi-cases">
-              <Cases at={at} lead={t("It makes sense for a business with:", "Faz sentido para um negócio com:")} items={fits} />
-              <Cases at={at} muted lead={t("It doesn’t make sense for a business with:", "Não faz sentido para um negócio com:")} items={doesNot} />
+                {/* Where the section's head ends up: the label and the
+                    question as its title, and "No." under them, brought
+                    here from the middle of the screen. */}
+                <div ref={head} className="shell vi-fit-head">
+                  <motion.div style={{ opacity: title, y: titleY }}>
+                    <p className="mono-label text-paper/55">{t("Who it is for", "Para quem é")}</p>
+                    <h2 id="vi-fit-title" className="display vi-fit-title">
+                      {question}
+                    </h2>
+                  </motion.div>
+                  <p className="vi-fit-no">
+                    <motion.span
+                      ref={no}
+                      className="vi-fit-no-move"
+                      style={{ opacity: noIn, x: noX, y: noY, scale: noScale }}
+                    >
+                      {answer}
+                    </motion.span>
+                  </p>
+                </div>
+              </div>
             </div>
-          </SlideIn>
-          <SlideIn ready distance={0} delay={0.08}>
-            <NotSure t={t} />
-          </SlideIn>
-        </div>
+            {/* Pulled up into the room the pinned screen leaves under the
+                title, so it arrives as the pin lets go. */}
+            <div ref={ref} className="shell vi-fit-rest" style={{ marginTop: `${-Math.max(0, room - 48)}px` }}>
+              {rest}
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

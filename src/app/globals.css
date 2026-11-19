@@ -8514,12 +8514,12 @@
 }
 
 /* ---- visual identity, reshaped on 2026-11-19 -------------------------
-   The header is the title and Pilar's two identities, each card on its
-   own brand's ground (cards and logos a quarter larger than the day
-   before, user); under "Why it is worth it" the call card's metal, with
-   the client looking Pilar up on a phone; "Does it make sense?" on the
-   dark ground, held and turned into "No." by the scroll, with the cases
-   and the grey card after it.                                         */
+   The header is the title and three grey cards, the card of "Not sure?"
+   three times, only the first filled; "Why it is worth it" is one large
+   statement with its key ideas lit, and under it a short film of the
+   client and the phone; "Does it make sense?" is held by the scroll and
+   then settles into a section's normal head, with the cases and the
+   grey card close under it.                                          */
 @layer components {
   /* ---- Pilar's two logos, whole ---------------------------------- */
   .vi-logo { display: inline-flex; align-items: center; line-height: 1; }
@@ -8535,128 +8535,219 @@
   .vi-logo-new .vi-logo-mark { width: 0.86em; }
   .vi-logo-new-name { font-family: var(--f-pilar-sans), ui-sans-serif, system-ui, sans-serif; font-weight: 600; letter-spacing: -0.015em; }
 
-  /* ---- 1. the two cards, each on its brand's ground -------------- */
-  .vi-pair-card,
-  .vi-pair-card[data-side="after"] { box-shadow: none; }
-  .vi-pair-card[data-side="before"] { background: #ffffff; }
-  .vi-pair-card[data-side="after"] { background: #111525; }
-  .vi-pair-card[data-side="before"] .vi-pair-head { color: rgb(0 0 0 / 0.5); }
-  .vi-pair-card[data-side="after"] .vi-pair-head { color: rgb(255 255 255 / 0.6); }
-  /* A quarter taller than it was, and the logos a quarter larger. */
-  .vi-pair-stage { display: grid; place-items: center; height: clamp(10.625rem, 18.75vw, 13.75rem); }
-  .vi-pair .vi-logo { font-size: clamp(1.875rem, 3.75vw, 2.8125rem); }
+  /* ---- the grey card, wherever it stands ------------------------- */
+  .vi-trio-card,
+  .vi-fit .vi-sure {
+    color: var(--color-paper);
+    background: linear-gradient(155deg, #4a4a4e 0%, #2c2c2f 55%, #1d1d1f 100%);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
+  }
+  /* The mark stands on its own brand's ground: the old one on the white
+     of its website, the new one on Pilar's Noite. */
+  .vi-morph .vi-morph-stage { background: #ffffff; transition: background-color 0.6s ease; }
+  .vi-morph[data-step="2"] .vi-morph-stage,
+  .vi-morph[data-step="3"] .vi-morph-stage { background: #111525; }
+  .vi-morph .vi-morph-new { color: #ffffff; }
+  .vi-morph .vi-g-rule { transition: stroke-dashoffset 0.9s cubic-bezier(0.33, 1, 0.68, 1) var(--o), stroke 0.6s ease; }
+  .vi-morph[data-step="2"] .vi-g-rule { stroke: rgb(255 255 255 / 0.34); }
+  .vi-morph[data-step="2"] .vi-g-faint { stroke: rgb(255 255 255 / 0.16); }
+  .vi-morph .vi-morph-name { color: #ffffff; }
+  .vi-morph .vi-morph-trade { color: rgb(255 255 255 / 0.5); }
 
-  /* ---- 2. the client, looking it up ------------------------------ */
-  .vi-glance { margin-top: clamp(3rem, 6vw, 4.5rem); padding: clamp(1.5rem, 4vw, 3.5rem); }
-  .vi-glance > * { position: relative; z-index: 1; }
-  .vi-glance-call { --face: clamp(4.5rem, 10vw, 7.5rem); --phone: clamp(5.75rem, 14vw, 9.5rem); }
-  .vi-glance .sbc-panel { width: clamp(9.5rem, 22vw, 15rem); }
-  .vi-face .vi-face-feel { width: 64%; overflow: visible; }
-  .vi-face-head, .vi-face-body { fill: none; stroke: rgb(255 255 255 / 0.72); stroke-width: 1.5; }
-  .vi-face-eye { fill: rgb(255 255 255 / 0.85); stroke: none; }
-  .vi-face-mouth, .vi-face-brow { fill: none; stroke: #ffffff; stroke-width: 1.4; stroke-linecap: round; opacity: 0; transition: opacity 0.35s ease; }
-  .vi-face[data-mood="none"] .vi-face-mouth[data-for="none"],
-  .vi-face[data-mood="bad"] .vi-face-mouth[data-for="bad"],
-  .vi-face[data-mood="bad"] .vi-face-brow,
-  .vi-face[data-mood="good"] .vi-face-mouth[data-for="good"] { opacity: 1; }
+  /* ---- 1. three of them in the header ----------------------------- */
+  .vi-trio { display: grid; gap: 1.25rem; margin-top: clamp(2rem, 4vw, 3rem); }
+  @media (min-width: 900px) { .vi-trio { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .vi-trio-card { display: grid; justify-items: center; align-content: center; padding: clamp(1.75rem, 3vw, 2.5rem) 1.25rem; }
+  .vi-trio-card[data-empty] { gap: 1.25rem; }
+  .vi-trio-wait { display: block; width: min(15rem, 76%); aspect-ratio: 1 / 1; outline: 1px dashed rgb(255 255 255 / 0.2); outline-offset: -1px; }
+  .vi-trio-say { color: rgb(255 255 255 / 0.4); text-transform: none; letter-spacing: 0.06em; }
 
-  .vi-phone-seat { display: grid; justify-items: center; gap: 0.75rem; }
-  .vi-phone {
+  /* ---- 2. the statement ------------------------------------------- */
+  .vi-say { display: grid; gap: clamp(1.25rem, 2.6vw, 2rem); margin-top: clamp(2.5rem, 5vw, 4rem); }
+  .vi-say-p {
+    max-width: 30ch;
+    font-family: var(--font-title);
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: 300;
+    line-height: 1.24;
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
+    text-wrap: pretty;
+  }
+  @media (min-width: 900px) { .vi-say-p2 { margin-left: clamp(4rem, 16vw, 16rem); } }
+  .vi-lit {
+    padding: 0 0.1em;
+    font-weight: 400;
+    background-image: linear-gradient(var(--color-ink), var(--color-ink));
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 0% 100%;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    transition: background-size 0.9s cubic-bezier(0.65, 0, 0.35, 1), color 0.35s ease 0.4s;
+  }
+  .vi-lit[data-on] { background-size: 100% 100%; color: #ffffff; }
+
+  /* ---- 2. the client and the phone, as a short film -------------- */
+  .vi-mg {
+    margin-top: clamp(3rem, 6vw, 4.5rem);
+    overflow: hidden;
+    color: var(--color-paper);
+    background: linear-gradient(155deg, #3a3a3d 0%, #18181a 48%, #080809 100%);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+  }
+  .vi-mg-stage { position: relative; aspect-ratio: 16 / 9; overflow: hidden; }
+  .vi-mg-cam {
+    position: absolute;
+    inset: 0;
+    transform-origin: 0 0;
+    transition: transform 1.15s cubic-bezier(0.65, 0, 0.35, 1);
+    will-change: transform;
+  }
+  .vi-mg-art { display: block; width: 100%; height: 100%; overflow: visible; }
+  .vi-mg-line { fill: none; stroke: rgb(255 255 255 / 0.86); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+  .vi-mg-head { fill: #141416; }
+  .vi-mg-floor { stroke: rgb(255 255 255 / 0.14); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .vi-mg-dot { fill: #ffffff; }
+  .vi-mg-feel { fill: none; stroke: #ffffff; stroke-width: 2.4; stroke-linecap: round; vector-effect: non-scaling-stroke; opacity: 0; transition: opacity 0.3s ease; }
+  .vi-mg-face[data-mood="none"] .vi-mg-feel[data-for="none"],
+  .vi-mg-face[data-mood="bad"] .vi-mg-feel[data-for="bad"],
+  .vi-mg-face[data-mood="good"] .vi-mg-feel[data-for="good"] { opacity: 1; }
+  /* The arm hangs from the shoulder and comes up with the phone. */
+  .vi-mg-arm { transform-box: view-box; transform-origin: 374px 232px; rotate: 40deg; transition: rotate 0.95s cubic-bezier(0.22, 1, 0.36, 1); }
+  .vi-mg-arm[data-up] { rotate: 0deg; }
+  .vi-mg-phone { fill: #050505; stroke: rgb(255 255 255 / 0.75); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+  .vi-mg-glass { fill: #ffffff; transition: fill 0.4s ease; }
+  .vi-mg-glass[data-side="new"] { fill: #111525; }
+
+  /* Inside the phone: the screen, sized to the phone the camera has
+     closed in on (27 by 48 units, six and a half times over). */
+  .vi-mg-screen { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(closest-side, #1c1c1e, #0b0b0c); opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
+  .vi-mg-screen[data-on] { opacity: 1; transition: opacity 0.45s ease 0.75s; }
+  .vi-mg-frame {
     position: relative;
     display: block;
-    width: var(--phone);
-    aspect-ratio: 9 / 18.5;
-    border-radius: calc(var(--phone) * 0.16);
+    height: 69%;
+    aspect-ratio: 27 / 48;
+    container-type: inline-size;
+    border-radius: 18cqw;
     background: #050505;
-    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.28), 0 30px 50px -30px rgb(0 0 0 / 0.8);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.5), 0 40px 60px -30px rgb(0 0 0 / 0.9);
   }
-  .vi-phone-notch { position: absolute; top: 0.62rem; left: 50%; z-index: 2; width: 26%; height: 0.36rem; translate: -50% 0; border-radius: 999px; background: #050505; }
-  .vi-phone-screen {
+  .vi-site {
     position: absolute;
-    inset: 0.32rem;
+    inset: 10.4% 11.1%;
     display: grid;
-    grid-template-rows: auto auto auto 1fr;
     align-content: start;
-    gap: 0.5rem;
-    padding: 1.6rem 0.5rem 0.7rem;
+    gap: 5cqw;
+    padding: 9cqw 6cqw;
     overflow: hidden;
-    border-radius: calc(var(--phone) * 0.13);
+    border-radius: 6cqw;
     opacity: 0;
-    scale: 0.97;
-    transition: opacity 0.6s ease, scale 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity 0.4s ease;
   }
-  .vi-phone-screen[data-on] { opacity: 1; scale: 1; }
-  .vi-phone-screen[data-side="old"] { background: #ffffff; }
-  .vi-phone-screen[data-side="new"] { background: #111525; }
-  .vi-phone-bar { display: flex; align-items: center; justify-content: space-between; gap: 0.3rem; }
-  .vi-phone-logo .vi-logo { font-size: calc(var(--phone) * 0.1); }
-  .vi-phone-screen[data-side="new"] .vi-phone-logo .vi-logo { font-size: calc(var(--phone) * 0.085); }
-  .vi-phone-burger { display: grid; gap: 2px; flex: none; }
-  .vi-phone-burger i { display: block; width: calc(var(--phone) * 0.08); height: 1.5px; background: #1d3c87; }
-  .vi-phone-screen[data-side="new"] .vi-phone-burger i { background: #ffffff; }
-  .vi-phone-pic { display: block; aspect-ratio: 4 / 3; background: linear-gradient(180deg, #8fb4e6, #1d3c87); }
-  .vi-phone-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; align-self: start; }
-  .vi-phone-cards i { display: block; aspect-ratio: 1; background: rgb(0 0 0 / 0.08); box-shadow: inset 0 -3px 0 #1d3c87; }
-  .vi-phone-screen[data-side="new"] .vi-phone-cards i { background: rgb(255 255 255 / 0.08); box-shadow: none; }
-  .vi-phone-screen[data-side="new"] .vi-phone-pic { background: linear-gradient(180deg, #a8aabc, #434655); }
-  .vi-phone-lines { display: grid; gap: 4px; }
-  .vi-phone-lines i { display: block; height: 3px; background: rgb(0 0 0 / 0.16); }
-  .vi-phone-lines i:nth-child(2) { width: 78%; }
-  .vi-phone-lines i:nth-child(3) { width: 58%; background: #f39200; }
-  .vi-phone-screen[data-side="new"] .vi-phone-lines i { background: rgb(255 255 255 / 0.22); }
-  .vi-phone-screen[data-side="new"] .vi-phone-lines i:nth-child(3) { width: 40%; background: #ffffff; }
-  /* Two lines held open, so the card keeps its height as the words change. */
-  .vi-phone-name { max-width: 22ch; min-height: 2.8em; text-align: center; }
+  .vi-site[data-on] { opacity: 1; }
+  .vi-site[data-side="old"] { background: #ffffff; }
+  .vi-site[data-side="new"] { background: #111525; }
+  .vi-site-bar { display: flex; align-items: center; justify-content: space-between; gap: 2cqw; }
+  .vi-site-logo .vi-logo { font-size: 9cqw; }
+  .vi-site[data-side="new"] .vi-site-logo .vi-logo { font-size: 7.5cqw; }
+  .vi-site-burger { display: grid; gap: 1.4cqw; flex: none; }
+  .vi-site-burger i { display: block; width: 7cqw; height: 0.9cqw; background: #1d3c87; }
+  .vi-site[data-side="new"] .vi-site-burger i { background: #ffffff; }
+  .vi-site-pic { display: block; aspect-ratio: 4 / 3; background: linear-gradient(180deg, #8fb4e6, #1d3c87); }
+  .vi-site[data-side="new"] .vi-site-pic { background: linear-gradient(180deg, #a8aabc, #434655); }
+  .vi-site-lines { display: grid; gap: 2.4cqw; }
+  .vi-site-lines i { display: block; height: 2cqw; background: rgb(0 0 0 / 0.16); }
+  .vi-site-lines i:nth-child(2) { width: 78%; }
+  .vi-site-lines i:nth-child(3) { width: 52%; background: #f39200; }
+  .vi-site[data-side="new"] .vi-site-lines i { background: rgb(255 255 255 / 0.22); }
+  .vi-site[data-side="new"] .vi-site-lines i:nth-child(3) { width: 38%; background: #ffffff; }
+  .vi-site-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 3cqw; }
+  .vi-site-cards i { display: block; aspect-ratio: 1; background: rgb(0 0 0 / 0.08); box-shadow: inset 0 -1.5cqw 0 #1d3c87; }
+  .vi-site[data-side="new"] .vi-site-cards i { background: rgb(255 255 255 / 0.08); box-shadow: none; }
 
-  /* ---- 3. does it make sense? - held, then answered -------------- */
-  .vi-ask-run { height: 260vh; }
-  .vi-ask-pin { position: sticky; top: 0; display: grid; place-items: center; height: 100dvh; }
-  .vi-ask-face { grid-area: 1 / 1; display: grid; justify-items: center; text-align: center; }
+  /* What the face says, beside it, typed in as the call types it. */
+  .vi-mg-say {
+    position: absolute;
+    left: 55%;
+    top: 22%;
+    max-width: 38%;
+    padding: 0.9rem 1.1rem;
+    background: rgb(20 20 21 / 0.82);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18), inset 0 1px 0 rgb(255 255 255 / 0.1);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    translate: 0 0.6rem;
+    transition: opacity 0.35s ease, translate 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .vi-mg-say[data-on] { opacity: 1; translate: 0 0; transition-delay: 0.9s; }
+  .vi-mg-say::before { content: ""; position: absolute; top: 1.35rem; right: 100%; width: 1.4rem; height: 1px; background: rgb(255 255 255 / 0.4); }
+  .vi-mg-say-text { display: block; min-height: 1.3em; font-family: var(--font-title); font-size: clamp(0.9375rem, 2.2vw, 1.625rem); font-weight: 500; line-height: 1.25; letter-spacing: -0.015em; color: #ffffff; }
+
+  .vi-mg-foot { display: flex; align-items: center; gap: 1rem; min-height: 3.25rem; padding: 0.85rem clamp(1.1rem, 2.4vw, 1.75rem); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1); }
+  .vi-mg-steps { display: flex; gap: 4px; flex: none; }
+  .vi-mg-steps i { width: 1.25rem; height: 2px; background: rgb(255 255 255 / 0.2); transition: background 0.4s ease; }
+  .vi-mg-steps i[data-on] { background: #ffffff; }
+  .vi-mg-cap { color: rgb(255 255 255 / 0.6); text-transform: none; letter-spacing: 0.06em; }
+  .vi-mg[data-still] .vi-mg-cam,
+  .vi-mg[data-still] .vi-mg-say,
+  .vi-mg[data-still] .vi-mg-arm { transition: none; }
+
+  /* ---- 3. does it make sense? - held, then settled --------------- */
+  .vi-ask-run { height: 300vh; }
+  .vi-ask-pin { position: sticky; top: 0; height: 100dvh; overflow: hidden; }
   .vi-ask-q {
-    max-width: 16ch;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(88vw, 16ch);
+    translate: -50% -50%;
+    margin: 0;
     font-size: clamp(2.25rem, 5.6vw, 4.75rem);
     font-weight: 300;
     line-height: 1;
     letter-spacing: -0.035em;
+    text-align: center;
     text-wrap: balance;
   }
-  .vi-fit .vi-answer { grid-template-columns: none; justify-items: center; gap: 1.5rem; margin-top: 0; text-align: center; }
-  .vi-fit .vi-no { font-size: clamp(4.5rem, 13vw, 10rem); }
+  .vi-fit-head { padding-top: clamp(7rem, 15vh, 9.5rem); }
+  .vi-fit-title {
+    max-width: 20ch;
+    margin-top: 1.25rem;
+    font-size: clamp(2rem, 4.6vw, 3.75rem);
+    font-weight: 300;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  .vi-fit-no { margin-top: clamp(0.75rem, 1.6vw, 1.25rem); }
+  .vi-fit-no-move { display: inline-block; will-change: transform; }
+  .vi-fit .vi-no { font-size: clamp(3.5rem, 8vw, 6.5rem); }
   .vi-fit .vi-no-bar { background: #ffffff; }
-  .vi-fit .vi-no-say { max-width: 46ch; color: rgb(255 255 255 / 0.7); }
-  .vi-ask-still { display: grid; justify-items: center; gap: 3rem; padding-block: clamp(5rem, 10vw, 8rem) 0; text-align: center; }
 
-  .vi-fit-rest { padding-bottom: clamp(5rem, 10vw, 8rem); }
+  .vi-fit-rest, .vi-fit-still { padding-bottom: clamp(5rem, 10vw, 8rem); }
+  .vi-fit-still { padding-top: clamp(5rem, 10vw, 8rem); }
+  .vi-fit-still .vi-cases { margin-top: 3rem; }
+  .vi-fit .vi-cases .vi-case { margin-top: 0; }
   .vi-fit .vi-case { border-top-color: rgb(255 255 255 / 0.16); }
   .vi-fit .vi-case-lead { color: rgb(255 255 255 / 0.55); }
   .vi-fit .vi-case-word { color: #ffffff; }
   .vi-fit .vi-case[data-muted] .vi-case-lead,
   .vi-fit .vi-case[data-muted] .vi-case-word { color: rgb(255 255 255 / 0.4); }
 
-  /* ---- the grey card, inside it ---------------------------------- */
-  .vi-fit .vi-sure {
-    margin-top: clamp(3.5rem, 7vw, 5.5rem);
-    color: var(--color-paper);
-    background: linear-gradient(155deg, #4a4a4e 0%, #2c2c2f 55%, #1d1d1f 100%);
-    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
-  }
+  .vi-fit .vi-sure { margin-top: clamp(2.5rem, 5vw, 3.5rem); }
   .vi-fit .vi-sure-title { margin-top: 0; font-size: clamp(1.75rem, 3.4vw, 2.75rem); font-weight: 400; }
   .vi-fit .vi-sure-say { max-width: 40ch; margin-top: 1.25rem; font-family: inherit; font-size: clamp(1rem, 1.4vw, 1.1875rem); line-height: 1.55; letter-spacing: 0; color: rgb(255 255 255 / 0.72); }
 
-  /* The mark stands on its own brand's ground: the old one on the white
-     of its website, the new one on Pilar's Noite. */
-  .vi-fit .vi-morph-stage { background: #ffffff; transition: background-color 0.6s ease; }
-  .vi-fit .vi-morph[data-step="2"] .vi-morph-stage,
-  .vi-fit .vi-morph[data-step="3"] .vi-morph-stage { background: #111525; }
-  .vi-fit .vi-morph-new { color: #ffffff; }
-  .vi-fit .vi-morph .vi-g-rule { transition: stroke-dashoffset 0.9s cubic-bezier(0.33, 1, 0.68, 1) var(--o), stroke 0.6s ease; }
-  .vi-fit .vi-morph[data-step="2"] .vi-g-rule { stroke: rgb(255 255 255 / 0.34); }
-  .vi-fit .vi-morph[data-step="2"] .vi-g-faint { stroke: rgb(255 255 255 / 0.16); }
-  .vi-fit .vi-morph-name { color: #ffffff; }
-  .vi-fit .vi-morph-trade { color: rgb(255 255 255 / 0.5); }
+  @media (max-width: 639.98px) {
+    .vi-mg-say { left: 52%; top: 16%; max-width: 45%; padding: 0.6rem 0.7rem; }
+    .vi-mg-say::before { top: 1rem; width: 0.8rem; }
+  }
 
   @media (prefers-reduced-motion: reduce) {
-    .vi-phone-screen, .vi-face-mouth, .vi-face-brow, .vi-fit .vi-morph-stage { transition: none; }
+    .vi-lit, .vi-mg-cam, .vi-mg-arm, .vi-mg-say, .vi-mg-feel, .vi-site, .vi-mg-screen, .vi-morph .vi-morph-stage { transition: none; }
   }
 }
 
