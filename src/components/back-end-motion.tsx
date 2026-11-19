@@ -367,12 +367,32 @@ export function DragRun({
 
 /* ---- 4. the gains, with the drawing held beside them ------------- */
 
-type Gain = { id: string; name: string; body: string };
+/** Each gain as it is read now (user, 2026-11-19, second round): the
+    name, one line that leads, and the rest as short keyed lines that
+    open only on the gain being read (the key terms of The Equity Fund's
+    approach page and the folding list of GitHub's features, through
+    Inspo; only the composition). */
+type Gain = { id: string; name: string; lead: string; items: { key: string; rest: string }[] };
 
 export function GainStory({ gains, scenes, t }: { gains: Gain[]; scenes: ReactNode[]; t: T }) {
   const reduce = useReducedMotion() ?? false;
   const rows = useRef<(HTMLElement | null)[]>([]);
   const [at, setAt] = useState(0);
+
+  // The card behind the drawings takes the size of the drawing it holds
+  // (user, 2026-11-19, second round), so a phone sits in a tall card and
+  // the week in a wide one, with the same margin round each.
+  const fits = useRef<(HTMLDivElement | null)[]>([]);
+  const [sizes, setSizes] = useState<{ w: number; h: number }[]>([]);
+  useEffect(() => {
+    const read = () =>
+      setSizes(fits.current.map((el) => ({ w: el?.offsetWidth ?? 0, h: el?.offsetHeight ?? 0 })));
+    read();
+    const watch = new ResizeObserver(read);
+    for (const el of fits.current) if (el) watch.observe(el);
+    return () => watch.disconnect();
+  }, []);
+  const size = sizes[at];
 
   // The gain being read is the one across the middle of the screen.
   useEffect(() => {
@@ -403,16 +423,35 @@ export function GainStory({ gains, scenes, t }: { gains: Gain[]; scenes: ReactNo
             data-on={at === i || undefined}
           >
             <h3 className="be-gs-name">{gain.name}</h3>
-            <p className="be-gs-body">{gain.body}</p>
+            <p className="be-gs-lead">{gain.lead}</p>
+            <div className="be-gs-fold">
+              <ul className="be-gs-items">
+                {gain.items.map((item) => (
+                  <li key={item.key}>
+                    <b>{item.key}</b> {item.rest}
+                  </li>
+                ))}
+              </ul>
+            </div>
             {/* On a phone the drawing comes with its own gain. */}
             <InlineScene>{scenes[i]}</InlineScene>
           </li>
         ))}
       </ol>
       <div className="be-gs-hold" aria-hidden="true">
-        <div className="be-gs-frame be-card">
+        <div
+          className="be-gs-frame be-card"
+          style={size && size.w ? { width: size.w, height: size.h } : undefined}
+        >
           {scenes.map((scene, i) => (
-            <div key={i} className="be-gs-scene" data-on={at === i || undefined}>
+            <div
+              key={i}
+              ref={(el) => {
+                fits.current[i] = el;
+              }}
+              className="be-gs-scene"
+              data-on={at === i || undefined}
+            >
               {/* Keyed to the gain being read, so the drawing plays
                   again each time its gain comes round. */}
               <div key={at === i ? `on-${i}` : `off-${i}`} className="be-gs-play">
@@ -552,7 +591,7 @@ export function SceneClient({ t }: { t: T }) {
 
 /* ---- 5. the price, as a line ------------------------------------- */
 
-type Stop = { id: string; name: string; value: string; when: string; body: string; note?: string; glyph: "meet" | "build" | "month" };
+type Stop = { id: string; name: string; value: string; per?: string; body: string; note?: string; glyph: "meet" | "build" | "month" };
 
 function Glyph({ kind }: { kind: Stop["glyph"] }) {
   if (kind === "meet") {
@@ -583,11 +622,13 @@ function Glyph({ kind }: { kind: Stop["glyph"] }) {
 export function PriceLine({ stops }: { stops: Stop[] }) {
   const reduce = useReducedMotion() ?? false;
   const line = useRef<HTMLOListElement>(null);
-  const { scrollYProgress } = useScroll({ target: line, offset: ["start 80%", "end 60%"] });
+  const { scrollYProgress } = useScroll({ target: line, offset: ["start 95%", "end 72%"] });
   const grow = useTransform(scrollYProgress, [0, 1], [0, 1], { clamp: true });
   const [reached, setReached] = useState(reduce ? stops.length : 0);
   useMotionValueEvent(scrollYProgress, "change", (p) => {
-    const n = p >= 0.95 ? 3 : p >= 0.45 ? 2 : p > 0.02 ? 1 : 0;
+    // It answers sooner (user, 2026-11-19, second round): each stop lights
+    // a little before the line reaches it.
+    const n = p >= 0.82 ? 3 : p >= 0.38 ? 2 : p > 0 ? 1 : 0;
     setReached((was) => (was === n ? was : n));
   });
   const shown = reduce ? stops.length : reached;
@@ -602,9 +643,11 @@ export function PriceLine({ stops }: { stops: Stop[] }) {
           <span className="be-pl-node" aria-hidden="true">
             <Glyph kind={stop.glyph} />
           </span>
-          <p className="mono-label be-pl-when">{stop.when}</p>
           <h3 className="be-pl-name">{stop.name}</h3>
-          <p className="be-pl-value">{stop.value}</p>
+          <p className="be-pl-value">
+            {stop.value}
+            {stop.per && <small>{stop.per}</small>}
+          </p>
           <p className="be-pl-body">{stop.body}</p>
           {stop.note && <p className="be-pl-note">{stop.note}</p>}
         </li>
