@@ -9275,3 +9275,12 @@
 @layer components {
   .ps-pack:not([data-lit]) :is(.ps-pack-rows dt, .ps-pack-kicker) { color: rgb(255 255 255 / 0.82); }
 }
+@layer components {
+  /* The guides never cross the whole logo (user, 2026-11-19): a band
+     across the middle of the card, where the lockup stands, is left
+     clear of them, its edges soft. */
+  .vi-morph[data-whole] .vi-morph-grid {
+    -webkit-mask-image: linear-gradient(to bottom, #000 0 37.5%, transparent 41.5% 58.5%, #000 62.5% 100%);
+    mask-image: linear-gradient(to bottom, #000 0 37.5%, transparent 41.5% 58.5%, #000 62.5% 100%);
+  }
+}
