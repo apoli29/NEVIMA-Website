@@ -230,3 +230,9 @@ a seccao dos precos tem o seu proprio botao e a pagina acaba em "Let's
 work together" - o mesmo raciocinio que tirou o botao do retangulo
 cinzento da pagina do back end.
 
+
+## 2026-11-19 — terceira ronda (utilizador)
+
+- Os cartões do cabeçalho mostram o logótipo inteiro da Pilar (símbolo e palavras), antigo e novo, e não só o símbolo (`Morph` com `whole`). As palavras saem com o símbolo antigo e chegam depois do novo.
+- O filme (o cliente e o telemóvel) subiu para o cabeçalho, logo por baixo dos três cartões. Os dois parágrafos de "Why it is worth it" ficam por baixo, em três opções emolduradas para o utilizador escolher (`WorthOptions`): A duas colunas (Frontier Climate), B uma frase grande e o detalhe pequeno (NB Studio, Linked by Air), C três pontos numerados (Dia & Co). Escolhida uma, as outras e a moldura saem.
+- O "Não." passa a ser revelado pelo próprio scroll (recorte e barra ligados ao progresso), em vez de uma transição disparada a 0,32: num scroll longo e rápido a transição podia não correr e o "Não." não aparecia.

@@ -8939,6 +8939,16 @@
   .vi-wc-body { max-width: 38ch; margin-top: 0.85rem; font-size: 1rem; line-height: 1.6; color: var(--color-ash); text-wrap: pretty; }
 }
 
+/* ---- SEO & GEO: the price card without figures (user, 2026-11-19) -- */
+@layer components {
+  .sg-ledger-plain { margin-top: 1rem; }
+  .sg-ledger-plain .sg-ledger-row { align-items: start; padding: 1.35rem 0; }
+  .sg-ledger-plain .sg-ledger-name { font-size: clamp(1.0625rem, 1.3vw, 1.1875rem); }
+  .sg-ledger-says { max-width: 36ch; margin-top: 0.35rem; font-size: 0.9375rem; line-height: 1.5; color: var(--color-ash); text-wrap: pretty; }
+  .sg-ledger-tag { flex: none; margin: 0.2rem 0 0; padding: 0.4rem 0.6rem; color: var(--color-ink); box-shadow: inset 0 0 0 1px var(--color-hair-strong); white-space: nowrap; }
+  .sg-ledger-tag[data-in] { color: #ffffff; background: var(--color-ink); box-shadow: none; }
+}
+
 /* ---- back-end: "Why" on white, its cards black (user, 2026-11-19) ---
    The section turns light; the three cards keep the drawings' dark, now
    solid black, and the meteor that runs between them goes ink. */
