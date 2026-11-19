@@ -197,6 +197,33 @@ Pedido do utilizador, secção a secção:
   Motion entrega a opacidade ao scroll timeline do browser, que media
   mal a secção presa.
 
+### Segunda volta no mesmo dia (2026-11-19)
+
+- **Secção 1** passou a ser o card cinzento do "Com dúvidas?" três
+  vezes (`Cases3`): o primeiro com o loop da Pilar, os outros dois
+  vazios (um quadrado tracejado e `[a preencher]`) para os dois casos
+  que o estúdio vai acrescentar. Os dois cards antes/depois saíram.
+- **Secção 2.** O texto foi mantido palavra a palavra, mas posto como
+  uma frase grande em dois parágrafos desencontrados, com as três ideias
+  que a seguram ("o logótipo e o símbolo ao lado dele", "entra em
+  contradição com ele", "tudo fale a mesma linguagem") acesas por um
+  bloco preto que se desenha atrás delas quando são alcançadas.
+  Referência pelo Inspo: **Bandcamp** (a frase com os números em blocos
+  pretos). O card da chamada era uma imitação demasiado literal; só o
+  boneco e as falas ficaram. No lugar dele há um pequeno filme
+  (`Glance`): o boneco a traço branco sobre o fundo escuro levanta o
+  telemóvel, a câmara entra no ecrã (o site da Pilar antigo), volta à
+  cara, que franze e diz "Será que ainda existem?"; depois o mesmo com
+  o site novo, sorri e diz "Nestes confiava.". É uma câmara só, movida
+  por transform, e cerca de 15 s por volta. Com movimento reduzido fica
+  o último plano.
+- **Secção 4.** A frase debaixo do "Não." saiu. A pergunta aparece ao
+  centro e apaga-se, o "Não." entra ao centro e vai para a esquerda, e
+  a pergunta volta por cima dele como título da secção (a estrutura
+  normal). Os widgets e o card sobem para o espaço que o ecrã preso
+  deixa livre, para chegarem colados quando a secção se solta (antes
+  ficava tão longe que pareciam duas secções).
+
 **O botao do card cinzento saiu** (user, 2026-11-18): o card fica com o
 texto e com o loop da marca. A barra leva o formulario em todo o lado,
 a seccao dos precos tem o seu proprio botao e a pagina acaba em "Let's
