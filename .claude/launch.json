@@ -1,35 +1,122 @@
 {
-  "version": "0.0.1",
-  "autoPort": true,
-  "configurations": [
-    {
-      "name": "nevima-dev",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "port": 3000
-    },
-    {
-      "name": "nevima-prod",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "start"],
-      "port": 3000
-    },
-    {
-      "name": "nevima-dev-sbs",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "../NEVIMA-Website-sbs", "run", "dev", "--", "-p", "3005"],
-      "port": 3005
-    },
-    {
-      "name": "nevima-dev-emails",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "port": 3000,
-      "env": {
-        "STUDIO_KEY": "local-test-key",
-        "LINKS_SECRET": "local-test-secret",
-        "RESEND_API_KEY": ""
-      }
-    }
-  ]
+    "version": "0.0.1",
+    "autoPort": true,
+    "configurations": [
+        {
+            "name": "nevima-dev",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "dev"
+            ],
+            "port": 3000
+        },
+        {
+            "name": "nevima-prod",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "start"
+            ],
+            "port": 3000
+        },
+        {
+            "name": "nevima-dev-sbs",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "--prefix",
+                "../NEVIMA-Website-sbs",
+                "run",
+                "dev",
+                "--",
+                "-p",
+                "3005"
+            ],
+            "port": 3005
+        },
+        {
+            "name": "nevima-dev-nav",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "--prefix",
+                "../NEVIMA-Website-nav",
+                "run",
+                "dev",
+                "--",
+                "-p",
+                "3006"
+            ],
+            "port": 3006
+        },
+        {
+            "name": "nevima-dev-levels",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "--prefix",
+                "../NEVIMA-Website-levels",
+                "run",
+                "dev",
+                "--",
+                "-p",
+                "3008"
+            ],
+            "port": 3008
+        },
+        {
+            "name": "nevima-dev-emails",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "dev"
+            ],
+            "port": 3000,
+            "env": {
+                "STUDIO_KEY": "local-test-key",
+                "LINKS_SECRET": "local-test-secret",
+                "RESEND_API_KEY": ""
+            }
+        },
+        {
+            "name": "nevima-dev-be",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "--prefix",
+                "../NEVIMA-Website-be",
+                "run",
+                "dev",
+                "--",
+                "-p",
+                "3009"
+            ],
+            "port": 3009
+        },
+        {
+            "name": "nevima-dev-vi",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "--prefix",
+                "../NEVIMA-Website-vi",
+                "run",
+                "dev",
+                "--",
+                "-p",
+                "3010"
+            ],
+            "port": 3010
+        },
+        {
+            "name": "nevima-dev-cards",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "--prefix",
+                "../NEVIMA-Website-cards",
+                "run",
+                "dev",
+                "--",
+                "-p",
+                "3011"
+            ],
+            "port": 3011
+        }
+    ]
 }
