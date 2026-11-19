@@ -8217,7 +8217,7 @@
     background: linear-gradient(155deg, #3a3a3d 0%, #18181a 48%, #080809 100%);
     box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
   }
-  .vi-mg-stage { position: relative; aspect-ratio: 16 / 9; overflow: hidden; }
+  .vi-mg-stage { position: relative; aspect-ratio: 16 / 10; overflow: hidden; }
   .vi-mg-cam {
     position: absolute;
     inset: 0;
@@ -8243,20 +8243,20 @@
   .vi-mg-glass[data-side="new"] { fill: #111525; }
 
   /* Inside the phone: the screen, laid exactly over the drawn phone the
-     camera has closed in on (34 by 62 units, 5.8 times over, centred by
-     the camera), so the phone keeps its shape from the first frame of
-     the zoom to the last. Larger than it was and with a thin bezel, the
-     glass 1.5 units in from every edge (user, 2026-11-19). Corners in
-     percent of the phone, as drawn (6 units out, 4.8 in) - never cqw on
-     the container itself, which would measure the window and round the
+     camera has closed in on (42.5 by 77.5 units, 5.74 times over,
+     centred by the camera), so the phone keeps its shape from the first
+     frame of the zoom to the last. Large and with a thin bezel, the glass
+     1.6 units in from every edge (user, 2026-11-19). Corners in percent
+     of the phone, as drawn (7.5 units out, 6 in) - never cqw on the
+     container itself, which would measure the window and round the
      phone into a circle. */
   .vi-mg-screen { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
   .vi-mg-screen[data-on] { opacity: 1; transition: opacity 0.4s ease 0.8s; }
   .vi-mg-frame {
     position: relative;
     display: block;
-    height: 79.9%;
-    aspect-ratio: 34 / 62;
+    height: 88.97%;
+    aspect-ratio: 42.5 / 77.5;
     border-radius: 17.65% / 9.68%;
     background: #050505;
     box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.4), 0 40px 60px -30px rgb(0 0 0 / 0.9);
@@ -8264,12 +8264,12 @@
   /* Only the logo, in the middle of the screen, on its brand's ground. */
   .vi-site {
     position: absolute;
-    inset: 2.42% 4.41%;
+    inset: 2.06% 3.76%;
     display: grid;
     place-items: center;
     container-type: inline-size;
     overflow: hidden;
-    border-radius: 15.5% / 8.1%;
+    border-radius: 15.3% / 8.1%;
     opacity: 0;
     transition: opacity 0.4s ease;
   }
@@ -8277,8 +8277,8 @@
   .vi-site[data-side="old"] { background: #ffffff; }
   .vi-site[data-side="new"] { background: #111525; }
   .vi-site-logo { display: block; max-width: 88%; }
-  .vi-site-logo .vi-logo { font-size: 11.5cqw; }
-  .vi-site[data-side="new"] .vi-site-logo .vi-logo { font-size: 11.8cqw; }
+  .vi-site-logo .vi-logo { font-size: 10.6cqw; }
+  .vi-site[data-side="new"] .vi-site-logo .vi-logo { font-size: 10.85cqw; }
 
   /* What the face says, beside it, typed in as the call types it. */
   .vi-mg-say {
