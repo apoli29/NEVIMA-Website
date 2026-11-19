@@ -200,6 +200,16 @@ export function DepthCard({ t }: { t: T }) {
 
 /* ---- 2. three cards and a light ---------------------------------- */
 
+/** Piecewise linear: where `y` falls between the knots `ys`, the same
+    share between the matching `ss`; clamped at both ends. */
+function along(y: number, ys: number[], ss: number[]) {
+  if (y <= ys[0]) return ss[0];
+  for (let i = 1; i < ys.length; i++) {
+    if (y <= ys[i]) return ss[i - 1] + ((y - ys[i - 1]) / Math.max(1, ys[i] - ys[i - 1])) * (ss[i] - ss[i - 1]);
+  }
+  return ss[ss.length - 1];
+}
+
 /** The three cards of the week, set off one from another as in the
     user's sketch (2026-11-19): a wide one on the left, a smaller one on
     the right a little lower, and one in the middle under them. One soft
@@ -221,7 +231,7 @@ export function GlowTrail({ cards }: { cards: ReactNode[] }) {
   const trail = useRef<SVGPathElement>(null);
   const tail = useRef<SVGPathElement>(null);
   const head = useRef<SVGCircleElement>(null);
-  const [route, setRoute] = useState<{ d: string; w: number; h: number; turns: number[] }>({ d: "", w: 0, h: 0, turns: [] });
+  const [route, setRoute] = useState({ d: "", w: 0, h: 0, turns: [] as number[], start: 0, end: 0, g1: 0, g2: 0, pageTop: 0 });
   const [lit, setLit] = useState(0);
 
   // The route, in the box's own pixels, read again whenever anything
@@ -252,25 +262,60 @@ export function GlowTrail({ cards }: { cards: ReactNode[] }) {
       // where along the route each leg ends, to know which card it is at
       let run = 0;
       const turns = pts.slice(1).map(([x, y], i) => (run += Math.hypot(x - pts[i][0], y - pts[i][1])));
-      setRoute({ d, w: el.offsetWidth, h: el.offsetHeight, turns });
+      setRoute({
+        d,
+        w: el.offsetWidth,
+        h: el.offsetHeight,
+        turns,
+        start: pts[0][1],
+        end: pts[5][1],
+        g1,
+        g2,
+        pageTop: el.getBoundingClientRect().top + window.scrollY,
+      });
     };
     read();
     const watch = new ResizeObserver(read);
     watch.observe(el);
     for (const card of items.current) if (card) watch.observe(card);
-    return () => watch.disconnect();
+    // the box can move on the page without changing size
+    window.addEventListener("resize", read);
+    return () => {
+      watch.disconnect();
+      window.removeEventListener("resize", read);
+    };
   }, []);
 
-  const { scrollYProgress } = useScroll({ target: box, offset: ["start 70%", "end 45%"] });
-  const place = (p: number) => {
+  // The meteor stays level with a reading line 55% down the screen
+  // (user, 2026-11-19: "sincroniza melhor a animação com o scroll e o
+  // posicionamento do user"), pixel for pixel on the way down, and crosses
+  // each gap while that line passes it, within k above and below; it used
+  // to move by the share of the path's length, which ran it ahead on the
+  // way down and left it behind in the long crossings (plan 004).
+  const { scrollY } = useScroll();
+  const place = (sy: number) => {
     const path = track.current;
-    if (!path || !route.d) return;
+    if (!path || !route.d || route.turns.length < 5) return;
     const total = path.getTotalLength();
-    const at = Math.max(0, Math.min(1, p)) * total;
+    const { start, end, g1, g2, turns } = route;
+    const Y = sy + window.innerHeight * 0.55 - route.pageTop;
+    const shortest = Math.min(g1 - start, g2 - g1, end - g2);
+    const k = Math.min(Math.max(80, 0.12 * window.innerHeight), 140, 0.45 * shortest);
+    // Down each side the head is exactly on the line; the last k before a
+    // corner, the crossing and the first k after it share the 2k of
+    // scroll round each gap, so the line never gets ahead or behind.
+    const at = along(
+      Y,
+      [start, g1 - k, g1 + k, g2 - k, g2 + k, end],
+      [0, turns[0] - k, turns[1] + k, turns[2] - k, turns[3] + k, total],
+    );
     const pt = path.getPointAtLength(at);
+    const fade = String(Math.min(1, Math.max(0, (Y - start) / 60)) * Math.min(1, Math.max(0, (end - Y) / 60)));
     head.current?.setAttribute("cx", String(pt.x));
     head.current?.setAttribute("cy", String(pt.y));
-    head.current?.setAttribute("opacity", p <= 0 || p >= 1 ? "0" : "1");
+    head.current?.setAttribute("opacity", fade);
+    if (trail.current) trail.current.style.opacity = fade;
+    if (tail.current) tail.current.style.opacity = fade;
     // the trail: a short bright line just behind the head, and a longer
     // faint one behind that
     const draw = (el: SVGPathElement | null, len: number) => {
@@ -284,8 +329,8 @@ export function GlowTrail({ cards }: { cards: ReactNode[] }) {
     const near = at < (a + b) / 2 ? 0 : at < (c2 + d2) / 2 ? 1 : 2;
     setLit((was) => (was === near ? was : near));
   };
-  useMotionValueEvent(scrollYProgress, "change", place);
-  useEffect(() => place(scrollYProgress.get()));
+  useMotionValueEvent(scrollY, "change", place);
+  useEffect(() => place(scrollY.get()));
 
   return (
     <div ref={box} className="be-trail" data-still={reduce || undefined}>

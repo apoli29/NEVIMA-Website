@@ -511,3 +511,12 @@ baixo deste e desce pelo lado esquerdo do terceiro. O percurso lê-se das
 próprias posições dos cards, por isso acompanha-os a qualquer largura. O
 card por onde vai passa a ter a borda acesa. Os espaços entre os cards
 cresceram (até 5,5rem) para se ver o meteorito a passar.
+
+**O meteorito acompanha quem lê** (2026-11-19, plano 004). Andava pela
+fração do comprimento do percurso, por isso corria à frente da página nas
+descidas e ficava para trás nas travessias compridas. Agora fica à altura
+de uma linha de leitura a 55% do ecrã, píxel a píxel, ao descer por cada
+lado; e atravessa cada espaço enquanto essa linha passa por ele, numa
+janela de 80 a 140px acima e abaixo, sem nunca se afastar mais do que
+isso. Aparece e desaparece com um esbatimento, em vez de surgir de
+repente. Sem mola: o scroll já é suavizado pelo Lenis.
