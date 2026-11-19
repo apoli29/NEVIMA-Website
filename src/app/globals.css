@@ -8632,17 +8632,22 @@
   .vi-mg-glass { fill: #ffffff; transition: fill 0.4s ease; }
   .vi-mg-glass[data-side="new"] { fill: #111525; }
 
-  /* Inside the phone: the screen, sized to the phone the camera has
-     closed in on (27 by 48 units, six and a half times over). */
-  .vi-mg-screen { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(closest-side, #1c1c1e, #0b0b0c); opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
-  .vi-mg-screen[data-on] { opacity: 1; transition: opacity 0.45s ease 0.75s; }
+  /* Inside the phone: the screen, laid exactly over the drawn phone the
+     camera has closed in on (27 by 48 units, six and a half times over,
+     centred by the camera), so the phone keeps its shape from the first
+     frame of the zoom to the last. Its corners are the drawn phone's
+     (5 units: 18.5% of its width, 10.4% of its height) - in percent, not
+     cqw, which on the container itself would measure the window and
+     round the phone into a circle (user, 2026-11-19). */
+  .vi-mg-screen { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
+  .vi-mg-screen[data-on] { opacity: 1; transition: opacity 0.4s ease 0.8s; }
   .vi-mg-frame {
     position: relative;
     display: block;
-    height: 69%;
+    height: 69.33%;
     aspect-ratio: 27 / 48;
     container-type: inline-size;
-    border-radius: 18cqw;
+    border-radius: 18.5% / 10.4%;
     background: #050505;
     box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.5), 0 40px 60px -30px rgb(0 0 0 / 0.9);
   }
