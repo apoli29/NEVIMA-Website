@@ -8544,7 +8544,12 @@
   }
   /* The mark stands on its own brand's ground: the old one on the white
      of its website, the new one on Pilar's Noite. */
-  .vi-morph .vi-morph-stage { background: #ffffff; transition: background-color 0.6s ease; }
+  .vi-morph .vi-morph-stage { overflow: hidden; background: #ffffff; transition: background-color 0.6s ease; }
+  /* The guides' square runs to the edge of the ground, with no white
+     margin left between it and the grey card (user, 2026-11-19): the
+     grid is drawn a quarter larger (its square is 160 of 200 units) and
+     its outside clipped. */
+  .vi-morph .vi-morph-grid { inset: -12.5%; }
   .vi-morph[data-step="2"] .vi-morph-stage,
   .vi-morph[data-step="3"] .vi-morph-stage { background: #111525; }
   .vi-morph .vi-morph-new { color: #ffffff; }
@@ -8555,12 +8560,19 @@
   .vi-morph .vi-morph-trade { color: rgb(255 255 255 / 0.5); }
 
   /* ---- 1. three of them in the header ----------------------------- */
-  .vi-trio { display: grid; gap: 1.25rem; margin-top: clamp(2rem, 4vw, 3rem); }
+  /* The mark as "Not sure?" shows it, in a thin rim of grey; the trade
+     over the card and the name under it, both outside (user). */
+  .vi-trio { display: grid; gap: 2rem 1.5rem; margin-top: clamp(2rem, 4vw, 3rem); }
   @media (min-width: 900px) { .vi-trio { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  .vi-trio-card { display: grid; justify-items: center; align-content: center; padding: clamp(1.75rem, 3vw, 2.5rem) 1.25rem; }
-  .vi-trio-card[data-empty] { gap: 1.25rem; }
-  .vi-trio-wait { display: block; width: min(15rem, 76%); aspect-ratio: 1 / 1; outline: 1px dashed rgb(255 255 255 / 0.2); outline-offset: -1px; }
-  .vi-trio-say { color: rgb(255 255 255 / 0.4); text-transform: none; letter-spacing: 0.06em; }
+  .vi-trio-item { display: grid; margin: 0; }
+  .vi-trio-trade { margin-bottom: 0.75rem; color: rgb(255 255 255 / 0.5); text-transform: none; letter-spacing: 0.06em; }
+  .vi-trio-card { display: block; padding: clamp(0.4rem, 0.8vw, 0.625rem); }
+  .vi-trio .vi-morph { display: block; }
+  .vi-trio .vi-morph-stage { width: 100%; }
+  .vi-trio-name { margin-top: 0.9rem; font-family: var(--font-title); font-size: clamp(1.125rem, 1.8vw, 1.375rem); font-weight: 500; letter-spacing: -0.02em; color: #ffffff; }
+  .vi-trio-wait { display: block; width: 100%; aspect-ratio: 1 / 1; background: rgb(255 255 255 / 0.03); outline: 1px dashed rgb(255 255 255 / 0.2); outline-offset: -1px; }
+  .vi-trio-item[data-empty] .vi-trio-trade,
+  .vi-trio-item[data-empty] .vi-trio-name { color: rgb(255 255 255 / 0.32); }
 
   /* ---- 2. the statement ------------------------------------------- */
   .vi-say { display: grid; gap: clamp(1.25rem, 2.6vw, 2rem); margin-top: clamp(2.5rem, 5vw, 4rem); }

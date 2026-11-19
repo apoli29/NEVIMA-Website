@@ -56,16 +56,23 @@ import { useT } from "@/lib/use-lang";
     empty for the two cases the studio is about to add. One over the
     other on a phone. */
 function Cases3({ t }: { t: T }) {
+  const pilar = BRANDS[0]!;
+  // The mark exactly as the grey card of "Not sure?" shows it, in a much
+  // thinner rim of grey; the trade over it and the name under it, both
+  // outside the card (user, 2026-11-19).
+  const items = [
+    { key: "pilar", trade: pilar.trade(t), name: pilar.name, body: <Morph t={t} bare /> },
+    { key: "next-1", trade: TO_FILL, name: TO_FILL, body: <span className="vi-trio-wait" aria-hidden="true" /> },
+    { key: "next-2", trade: TO_FILL, name: TO_FILL, body: <span className="vi-trio-wait" aria-hidden="true" /> },
+  ];
   return (
     <div className="vi-trio">
-      <div className="vi-trio-card">
-        <Morph t={t} />
-      </div>
-      {[1, 2].map((n) => (
-        <div key={n} className="vi-trio-card" data-empty="">
-          <span className="vi-trio-wait" aria-hidden="true" />
-          <span className="mono-label vi-trio-say">{TO_FILL}</span>
-        </div>
+      {items.map((it) => (
+        <figure key={it.key} className="vi-trio-item" data-empty={it.key !== "pilar" || undefined}>
+          <span className="mono-label vi-trio-trade">{it.trade}</span>
+          <div className="vi-trio-card">{it.body}</div>
+          <figcaption className="vi-trio-name">{it.name}</figcaption>
+        </figure>
       ))}
     </div>
   );
@@ -675,7 +682,7 @@ const MORPH_MS = 1250;
     References through Inspo: Geex (forms sculpted and resolved on an
     empty ground) and Portal One (the construction geometry left in
     view). The composition only - the colour and the type are ours. */
-function Morph({ t }: { t: T }) {
+function Morph({ t, bare = false }: { t: T; bare?: boolean }) {
   const reduce = useReducedMotion() ?? false;
   const [ref, inView] = useInView<HTMLDivElement>(0.35);
   const [n, setN] = useState(0);
@@ -711,10 +718,13 @@ function Morph({ t }: { t: T }) {
           <Mark brand={brand} side="after" />
         </span>
       </span>
-      <p className="vi-morph-say">
-        <span className="vi-morph-name">{brand.name}</span>
-        <span className="mono-label vi-morph-trade">{brand.trade(t)}</span>
-      </p>
+      {/* Bare in the header, where the name and the trade stand outside the card. */}
+      {!bare && (
+        <p className="vi-morph-say">
+          <span className="vi-morph-name">{brand.name}</span>
+          <span className="mono-label vi-morph-trade">{brand.trade(t)}</span>
+        </p>
+      )}
     </div>
   );
 }
