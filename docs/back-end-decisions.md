@@ -274,3 +274,78 @@ dantes estava o "como é feito" — e o cinzento ficou onde foi pedido:
 O título continua no topo do cabeçalho e o retângulo cinzento das três
 soluções fica como estava, porque esse foi pedido cinzento de propósito.
 
+
+## A página em movimento (2026-11-19, quinto pedido)
+
+Pedido secção a secção, com a skill `redesign-skill` (taste-skill) e o
+INSPO MCP. As cinco peças novas estão em
+`src/components/back-end-motion.tsx`, com os estilos no fim do bloco
+`.be-*` de `globals.css` ("the back-end page in motion"). O `ProcessCard`
+continua em `back-end-charts.tsx`, sem uso, como manda a regra dos
+componentes antigos.
+
+**1. Cabeçalho.** O H1 fica onde estava; o card passou para baixo dele,
+em toda a largura (`DepthCard`). Saíram os três factos ("Pedidos e
+contactos", "Calendários e reservas", "E-mails"): é o card que os mostra.
+O card conta um pedido em profundidade, como o da Personalização: o
+formulário à frente, e atrás dele as três folhas (base de dados,
+calendário, e-mail) em leque, umas atrás das outras. O pedido entra no
+leque, e a folha onde ele está sai para a frente, iluminada: a linha
+cai na tabela, a vaga é ocupada no calendário, o e-mail escreve-se e leva
+o visto. No fim, as três vêm para a frente lado a lado, direitas, ligadas
+por fios com os dados a correr. Cada passo tem a sua legenda por baixo
+(cinco, em PT e EN), com uma régua de cinco traços a mostrar onde vai.
+Recomeça sozinho; para quando sai do ecrã; com movimento reduzido fica
+no último passo. No telemóvel os nomes dentro das folhas escondem-se (não
+se leriam); a legenda diz o mesmo.
+
+**2. Porque deve investir.** As barras, o anel e o contador são agora
+três cards (`GlowTrail`), dispostos como o esboço do utilizador: o grande
+à esquerda, o mais pequeno à direita e mais abaixo, o médio ao centro no
+fundo (numa grelha de 12 colunas: 1–8, 7–12, 3–9; empilhados abaixo de
+900px). Uma luz suave anda com o scroll do centro de um card para o
+centro do seguinte, e o card onde ela está acende a borda. Sem luz com
+movimento reduzido.
+
+**3. As três soluções.** O rótulo e o título diziam o mesmo; ficou só o
+título, com o nome que o utilizador usa: "As nossas três principais
+soluções de back end". Os cards passaram ao cinzento escuro do card da
+Personalização, com o texto claro. No computador (a partir de 1024px de
+largura e 800px de altura) a secção fica presa e o scroll puxa os cards
+uns dos outros (`DragRun`): o da esquerda entra pela esquerda, o do
+centro nasce de trás dele e é empurrado para o centro, o da direita nasce
+de trás do do centro. O fio de cada card desenha-se quando ele assenta.
+Por fim, o bloco "É preciso algo mais específico?" nasce de debaixo dos
+três, no mesmo cinzento. Só a pergunta fica em tamanho de título; "Não há
+problema. Basta dizer…" passou a texto. No telemóvel e em ecrãs baixos
+entram da esquerda, um a seguir ao outro, quando são alcançados.
+
+**4. O que a empresa ganha.** Opção A. Os nove pontos juntaram-se em três,
+sem perder nenhuma informação dos nove:
+
+- *O dia é gerido, não corrido*: o tempo organizado, as decisões sobre
+  os números do negócio, e cresce com a empresa;
+- *Nada se perde*: nada se perde, o que se sabe do cliente fica guardado,
+  e menos erros à mão;
+- *O cliente sente a diferença*: respondido mais depressa, menos faltas,
+  e parece uma empresa.
+
+O título passou a "Três coisas, e o tempo é só a primeira." Os nove
+continuam no código (`gains()`), sem uso. À esquerda os três; à direita
+um card preso ao ecrã cujo desenho muda para o ponto que se está a ler
+(`GainStory`; referência Linear Features, pelo Inspo: só a composição):
+a semana a arrumar-se com o fim do dia livre e a linha dos números a
+subir; o registo de um cliente a encher-se sozinho; um telemóvel a
+receber a confirmação às 23:47, o lembrete na véspera e uma resposta que
+conhece o histórico. No telemóvel cada desenho vem debaixo do seu ponto.
+
+**5. Como funcionam os preços.** Opção A: uma linha que o scroll desenha
+(`PriceLine`), na ordem em que as coisas acontecem — a reunião inicial
+(gratuita) primeiro, depois a implementação (uma vez), depois o serviço
+mensal (um anel que gira). Cada paragem tem um rótulo de quando, o nome,
+o valor em grande e uma linha. "Duas que vivem sozinhas custam menos…"
+ficou como nota debaixo da implementação, para não se perder. Os valores
+continuam `[a preencher]`. Deitada no computador, em pé no telemóvel.
+
+Fica por correr `node audit/seo-check.mjs` contra uma build de produção
+(a build parte o servidor de desenvolvimento enquanto ele corre).
