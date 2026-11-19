@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion, useIsPresent, useReducedMotion } from "motion/react";
 import { SERVICES, servicePath, servicesIn, type Service } from "@/lib/services";
 import { useHref, useLang, useT } from "@/lib/use-lang";
 import { SlideIn } from "./enter";
@@ -53,6 +53,18 @@ const LIGHT_OVERLAP = 0.6;
 /** Between one row's entrance and the next, in s. */
 const ROW_STAGGER_S = 0.09;
 
+/** The frame uncovers once the rows have begun to rise, in s (user,
+    2026-11-19: every animation in the section came at once). */
+const FRAME_DELAY_S = 0.15 + 2 * ROW_STAGGER_S + 0.02; // 0.35
+/** Uncover's own length, in s (exhibit.tsx). */
+const UNCOVER_S = 1.1;
+/** How long the pointer must rest on a row before the frame follows, in ms. */
+const INTENT_MS = 110;
+/** Strong ease-in-out, for the card uncovering across the frame. */
+const EASE_IN_OUT = [0.77, 0, 0.175, 1] as const;
+/** Strong ease-out, for what settles and what recedes. */
+const EASE_OUT = [0.23, 1, 0.32, 1] as const;
+
 /** Where the services' title is put when the foot sends a visitor to a
     service: clear of the bar, in px from the top of the screen. */
 const FRAME_TOP = () => Math.min(Math.max(window.innerHeight * 0.15, 112), 152);
@@ -69,6 +81,18 @@ export function Services({ ready }: { ready: boolean }) {
   const [open, setOpen] = useState<string | null>(null);
   // The row pointed at, which the showcase shows ahead of the open one.
   const [pointed, setPointed] = useState<number | null>(null);
+  // The frame follows the pointer only once it rests on a row, so a
+  // pointer passing down the list does not flick through every card.
+  const intent = useRef<number | undefined>(undefined);
+  const point = useCallback((i: number | null) => {
+    window.clearTimeout(intent.current);
+    if (i === null) {
+      setPointed(null);
+      return;
+    }
+    intent.current = window.setTimeout(() => setPointed(i), INTENT_MS);
+  }, []);
+  useEffect(() => () => window.clearTimeout(intent.current), []);
   const [listRef, seen] = useSeen<HTMLDivElement>(ready, "0px 0px -12% 0px");
   const titleRef = useRef<HTMLDivElement>(null);
   const subRef = useRef<HTMLParagraphElement>(null);
@@ -206,7 +230,7 @@ export function Services({ ready }: { ready: boolean }) {
 
           <ol
             data-open={open ? "" : undefined}
-            onPointerLeave={() => setPointed(null)}
+            onPointerLeave={() => point(null)}
             className="xs-list col-span-12 lg:col-span-7 lg:col-start-6"
           >
             {services.map((service, i) => (
@@ -219,7 +243,7 @@ export function Services({ ready }: { ready: boolean }) {
                 seen={seen}
                 reduce={reduce}
                 onToggle={toggle}
-                onPoint={(on) => setPointed(on && open !== service.slug ? i : null)}
+                onPoint={(on) => point(on && open !== service.slug ? i : null)}
               />
             ))}
           </ol>
@@ -266,9 +290,19 @@ function PortfolioCall() {
 /* ================================================================== */
 
 /* Since 2026-11-19 (user) the frame holds each service's animated card
-   (service-cards.tsx) in place of its photographs. Each new card is
-   uncovered over the one before it, from the foot up, settling as it
-   comes, and the one under it is let go once it is covered. */
+   (service-cards.tsx) in place of its photographs.
+
+   It enters after the rows have begun to rise (FRAME_DELAY_S), and the
+   first card's loop starts only once the frame is fully uncovered.
+
+   A change of service (user, 2026-11-19: a premium change from one
+   service to the next) is one hand-over: the pointer has to rest on a
+   row for INTENT_MS; the new card uncovers from the foot with a line of
+   light on its moving edge while its content settles; the old one
+   recedes under it, smaller, dimmer and softly blurred, its loop
+   stopped; the new loop starts from its first step once uncovered; the
+   caption rolls up to the new name. Never more than one card playing.
+   With reduced motion, a plain 0.2 s crossfade. */
 function Showcase({
   service,
   index,
@@ -280,47 +314,97 @@ function Showcase({
   seen: boolean;
   reduce: boolean;
 }) {
-  const slug = service.slug;
-  const [layers, setLayers] = useState([{ slug, key: 0 }]);
-  useEffect(() => {
-    setLayers((now) =>
-      now[now.length - 1].slug === slug
-        ? now
-        : [...now.slice(-2), { slug, key: now[now.length - 1].key + 1 }],
-    );
-  }, [slug]);
-
   return (
     <figure className="hidden lg:col-span-4 lg:block">
       <div className="sticky top-28 pt-10">
-        <Uncover shown={seen} className="relative aspect-[4/5] bg-ink">
-          {layers.map((layer, i, shownLayers) => (
-            <motion.div
-              key={layer.key}
-              className="absolute inset-0"
-              initial={i === 0 || reduce ? false : { clipPath: "inset(100% 0% 0% 0%)", scale: 1.08 }}
-              animate={{ clipPath: "inset(0% 0% 0% 0%)", scale: 1 }}
-              transition={{
-                clipPath: { duration: 0.8, ease: [0.76, 0, 0.24, 1] },
-                scale: { duration: 1.3, ease: [0.22, 1, 0.36, 1] },
-              }}
-              onAnimationComplete={() => {
-                if (i === shownLayers.length - 1 && i > 0) setLayers((now) => now.slice(-1));
-              }}
-            >
-              <ServiceCard slug={layer.slug} />
-            </motion.div>
-          ))}
+        <Uncover shown={seen} delay={FRAME_DELAY_S} className="relative aspect-[4/5] bg-ink">
+          <AnimatePresence initial={false}>
+            <ShowcaseLayer key={service.slug} slug={service.slug} seen={seen} reduce={reduce} />
+          </AnimatePresence>
         </Uncover>
         <figcaption className="mono-label mt-3 flex items-baseline justify-between gap-4 text-ash-2">
-          <span className="flex items-center gap-2">
-            <span aria-hidden="true" className="block size-[7px] bg-ink" />
-            <span className="text-ink tabular-nums">Fig. 0{index + 1}</span>
-            <span>— {service.title}</span>
+          <span className="relative flex items-center gap-2 overflow-hidden">
+            <span aria-hidden="true" className="block size-[7px] shrink-0 bg-ink" />
+            <AnimatePresence initial={false} mode="popLayout">
+              <motion.span
+                key={service.slug}
+                className="flex items-center gap-2"
+                initial={reduce ? false : { y: "100%", opacity: 0 }}
+                animate={{ y: "0%", opacity: 1 }}
+                exit={reduce ? { opacity: 0, transition: { duration: 0 } } : { y: "-100%", opacity: 0 }}
+                transition={{ duration: 0.45, ease: EASE_OUT }}
+              >
+                <span className="text-ink tabular-nums">Fig. 0{index + 1}</span>
+                <span>— {service.title}</span>
+              </motion.span>
+            </AnimatePresence>
           </span>
         </figcaption>
       </div>
     </figure>
+  );
+}
+
+/** One service's card in the frame: coming in it uncovers from the foot
+    with a line of light on its edge while its content settles; going
+    out it recedes under the next one, its loop stopped. */
+function ShowcaseLayer({ slug, seen, reduce }: { slug: string; seen: boolean; reduce: boolean }) {
+  const present = useIsPresent();
+  // The first card is uncovered by the frame's own entrance; the ones
+  // after it by this layer.
+  const [first] = useState(() => !seen);
+  const startDelay = first ? (FRAME_DELAY_S + UNCOVER_S) * 1000 : 700;
+
+  if (reduce) {
+    return (
+      <motion.div
+        className="absolute inset-0"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2, ease: "easeInOut" }}
+      >
+        <ServiceCard slug={slug} play={seen && present} />
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div
+      className="absolute inset-0"
+      initial={{ clipPath: "inset(100% 0% 0% 0%)" }}
+      animate={{ clipPath: "inset(0% 0% 0% 0%)", scale: 1, opacity: 1, filter: "blur(0px)" }}
+      exit={{
+        clipPath: "inset(0% 0% 0% 0%)",
+        scale: 0.96,
+        opacity: 0.4,
+        filter: "blur(4px)",
+        transition: { duration: 0.6, ease: EASE_OUT },
+      }}
+      transition={{ clipPath: { duration: 0.7, ease: EASE_IN_OUT } }}
+    >
+      <motion.div
+        className="size-full"
+        initial={{ scale: 1.06, y: "4%" }}
+        animate={{ scale: 1, y: "0%" }}
+        transition={{ duration: 0.9, ease: EASE_OUT }}
+      >
+        <ServiceCard slug={slug} play={seen && present} startDelay={startDelay} />
+      </motion.div>
+      {/* the line of light riding the clip's edge */}
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        initial={{ y: "100%", opacity: 0 }}
+        animate={{ y: "0%", opacity: [0, 1, 1, 0] }}
+        transition={{
+          y: { duration: 0.7, ease: EASE_IN_OUT },
+          opacity: { duration: 0.7, times: [0, 0.08, 0.8, 1] },
+        }}
+      >
+        <span className="block h-px w-full bg-white/60" />
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -468,7 +552,7 @@ function Row({
             {/* Where there is no showcase, the drawer carries the card,
                 wider than tall, playing only while it is open. */}
             <Uncover shown={open} delay={open ? 0.3 : 0} className="mt-6 aspect-[5/4] max-w-[34rem] bg-ink lg:hidden">
-              <ServiceCard slug={service.slug} play={open} />
+              <ServiceCard slug={service.slug} play={open} startDelay={(0.3 + UNCOVER_S) * 1000} />
             </Uncover>
 
             {/* The way out of the index and into the service's own page.

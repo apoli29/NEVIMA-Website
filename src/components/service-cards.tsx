@@ -29,17 +29,21 @@ import { useT } from "@/lib/use-lang";
      frames a product, the flash goes and the photo lands in a strip;
      then the scene is a shopfront and the camera records it.
 
-   Each card runs only while it is on the screen (and, in a drawer, only
-   while the drawer is open). With reduced motion asked for, it stands
-   on its last frame.
+   Each card runs only once it has been uncovered (`startDelay`) and
+   while it is on the screen; hidden, it goes back to its first step.
+   With reduced motion asked for, it stands on its last frame.
 
    The ground is the side-by-side card's dark gradient, as on the back
    end page; styled .svk-* in globals.css.
    ================================================================== */
 
 /** The loop's clock: the step it is on, held for its own time. */
-function useBeat(holds: number[], run: boolean, still: boolean) {
+function useBeat(holds: number[], run: boolean, still: boolean, armed: boolean) {
   const [at, setAt] = useState(0);
+  // Hidden again, it goes back to its first step.
+  useEffect(() => {
+    if (!armed) setAt(0);
+  }, [armed]);
   useEffect(() => {
     if (!run || still) return;
     const id = window.setTimeout(() => setAt((s) => (s + 1) % holds.length), holds[at]);
@@ -131,13 +135,31 @@ const SPECS: Record<string, Spec> = {
 
 /** One service's card. `play` is false while it cannot be seen for
     another reason than the screen (a closed drawer). */
-export function ServiceCard({ slug, play = true }: { slug: string; play?: boolean }) {
+export function ServiceCard({
+  slug,
+  play = true,
+  startDelay = 0,
+}: {
+  slug: string;
+  play?: boolean;
+  /** ms to wait once `play` turns true: the time it takes to be uncovered */
+  startDelay?: number;
+}) {
   const t = useT();
   const reduce = useReducedMotion() ?? false;
   const [ref, inView] = useInView<HTMLElement>(0.3);
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    if (!play) {
+      setArmed(false);
+      return;
+    }
+    const id = window.setTimeout(() => setArmed(true), startDelay);
+    return () => window.clearTimeout(id);
+  }, [play, startDelay]);
   const spec = SPECS[slug];
-  const run = play && inView;
-  const at = useBeat(spec?.holds ?? [1], run, reduce);
+  const run = armed && inView;
+  const at = useBeat(spec?.holds ?? [1], run, reduce, armed);
   if (!spec) return null;
   const { Stage } = spec;
   const phase = spec.phases?.(t)[at];

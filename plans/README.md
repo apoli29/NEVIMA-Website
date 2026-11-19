@@ -8,6 +8,8 @@ Written by `improve-animations`. Each plan is self-contained and can be run by a
 | [002](002-sheet-stack-section-transition.md) | Replace the slat wipe between sections with a stacked-sheet transition | MEDIUM | DONE |
 | [003](003-side-by-side-entrances.md) | Side by side: entrances for the section heads, the plates and their controls | LOW | DONE |
 | [004](004-meteor-follows-the-reader.md) | Back end: the meteor follows the reader's line, not the path's length | MEDIUM | DONE |
+| [005](005-services-entrance-sequence.md) | Our Services: one entrance at a time, each card's loop starting only after its reveal | HIGH | DONE |
+| [006](006-services-card-transition.md) | Our Services: a premium change from one service's card to the next | MEDIUM | DONE |
 
 ## Order and dependencies
 
@@ -21,3 +23,10 @@ Written by `improve-animations`. Each plan is self-contained and can be run by a
   `src/components/back-end-motion.tsx` (and a paragraph in
   `docs/back-end-decisions.md`), in the worktree `../NEVIMA-Website-be` on
   branch `design/back-end-depth`.
+- **005** first. It touches `src/components/services.tsx` (the frame's
+  delay, the cards' `play` / `startDelay`) and `src/components/service-cards.tsx`
+  (`ServiceCard`, `useBeat`), in the worktree `../NEVIMA-Website-cards` on
+  branch `design/services-cards-motion`.
+- **006** after 005, which it builds on (`startDelay`, `FRAME_DELAY_S`,
+  `UNCOVER_S`). It touches only `src/components/services.tsx` (`Services`'s
+  hover intent, `Showcase`, a new `ShowcaseLayer`, the caption).

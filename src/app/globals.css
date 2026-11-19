@@ -9596,3 +9596,9 @@
   .svk-ps-cam { fill: rgb(0 0 0 / 0.55); }
   .svk-ps-time { paint-order: stroke; stroke: rgb(0 0 0 / 0.5); stroke-width: 2px; }
 }
+
+/* On a short stage (the phone drawer's 5:4 card) the result rows are too
+   low for the clinic's name and its address together: the name stays. */
+@layer components {
+  @container (max-height: 13rem) { .svk-sg-ours .svk-sg-url { display: none; } }
+}
