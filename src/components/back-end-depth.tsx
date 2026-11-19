@@ -48,13 +48,15 @@ const ACTIVE = [-1, 0, 1, 2, -1, -1];
 /** How the three stand at the end: their size against the open one,
     and the space between them, in the card's width. */
 function layout(narrow: boolean) {
-  const W = narrow ? 88 : 60;
-  const H = narrow ? 62 : 34;
+  // The open sheet, in the card's width (2026-11-19: the card 20% taller,
+  // the sheets as large as it allows): 72 x 42 on a desk, 90 x 74 on a phone.
+  const W = narrow ? 90 : 72;
+  const H = narrow ? 74 : 42;
   return {
     W,
     H,
-    row: { s: narrow ? 0.3 : 0.32, gap: 3 },
-    sys: { s: narrow ? 0.22 : 0.24, gap: 2.6, rowGap: narrow ? 7 : 5.2 },
+    row: { s: narrow ? 0.29 : 0.27, gap: 3 },
+    sys: { s: narrow ? 0.215 : 0.2, gap: 2.6, rowGap: narrow ? 8 : 6 },
   };
 }
 
@@ -77,10 +79,10 @@ function pose(col: number, at: number, narrow: boolean, row = 0) {
   // 2026-11-19, fourth round: the see-through fan looked wrong). The one
   // still to come is the nearest.
   const ahead = ACTIVE[at] < 0 ? col : (col - ACTIVE[at] + 3) % 3;
-  const x = (narrow ? 24 : 29) + ahead * 1.6;
+  const x = (narrow ? 24 : 31) + ahead * 1.6;
   const y = -ahead * 1.6;
   const z = -220 - ahead * 50;
-  return { transform: `translate3d(${x}cqw, ${y}cqw, ${z}px) rotateY(-18deg) rotateX(4deg) scale(0.5)`, opacity: 1, dim: true };
+  return { transform: `translate3d(${x}cqw, ${y}cqw, ${z}px) rotateY(-18deg) rotateX(4deg) scale(0.42)`, opacity: 1, dim: true };
 }
 
 /** One business's version of a sheet. Shown while it is the one being
@@ -256,9 +258,8 @@ function Week({ t, head, taken, fresh, children }: { t: T; head: string; taken: 
         </span>
       </div>
       <div className="be-cal-grid">
-        <span />
-        {days.map((d) => (
-          <span key={d} className="be-cal-day">
+        {days.map((d, c) => (
+          <span key={d} className="be-cal-day" style={{ gridColumn: c + 2 }}>
             {d}
           </span>
         ))}
@@ -398,9 +399,8 @@ function Calendar({ t, v, on }: { t: T; v: number; on: boolean }) {
           <span className="be-x-chip">{names[2]}</span>
         </div>
         <div className="be-rest-grid">
-          <span />
-          {times.map((tm) => (
-            <span key={tm} className="be-cal-day">
+          {times.map((tm, c) => (
+            <span key={tm} className="be-cal-day" style={{ gridColumn: c + 2 }}>
               {tm}
             </span>
           ))}

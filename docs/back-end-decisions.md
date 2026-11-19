@@ -527,3 +527,11 @@ fundo branco das soluções começa mais tarde: quando o topo da secção está
 a 60% do ecrã, em vez dos 75% comuns a todas as passagens. É só esta
 passagem; o `ToneRoom` aceita agora `data-tone-from` em cada secção, e as
 outras páginas que o usam ficam como estavam.
+
+**O card do cabeçalho maior** (2026-11-19). O card cinzento ficou 20% mais
+alto e a folha branca aberta passou de 60% para 72% da largura dele (887 x
+517px a 1440px), com tudo o que tem dentro a crescer na mesma proporção.
+O monte de trás e as vistas finais foram reajustados para manterem o
+tamanho relativo. Corrigido também: os títulos das colunas do calendário
+(dias e horas) ficavam uma coluna fora do sítio, porque eram colocados
+antes da célula do canto; agora cada um tem a sua coluna.
