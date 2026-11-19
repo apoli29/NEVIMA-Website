@@ -211,7 +211,9 @@ function Solutions({ t }: { t: T }) {
   ];
 
   return (
-    <section aria-labelledby="be-sol-title" data-tone="light" className="relative">
+    // The turn to white starts 15% further down than the room's default
+    // (75% → 60% of the screen; user, 2026-11-19).
+    <section aria-labelledby="be-sol-title" data-tone="light" data-tone-from="0.6" className="relative">
       <div className="shell ps-sec" data-tone-body>
         {/* Dark grey cards now (user, 2026-11-19). On a desk the scroll
             pulls them out of one another from left to right, and the

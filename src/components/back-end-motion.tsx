@@ -200,6 +200,9 @@ export function DepthCard({ t }: { t: T }) {
 
 /* ---- 2. three cards and a light ---------------------------------- */
 
+/** How far down the screen the reader's line sits (see GlowTrail). */
+const READ_LINE = 0.65;
+
 /** Piecewise linear: where `y` falls between the knots `ys`, the same
     share between the matching `ss`; clamped at both ends. */
 function along(y: number, ys: number[], ss: number[]) {
@@ -286,7 +289,7 @@ export function GlowTrail({ cards }: { cards: ReactNode[] }) {
     };
   }, []);
 
-  // The meteor stays level with a reading line 55% down the screen
+  // The meteor stays level with a reading line READ_LINE down the screen (65%; it was 55%, and the user asked for it to start 10% higher, 2026-11-19)
   // (user, 2026-11-19: "sincroniza melhor a animação com o scroll e o
   // posicionamento do user"), pixel for pixel on the way down, and crosses
   // each gap while that line passes it, within k above and below; it used
@@ -298,7 +301,7 @@ export function GlowTrail({ cards }: { cards: ReactNode[] }) {
     if (!path || !route.d || route.turns.length < 5) return;
     const total = path.getTotalLength();
     const { start, end, g1, g2, turns } = route;
-    const Y = sy + window.innerHeight * 0.55 - route.pageTop;
+    const Y = sy + window.innerHeight * READ_LINE - route.pageTop;
     const shortest = Math.min(g1 - start, g2 - g1, end - g2);
     const k = Math.min(Math.max(80, 0.12 * window.innerHeight), 140, 0.45 * shortest);
     // Down each side the head is exactly on the line; the last k before a

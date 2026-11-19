@@ -520,3 +520,10 @@ lado; e atravessa cada espaço enquanto essa linha passa por ele, numa
 janela de 80 a 140px acima e abaixo, sem nunca se afastar mais do que
 isso. Aparece e desaparece com um esbatimento, em vez de surgir de
 repente. Sem mola: o scroll já é suavizado pelo Lenis.
+
+**Duas afinações** (2026-11-19). O meteorito começa mais cedo: a linha de
+leitura que ele segue desceu de 55% para 65% do ecrã. A passagem para o
+fundo branco das soluções começa mais tarde: quando o topo da secção está
+a 60% do ecrã, em vez dos 75% comuns a todas as passagens. É só esta
+passagem; o `ToneRoom` aceita agora `data-tone-from` em cada secção, e as
+outras páginas que o usam ficam como estavam.
