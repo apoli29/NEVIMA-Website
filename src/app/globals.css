@@ -8466,6 +8466,9 @@
   }
   .vi-no[data-still] .vi-no-word { clip-path: inset(0 0 0 0); transition: none; }
   .vi-no[data-still] .vi-no-bar { animation: none; }
+  /* driven by the scroll (Fits): no transition, no animation */
+  .vi-no[data-scroll] .vi-no-word { transition: none; }
+  .vi-no[data-scroll] .vi-no-bar { animation: none; }
 
   /* ---- the two lists of cases ------------------------------------- */
   .vi-cases { display: grid; gap: clamp(2rem, 4vw, 3rem); }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { SlideIn } from "./enter";
 import { BeforeAfter } from "./project-report";
 import { ToneRoom } from "./tone-veil";
@@ -609,7 +609,6 @@ function Fits({ t }: { t: T }) {
   const head = useRef<HTMLDivElement>(null);
   const no = useRef<HTMLSpanElement>(null);
   const [ref, inView] = useInView<HTMLDivElement>(0.3);
-  const [said, setSaid] = useState(false);
   const [at, setAt] = useState(0);
   // How far "No." sits, in its place, from the middle of the screen; and
   // how much room the pinned screen leaves under the title.
@@ -650,9 +649,15 @@ function Fits({ t }: { t: T }) {
   const noScale = useTransform(scrollYProgress, (p) => 1.5 - 0.5 * noMove(p));
   const title = useTransform(scrollYProgress, (p) => span(p, 0.6, 0.74));
   const titleY = useTransform(scrollYProgress, (p) => 18 * (1 - span(p, 0.6, 0.74)));
-  useMotionValueEvent(scrollYProgress, "change", (p) => {
-    if (p > 0.32) setSaid(true);
-  });
+  // "No." is uncovered by the scroll itself, not by a timed transition
+  // set off when a threshold is crossed (user, 2026-11-19: on a long,
+  // fast scroll the transition could be left unplayed and "No." never
+  // showed). Wherever the scroll stands, the word stands as far revealed
+  // as that point says, and whole from 0.42 on.
+  const reveal = useTransform(scrollYProgress, (p) => ease(span(p, 0.28, 0.42)));
+  const noClip = useTransform(reveal, (r) => `inset(0 ${(1 - r) * 100}% 0 0)`);
+  const barLeft = useTransform(reveal, (r) => `${r * 100}%`);
+  const barShow = useTransform(reveal, (r) => (r > 0.001 && r < 0.999 ? 1 : 0));
 
   const fits = [
     t("no symbol at all", "nenhum símbolo"),
@@ -674,10 +679,17 @@ function Fits({ t }: { t: T }) {
   }, [inView, reduce]);
 
   const question = t("Does it make sense for every business?", "Faz sentido para todos os negócios?");
-  const answer = (
-    <span className="vi-no" data-said={said || reduce || undefined} data-still={reduce || undefined}>
+  const answer = reduce ? (
+    <span className="vi-no" data-said data-still>
       <span className="vi-no-word">{t("No.", "Não.")}</span>
       <span aria-hidden="true" className="vi-no-bar" />
+    </span>
+  ) : (
+    <span className="vi-no" data-scroll>
+      <motion.span className="vi-no-word" style={{ clipPath: noClip }}>
+        {t("No.", "Não.")}
+      </motion.span>
+      <motion.span aria-hidden="true" className="vi-no-bar" style={{ left: barLeft, opacity: barShow }} />
     </span>
   );
 
