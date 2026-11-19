@@ -102,10 +102,11 @@ function Why({ t }: { t: T }) {
   }, [inView]);
 
   return (
-    <section aria-labelledby="be-why-title" data-tone="dark" className="relative text-paper">
+    // White now, the three cards black on it (user, 2026-11-19).
+    <section aria-labelledby="be-why-title" data-tone="light" className="relative be-why-light">
       <div className="shell ps-sec" data-tone-body>
         <SlideIn ready>
-          <p className="mono-label text-paper/55">
+          <p className="mono-label text-ash-2">
             {t(
               "Why should small businesses invest in back end solutions?",
               "Porque deve um negócio pequeno investir em soluções de back end?",
@@ -242,6 +243,10 @@ function Solutions({ t }: { t: T }) {
                   "Não há problema. Basta dizer o que falta no formulário e encontramos uma solução.",
                 )}
               </p>
+              {/* The form itself, from here (user, 2026-11-19). */}
+              <div className="be-slab-ask">
+                <ProposalAsk label={t("Get your free proposal", "Pedir proposta gratuita")} />
+              </div>
             </div>
           }
         />

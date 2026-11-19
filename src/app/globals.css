@@ -8834,11 +8834,12 @@
    has three steps, not five.                                           */
 @layer components {
   .be-gs-row { padding-block: clamp(1.25rem, 2.2vw, 1.75rem); }
-  .be-gs-name { font-size: clamp(1.375rem, 2.2vw, 1.875rem); }
-  .be-gs-lead { max-width: 44ch; margin-top: 0.55rem; font-size: 1.0625rem; line-height: 1.45; color: var(--color-ink); text-wrap: pretty; }
+  .be-gs-name { font-size: clamp(1.5rem, 2.4vw, 2.125rem); }
+  /* larger (user, 2026-11-19: the body read too small) */
+  .be-gs-lead { max-width: 44ch; margin-top: 0.65rem; font-size: clamp(1.125rem, 1.5vw, 1.3125rem); line-height: 1.45; color: var(--color-ink); text-wrap: pretty; }
   .be-gs-fold { display: grid; grid-template-rows: 1fr; }
   .be-gs-items { display: grid; gap: 0.5rem; min-height: 0; margin: 0; padding: 0.85rem 0 0; overflow: hidden; list-style: none; }
-  .be-gs-items li { position: relative; max-width: 52ch; padding-left: 1.1rem; font-size: 0.9375rem; line-height: 1.5; color: var(--color-ash); text-wrap: pretty; }
+  .be-gs-items li { position: relative; max-width: 52ch; padding-left: 1.1rem; font-size: clamp(1rem, 1.25vw, 1.125rem); line-height: 1.5; color: var(--color-ash); text-wrap: pretty; }
   .be-gs-items li::before { content: ""; position: absolute; left: 0; top: 0.72em; width: 0.45rem; height: 1px; background: var(--color-ink); }
   .be-gs-items b { font-weight: 500; color: var(--color-ink); }
   @media (min-width: 1024px) {
@@ -8877,6 +8878,25 @@
   .be-pl-body { margin-top: 0.75rem; font-size: 0.9375rem; color: rgb(255 255 255 / 0.6); }
   .be-pl-note { margin-top: 0.5rem; padding-left: 0; font-size: 0.9375rem; line-height: 1.6; color: rgb(255 255 255 / 0.6); box-shadow: none; }
   .be-pl-stop { opacity: 0.32; transition: opacity 0.45s ease; }
+}
+
+/* ---- back-end: "Why" on white, its cards black (user, 2026-11-19) ---
+   The section turns light; the three cards keep the drawings' dark, now
+   solid black, and the meteor that runs between them goes ink. */
+@layer components {
+  .be-why-light .be-why-say { color: var(--color-ash); }
+  .be-why-light .be-lit { color: var(--color-ink); }
+  .be-why-light .be-lit-block { background: var(--color-ink); }
+  .be-why-light .be-lit[data-on] .be-lit-word { color: #ffffff; }
+  .be-why-light .be-card { color: var(--color-paper); background: #0b0b0b; box-shadow: none; }
+  .be-why-light .be-card .bef,
+  .be-why-light .be-card .bef-saved { --bef-ground: #0b0b0b; }
+  .be-why-light .be-trail .be-trail-card[data-lit] { box-shadow: 0 30px 70px -36px rgb(0 0 0 / 0.55); }
+  .be-why-light .be-trail-track { stroke: rgb(0 0 0 / 0.08); }
+  .be-why-light .be-trail-tail { stroke: rgb(0 0 0 / 0.25); }
+  .be-why-light .be-trail-line { stroke: var(--color-ink); }
+  .be-why-light .be-trail-head { fill: var(--color-ink); filter: drop-shadow(0 0 4px rgb(0 0 0 / 0.35)); }
+  .be-slab-ask { margin-top: clamp(1.25rem, 2.4vw, 1.75rem); }
 }
 
 /* ---- visual identity, reshaped on 2026-11-19 -------------------------
