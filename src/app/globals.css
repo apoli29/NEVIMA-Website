@@ -9284,3 +9284,28 @@
     mask-image: linear-gradient(to bottom, #000 0 37.5%, transparent 41.5% 58.5%, #000 62.5% 100%);
   }
 }
+
+/* ---- visual identity, 2026-11-19 (user): "why it is worth it" in the
+   header, a fifth of its old room; everything after it on white ------ */
+@layer components {
+  .vi-worth { display: grid; gap: 1rem 2.5rem; margin-top: clamp(2rem, 4vw, 3rem); padding-top: clamp(1.25rem, 2.4vw, 1.75rem); border-top: 1px solid rgb(255 255 255 / 0.16); }
+  @media (min-width: 900px) { .vi-worth { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: end; } }
+  .vi-worth-title { max-width: 22ch; margin-top: 0.75rem; font-size: clamp(1.5rem, 2.6vw, 2.25rem); font-weight: 300; line-height: 1.08; letter-spacing: -0.03em; text-wrap: balance; }
+  .vi-worth-say { max-width: 50ch; font-size: clamp(1rem, 1.2vw, 1.125rem); line-height: 1.55; color: rgb(255 255 255 / 0.72); text-wrap: pretty; }
+  .vi-worth-say b { font-weight: 500; color: #ffffff; }
+
+  /* Does it make sense? on white */
+  .vi-fit .vi-no-bar { background: var(--color-ink); }
+  .vi-fit .vi-case { border-top-color: var(--color-hair); }
+  .vi-fit .vi-case-lead { color: var(--color-ash-2); }
+  .vi-fit .vi-case-word { color: var(--color-ink); }
+  .vi-fit .vi-case[data-muted] .vi-case-lead,
+  .vi-fit .vi-case[data-muted] .vi-case-word { color: rgb(0 0 0 / 0.38); }
+
+  /* How the price works, on white */
+  .vi-price-light .vi-price { border-top-color: var(--color-ink); }
+  .vi-price-light .vi-price-row { border-color: var(--color-hair); }
+  .vi-price-light .vi-price-n { color: var(--color-ash-2); }
+  .vi-price-light .vi-price-body { color: var(--color-ash); }
+  .vi-price-light .vi-price-foot .mono-label { color: var(--color-ash-2); }
+}

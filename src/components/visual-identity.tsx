@@ -98,6 +98,27 @@ function Head({ t }: { t: T }) {
             <Glance t={t} />
           </div>
         </SlideIn>
+        {/* Why it is worth it, cut to one line of title and one of text
+            and set under the film (user, 2026-11-19: a fifth of what the
+            section took). The full text and its three options are kept,
+            out of use, in Opening and WorthOptions below. */}
+        <SlideIn ready distance={0} delay={0.2}>
+          <div className="vi-worth">
+            <div>
+              <p className="mono-label text-paper/55">{t("Why it is worth it", "Porque vale a pena")}</p>
+              <h2 className="display vi-worth-title">
+                {t("A client's first impression rests on a mark.", "A primeira impressão de um cliente assenta numa marca.")}
+              </h2>
+            </div>
+            <p className="vi-worth-say">
+              {t(
+                "When the logo and the symbol are out of date, even the best-built website contradicts them. So we draw them with the website, ",
+                "Quando o logótipo e o símbolo estão desatualizados, até o website mais bem feito entra em contradição com eles. Por isso são desenhados com o website, ",
+              )}
+              <b>{t("so everything speaks the same language.", "para que tudo fale a mesma linguagem.")}</b>
+            </p>
+          </div>
+        </SlideIn>
       </header>
     </section>
   );
@@ -122,7 +143,9 @@ function Lit({ children }: { children: ReactNode }) {
   );
 }
 
-function Opening({ t }: { t: T }) {
+/** The section as it stood until 2026-11-19, with the three options;
+    out of use (the header carries the short version). */
+export function Opening({ t }: { t: T }) {
   return (
     <section data-tone="light" className="relative">
       <div className="shell ps-open vi-open" data-tone-body>
@@ -704,12 +727,12 @@ function Fits({ t }: { t: T }) {
   );
 
   return (
-    <section aria-labelledby="vi-fit-title" data-tone="dark" className="vi-fit relative text-paper">
+    <section aria-labelledby="vi-fit-title" data-tone="light" className="vi-fit relative">
       <div data-tone-body>
         {reduce ? (
           <div className="shell vi-fit-still">
             <div className="vi-fit-head">
-              <p className="mono-label text-paper/55">{t("Who it is for", "Para quem é")}</p>
+              <p className="mono-label text-ash-2">{t("Who it is for", "Para quem é")}</p>
               <h2 id="vi-fit-title" className="display vi-fit-title">
                 {question}
               </h2>
@@ -731,7 +754,7 @@ function Fits({ t }: { t: T }) {
                     here from the middle of the screen. */}
                 <div ref={head} className="shell vi-fit-head">
                   <motion.div style={{ opacity: title, y: titleY }}>
-                    <p className="mono-label text-paper/55">{t("Who it is for", "Para quem é")}</p>
+                    <p className="mono-label text-ash-2">{t("Who it is for", "Para quem é")}</p>
                     <h2 id="vi-fit-title" className="display vi-fit-title">
                       {question}
                     </h2>
@@ -885,10 +908,10 @@ function Prices({ t }: { t: T }) {
   ];
 
   return (
-    <section aria-labelledby="vi-price-title" data-tone="dark" className="relative text-paper">
+    <section aria-labelledby="vi-price-title" data-tone="light" className="relative vi-price-light">
       <div className="shell ps-sec" data-tone-body>
         <SlideIn ready>
-          <p className="mono-label text-paper/55">{t("How the price works", "Como funcionam os preços")}</p>
+          <p className="mono-label text-ash-2">{t("How the price works", "Como funcionam os preços")}</p>
           <h2 id="vi-price-title" className="display ps-title">
             <span className="font-light sm:block">{t("The mark and the website", "A marca e o website")}</span>{" "}
             <span className="font-medium sm:block">{t("are priced as one piece of work.", "são orçamentados como um só trabalho.")}</span>
@@ -934,7 +957,6 @@ export function VisualIdentity() {
   return (
     <ToneRoom>
       <Head t={t} />
-      <Opening t={t} />
       <Fits t={t} />
       <Prices t={t} />
     </ToneRoom>
