@@ -164,6 +164,66 @@ Duas coisas, depois de ver a pagina no ar:
   haver dois nomes meio-desenhados um por cima do outro, que era o que
   se via no print.
 
+## A página refeita (2026-11-19)
+
+Pedido do utilizador, secção a secção:
+
+- **Secção 1.** Fica só o H1 e os dois cards (saíram a etiqueta
+  "Additional service", a frase "An outdated logo…" e os três factos).
+  Cada card tem o fundo da sua marca: a **marca antiga é a do site
+  template** do Side by Side (o emblema azul com o anel laranja, "Pilar"
+  em itálico e SEGUROS a laranja, `CLogo` em `side-by-side.tsx`), em
+  branco; a nova é a assinatura do nosso site (símbolo + "Pilar
+  Seguros" na Plus Jakarta Sans) no Noite #111525. O escudo que lá
+  estava saiu de `vi-brands.tsx`: o emblema do template passou a ser o
+  "antes" da Pilar, desenhado forma a forma para o loop. Cards e
+  logótipos **25% maiores** do que estavam.
+- **Secção 2.** Debaixo do texto, o card da chamada do Side by Side (o
+  mesmo metal, o mesmo quadrado, a mesma linha com o ponto de luz, o
+  mesmo painel escrito letra a letra), com o cliente sozinho e um
+  telemóvel: vê o site com a identidade antiga, franze ("Será que ainda
+  existem?"), o ecrã passa à nova e sorri ("Nestes confiava."). A cabeça
+  do boneco é desenhada maior que na chamada para levar olhos, boca e
+  sobrancelhas. Com movimento reduzido fica a nova e o sorriso.
+- **Secção 3** (a proposta em três coisas vistas) saiu: repetia a 2.
+  Fica inteira em `visual-identity.tsx`, `Proposal`, fora de uso.
+- **Secção 4** passou ao cinzento escuro. A pergunta fica presa ao
+  centro do ecrã; o scroll apaga-a e traz o "Não." para o mesmo sítio,
+  descoberto pela barra (agora branca), com a frase por baixo; depois a
+  secção solta-se e vêm os dois widgets e o card cinzento do "Com
+  dúvidas?", que passou para dentro desta secção. No loop do card, a
+  marca antiga está no branco do template e a nova constrói-se no Noite.
+  As opacidades do scroll são funções e não intervalos: com intervalos o
+  Motion entrega a opacidade ao scroll timeline do browser, que media
+  mal a secção presa.
+
+### Segunda volta no mesmo dia (2026-11-19)
+
+- **Secção 1** passou a ser o card cinzento do "Com dúvidas?" três
+  vezes (`Cases3`): o primeiro com o loop da Pilar, os outros dois
+  vazios (um quadrado tracejado e `[a preencher]`) para os dois casos
+  que o estúdio vai acrescentar. Os dois cards antes/depois saíram.
+- **Secção 2.** O texto foi mantido palavra a palavra, mas posto como
+  uma frase grande em dois parágrafos desencontrados, com as três ideias
+  que a seguram ("o logótipo e o símbolo ao lado dele", "entra em
+  contradição com ele", "tudo fale a mesma linguagem") acesas por um
+  bloco preto que se desenha atrás delas quando são alcançadas.
+  Referência pelo Inspo: **Bandcamp** (a frase com os números em blocos
+  pretos). O card da chamada era uma imitação demasiado literal; só o
+  boneco e as falas ficaram. No lugar dele há um pequeno filme
+  (`Glance`): o boneco a traço branco sobre o fundo escuro levanta o
+  telemóvel, a câmara entra no ecrã (o site da Pilar antigo), volta à
+  cara, que franze e diz "Será que ainda existem?"; depois o mesmo com
+  o site novo, sorri e diz "Nestes confiava.". É uma câmara só, movida
+  por transform, e cerca de 15 s por volta. Com movimento reduzido fica
+  o último plano.
+- **Secção 4.** A frase debaixo do "Não." saiu. A pergunta aparece ao
+  centro e apaga-se, o "Não." entra ao centro e vai para a esquerda, e
+  a pergunta volta por cima dele como título da secção (a estrutura
+  normal). Os widgets e o card sobem para o espaço que o ecrã preso
+  deixa livre, para chegarem colados quando a secção se solta (antes
+  ficava tão longe que pareciam duas secções).
+
 **O botao do card cinzento saiu** (user, 2026-11-18): o card fica com o
 texto e com o loop da marca. A barra leva o formulario em todo o lado,
 a seccao dos precos tem o seu proprio botao e a pagina acaba em "Let's

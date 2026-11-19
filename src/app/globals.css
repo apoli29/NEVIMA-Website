@@ -8121,3 +8121,245 @@
     .vi-no[data-said] .vi-no-bar { animation: none; }
   }
 }
+
+/* ---- visual identity, reshaped on 2026-11-19 -------------------------
+   The header is the title and three grey cards, the card of "Not sure?"
+   three times, only the first filled; "Why it is worth it" is one large
+   statement with its key ideas lit, and under it a short film of the
+   client and the phone; "Does it make sense?" is held by the scroll and
+   then settles into a section's normal head, with the cases and the
+   grey card close under it.                                          */
+@layer components {
+  /* ---- Pilar's two logos, whole ---------------------------------- */
+  .vi-logo { display: inline-flex; align-items: center; line-height: 1; }
+  .vi-logo-mark { display: block; flex: none; }
+  .vi-logo-old { gap: 0.3em; color: #1d3c87; }
+  .vi-logo-old .vi-logo-mark { width: 1.7em; }
+  .vi-logo-words { display: grid; gap: 0.12em; }
+  .vi-logo-old-name { display: flex; align-items: baseline; gap: 0.2em; }
+  .vi-logo-old-name b { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-weight: 700; font-size: 1em; color: #1d3c87; text-shadow: 0.04em 0.04em 0 #b9c9e6; }
+  .vi-logo-old-name i { font-style: normal; font-family: Arial, Helvetica, sans-serif; font-size: 0.42em; font-weight: 700; letter-spacing: 0.18em; color: #f39200; }
+  .vi-logo-old small { display: block; font-family: Arial, Helvetica, sans-serif; font-size: 0.35em; color: #888; }
+  .vi-logo-new { gap: 0.3em; color: #ffffff; }
+  .vi-logo-new .vi-logo-mark { width: 0.86em; }
+  .vi-logo-new-name { font-family: var(--f-pilar-sans), ui-sans-serif, system-ui, sans-serif; font-weight: 600; letter-spacing: -0.015em; white-space: nowrap; }
+
+  /* ---- the grey card, wherever it stands ------------------------- */
+  .vi-trio-card,
+  .vi-fit .vi-sure {
+    color: var(--color-paper);
+    background: linear-gradient(155deg, #4a4a4e 0%, #2c2c2f 55%, #1d1d1f 100%);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
+  }
+  /* The mark stands on its own brand's ground: the old one on the white
+     of its website, the new one on Pilar's Noite. */
+  .vi-morph .vi-morph-stage { overflow: hidden; background: #ffffff; transition: background-color 0.6s ease; }
+  /* The guides' square runs to the edge of the ground, with no white
+     margin left between it and the grey card (user, 2026-11-19): the
+     grid is drawn a quarter larger (its square is 160 of 200 units) and
+     its outside clipped. */
+  .vi-morph .vi-morph-grid { inset: -12.5%; }
+  .vi-morph[data-step="2"] .vi-morph-stage,
+  .vi-morph[data-step="3"] .vi-morph-stage { background: #111525; }
+  .vi-morph .vi-morph-new { color: #ffffff; }
+  .vi-morph .vi-g-rule { transition: stroke-dashoffset 0.9s cubic-bezier(0.33, 1, 0.68, 1) var(--o), stroke 0.6s ease; }
+  .vi-morph[data-step="2"] .vi-g-rule { stroke: rgb(255 255 255 / 0.34); }
+  .vi-morph[data-step="2"] .vi-g-faint { stroke: rgb(255 255 255 / 0.16); }
+  .vi-morph .vi-morph-name { color: #ffffff; }
+  .vi-morph .vi-morph-trade { color: rgb(255 255 255 / 0.5); }
+
+  /* ---- 1. three of them in the header ----------------------------- */
+  /* The mark as "Not sure?" shows it, in a thin rim of grey; the trade
+     over the card and the name under it, both outside (user). */
+  .vi-trio { display: grid; gap: 2rem 1.5rem; margin-top: clamp(2rem, 4vw, 3rem); }
+  @media (min-width: 900px) { .vi-trio { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .vi-trio-item { display: grid; margin: 0; }
+  .vi-trio-trade { margin-bottom: 0.75rem; color: rgb(255 255 255 / 0.5); text-transform: none; letter-spacing: 0.06em; }
+  .vi-trio-card { display: block; padding: clamp(0.4rem, 0.8vw, 0.625rem); }
+  .vi-trio .vi-morph { display: block; }
+  .vi-trio .vi-morph-stage { width: 100%; }
+  .vi-trio-name { margin-top: 0.9rem; font-family: var(--font-title); font-size: clamp(1.125rem, 1.8vw, 1.375rem); font-weight: 500; letter-spacing: -0.02em; color: #ffffff; }
+  .vi-trio-wait { display: block; width: 100%; aspect-ratio: 1 / 1; background: rgb(255 255 255 / 0.03); outline: 1px dashed rgb(255 255 255 / 0.2); outline-offset: -1px; }
+  .vi-trio-item[data-empty] .vi-trio-trade,
+  .vi-trio-item[data-empty] .vi-trio-name { color: rgb(255 255 255 / 0.32); }
+
+  /* ---- 2. the statement ------------------------------------------- */
+  .vi-say { display: grid; gap: clamp(1.25rem, 2.6vw, 2rem); margin-top: clamp(2.5rem, 5vw, 4rem); }
+  .vi-say-p {
+    max-width: 30ch;
+    font-family: var(--font-title);
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: 300;
+    line-height: 1.24;
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
+    text-wrap: pretty;
+  }
+  @media (min-width: 900px) { .vi-say-p2 { margin-left: clamp(4rem, 16vw, 16rem); } }
+  .vi-lit {
+    padding: 0 0.1em;
+    font-weight: 400;
+    background-image: linear-gradient(var(--color-ink), var(--color-ink));
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 0% 100%;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    transition: background-size 0.9s cubic-bezier(0.65, 0, 0.35, 1), color 0.35s ease 0.4s;
+  }
+  .vi-lit[data-on] { background-size: 100% 100%; color: #ffffff; }
+
+  /* ---- 2. the client and the phone, as a short film -------------- */
+  .vi-mg {
+    margin-top: clamp(3rem, 6vw, 4.5rem);
+    overflow: hidden;
+    color: var(--color-paper);
+    background: linear-gradient(155deg, #3a3a3d 0%, #18181a 48%, #080809 100%);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+  }
+  .vi-mg-stage { position: relative; aspect-ratio: 16 / 10; overflow: hidden; }
+  .vi-mg-cam {
+    position: absolute;
+    inset: 0;
+    transform-origin: 0 0;
+    transition: transform 1.15s cubic-bezier(0.65, 0, 0.35, 1);
+    will-change: transform;
+  }
+  .vi-mg-art { display: block; width: 100%; height: 100%; overflow: visible; }
+  .vi-mg-line { fill: none; stroke: rgb(255 255 255 / 0.86); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+  .vi-mg-head { fill: #141416; }
+  .vi-mg-floor { stroke: rgb(255 255 255 / 0.14); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .vi-mg-dot { fill: #ffffff; }
+  .vi-mg-feel { fill: none; stroke: #ffffff; stroke-width: 2.4; stroke-linecap: round; vector-effect: non-scaling-stroke; opacity: 0; transition: opacity 0.3s ease; }
+  .vi-mg-face[data-mood="none"] .vi-mg-feel[data-for="none"],
+  .vi-mg-face[data-mood="bad"] .vi-mg-feel[data-for="bad"],
+  .vi-mg-face[data-mood="good"] .vi-mg-feel[data-for="good"] { opacity: 1; }
+  /* The arm hangs from the shoulder and comes up with the phone. */
+  .vi-mg-arm { transform-box: view-box; transform-origin: 374px 232px; rotate: 40deg; transition: rotate 0.95s cubic-bezier(0.22, 1, 0.36, 1); }
+  .vi-mg-arm[data-up] { rotate: 0deg; }
+  .vi-mg-edge { fill: rgb(255 255 255 / 0.55); }
+  .vi-mg-phone { fill: #050505; }
+  .vi-mg-glass { fill: #ffffff; transition: fill 0.4s ease; }
+  .vi-mg-glass[data-side="new"] { fill: #111525; }
+
+  /* Inside the phone: the screen, laid exactly over the drawn phone the
+     camera has closed in on (42.5 by 77.5 units, 5.74 times over,
+     centred by the camera), so the phone keeps its shape from the first
+     frame of the zoom to the last. Large and with a thin bezel, the glass
+     1.6 units in from every edge (user, 2026-11-19). Corners in percent
+     of the phone, as drawn (7.5 units out, 6 in) - never cqw on the
+     container itself, which would measure the window and round the
+     phone into a circle. */
+  .vi-mg-screen { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
+  .vi-mg-screen[data-on] { opacity: 1; transition: opacity 0.4s ease 0.8s; }
+  .vi-mg-frame {
+    position: relative;
+    display: block;
+    height: 88.97%;
+    aspect-ratio: 42.5 / 77.5;
+    border-radius: 17.65% / 9.68%;
+    background: #050505;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.4), 0 40px 60px -30px rgb(0 0 0 / 0.9);
+  }
+  /* Only the logo, in the middle of the screen, on its brand's ground. */
+  .vi-site {
+    position: absolute;
+    inset: 2.06% 3.76%;
+    display: grid;
+    place-items: center;
+    container-type: inline-size;
+    overflow: hidden;
+    border-radius: 15.3% / 8.1%;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .vi-site[data-on] { opacity: 1; }
+  .vi-site[data-side="old"] { background: #ffffff; }
+  .vi-site[data-side="new"] { background: #111525; }
+  .vi-site-logo { display: block; max-width: 88%; }
+  .vi-site-logo .vi-logo { font-size: 10.6cqw; }
+  .vi-site[data-side="new"] .vi-site-logo .vi-logo { font-size: 10.85cqw; }
+
+  /* What the face says, beside it, typed in as the call types it. */
+  .vi-mg-say {
+    position: absolute;
+    left: 55%;
+    top: 22%;
+    max-width: 38%;
+    padding: 0.9rem 1.1rem;
+    background: rgb(20 20 21 / 0.82);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18), inset 0 1px 0 rgb(255 255 255 / 0.1);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    translate: 0 0.6rem;
+    transition: opacity 0.35s ease, translate 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .vi-mg-say[data-on] { opacity: 1; translate: 0 0; transition-delay: 0.9s; }
+  .vi-mg-say::before { content: ""; position: absolute; top: 1.35rem; right: 100%; width: 1.4rem; height: 1px; background: rgb(255 255 255 / 0.4); }
+  .vi-mg-say-text { display: block; min-height: 1.3em; font-family: var(--font-title); font-size: clamp(0.9375rem, 2.2vw, 1.625rem); font-weight: 500; line-height: 1.25; letter-spacing: -0.015em; color: #ffffff; }
+
+  .vi-mg-foot { display: flex; align-items: center; gap: 1rem; min-height: 3.25rem; padding: 0.85rem clamp(1.1rem, 2.4vw, 1.75rem); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1); }
+  .vi-mg-steps { display: flex; gap: 4px; flex: none; }
+  .vi-mg-steps i { width: 1.25rem; height: 2px; background: rgb(255 255 255 / 0.2); transition: background 0.4s ease; }
+  .vi-mg-steps i[data-on] { background: #ffffff; }
+  .vi-mg-cap { color: rgb(255 255 255 / 0.6); text-transform: none; letter-spacing: 0.06em; }
+  .vi-mg[data-still] .vi-mg-cam,
+  .vi-mg[data-still] .vi-mg-say,
+  .vi-mg[data-still] .vi-mg-arm { transition: none; }
+
+  /* ---- 3. does it make sense? - held, then settled --------------- */
+  .vi-ask-run { height: 300vh; }
+  .vi-ask-pin { position: sticky; top: 0; height: 100dvh; overflow: hidden; }
+  .vi-ask-q {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(88vw, 16ch);
+    translate: -50% -50%;
+    margin: 0;
+    font-size: clamp(2.25rem, 5.6vw, 4.75rem);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.035em;
+    text-align: center;
+    text-wrap: balance;
+  }
+  .vi-fit-head { padding-top: clamp(7rem, 15vh, 9.5rem); }
+  .vi-fit-title {
+    max-width: 20ch;
+    margin-top: 1.25rem;
+    font-size: clamp(2rem, 4.6vw, 3.75rem);
+    font-weight: 300;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  .vi-fit-no { margin-top: clamp(0.75rem, 1.6vw, 1.25rem); }
+  .vi-fit-no-move { display: inline-block; will-change: transform; }
+  .vi-fit .vi-no { font-size: clamp(3.5rem, 8vw, 6.5rem); }
+  .vi-fit .vi-no-bar { background: #ffffff; }
+
+  .vi-fit-rest, .vi-fit-still { padding-bottom: clamp(5rem, 10vw, 8rem); }
+  .vi-fit-still { padding-top: clamp(5rem, 10vw, 8rem); }
+  .vi-fit-still .vi-cases { margin-top: 3rem; }
+  .vi-fit .vi-cases .vi-case { margin-top: 0; }
+  .vi-fit .vi-case { border-top-color: rgb(255 255 255 / 0.16); }
+  .vi-fit .vi-case-lead { color: rgb(255 255 255 / 0.55); }
+  .vi-fit .vi-case-word { color: #ffffff; }
+  .vi-fit .vi-case[data-muted] .vi-case-lead,
+  .vi-fit .vi-case[data-muted] .vi-case-word { color: rgb(255 255 255 / 0.4); }
+
+  .vi-fit .vi-sure { margin-top: clamp(2.5rem, 5vw, 3.5rem); }
+  .vi-fit .vi-sure-title { margin-top: 0; font-size: clamp(1.75rem, 3.4vw, 2.75rem); font-weight: 400; }
+  .vi-fit .vi-sure-say { max-width: 40ch; margin-top: 1.25rem; font-family: inherit; font-size: clamp(1rem, 1.4vw, 1.1875rem); line-height: 1.55; letter-spacing: 0; color: rgb(255 255 255 / 0.72); }
+
+  @media (max-width: 639.98px) {
+    .vi-mg-say { left: 52%; top: 16%; max-width: 45%; padding: 0.6rem 0.7rem; }
+    .vi-mg-say::before { top: 1rem; width: 0.8rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vi-lit, .vi-mg-cam, .vi-mg-arm, .vi-mg-say, .vi-mg-feel, .vi-site, .vi-mg-screen, .vi-morph .vi-morph-stage { transition: none; }
+  }
+}
