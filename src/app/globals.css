@@ -9564,3 +9564,41 @@
   .vi-price-light .vi-price-body { color: var(--color-ash); }
   .vi-price-light .vi-price-foot .mono-label { color: var(--color-ash-2); }
 }
+
+/* ---- the services' drawings on the about page's folds ----------------
+   Only the drawing inside each home page service card (.svk-stage,
+   service-cards.tsx) stands on the ground of the service pages' black
+   cards (user, 2026-11-19: "só no desenho dos cards"): the about page's
+   folds dimmed by half, the same vignette, laid as a panel a little
+   wider than the drawing; the card around it keeps its dark gradient,
+   its kicker and its foot. On the panel the words carry the same soft
+   shade and the faintest labels come up a step; solid near-black fills
+   in the drawings (the camera, the AI panel) become translucent, or
+   they would read as holes in the photograph. */
+@layer components {
+  .svk-stage { margin-block: 1.2rem; text-shadow: 0 0 14px rgb(0 0 0 / 0.7), 0 0 2px rgb(0 0 0 / 0.35); }
+  .svk-stage::before {
+    content: "";
+    position: absolute;
+    inset: -0.6rem;
+    background:
+      radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(0 0 0 / 0.35)),
+      linear-gradient(rgb(0 0 0 / 0.5), rgb(0 0 0 / 0.5)),
+      url("/about/folds-1600.webp") center / cover no-repeat,
+      #000000;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+  }
+  .svk :is(.svk-sg-url, .svk-sg-ai-top) { color: rgb(255 255 255 / 0.82); }
+  .svk-be-row { color: rgb(255 255 255 / 0.62); }
+  .svk-be-row[data-done] { color: rgb(255 255 255 / 0.8); }
+  .svk-be-row[data-on] { color: #ffffff; }
+  .svk-sg-ai { background: rgb(0 0 0 / 0.62); }
+  .svk-ps-cam { fill: rgb(0 0 0 / 0.55); }
+  .svk-ps-time { paint-order: stroke; stroke: rgb(0 0 0 / 0.5); stroke-width: 2px; }
+}
+
+/* On a short stage (the phone drawer's 5:4 card) the result rows are too
+   low for the clinic's name and its address together: the name stays. */
+@layer components {
+  @container (max-height: 13rem) { .svk-sg-ours .svk-sg-url { display: none; } }
+}
