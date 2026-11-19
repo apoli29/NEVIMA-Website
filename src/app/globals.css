@@ -8496,3 +8496,150 @@
     .vi-no[data-said] .vi-no-bar { animation: none; }
   }
 }
+
+/* ---- visual identity, reshaped on 2026-11-19 -------------------------
+   The header is the title and Pilar's two identities, each card on its
+   own brand's ground (cards and logos a quarter larger than the day
+   before, user); under "Why it is worth it" the call card's metal, with
+   the client looking Pilar up on a phone; "Does it make sense?" on the
+   dark ground, held and turned into "No." by the scroll, with the cases
+   and the grey card after it.                                         */
+@layer components {
+  /* ---- Pilar's two logos, whole ---------------------------------- */
+  .vi-logo { display: inline-flex; align-items: center; line-height: 1; }
+  .vi-logo-mark { display: block; flex: none; }
+  .vi-logo-old { gap: 0.3em; color: #1d3c87; }
+  .vi-logo-old .vi-logo-mark { width: 1.7em; }
+  .vi-logo-words { display: grid; gap: 0.12em; }
+  .vi-logo-old-name { display: flex; align-items: baseline; gap: 0.2em; }
+  .vi-logo-old-name b { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-weight: 700; font-size: 1em; color: #1d3c87; text-shadow: 0.04em 0.04em 0 #b9c9e6; }
+  .vi-logo-old-name i { font-style: normal; font-family: Arial, Helvetica, sans-serif; font-size: 0.42em; font-weight: 700; letter-spacing: 0.18em; color: #f39200; }
+  .vi-logo-old small { display: block; font-family: Arial, Helvetica, sans-serif; font-size: 0.35em; color: #888; }
+  .vi-logo-new { gap: 0.3em; color: #ffffff; }
+  .vi-logo-new .vi-logo-mark { width: 0.86em; }
+  .vi-logo-new-name { font-family: var(--f-pilar-sans), ui-sans-serif, system-ui, sans-serif; font-weight: 600; letter-spacing: -0.015em; }
+
+  /* ---- 1. the two cards, each on its brand's ground -------------- */
+  .vi-pair-card,
+  .vi-pair-card[data-side="after"] { box-shadow: none; }
+  .vi-pair-card[data-side="before"] { background: #ffffff; }
+  .vi-pair-card[data-side="after"] { background: #111525; }
+  .vi-pair-card[data-side="before"] .vi-pair-head { color: rgb(0 0 0 / 0.5); }
+  .vi-pair-card[data-side="after"] .vi-pair-head { color: rgb(255 255 255 / 0.6); }
+  /* A quarter taller than it was, and the logos a quarter larger. */
+  .vi-pair-stage { display: grid; place-items: center; height: clamp(10.625rem, 18.75vw, 13.75rem); }
+  .vi-pair .vi-logo { font-size: clamp(1.875rem, 3.75vw, 2.8125rem); }
+
+  /* ---- 2. the client, looking it up ------------------------------ */
+  .vi-glance { margin-top: clamp(3rem, 6vw, 4.5rem); padding: clamp(1.5rem, 4vw, 3.5rem); }
+  .vi-glance > * { position: relative; z-index: 1; }
+  .vi-glance-call { --face: clamp(4.5rem, 10vw, 7.5rem); --phone: clamp(5.75rem, 14vw, 9.5rem); }
+  .vi-glance .sbc-panel { width: clamp(9.5rem, 22vw, 15rem); }
+  .vi-face .vi-face-feel { width: 64%; overflow: visible; }
+  .vi-face-head, .vi-face-body { fill: none; stroke: rgb(255 255 255 / 0.72); stroke-width: 1.5; }
+  .vi-face-eye { fill: rgb(255 255 255 / 0.85); stroke: none; }
+  .vi-face-mouth, .vi-face-brow { fill: none; stroke: #ffffff; stroke-width: 1.4; stroke-linecap: round; opacity: 0; transition: opacity 0.35s ease; }
+  .vi-face[data-mood="none"] .vi-face-mouth[data-for="none"],
+  .vi-face[data-mood="bad"] .vi-face-mouth[data-for="bad"],
+  .vi-face[data-mood="bad"] .vi-face-brow,
+  .vi-face[data-mood="good"] .vi-face-mouth[data-for="good"] { opacity: 1; }
+
+  .vi-phone-seat { display: grid; justify-items: center; gap: 0.75rem; }
+  .vi-phone {
+    position: relative;
+    display: block;
+    width: var(--phone);
+    aspect-ratio: 9 / 18.5;
+    border-radius: calc(var(--phone) * 0.16);
+    background: #050505;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.28), 0 30px 50px -30px rgb(0 0 0 / 0.8);
+  }
+  .vi-phone-notch { position: absolute; top: 0.62rem; left: 50%; z-index: 2; width: 26%; height: 0.36rem; translate: -50% 0; border-radius: 999px; background: #050505; }
+  .vi-phone-screen {
+    position: absolute;
+    inset: 0.32rem;
+    display: grid;
+    grid-template-rows: auto auto auto 1fr;
+    align-content: start;
+    gap: 0.5rem;
+    padding: 1.6rem 0.5rem 0.7rem;
+    overflow: hidden;
+    border-radius: calc(var(--phone) * 0.13);
+    opacity: 0;
+    scale: 0.97;
+    transition: opacity 0.6s ease, scale 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .vi-phone-screen[data-on] { opacity: 1; scale: 1; }
+  .vi-phone-screen[data-side="old"] { background: #ffffff; }
+  .vi-phone-screen[data-side="new"] { background: #111525; }
+  .vi-phone-bar { display: flex; align-items: center; justify-content: space-between; gap: 0.3rem; }
+  .vi-phone-logo .vi-logo { font-size: calc(var(--phone) * 0.1); }
+  .vi-phone-screen[data-side="new"] .vi-phone-logo .vi-logo { font-size: calc(var(--phone) * 0.085); }
+  .vi-phone-burger { display: grid; gap: 2px; flex: none; }
+  .vi-phone-burger i { display: block; width: calc(var(--phone) * 0.08); height: 1.5px; background: #1d3c87; }
+  .vi-phone-screen[data-side="new"] .vi-phone-burger i { background: #ffffff; }
+  .vi-phone-pic { display: block; aspect-ratio: 4 / 3; background: linear-gradient(180deg, #8fb4e6, #1d3c87); }
+  .vi-phone-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; align-self: start; }
+  .vi-phone-cards i { display: block; aspect-ratio: 1; background: rgb(0 0 0 / 0.08); box-shadow: inset 0 -3px 0 #1d3c87; }
+  .vi-phone-screen[data-side="new"] .vi-phone-cards i { background: rgb(255 255 255 / 0.08); box-shadow: none; }
+  .vi-phone-screen[data-side="new"] .vi-phone-pic { background: linear-gradient(180deg, #a8aabc, #434655); }
+  .vi-phone-lines { display: grid; gap: 4px; }
+  .vi-phone-lines i { display: block; height: 3px; background: rgb(0 0 0 / 0.16); }
+  .vi-phone-lines i:nth-child(2) { width: 78%; }
+  .vi-phone-lines i:nth-child(3) { width: 58%; background: #f39200; }
+  .vi-phone-screen[data-side="new"] .vi-phone-lines i { background: rgb(255 255 255 / 0.22); }
+  .vi-phone-screen[data-side="new"] .vi-phone-lines i:nth-child(3) { width: 40%; background: #ffffff; }
+  /* Two lines held open, so the card keeps its height as the words change. */
+  .vi-phone-name { max-width: 22ch; min-height: 2.8em; text-align: center; }
+
+  /* ---- 3. does it make sense? - held, then answered -------------- */
+  .vi-ask-run { height: 260vh; }
+  .vi-ask-pin { position: sticky; top: 0; display: grid; place-items: center; height: 100dvh; }
+  .vi-ask-face { grid-area: 1 / 1; display: grid; justify-items: center; text-align: center; }
+  .vi-ask-q {
+    max-width: 16ch;
+    font-size: clamp(2.25rem, 5.6vw, 4.75rem);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+  .vi-fit .vi-answer { grid-template-columns: none; justify-items: center; gap: 1.5rem; margin-top: 0; text-align: center; }
+  .vi-fit .vi-no { font-size: clamp(4.5rem, 13vw, 10rem); }
+  .vi-fit .vi-no-bar { background: #ffffff; }
+  .vi-fit .vi-no-say { max-width: 46ch; color: rgb(255 255 255 / 0.7); }
+  .vi-ask-still { display: grid; justify-items: center; gap: 3rem; padding-block: clamp(5rem, 10vw, 8rem) 0; text-align: center; }
+
+  .vi-fit-rest { padding-bottom: clamp(5rem, 10vw, 8rem); }
+  .vi-fit .vi-case { border-top-color: rgb(255 255 255 / 0.16); }
+  .vi-fit .vi-case-lead { color: rgb(255 255 255 / 0.55); }
+  .vi-fit .vi-case-word { color: #ffffff; }
+  .vi-fit .vi-case[data-muted] .vi-case-lead,
+  .vi-fit .vi-case[data-muted] .vi-case-word { color: rgb(255 255 255 / 0.4); }
+
+  /* ---- the grey card, inside it ---------------------------------- */
+  .vi-fit .vi-sure {
+    margin-top: clamp(3.5rem, 7vw, 5.5rem);
+    color: var(--color-paper);
+    background: linear-gradient(155deg, #4a4a4e 0%, #2c2c2f 55%, #1d1d1f 100%);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
+  }
+  .vi-fit .vi-sure-title { margin-top: 0; font-size: clamp(1.75rem, 3.4vw, 2.75rem); font-weight: 400; }
+  .vi-fit .vi-sure-say { max-width: 40ch; margin-top: 1.25rem; font-family: inherit; font-size: clamp(1rem, 1.4vw, 1.1875rem); line-height: 1.55; letter-spacing: 0; color: rgb(255 255 255 / 0.72); }
+
+  /* The mark stands on its own brand's ground: the old one on the white
+     of its website, the new one on Pilar's Noite. */
+  .vi-fit .vi-morph-stage { background: #ffffff; transition: background-color 0.6s ease; }
+  .vi-fit .vi-morph[data-step="2"] .vi-morph-stage,
+  .vi-fit .vi-morph[data-step="3"] .vi-morph-stage { background: #111525; }
+  .vi-fit .vi-morph-new { color: #ffffff; }
+  .vi-fit .vi-morph .vi-g-rule { transition: stroke-dashoffset 0.9s cubic-bezier(0.33, 1, 0.68, 1) var(--o), stroke 0.6s ease; }
+  .vi-fit .vi-morph[data-step="2"] .vi-g-rule { stroke: rgb(255 255 255 / 0.34); }
+  .vi-fit .vi-morph[data-step="2"] .vi-g-faint { stroke: rgb(255 255 255 / 0.16); }
+  .vi-fit .vi-morph-name { color: #ffffff; }
+  .vi-fit .vi-morph-trade { color: rgb(255 255 255 / 0.5); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vi-phone-screen, .vi-face-mouth, .vi-face-brow, .vi-fit .vi-morph-stage { transition: none; }
+  }
+}
