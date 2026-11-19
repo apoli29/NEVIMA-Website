@@ -471,3 +471,24 @@ medida. As outras três passaram a ser coisas que estes mesmos negócios
 pedem e que o estúdio já faz: uma calculadora de orçamentos (como a da
 página de SEO & GEO), um catálogo que o próprio negócio edita
 (tratamentos, imóveis, menu) e uma pesquisa com filtros por cima dele.
+
+## Porque investir: a escada da primeira versão, acertada (2026-11-19, nono pedido)
+
+O utilizador queria o desalinhamento da primeira versão, só com ajustes
+pequenos: a mudança da segunda volta (as cards encaixadas em ziguezague)
+saiu, e a escada em diagonal voltou — barras em cima à esquerda, o anel à
+direita, o contador ao centro, por baixo.
+
+O que a tornou exata, em vez de estranha:
+
+- as três com a **mesma largura** (14 de 24 colunas);
+- **passos iguais**: a primeira encostada à esquerda, a segunda à
+  direita, a terceira exatamente ao meio (a 261px de cada uma, a 1440px);
+- **o mesmo espaço vertical** entre cada uma;
+- no card do anel, agora tão largo como os outros, **o anel e as três
+  partes lado a lado**, para não ficar um anel perdido num card vazio;
+- a borda acesa pela luz mais **discreta** (um fio, não uma moldura).
+
+A segunda volta perdia as margens para uma regra posterior
+(`.be-trail .be-trail-card { margin-top: 0 }`, da mesma força); as
+posições estão agora debaixo de `.be-trail .be-trail-card[...]`.
