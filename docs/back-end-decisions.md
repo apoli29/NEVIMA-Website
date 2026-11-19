@@ -545,3 +545,9 @@ baixo, como antes, e três fios descem do pé de cada card e juntam-se num
 ponto no topo dele. No computador desenham-se com o scroll, no fim do
 arrasto; sem o arrasto, desenham-se quando são alcançados; no telemóvel,
 com os cards empilhados, não aparecem.
+
+## 2026-11-19 — mais uma ronda (utilizador)
+
+- "Why should small businesses invest…" passou a branco, com os três cartões a preto sólido e o meteoro entre eles a tinta (`.be-why-light`).
+- Em "What a company gains" os textos subiram (a frase de abertura e as linhas de cada ganho).
+- "Need something more specific?" volta a ter o botão do formulário (o utilizador pediu-o, revendo a decisão anterior de o tirar).

@@ -833,7 +833,10 @@ function Levels({ t }: { t: T }) {
 /* 3. The price                                                      */
 /* ---------------------------------------------------------------- */
 
-function Price({ t, table }: { t: T; table: SeoPrice[] }) {
+/** The calculator with the figures, taken off the page on 2026-11-19
+    (user: the price should not show at once). Kept whole, out of use;
+    putting it back is one line in SeoGeo below. */
+export function PriceCalculator({ t, table }: { t: T; table: SeoPrice[] }) {
   const lang = useLang();
   const reduce = useReducedMotion() ?? false;
   const [at, setAt] = useState(Math.max(0, table.findIndex((row) => row.pages === 8)));
@@ -944,8 +947,103 @@ function Price({ t, table }: { t: T; table: SeoPrice[] }) {
   );
 }
 
+/** The price section without figures (user, 2026-11-19): what each
+    level includes and how it is priced, the figures left for the free
+    proposal. Same card and ledger as the calculator it replaces. */
+function Price({ t }: { t: T }) {
+  const rows = [
+    {
+      id: "basic",
+      name: t("Basic SEO", "SEO básico"),
+      when: t("In every website", "Em todos os websites"),
+      body: t(
+        "The website comes up at the top of searches for the business’s own name.",
+        "O website aparece no topo das pesquisas pelo nome do próprio negócio.",
+      ),
+      fig: t("Included", "Incluído"),
+    },
+    {
+      id: "once",
+      name: t("SEO & GEO, one-off", "SEO e GEO, serviço único"),
+      when: t("Before launch", "Antes do lançamento"),
+      body: t(
+        "A short-term boost, almost immediate once the practices are applied.",
+        "Um impulso a curto prazo, quase imediato quando as práticas são aplicadas.",
+      ),
+      fig: t("In the proposal", "Na proposta"),
+    },
+    {
+      id: "monthly",
+      name: t("Monthly maintenance", "Manutenção mensal"),
+      when: t("Optional", "Opcional"),
+      body: t(
+        "Every month, the changes in searches are followed, to keep the results and make them grow.",
+        "Todos os meses, as mudanças nas pesquisas são acompanhadas, para manter e fazer crescer os resultados.",
+      ),
+      fig: t("In the proposal", "Na proposta"),
+    },
+  ];
+
+  return (
+    <section aria-labelledby="sg-price" data-tone="light" className="sg-price relative">
+      <div className="shell" data-tone-body>
+        <div className="sg-price-card sg-card-dark">
+          <div aria-hidden="true" className="sg-card-grain" />
+          <div className="sg-price-grid">
+            <div className="sg-price-copy">
+              <SlideIn ready>
+                <p className="mono-label text-paper/55">{t("Price", "Preço")}</p>
+                <h2 id="sg-price" className="display mt-6 text-paper text-[clamp(2rem,4.2vw,3.5rem)] leading-[1.02]">
+                  <span className="block font-light">{t("What it costs,", "Quanto custa,")}</span>
+                  <span className="block font-medium">{t("measured by the website.", "à medida do website.")}</span>
+                </h2>
+              </SlideIn>
+              <SlideIn ready distance={0} delay={0.08}>
+                <p className="sg-lede mt-8 text-paper/70">
+                  {t(
+                    "Basic SEO comes with every website. The one-off work is worked out from the website’s price, and the monthly service from the one-off work.",
+                    "O SEO básico vem com todos os websites. O trabalho pontual é calculado a partir do valor do website, e o serviço mensal a partir do trabalho pontual.",
+                  )}
+                </p>
+              </SlideIn>
+            </div>
+
+            <div className="sg-calc">
+              <p className="mono-label text-ash-2">{t("What each level includes", "O que inclui cada nível")}</p>
+              <dl className="sg-ledger sg-ledger-plain">
+                {rows.map((row) => (
+                  <div key={row.id} className="sg-ledger-row">
+                    <dt>
+                      <span className="sg-ledger-name">{row.name}</span>
+                      <span className="mono-label text-ash-2">{row.when}</span>
+                      <span className="sg-ledger-says">{row.body}</span>
+                    </dt>
+                    <dd className="sg-ledger-tag mono-label" data-in={row.id === "basic" || undefined}>
+                      {row.fig}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+
+              <div className="sg-calc-foot">
+                <p className="max-w-[40ch] text-[0.875rem] leading-[1.55] text-ash">
+                  {t(
+                    "The figures are set in the free proposal, from the size of the website.",
+                    "Os valores ficam definidos na proposta gratuita, a partir do tamanho do website.",
+                  )}
+                </p>
+                <ProposalAsk label={t("Get your free proposal", "Pedir proposta gratuita")} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /** The page's three sections, between the bar and Let's work together. */
-export function SeoGeo({ prices }: { prices: SeoPrice[] }) {
+export function SeoGeo({ prices: _prices }: { prices: SeoPrice[] }) {
   const t = useT();
   // Between the sections, the tonal veil (tone-veil.tsx).
   return (
@@ -953,7 +1051,9 @@ export function SeoGeo({ prices }: { prices: SeoPrice[] }) {
       <SeoHero t={t} />
       <GeoSection t={t} />
       <Levels t={t} />
-      <Price t={t} table={prices} />
+      {/* The figures went to the proposal (2026-11-19); the calculator
+          is <PriceCalculator t={t} table={_prices} />, kept above. */}
+      <Price t={t} />
     </ToneRoom>
   );
 }
