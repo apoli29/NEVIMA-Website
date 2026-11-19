@@ -9564,3 +9564,29 @@
   .vi-price-light .vi-price-body { color: var(--color-ash); }
   .vi-price-light .vi-price-foot .mono-label { color: var(--color-ash-2); }
 }
+
+/* ---- the services' cards on the about page's folds -------------------
+   The home page's service cards (.svk, service-cards.tsx) take the same
+   ground as the service pages' black cards (user, 2026-11-19): the
+   about page's folds dimmed by half, the same vignette, the words with
+   the same soft shade, and the faintest labels a step up so they read
+   on the brightest fold. Solid near-black fills inside the drawings
+   (the camera, the AI panel) become translucent, or they would read as
+   holes in the photograph. */
+@layer components {
+  .svk {
+    background:
+      radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(0 0 0 / 0.35)),
+      linear-gradient(rgb(0 0 0 / 0.5), rgb(0 0 0 / 0.5)),
+      url("/about/folds-1600.webp") center / cover no-repeat,
+      #000000;
+    text-shadow: 0 0 14px rgb(0 0 0 / 0.7), 0 0 2px rgb(0 0 0 / 0.35);
+  }
+  .svk :is(.svk-kicker, .svk-foot, .svk-sg-url, .svk-sg-ai-top) { color: rgb(255 255 255 / 0.82); }
+  .svk-be-row { color: rgb(255 255 255 / 0.62); }
+  .svk-be-row[data-done] { color: rgb(255 255 255 / 0.8); }
+  .svk-be-row[data-on] { color: #ffffff; }
+  .svk-sg-ai { background: rgb(0 0 0 / 0.62); }
+  .svk-ps-cam { fill: rgb(0 0 0 / 0.55); }
+  .svk-ps-time { paint-order: stroke; stroke: rgb(0 0 0 / 0.5); stroke-width: 2px; }
+}
