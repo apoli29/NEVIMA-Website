@@ -8880,6 +8880,26 @@
   .be-pl-stop { opacity: 0.32; transition: opacity 0.45s ease; }
 }
 
+/* ---- visual identity: the header's cards show the whole logo -------
+   The symbol and the words together (user, 2026-11-19), sized by the
+   card; the shapes come apart and are built as before, the words go
+   with the old symbol and arrive after the new one. */
+@layer components {
+  .vi-morph[data-whole] .vi-morph-stage { container-type: inline-size; }
+  .vi-morph[data-whole] .vi-morph-face { inset: 0; display: grid; place-items: center; }
+  .vi-morph[data-whole] .vi-morph-old .vi-logo { font-size: 10.5cqw; }
+  .vi-morph[data-whole] .vi-morph-new .vi-logo { font-size: 9.25cqw; }
+  .vi-morph[data-whole] .vi-logo-words,
+  .vi-morph[data-whole] .vi-logo-new-name { transition: opacity 0.5s ease, translate 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+  .vi-morph[data-whole]:is([data-step="1"], [data-step="2"], [data-step="3"]) .vi-morph-old .vi-logo-words { opacity: 0; translate: 0.6em 0; }
+  .vi-morph[data-whole] .vi-morph-new .vi-logo-new-name { opacity: 0; translate: -0.4em 0; }
+  .vi-morph[data-whole][data-step="3"] .vi-morph-new .vi-logo-new-name,
+  .vi-morph[data-whole][data-step="2"] .vi-morph-new .vi-logo-new-name { opacity: 1; translate: 0 0; transition-delay: 0.3s; }
+  @media (prefers-reduced-motion: reduce) {
+    .vi-morph[data-whole] .vi-logo-words, .vi-morph[data-whole] .vi-logo-new-name { transition: none; }
+  }
+}
+
 /* ---- back-end: "Why" on white, its cards black (user, 2026-11-19) ---
    The section turns light; the three cards keep the drawings' dark, now
    solid black, and the meteor that runs between them goes ink. */

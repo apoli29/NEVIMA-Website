@@ -61,7 +61,7 @@ function Cases3({ t }: { t: T }) {
   // thinner rim of grey; the trade over it and the name under it, both
   // outside the card (user, 2026-11-19).
   const items = [
-    { key: "pilar", trade: pilar.trade(t), name: pilar.name, body: <Morph t={t} bare /> },
+    { key: "pilar", trade: pilar.trade(t), name: pilar.name, body: <Morph t={t} bare whole /> },
     { key: "next-1", trade: TO_FILL, name: TO_FILL, body: <span className="vi-trio-wait" aria-hidden="true" /> },
     { key: "next-2", trade: TO_FILL, name: TO_FILL, body: <span className="vi-trio-wait" aria-hidden="true" /> },
   ];
@@ -674,7 +674,7 @@ const MORPH_MS = 1250;
     References through Inspo: Geex (forms sculpted and resolved on an
     empty ground) and Portal One (the construction geometry left in
     view). The composition only - the colour and the type are ours. */
-function Morph({ t, bare = false }: { t: T; bare?: boolean }) {
+function Morph({ t, bare = false, whole = false }: { t: T; bare?: boolean; whole?: boolean }) {
   const reduce = useReducedMotion() ?? false;
   const [ref, inView] = useInView<HTMLDivElement>(0.35);
   const [n, setN] = useState(0);
@@ -693,6 +693,7 @@ function Morph({ t, bare = false }: { t: T; bare?: boolean }) {
       ref={ref}
       className="vi-morph"
       data-step={step}
+      data-whole={whole || undefined}
       role="img"
       aria-label={t(
         "Pilar's old mark taken apart and its new mark built on the guides.",
@@ -703,11 +704,14 @@ function Morph({ t, bare = false }: { t: T; bare?: boolean }) {
         <span className="vi-morph-grid">
           <Grid drawn={step === 1 || step === 2} />
         </span>
+        {/* Whole in the header (user, 2026-11-19): the logo and the
+            symbol together, the words leaving and arriving with the
+            shapes. Only Pilar has both lockups drawn. */}
         <span className="vi-morph-face vi-morph-old">
-          <Mark brand={brand} side="before" />
+          {whole ? <PilarOldLogo t={t} /> : <Mark brand={brand} side="before" />}
         </span>
         <span className="vi-morph-face vi-morph-new">
-          <Mark brand={brand} side="after" />
+          {whole ? <PilarNewLogo t={t} /> : <Mark brand={brand} side="after" />}
         </span>
       </span>
       {/* Bare in the header, where the name and the trade stand outside the card. */}
