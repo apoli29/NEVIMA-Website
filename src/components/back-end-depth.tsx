@@ -40,7 +40,7 @@ export const SPEED = 1.5;
     businesses); the calendar (the clinic with its booking opened, the
     agency, the restaurant); the email (the clinic with its message
     opened, the agency, the restaurant); the three; the whole. */
-const HOLDS: number[][] = [[2600], [2700, 2600, 2700], [4700, 2600, 2800], [5400, 2500, 2600], [3200], [6000]];
+const HOLDS: number[][] = [[2600, 2600, 2600], [2700, 2600, 2700], [4700, 4600, 4700], [5400, 5400, 5400], [3200], [6000]];
 
 /** Which sheet the request is in at each step (-1: none of them). */
 const ACTIVE = [-1, 0, 1, 2, -1, -1];
@@ -71,11 +71,16 @@ function pose(col: number, at: number, narrow: boolean, row = 0) {
   if (ACTIVE[at] === col && row === 0) {
     return { transform: "translate3d(0, 0, 40px) rotateY(-3deg) rotateX(2deg) scale(1)", opacity: 1 };
   }
-  // The others wait in a fan at the back, on the right.
-  const x = (narrow ? 22 : 27) + col * 4;
-  const y = -3 + col * 1.4;
-  const z = -260 - col * 70;
-  return { transform: `translate3d(${x}cqw, ${y}cqw, ${z}px) rotateY(-34deg) rotateX(6deg) scale(0.55)`, opacity: 0.42 };
+  // The others wait at the back, on the right, in a tidy pile: solid
+  // sheets, one behind the other, each a little up and to the right, so
+  // only their edges show and nothing reads through them (user,
+  // 2026-11-19, fourth round: the see-through fan looked wrong). The one
+  // still to come is the nearest.
+  const ahead = ACTIVE[at] < 0 ? col : (col - ACTIVE[at] + 3) % 3;
+  const x = (narrow ? 24 : 29) + ahead * 1.6;
+  const y = -ahead * 1.6;
+  const z = -220 - ahead * 50;
+  return { transform: `translate3d(${x}cqw, ${y}cqw, ${z}px) rotateY(-18deg) rotateX(4deg) scale(0.5)`, opacity: 1, dim: true };
 }
 
 /** One business's version of a sheet. Shown while it is the one being
@@ -95,6 +100,43 @@ function Layer({ l, v, on, className, children }: { l: number; v: number; on: bo
 
 function businesses(t: T) {
   return [t("Aesthetic clinic", "Clínica de estética"), t("Property agency", "Imobiliária"), t("Restaurant", "Restaurante")];
+}
+
+/** The website's form, as each business has it: where each request
+    starts. */
+function forms(t: T) {
+  return [
+    {
+      head: t("Book an appointment", "Marcar consulta"),
+      send: t("Send request", "Enviar pedido"),
+      fields: [
+        [t("Name", "Nome"), "Marta Figueiredo"],
+        [t("Email", "E-mail"), "marta.figueiredo@exemplo.pt"],
+        [t("Service", "Serviço"), t("Assessment appointment", "Consulta de avaliação")],
+        [t("Preferred time", "Horário preferido"), t("Tue morning", "Terça de manhã")],
+      ],
+    },
+    {
+      head: t("Ask for a viewing", "Pedir visita"),
+      send: t("Ask for a viewing", "Pedir visita"),
+      fields: [
+        [t("Name", "Nome"), "Rui Santos"],
+        [t("Email", "E-mail"), "rui.santos@exemplo.pt"],
+        [t("Property", "Imóvel"), t("2-bed in Alvalade · ref. 2231", "T2 em Alvalade · ref. 2231")],
+        [t("When I can", "Disponibilidade"), t("Thursday, lunchtime", "Quinta, à hora de almoço")],
+      ],
+    },
+    {
+      head: t("Book a table", "Reservar mesa"),
+      send: t("Book", "Reservar"),
+      fields: [
+        [t("Name", "Nome"), "Ana Lopes"],
+        [t("Email", "E-mail"), "ana.lopes@exemplo.pt"],
+        [t("People", "Pessoas"), t("4, one of them a baby", "4, uma delas um bebé")],
+        [t("When", "Quando"), t("Saturday, 20:30", "Sábado, 20:30")],
+      ],
+    },
+  ];
 }
 
 const mail = (name: string) =>
@@ -240,6 +282,28 @@ function Week({ t, head, taken, fresh, children }: { t: T; head: string; taken: 
   );
 }
 
+/** A booking, opened from its own block: everything kept about it. */
+function Detail({ head, state, rows }: { t: T; head: string; state: string; rows: string[][] }) {
+  return (
+    <div className="be-cal-detail">
+      <p className="be-cal-detail-head">
+        <b>{head}</b>
+        <i className="be-x-pill" data-fresh>
+          {state}
+        </i>
+      </p>
+      <dl>
+        {rows.map(([k, val]) => (
+          <div key={k} className="be-cal-detail-row">
+            <dt>{k}</dt>
+            <dd>{val}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
 function Calendar({ t, v, on }: { t: T; v: number; on: boolean }) {
   const names = businesses(t);
   const tables = [
@@ -277,30 +341,20 @@ function Calendar({ t, v, on }: { t: T; v: number; on: boolean }) {
           ]}
           fresh={{ d: 1, h: 1, n: 1, say: t("Marta F. · assessment", "Marta F. · consulta") }}
         >
-          <div className="be-cal-detail">
-            <p className="be-cal-detail-head">
-              <b>{t("Assessment appointment", "Consulta de avaliação")}</b>
-              <i className="be-x-pill" data-fresh>
-                {t("Confirmed", "Confirmada")}
-              </i>
-            </p>
-            <dl>
-              <dt>{t("Client", "Cliente")}</dt>
-              <dd>Marta Figueiredo</dd>
-              <dt>{t("When", "Quando")}</dt>
-              <dd>{t("Tue 18 Nov · 10:00–10:45", "Ter, 18 nov · 10:00–10:45")}</dd>
-              <dt>{t("With", "Com")}</dt>
-              <dd>{t("Dr Sofia Reis · Room 2", "Dra. Sofia Reis · Sala 2")}</dd>
-              <dt>{t("Contact", "Contacto")}</dt>
-              <dd className="be-x-mono">912 *** 418</dd>
-              <dt>{t("Reminder", "Lembrete")}</dt>
-              <dd>{t("24 h before, by email", "24 h antes, por e-mail")}</dd>
-              <dt>{t("Notes", "Notas")}</dt>
-              <dd>{t("First visit. Sensitive skin.", "Primeira consulta. Pele sensível.")}</dd>
-              <dt>{t("Came from", "Origem")}</dt>
-              <dd>{t("Website form · request #129", "Formulário do website · pedido n.º 129")}</dd>
-            </dl>
-          </div>
+          <Detail
+            t={t}
+            head={t("Assessment appointment", "Consulta de avaliação")}
+            state={t("Confirmed", "Confirmada")}
+            rows={[
+              [t("Client", "Cliente"), "Marta Figueiredo"],
+              [t("When", "Quando"), t("Tue 18 Nov · 10:00–10:45", "Ter, 18 nov · 10:00–10:45")],
+              [t("With", "Com"), t("Dr Sofia Reis · Room 2", "Dra. Sofia Reis · Sala 2")],
+              [t("Contact", "Contacto"), "912 *** 418"],
+              [t("Reminder", "Lembrete"), t("24 h before, by email", "24 h antes, por e-mail")],
+              [t("Notes", "Notas"), t("First visit. Sensitive skin.", "Primeira consulta. Pele sensível.")],
+              [t("Came from", "Origem"), t("Website form · request #129", "Formulário do website · pedido n.º 129")],
+            ]}
+          />
         </Week>
       </Layer>
 
@@ -318,7 +372,22 @@ function Calendar({ t, v, on }: { t: T; v: number; on: boolean }) {
             { d: 0, h: 3, n: 1, say: t("Photo shoot", "Sessão de fotos") },
           ]}
           fresh={{ d: 3, h: 3, n: 1, say: t("Rui S. · 2-bed", "Rui S. · T2") }}
-        />
+        >
+          <Detail
+            t={t}
+            head={t("Viewing, 2-bed in Alvalade", "Visita a um T2 em Alvalade")}
+            state={t("Confirmed", "Confirmada")}
+            rows={[
+              [t("Client", "Cliente"), "Rui Santos"],
+              [t("When", "Quando"), t("Thu 20 Nov · 12:00–12:45", "Qui, 20 nov · 12:00–12:45")],
+              [t("Agent", "Consultor"), "Miguel Vaz"],
+              [t("Where", "Onde"), t("Av. de Roma 88, 3rd floor", "Av. de Roma 88, 3.º esq.")],
+              [t("Keys", "Chaves"), t("Collect at the office by 11:30", "Levantar no escritório até às 11:30")],
+              [t("Looking for", "Procura"), t("2-bed, up to €390,000, with lift", "T2 até 390 000 €, com elevador")],
+              [t("Came from", "Origem"), t("Website form · request #86", "Formulário do website · pedido n.º 86")],
+            ]}
+          />
+        </Week>
       </Layer>
 
       {/* the restaurant's tables */}
@@ -349,6 +418,20 @@ function Calendar({ t, v, on }: { t: T; v: number; on: boolean }) {
           <span className="be-cal-block be-cal-new" style={{ gridRow: 4, gridColumn: "5 / span 4" }}>
             Ana L. · 4
           </span>
+          <Detail
+            t={t}
+            head={t("Table for 4", "Mesa para 4")}
+            state={t("Confirmed", "Confirmada")}
+            rows={[
+              [t("Client", "Cliente"), "Ana Lopes"],
+              [t("When", "Quando"), t("Sat 22 Nov · 20:30–22:30", "Sáb, 22 nov · 20:30–22:30")],
+              [t("Table", "Mesa"), t("Table 3 · by the window", "Mesa 3 · junto à janela")],
+              [t("People", "Pessoas"), t("4 · a high chair", "4 · uma cadeira de bebé")],
+              [t("Notes", "Notas"), t("Nut allergy at the table", "Alergia a frutos secos na mesa")],
+              [t("Reminder", "Lembrete"), t("On the day, at 12:00", "No próprio dia, às 12:00")],
+              [t("Came from", "Origem"), t("Website form · request #214", "Formulário do website · pedido n.º 214")],
+            ]}
+          />
         </div>
         <div className="be-x-foot">
           <span>
@@ -396,8 +479,68 @@ function Email({ t, v, on }: { t: T; v: number; on: boolean }) {
       { to: "Joana Rocha", what: t("Thank you for coming", "Obrigado pela visita"), kind: t("After the visit", "Pós-visita"), at: y, state: opened },
     ],
   ];
+  // Each business's confirmation: the template's words, and its blanks
+  // as [blank, what goes in it]. The studio's emails to clients address
+  // the reader, formally (CLAUDE.md).
+  type Part = string | [string, string];
+  const opens: { to: string; template: string; subject: string; body: Part[]; sent: string; file: string }[] = [
+    {
+      to: "Marta Figueiredo",
+      template: t("Template: appointment confirmed", "Modelo: confirmação de consulta"),
+      subject: t("Your appointment is confirmed", "A sua consulta está confirmada"),
+      body: [
+        t("Hello ", "Olá, "),
+        [t("{name}", "{nome}"), "Marta"],
+        t(". Your ", ". A sua "),
+        [t("{service}", "{serviço}"), t("assessment appointment", "consulta de avaliação")],
+        t(" is confirmed for ", " está confirmada para "),
+        [t("{date}", "{data}"), t("Tuesday 18 November at 10:00", "terça-feira, 18 de novembro, às 10:00")],
+        t(", with ", ", com a "),
+        [t("{who}", "{quem}"), t("Dr Sofia Reis", "Dra. Sofia Reis")],
+        t(". We'll send a reminder the day before.", ". Enviamos um lembrete na véspera."),
+      ],
+      sent: t("Sent 0.4 s after the request", "Enviado 0,4 s depois do pedido"),
+      file: "consulta.ics",
+    },
+    {
+      to: "Rui Santos",
+      template: t("Template: viewing confirmed", "Modelo: confirmação de visita"),
+      subject: t("Your viewing is confirmed", "A sua visita está confirmada"),
+      body: [
+        t("Hello ", "Olá, "),
+        [t("{name}", "{nome}"), "Rui"],
+        t(". The viewing of the ", ". A visita ao "),
+        [t("{property}", "{imóvel}"), t("2-bed in Alvalade", "T2 em Alvalade")],
+        t(" is confirmed for ", " está confirmada para "),
+        [t("{date}", "{data}"), t("Thursday 20 November at 12:00", "quinta-feira, 20 de novembro, às 12:00")],
+        t(", with ", ", com o "),
+        [t("{agent}", "{consultor}"), "Miguel Vaz"],
+        t(". We'll meet you at the door.", ". Encontramo-nos à porta do prédio."),
+      ],
+      sent: t("Sent 0.6 s after the request", "Enviado 0,6 s depois do pedido"),
+      file: "visita.ics",
+    },
+    {
+      to: "Ana Lopes",
+      template: t("Template: table confirmed", "Modelo: confirmação de reserva"),
+      subject: t("Your table is booked", "A sua mesa está reservada"),
+      body: [
+        t("Hello ", "Olá, "),
+        [t("{name}", "{nome}"), "Ana"],
+        t(". Your table for ", ". A sua mesa para "),
+        [t("{people}", "{pessoas}"), t("4 people", "4 pessoas")],
+        t(" is booked for ", " está reservada para "),
+        [t("{date}", "{data}"), t("Saturday 22 November at 20:30", "sábado, 22 de novembro, às 20:30")],
+        t(". ", ". "),
+        [t("{note}", "{nota}"), t("The high chair is ready for you", "A cadeira de bebé já está guardada")],
+        t(".", "."),
+      ],
+      sent: t("Sent 0.3 s after the request", "Enviado 0,3 s depois do pedido"),
+      file: "reserva.ics",
+    },
+  ];
   // The blanks of the template, and what goes in each.
-  const slot = (blank: string, value: string, i: number) => (
+  const slot =(blank: string, value: string, i: number) => (
     <span className="be-mail-slot" style={{ ["--i" as string]: i } as CSSProperties}>
       <span className="be-mail-blank">{blank}</span>
       <span className="be-mail-value">{value}</span>
@@ -435,35 +578,32 @@ function Email({ t, v, on }: { t: T; v: number; on: boolean }) {
             ))}
           </div>
 
-          {/* the clinic's message, just sent, opened, its blanks filling */}
-          {l === 0 && (
-            <div className="be-mail-open">
-              <p className="be-mail-meta">
-                <span>
-                  {t("To", "Para")} <b>Marta Figueiredo</b>
-                </span>
-                <span>{t("Template: appointment confirmed", "Modelo: confirmação de consulta")}</span>
-              </p>
-              <p className="be-mail-subject">{t("Your appointment is confirmed", "A sua consulta está confirmada")}</p>
-              <p className="be-mail-body">
-                {t("Hello ", "Olá, ")}
-                {slot(t("{name}", "{nome}"), "Marta", 0)}
-                {t(". Your ", ". A sua ")}
-                {slot(t("{service}", "{serviço}"), t("assessment appointment", "consulta de avaliação"), 1)}
-                {t(" is confirmed for ", " está confirmada para ")}
-                {slot(t("{date}", "{data}"), t("Tuesday 18 November at 10:00", "terça-feira, 18 de novembro, às 10:00"), 2)}
-                {t(", with ", ", com a ")}
-                {slot(t("{who}", "{quem}"), t("Dr Sofia Reis", "Dra. Sofia Reis"), 3)}
-                {t(". We'll send a reminder the day before.", ". Enviamos um lembrete na véspera.")}
-              </p>
-              <p className="be-x-foot be-mail-foot">
-                <span>
-                  <i className="be-x-live" /> {t("Sent 0.4 s after the request", "Enviado 0,4 s depois do pedido")}
-                </span>
-                <span className="be-x-mono">convite.ics</span>
-              </p>
-            </div>
-          )}
+          {/* this business's confirmation, just sent, opened, its blanks
+              filling in */}
+          {(() => {
+            const o = opens[l];
+            let n = 0;
+            return (
+              <div className="be-mail-open">
+                <p className="be-mail-meta">
+                  <span>
+                    {t("To", "Para")} <b>{o.to}</b>
+                  </span>
+                  <span>{o.template}</span>
+                </p>
+                <p className="be-mail-subject">{o.subject}</p>
+                <p className="be-mail-body">
+                  {o.body.map((part, i) => (typeof part === "string" ? <span key={i}>{part}</span> : <span key={i}>{slot(part[0], part[1], n++)}</span>))}
+                </p>
+                <p className="be-x-foot be-mail-foot">
+                  <span>
+                    <i className="be-x-live" /> {o.sent}
+                  </span>
+                  <span className="be-x-mono">{o.file}</span>
+                </p>
+              </div>
+            );
+          })()}
         </Layer>
       ))}
     </div>
@@ -481,9 +621,15 @@ function others(t: T) {
     { col: 0, row: -1, name: t("Client portal", "Portal de clientes") },
     { col: 1, row: -1, name: t("Team portal", "Portal da equipa") },
     { col: 2, row: -1, name: t("Custom forms", "Formulários à medida") },
-    { col: 0, row: 1, name: t("Waiting list", "Lista de espera") },
-    { col: 1, row: 1, name: t("Review requests", "Pedidos de avaliação") },
-    { col: 2, row: 1, name: t("Monthly reports", "Relatórios mensais") },
+    // Kept from the first list: the two portals and the forms (user,
+    // 2026-11-19, fourth round). The other three are things these same
+    // businesses ask for, and that the studio already builds: the price
+    // worked out on the page (as the SEO page's calculator does), a list
+    // the business edits itself (treatments, properties, a menu), and a
+    // search with filters over it.
+    { col: 0, row: 1, name: t("Quote calculator", "Calculadora de orçamentos") },
+    { col: 1, row: 1, name: t("Editable catalogue", "Catálogo editável") },
+    { col: 2, row: 1, name: t("Search with filters", "Pesquisa com filtros") },
   ];
 }
 
@@ -527,7 +673,7 @@ export function DepthSystem({ t }: { t: T }) {
   ];
   const names = businesses(t);
   const captions = [
-    t("A request arrives through the website", "Um pedido chega pelo website"),
+    t(`A request arrives through the website · ${names[v]}`, `Um pedido chega pelo website · ${names[v]}`),
     t(`Kept in the database, with everything that was asked · ${names[v]}`, `Fica registado na base de dados, com tudo o que foi pedido · ${names[v]}`),
     t(`It takes its place in the calendar, every detail kept · ${names[v]}`, `Ocupa o seu lugar no calendário, com todos os detalhes · ${names[v]}`),
     t(`The confirmation goes out on its own, its blanks filled · ${names[v]}`, `A confirmação sai sozinha, com os espaços preenchidos · ${names[v]}`),
@@ -592,21 +738,24 @@ export function DepthSystem({ t }: { t: T }) {
               opacity: at === 0 ? 1 : 0,
             }}
           >
-            <p className="be-x-bar">
-              <b>{t("Book an appointment", "Marcar consulta")}</b>
-            </p>
-            {[
-              [t("Name", "Nome"), "Marta Figueiredo"],
-              [t("Email", "E-mail"), "marta.figueiredo@exemplo.pt"],
-              [t("Service", "Serviço"), t("Assessment appointment", "Consulta de avaliação")],
-              [t("Preferred time", "Horário preferido"), t("Tue morning", "Terça de manhã")],
-            ].map(([label, value], i) => (
-              <span key={label} className="be-ds-field" style={{ ["--i" as string]: i } as CSSProperties}>
-                <em>{label}</em>
-                <span>{value}</span>
-              </span>
-            ))}
-            <span className="be-ds-send">{t("Send request", "Enviar pedido")}</span>
+            {/* the same form, as each business would have it */}
+            <div className="be-stack">
+              {forms(t).map((form, l) => (
+                <Layer key={l} l={l} v={v} on={at === 0} className="be-ds-formlay">
+                  <p className="be-x-bar">
+                    <b>{form.head}</b>
+                    <span className="be-x-chip">{names[l]}</span>
+                  </p>
+                  {form.fields.map(([label, value], i) => (
+                    <span key={label} className="be-ds-field" style={{ ["--i" as string]: i } as CSSProperties}>
+                      <em>{label}</em>
+                      <span>{value}</span>
+                    </span>
+                  ))}
+                  <span className="be-ds-send">{form.send}</span>
+                </Layer>
+              ))}
+            </div>
           </div>
 
           {/* the others, made to measure: the same sheet, almost bare */}
@@ -638,7 +787,14 @@ export function DepthSystem({ t }: { t: T }) {
             const p = pose(i, at, narrow);
             const on = ACTIVE[at] === i;
             return (
-              <div key={k} className="be-ds-sheet" data-k={k} data-on={on || undefined} style={{ transform: p.transform, opacity: p.opacity, zIndex: on ? 5 : 3 - i }}>
+              <div
+                key={k}
+                className="be-ds-sheet"
+                data-k={k}
+                data-on={on || undefined}
+                data-dim={("dim" in p && p.dim) || undefined}
+                style={{ transform: p.transform, opacity: p.opacity, zIndex: on ? 5 : 3 - (ACTIVE[at] < 0 ? i : (i - ACTIVE[at] + 3) % 3) }}
+              >
                 <Body t={t} v={v} on={on} />
               </div>
             );

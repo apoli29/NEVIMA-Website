@@ -440,3 +440,34 @@ CSS a 1,5 (`usePageSpeed` em `back-end.tsx`, o mesmo método do card da
 Personalização), por isso os tempos escritos guardam as proporções. O que
 o scroll conduz não tem tempo e não muda. As contagens dos números
 (`useCount`) continuam ao ritmo de antes.
+
+## Quarta volta (2026-11-19, oitavo pedido)
+
+**Os três negócios com a mesma profundidade.** A imobiliária e o
+restaurante estavam incompletos; agora cada um tem tudo o que a clínica
+tem:
+
+- **o formulário** do início em três versões (marcar consulta, pedir
+  visita, reservar mesa), cada uma com o seu pedido (Marta, Rui, Ana);
+- **a marcação aberta** no calendário: a visita ao T2 (consultor, morada,
+  chaves, o que procura) e a mesa para 4 (mesa, cadeira de bebé, alergia,
+  lembrete), além da consulta da clínica (`Detail`);
+- **o e-mail de confirmação** aberto, com os espaços a preencher, para os
+  três (visita confirmada com o consultor; mesa reservada com a cadeira de
+  bebé guardada).
+
+Cada pedido corre a cadeia toda no seu negócio: o Rui pede a visita de
+quinta às 12:00, é essa visita que se abre no calendário e é essa que o
+e-mail confirma; o mesmo para a Ana, sábado às 20:30.
+
+**O monte à direita.** As folhas em espera eram translúcidas e liam-se
+umas através das outras. Agora são folhas opacas, escurecidas, com o
+conteúdo apagado, empilhadas uma atrás da outra; só se veem as margens, e
+a que vem a seguir é a da frente.
+
+**O sistema do fim.** O utilizador gostou dos portais e dos formulários;
+ficaram o portal de clientes, o portal da equipa e os formulários à
+medida. As outras três passaram a ser coisas que estes mesmos negócios
+pedem e que o estúdio já faz: uma calculadora de orçamentos (como a da
+página de SEO & GEO), um catálogo que o próprio negócio edita
+(tratamentos, imóveis, menu) e uma pesquisa com filtros por cima dele.

@@ -8541,7 +8541,16 @@
     will-change: transform;
   }
   .be-ds-sheet { width: 60cqw; height: 34cqw; overflow: hidden; font-size: 1.02cqw; }
-  .be-ds-form { display: grid; gap: 0.75em; width: 32cqw; padding-bottom: 1.3em; font-size: 1.02cqw; }
+  .be-ds-form { width: 32cqw; font-size: 1.02cqw; }
+  .be-ds-formlay.be-x { display: grid; grid-template-rows: none; align-content: start; gap: 0.75em; height: auto; padding-bottom: 1.3em; }
+  .be-cal-detail-row { display: contents; }
+  /* the pile at the back: solid sheets, darkened rather than see-through,
+     their contents put out of focus so only the edges are read */
+  .be-ds-sheet { transition: transform 1.1s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.7s ease, filter 0.7s ease; }
+  .be-ds-sheet[data-dim] { filter: brightness(0.42); }
+  .be-ds-sheet > .be-stack { transition: opacity 0.5s ease; }
+  .be-ds-sheet[data-dim] > .be-stack { opacity: 0.25; }
+  .be-ds-formlay > .be-x-bar { margin-bottom: 0.35em; }
   @container (max-width: 600px) {
     .be-ds-stage { height: 80cqw; }
     .be-ds-sheet { width: 88cqw; height: 62cqw; font-size: 2.05cqw; }
@@ -8686,10 +8695,10 @@
   .be-ds-field { display: grid; gap: 0.3em; padding: 0 1.3em; }
   .be-ds-field em { font-family: var(--font-mono); font-size: 0.74em; font-style: normal; color: rgb(0 0 0 / 0.5); }
   .be-ds-field span { display: block; padding: 0.5em 0.7em; overflow: hidden; font-size: 0.9em; white-space: nowrap; box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.14); }
-  .be-ds-form[data-on] .be-ds-field span { animation: be-x-type 0.55s steps(16) calc(0.4s + var(--i) * 0.38s) both; }
+  .be-lay[data-live] .be-ds-field span { animation: be-x-type 0.55s steps(16) calc(0.4s + var(--i) * 0.38s) both; }
   @keyframes be-x-type { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
   .be-ds-send { justify-self: start; margin: 0.3em 1.3em 0; padding: 0.65em 1.1em; font-size: 0.86em; color: #ffffff; background: var(--color-ink); }
-  .be-ds-form[data-on] .be-ds-send { animation: be-dc-press 0.5s cubic-bezier(0.22, 1, 0.36, 1) 2.05s both; }
+  .be-lay[data-live] .be-ds-send { animation: be-dc-press 0.5s cubic-bezier(0.22, 1, 0.36, 1) 2.05s both; }
 
   /* the three, tied; and their names under them */
   .be-ds-wire {
