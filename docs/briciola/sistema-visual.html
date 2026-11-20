@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Briciola — mini sistema visual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --rosso:#9b2a2a;
+    --inchiostro:#15120f;
+    --panna:#f4efe6;
+    --cenere:#8a8178;
+    --didone:"Bodoni Moda", Didot, "Bodoni MT", Georgia, serif;
+    --mono:"JetBrains Mono", ui-monospace, monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#100e0c;color:var(--panna);font-family:var(--mono);-webkit-font-smoothing:antialiased}
+  .board{max-width:1360px;margin:0 auto;padding:clamp(24px,4vw,64px)}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;padding-bottom:26px;border-bottom:1px solid rgba(244,239,230,.14)}
+  .head h1{font-family:var(--didone);font-size:clamp(22px,2.6vw,34px);letter-spacing:.02em;text-transform:uppercase;font-weight:400}
+  .lab{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:rgba(244,239,230,.42)}
+  .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:14px}
+  .p{background:var(--panna);color:var(--inchiostro);border-radius:2px;padding:clamp(18px,2vw,30px);position:relative;display:flex;flex-direction:column;min-height:240px}
+  .p.dark{background:var(--inchiostro);color:var(--panna)}
+  .p.red{background:var(--rosso);color:var(--panna)}
+  .p .tag{font-size:9px;letter-spacing:.3em;text-transform:uppercase;opacity:.5;margin-bottom:auto}
+  .p .num{position:absolute;right:14px;bottom:10px;font-size:9px;letter-spacing:.2em;opacity:.32}
+  .c6{grid-column:span 6}.c4{grid-column:span 4}.c3{grid-column:span 3}.c2{grid-column:span 2}
+  .mid{display:flex;align-items:center;justify-content:center;flex:1}
+  .sig{display:flex;flex-direction:column;align-items:center;gap:.065em}
+  .sig .sym{display:block;width:.34em;color:var(--inchiostro)}
+  .sig .wd{display:block;width:1em;height:auto;fill:var(--rosso)}
+  .sig text{font-family:var(--didone);font-weight:400}
+  .sig .trade{font-family:var(--didone);font-size:.055em;letter-spacing:.4em;text-indent:.4em;text-transform:uppercase;color:var(--cenere)}
+  .sw div{padding:12px 14px;font-size:10px;letter-spacing:.14em;display:flex;justify-content:space-between;gap:10px}
+  .rule{height:1px;background:currentColor;opacity:.16;margin:14px 0}
+  .note{font-size:11.5px;line-height:1.7;opacity:.85}
+  .apps{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap;flex:1}
+  @media (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.c6,.c4,.c3,.c2{grid-column:span 2}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="bri-sym" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke-width="4" d="M 6 29 C 20 7 58 1 92 18"/>
+      <path stroke-width="4.6" d="M 21 70 C 21 44 36 32 53 32 C 70 32 86 45 86 70"/>
+      <path stroke-width="3.4" d="M 53 32 L 53 27"/>
+      <circle cx="53" cy="23.5" r="3.4" fill="currentColor" stroke="none"/>
+      <path stroke-width="4.2" d="M 9 72 C 30 78 74 78 95 71"/>
+      <g fill="currentColor" stroke="none">
+        <path d="M 72.2 84.6 C 72.6 82.6 75.0 82.0 76.9 82.9 C 78.6 83.7 78.3 86.3 76.6 87.2 C 74.6 88.3 71.8 86.9 72.2 84.6 Z"/>
+        <path d="M 85.1 92.0 C 85.4 90.7 87.0 90.2 88.1 90.9 C 89.2 91.6 89.0 93.4 87.8 93.9 C 86.4 94.5 84.8 93.4 85.1 92.0 Z"/>
+        <path d="M 62.7 93.2 C 63.0 92.2 64.2 91.9 65.0 92.5 C 65.8 93.1 65.7 94.4 64.8 94.8 C 63.7 95.3 62.5 94.3 62.7 93.2 Z"/>
+      </g>
+    </g>
+  </defs>
+</svg>
+
+<div class="board">
+  <div class="head">
+    <h1>Briciola — sistema visual</h1>
+    <span class="lab">Restauração e hotelaria · 2026</span>
+  </div>
+
+  <div class="grid">
+
+    <section class="p c4" style="min-height:400px">
+      <span class="tag">A assinatura</span>
+      <div class="mid">
+        <span class="sig" style="font-size:330px">
+          <svg class="sym" viewBox="0 0 100 100" aria-hidden="true"><use href="#bri-sym"/></svg>
+          <svg class="wd" viewBox="0 0 158 46" role="img" aria-label="Briciola">
+            <text x="2" y="40" font-size="40" textLength="154" lengthAdjust="spacingAndGlyphs">BRICIOLA</text>
+          </svg>
+          <span class="trade">Cozinha e mesa</span>
+        </span>
+      </div>
+      <span class="num">01</span>
+    </section>
+
+    <section class="p dark c2" style="min-height:400px">
+      <span class="tag">Construção</span>
+      <div class="mid">
+        <svg viewBox="-4 -4 108 108" style="width:100%;max-width:290px" aria-hidden="true">
+          <g stroke="rgba(244,239,230,.10)" stroke-width=".5">
+            <path d="M10 0V100M20 0V100M30 0V100M40 0V100M50 0V100M60 0V100M70 0V100M80 0V100M90 0V100"/>
+            <path d="M0 10H100M0 20H100M0 30H100M0 40H100M0 50H100M0 60H100M0 70H100M0 80H100M0 90H100"/>
+          </g>
+          <g stroke="#4fd8e8" stroke-width=".45" stroke-dasharray="2 2" opacity=".8" fill="none">
+            <path d="M21 -4V104M53 -4V104M86 -4V104"/>
+            <path d="M-4 20H104M-4 32H104M-4 70H104M-4 78H104"/>
+            <circle cx="53.5" cy="51" r="32.5"/>
+          </g>
+          <g style="color:#f4efe6"><use href="#bri-sym"/></g>
+        </svg>
+      </div>
+      <span class="num">02</span>
+    </section>
+
+    <section class="p c2">
+      <span class="tag">Símbolo · tinta sobre panna</span>
+      <div class="mid"><svg viewBox="0 0 100 100" style="width:62%;color:#15120f" aria-hidden="true"><use href="#bri-sym"/></svg></div>
+      <span class="num">03</span>
+    </section>
+    <section class="p red c2">
+      <span class="tag" style="opacity:.65">Símbolo · sobre rosso</span>
+      <div class="mid"><svg viewBox="0 0 100 100" style="width:62%;color:#f4efe6" aria-hidden="true"><use href="#bri-sym"/></svg></div>
+      <span class="num">04</span>
+    </section>
+    <section class="p dark c2">
+      <span class="tag">Símbolo · sobre inchiostro</span>
+      <div class="mid"><svg viewBox="0 0 100 100" style="width:62%;color:#f4efe6" aria-hidden="true"><use href="#bri-sym"/></svg></div>
+      <span class="num">05</span>
+    </section>
+
+    <section class="p c3" style="padding:0;overflow:hidden">
+      <div style="padding:clamp(18px,2vw,30px) clamp(18px,2vw,30px) 0"><span class="tag">Cor</span></div>
+      <div class="sw" style="margin-top:18px">
+        <div style="background:#9b2a2a;color:#f4efe6"><b>ROSSO ANTICO</b><span>#9B2A2A · a palavra</span></div>
+        <div style="background:#15120f;color:#f4efe6"><b>INCHIOSTRO</b><span>#15120F · o desenho</span></div>
+        <div style="background:#f4efe6;color:#15120f"><b>PANNA</b><span>#F4EFE6 · o fundo</span></div>
+        <div style="background:#8a8178;color:#15120f"><b>CENERE</b><span>#8A8178 · a letra miúda</span></div>
+      </div>
+      <div style="padding:16px clamp(18px,2vw,30px) 26px"><p class="note">A divisão é o sistema: <b>a marca é tinta, a palavra é vermelha, o fundo é creme</b> — e não há nada que seja uma terceira coisa. O vermelho da referência foi puxado para um rosso antico; é isso que deixa um desenho a pincel e uma Didone fria assentar juntos em vez de brigarem.</p></div>
+      <span class="num">06</span>
+    </section>
+
+    <section class="p dark c3">
+      <span class="tag">Tipografia</span>
+      <div style="margin-top:20px">
+        <p style="font-family:var(--didone);font-size:clamp(36px,5.4vw,62px);line-height:1.04;color:#9b2a2a;letter-spacing:.01em">ABCDEFG</p>
+        <p style="font-family:var(--didone);font-size:clamp(36px,5.4vw,62px);line-height:1.04;letter-spacing:.01em">HIJKLM 0123</p>
+        <div class="rule"></div>
+        <p class="note">Didone, caixa alta, alta e estreitada 12% na própria linha. As hastes finas ficam finas: é o contraste que faz a elegância, e tirá-lo dava uma serifa qualquer.</p>
+        <p class="note" style="margin-top:10px">A linha sob o nome é a mesma face, aberta a 0,4&nbsp;em — não uma monoespaçada. A assinatura fala numa voz só.</p>
+      </div>
+      <span class="num">07</span>
+    </section>
+
+    <section class="p c3">
+      <span class="tag">As migalhas, a ponte</span>
+      <div class="mid" style="padding:10px 0">
+        <svg viewBox="0 0 100 100" style="width:100%;max-width:190px;color:#15120f" aria-hidden="true"><use href="#bri-sym"/></svg>
+      </div>
+      <p class="note">O nome é uma migalha. Três caem de debaixo da cloche — a única coisa da marca que não vem de nenhuma das duas referências, e a única que faz disto este negócio e não outro qualquer.</p>
+      <span class="num">08</span>
+    </section>
+
+    <section class="p c3">
+      <span class="tag">Aplicações</span>
+      <div class="apps">
+        <span style="width:104px;height:104px;border-radius:50%;background:#9b2a2a;display:grid;place-items:center">
+          <svg viewBox="0 0 100 100" style="width:56%;color:#f4efe6" aria-hidden="true"><use href="#bri-sym"/></svg>
+        </span>
+        <span style="width:176px;height:104px;background:#15120f;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px">
+          <svg viewBox="0 0 100 100" style="width:22%;color:#f4efe6" aria-hidden="true"><use href="#bri-sym"/></svg>
+          <svg viewBox="0 0 158 46" style="width:62%;fill:#f4efe6" aria-hidden="true"><text x="2" y="40" font-size="40" textLength="154" lengthAdjust="spacingAndGlyphs" font-family="Bodoni Moda, Didot, Georgia, serif">BRICIOLA</text></svg>
+          <span style="font-family:var(--didone);font-size:7px;letter-spacing:.4em;color:#8a8178">COZINHA E MESA</span>
+        </span>
+        <span style="width:72px;height:72px;border-radius:16px;background:#f4efe6;border:1px solid rgba(21,18,15,.14);display:grid;place-items:center">
+          <svg viewBox="0 0 100 100" style="width:60%;color:#15120f" aria-hidden="true"><use href="#bri-sym"/></svg>
+        </span>
+      </div>
+      <span class="num">09</span>
+    </section>
+
+    <section class="p dark c6">
+      <span class="tag">Tamanho mínimo · dois idiomas</span>
+      <div style="display:flex;align-items:flex-end;gap:34px;margin-top:26px;color:#f4efe6">
+        <svg viewBox="0 0 100 100" style="width:52px" aria-hidden="true"><use href="#bri-sym"/></svg>
+        <svg viewBox="0 0 100 100" style="width:30px" aria-hidden="true"><use href="#bri-sym"/></svg>
+        <svg viewBox="0 0 100 100" style="width:18px" aria-hidden="true"><use href="#bri-sym"/></svg>
+      </div>
+      <div class="rule"></div>
+      <p class="note">A linha sob a palavra é a única que muda de idioma: <b style="color:#f4efe6">Kitchen and table</b> / <b style="color:#f4efe6">Cozinha e mesa</b>. O nome nunca se traduz. Abaixo de 18&nbsp;px a cloche e o prato chegam, sem o arco nem as migalhas.</p>
+      <span class="num">10</span>
+    </section>
+
+  </div>
+</div>
+</body>
+</html>
