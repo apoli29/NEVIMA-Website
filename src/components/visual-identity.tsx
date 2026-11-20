@@ -199,7 +199,11 @@ function Plates({ t }: { t: T }) {
     and the third stands empty for the case after it. One over the
     other on a phone. */
 /** A business that has no before: the card is the end of the walk,
-    held, with the guides already drawn behind it. */
+    held, with the guides already drawn behind it.
+
+    Out of use since 2026-11-20, when the user asked for Briciola's
+    card to run the same animation as the other two; kept because a
+    card that should hold still rather than loop will want it. */
 function Finished({ t, brand }: { t: T; brand: Brand }) {
   return (
     <div className="vi-morph" data-step="3" data-whole="" data-held="">
@@ -225,14 +229,16 @@ function Cases3({ t }: { t: T }) {
      cards swapping businesses. Both are shown whole: the mark and the
      name together, side by side. */
   const limen = BRANDS[1]!;
-  /* The third is Briciola (user, 2026-11-20), shown only as it ends
-     up: it has no before, so the card stands still at the end of the
-     walk instead of taking one. */
+  /* The third is Briciola (user, 2026-11-20). It has no before, and
+     for a day the card simply stood at the end of the walk; the user
+     asked for the same animation as the other two, so it takes the
+     walk the part of it that is true - an empty ground, the guides,
+     and the mark built on them. */
   const briciola = BRANDS[2]!;
   const items = [
     { key: "pilar", trade: pilar.trade(t), name: pilar.name, body: <Morph t={t} bare whole only={pilar} /> },
     { key: "limen", trade: limen.trade(t), name: limen.name, body: <Morph t={t} bare whole only={limen} /> },
-    { key: "briciola", trade: briciola.trade(t), name: briciola.name, body: <Finished t={t} brand={briciola} /> },
+    { key: "briciola", trade: briciola.trade(t), name: briciola.name, body: <Morph t={t} bare whole only={briciola} /> },
   ];
   return (
     <div className="vi-trio">
@@ -957,6 +963,11 @@ function Fits({ t }: { t: T }) {
 /** How long each step of the change holds, in milliseconds. */
 const MORPH_MS = 1250;
 
+/** What each beat of the clock shows for a business that has no
+    before: the guides, the mark built on them, and standing - the
+    last beat held twice, because there is no old mark to go back to. */
+const NO_BEFORE = [1, 2, 3, 3] as const;
+
 /** The mark the business had, taken apart over the guides a mark is
     built on, and the mark it ends up with put together on them. Four
     steps: it stands on the white of its old website, it comes apart, the
@@ -976,10 +987,18 @@ function Morph({ t, bare = false, whole = false, only }: { t: T; bare?: boolean;
     return () => window.clearInterval(tick);
   }, [inView, reduce]);
 
-  const step = reduce ? 3 : n % 4;
+  const beat = reduce ? 3 : n % 4;
   /* A card that is given a business keeps it; left to itself, the
      loop walks all of them. */
   const brand = only ?? BRANDS[Math.floor(n / 4) % BRANDS.length]!;
+  const hadOne = Boolean(brand.before ?? (whole && brand.oldLogo));
+  /* A business with no before has nothing to stand there and nothing
+     to take apart, so it would spend half the loop on an empty card.
+     It walks the three beats it does have instead - the guides, the
+     building, and standing - and holds on the last one (user,
+     2026-11-20). The clock is the same; only what each beat shows
+     changes. */
+  const step = hadOne ? beat : NO_BEFORE[beat]!;
 
   return (
     <div
@@ -989,10 +1008,17 @@ function Morph({ t, bare = false, whole = false, only }: { t: T; bare?: boolean;
       data-brand={brand.id}
       data-whole={whole || undefined}
       role="img"
-      aria-label={t(
-        `${brand.name}'s old mark taken apart and its new mark built on the guides.`,
-        `A marca antiga da ${brand.name} desfeita e a nova construída sobre as guias.`,
-      )}
+      aria-label={
+        hadOne
+          ? t(
+              `${brand.name}'s old mark taken apart and its new mark built on the guides.`,
+              `A marca antiga da ${brand.name} desfeita e a nova construída sobre as guias.`,
+            )
+          : t(
+              `${brand.name}'s mark built on the guides, shape by shape.`,
+              `A marca da ${brand.name} construída sobre as guias, forma a forma.`,
+            )
+      }
     >
       <span className="vi-morph-stage" aria-hidden="true">
         <span className="vi-morph-grid">
@@ -1002,9 +1028,16 @@ function Morph({ t, bare = false, whole = false, only }: { t: T; bare?: boolean;
             symbol together, the words leaving and arriving with the
             shapes. A business without a pair of signatures falls back
             to its two symbols. */}
-        <span className="vi-morph-face vi-morph-old">
-          {whole && brand.oldLogo ? brand.oldLogo(t) : <Mark brand={brand} side="before" />}
-        </span>
+        {/* A business with no before has no old face at all: the
+            ground is empty, the guides draw, and the mark is built on
+            them. Without this it would morph into itself, because
+            Mark falls back to the after side (user, 2026-11-20:
+            Briciola runs the same animation as the other two). */}
+        {hadOne && (
+          <span className="vi-morph-face vi-morph-old">
+            {whole && brand.oldLogo ? brand.oldLogo(t) : <Mark brand={brand} side="before" />}
+          </span>
+        )}
         <span className="vi-morph-face vi-morph-new">
           {whole && brand.newLogo ? brand.newLogo(t) : <Mark brand={brand} side="after" />}
         </span>

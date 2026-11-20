@@ -627,3 +627,43 @@ tambem se repoe sozinha.
 
 A Briciola continua no terceiro card do cabecalho, com a assinatura
 inteira - o que saiu foi so a chapa de construcao.
+
+### O cartao passa a andar, a campainha cresce e a linha sai (2026-11-20)
+
+Tres pedidos do utilizador sobre o terceiro cartao do cabecalho.
+
+**A mesma animacao que os outros dois.** O cartao estava parado no fim
+do percurso (`Finished`), porque a Briciola nao tem um antes. Agora
+corre o mesmo relogio dos outros (`Morph`), com duas correccoes que o
+"nao ter antes" obriga:
+
+- **nao ha cara antiga nenhuma.** Sem isto a marca transformava-se em
+  si propria, porque o `Mark` cai para o lado *after* quando nao ha
+  *before*;
+- **o percurso tem tres tempos, nao quatro.** Com quatro, metade do
+  ciclo era um cartao vazio ao lado de dois que mostram logotipos. O
+  relogio e o mesmo; o que muda e o que cada batida mostra -
+  `NO_BEFORE = [1, 2, 3, 3]`: as guias desenham-se, a marca constroi-se
+  sobre elas, fica de pe, e espera ali mais uma batida;
+- **o chao e o dela desde o principio.** Os outros comecam no branco do
+  website antigo; a Briciola nunca teve website, por isso o cartao e o
+  seu inchiostro do primeiro ao ultimo tempo, e as guias leem-se claras
+  sobre ele em todos os passos.
+
+`Finished` fica no ficheiro, fora de uso, para o dia em que um cartao
+deva mesmo ficar parado.
+
+**A campainha cresce.** De `0.34em` para `0.52em` da largura da
+palavra, com o intervalo a abrir de `0.065em` para `0.085em`.
+
+**A linha de baixo sai.** O "Kitchen and table / Cozinha e mesa"
+deixou de aparecer sob a palavra. **Nao se perdeu nenhum idioma**: o
+`trade` continua no `Brand` e e o que o cartao imprime por cima de si
+proprio ("Restauracao e hotelaria" / "Restaurants and hospitality").
+A regra de como a linha se compoe - mesma face, aberta, nunca
+monoespacada - fica escrita no CSS caso volte.
+
+A palavra ganhou `.vi-logo-arrive`, que e a classe que faz a assinatura
+chegar com as formas em vez de estar la a espera delas. E so
+comportamento: ao contrario de `.vi-logo-new-name`, nao traz tipo de
+letra nenhum, por isso nao atropela a Didone.

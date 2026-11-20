@@ -565,15 +565,24 @@ function BriciolaWord() {
   );
 }
 
-/** The signature: the cloche over the word, the trade under it. */
-export function BriciolaNewLogo({ t }: { t: T }) {
+/** The signature: the cloche over the word, and nothing else. The
+    line that used to read "Kitchen and table" came off on the user's
+    ask (2026-11-20) and the cloche grew into the room it left; the
+    trade still exists on the Brand and is what the card prints above
+    itself, so neither language lost anything.
+
+    The word carries .vi-logo-arrive so that, in the card that builds
+    the mark, it comes in with the shapes instead of standing there
+    waiting for them. */
+export function BriciolaNewLogo(_: { t: T }) {
   return (
     <span className={`vi-logo vi-logo-stack vi-logo-bri ${briciolaSans.variable}`}>
       <span className="vi-logo-bri-sym" aria-hidden="true">
         <Mark brand={BRANDS[2]!} side="after" />
       </span>
-      <BriciolaWord />
-      <span className="vi-logo-bri-trade">{t("Kitchen and table", "Cozinha e mesa")}</span>
+      <span className="vi-logo-arrive">
+        <BriciolaWord />
+      </span>
     </span>
   );
 }
