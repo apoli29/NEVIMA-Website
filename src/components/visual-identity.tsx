@@ -191,22 +191,22 @@ function Cases3({ t }: { t: T }) {
   // The mark exactly as the grey card of "Not sure?" shows it, in a much
   // thinner rim of grey; the trade over it and the name under it, both
   // outside the card (user, 2026-11-19).
-  /* The second card is Terral's (user, 2026-11-19); the third waits
+  /* The second card is limen's (user, 2026-11-20; it was Terral's from
+     2026-11-19, and Terral is kept in SPARE_BRANDS); the third waits
      for the case after it. Each card is pinned to its own business -
      left to itself the loop walks them all, which would have the two
      cards swapping businesses. Both are shown whole: the mark and the
-     name together, Pilar's side by side and Terral's one over the
-     other. */
-  const terral = BRANDS[1]!;
+     name together, side by side. */
+  const limen = BRANDS[1]!;
   const items = [
     { key: "pilar", trade: pilar.trade(t), name: pilar.name, body: <Morph t={t} bare whole only={pilar} /> },
-    { key: "terral", trade: terral.trade(t), name: terral.name, body: <Morph t={t} bare whole only={terral} /> },
+    { key: "limen", trade: limen.trade(t), name: limen.name, body: <Morph t={t} bare whole only={limen} /> },
     { key: "next-1", trade: TO_FILL, name: TO_FILL, body: <span className="vi-trio-wait" aria-hidden="true" /> },
   ];
   return (
     <div className="vi-trio">
       {items.map((it) => (
-        <figure key={it.key} className="vi-trio-item" data-empty={it.key !== "pilar" || undefined}>
+        <figure key={it.key} className="vi-trio-item" data-empty={it.key.startsWith("next") || undefined}>
           <span className="mono-label vi-trio-trade">{it.trade}</span>
           <div className="vi-trio-card">{it.body}</div>
           <figcaption className="vi-trio-name">{it.name}</figcaption>
@@ -955,6 +955,7 @@ function Morph({ t, bare = false, whole = false, only }: { t: T; bare?: boolean;
       ref={ref}
       className="vi-morph"
       data-step={step}
+      data-brand={brand.id}
       data-whole={whole || undefined}
       role="img"
       aria-label={t(

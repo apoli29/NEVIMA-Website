@@ -374,3 +374,40 @@ como do mesmo tamanho. Um primeiro acerto por igual pos a da Pilar a
 99% da largura e a antiga da Terral a 135%, cortada pelo `overflow`
 do card; os valores acima sao os medidos depois de corrigir.
 
+
+## A limen no lugar da Terral (2026-11-20)
+
+O utilizador pediu uma identidade fictícia nova para o cartão do meio do
+cabeçalho, no lugar da Terral, **sem apagar a Terral dos ficheiros**.
+
+- **O negócio:** limen (do latim, «limiar»), imobiliário e design de
+  interiores; identidade ultra moderna, sofisticada, suave e madura. Em
+  minúsculas: o nome nunca se traduz. Descritor «Imobiliário &
+  Interiores» / «Real Estate & Interiors».
+- **A referência:** um logótipo «4 Space» (um 4 de traço único com
+  pontas retas, o nome numa grotesca regular, o descritor em duas linhas
+  ao lado, o ®), pedido com 75% de semelhança e 25% nossos.
+- **O símbolo:** duas paredes em L que se encaixam numa sala vista em
+  planta, com duas passagens em diagonal; em cada passagem uma porta
+  desenhada como numa planta (a folha e o arco), num traço a um quarto
+  do das paredes, e um losango de luz ao centro. A primeira versão era
+  só as paredes; o utilizador pediu-a «menos minimalista e mais
+  sofisticada», e foram as duas espessuras de traço que o deram.
+- **A assinatura nova:** símbolo à altura das hastes, «limen» em Inter
+  Tight 400 apertado, ® sobre o fim, o descritor em duas linhas na linha
+  de base. Linho #F5F2ED sobre Basalto #1E1D1B (e não sobre a Noite da
+  Pilar: o `Morph` passou a levar `data-brand` para cada marca ter o
+  seu fundo).
+- **A assinatura antiga:** um anel duplo com um telhado, uma janela de
+  quatro vidros e um floreado; «Limen» em serif itálico com relevo,
+  «INTERIORES» espacejado a dourado, linha legal a cinzento. Cor de
+  vinho, as cores da empresa, como o azul antigo da Pilar.
+- **A paleta** desenhada com ela: Basalto #1E1D1B, Pedra #948C82,
+  Travertino #DDD6CB, Linho #F5F2ED. O quadro com o mini sistema visual
+  está no artefacto «limen — identidade visual».
+- **A Terral** saiu de `BRANDS` para `SPARE_BRANDS` (`TERRAL` em
+  `vi-brands.tsx`), inteira, com as duas assinaturas e o CSS. O prato
+  de construção da secção «Como se constrói uma marca» passou a mostrar
+  a limen, porque lê os mesmos `BRANDS`.
+- O nome por baixo do cartão da limen deixou de aparecer a cinzento: o
+  cartão só fica marcado como vazio quando ainda espera um caso.
