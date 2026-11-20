@@ -414,46 +414,46 @@ cabeçalho, no lugar da Terral, **sem apagar a Terral dos ficheiros**.
 
 ## Briciola, o terceiro caso (2026-11-20)
 
-Pedida pelo utilizador para o terceiro card, que estava a `[a preencher]`.
-**Briciola** quer dizer migalha em italiano. Restauracao. Apresentada
-**so como fica depois** de passar por nos: este negocio nao tem um
-antes, e o card fica parado no fim do percurso em vez de o percorrer.
+Pedida para o terceiro card. Foi feita duas vezes no mesmo dia: a
+primeira para restauracao, a partir das referencias Geranos e
+Pomodoro; a segunda, que e esta, para **imobiliario e design de
+interiores**, a partir da referencia "crunch". A primeira esta no
+historico do git e nao ficou em codigo, para nao haver duas marcas com
+o mesmo nome no ficheiro.
 
-### O que vem de cada referencia
+Apresentada **so como fica depois** de passar por nos: este negocio
+nao tem um antes, e o card fica parado no fim do percurso em vez de o
+percorrer.
 
-As duas referencias dadas pesam o mesmo.
+### O que vem da referencia (tres quartos)
 
-**Da Pomodoro:**
-- o simbolo guardado dentro de **um unico recipiente geometrico cheio**,
-  para a marca inteira ser uma forma so a qualquer tamanho;
-- o recipiente **aberto por cortes** que se leem como gesto e nao como
-  desenho.
+- o **nome numa so linha, minusculas e pesada**, com a massa a fazer o
+  trabalho e os olhos das letras pequenos;
+- as **pecas pequenas a subir de uma das letras**, a ocupar o lugar do
+  ponto dela;
+- um sistema **plano de duas cores**: um campo e uma marca sobre ele, e
+  mais nada.
 
-**Da Geranos:**
-- a marca **recortada de um solido** em vez de contornada: quem desenha
-  e o que se tira;
-- o **serif em capitais, espacejado**, como voz da assinatura;
-- as **duas palavras pequenas a ladear o simbolo** ("est" e "2026"), que
-  e o dispositivo que transforma um simbolo e um nome numa assinatura.
+### O quarto que e nosso, e porque
 
-### Os 20% que sao nossos, e porque
+A referencia e um snack: letras cortadas a mao, uma inclinacao,
+migalhas a voar, um amarelo alto. Uma empresa de interiores que se
+quer ler sofisticada e madura nao pode pedir emprestada a piada. Por
+isso:
 
-As duas referencias puxam em sentidos contrarios: a Geranos e fria,
-editorial e sem cor; a Pomodoro e quente, desenhada a mao e alta.
-Copiadas de perto, o par brigava. Por isso:
-
-- os cortes mantem o gesto radial da Pomodoro mas sao tracados com a
-  **precisao da Geranos** - geometria verdadeira, nao pincel;
-- o serif mantem as capitais e o espacejamento da Geranos mas **perde o
-  contraste de navalha**: ao lado de uma massa tao pesada como o disco,
-  um serif de filete fica por resolver. A face e a **Fraunces**, light,
-  old-style de contraste moderado e esqueleto suave;
-- o assunto e o proprio nome: o disco **parte-se no canto inferior
-  direito** e tres migalhas caem dele, cada vez mais pequenas. Nada e
-  um desenho de comida, que e o que o mantem maduro;
-- as tres mordidas e as tres migalhas tem tamanhos e distancias
-  diferentes. Em passo certo liam-se como uma grelha de pixeis; fora de
-  passo leem-se como migalhas.
+- as mesmas minusculas pesadas sao desenhadas como **geometria
+  verdadeira** - peso igual, sem inclinacao, sem terminais irregulares.
+  So essa mudanca tira-lhe o brincalhao e poe-lhe o moderno. A face e a
+  **Outfit**, 700;
+- o que sobe da letra **nao sao migalhas mas quatro divisoes**, cada
+  uma com proporcao diferente, a subir e a diminuir - o oficio em vez
+  do snack. Sozinhas sao o simbolo; sobre o i sem ponto sao o ponto do
+  logotipo;
+- o **i perde o ponto** (e um i sem ponto, U+0131) para as divisoes
+  poderem subir dele, que e o que a referencia faz com o u;
+- o campo deixa de ser o amarelo alto e passa a um **gesso calmo**, para
+  a marca poder assentar numa parede, numa planta ou num quadro sem
+  gritar.
 
 ### O sistema de cores
 
@@ -461,23 +461,27 @@ Quatro, declaradas em `.vi-logo-bri` e em mais lado nenhum:
 
 | | | |
 | --- | --- | --- |
-| **Forno** | `#191513` | o forno. O fundo. |
-| **Farinha** | `#EDE9E0` | farinha. O papel, e a marca sobre o escuro. |
-| **Miolo** | `#C9B79B` | a migalha. O unico acento, e so em pequeno. |
-| **Carvao** | `#6B625A` | para a letra miuda. |
+| **Betao** | `#1A1A18` | betao. A marca. |
+| **Gesso** | `#EAE7E0` | gesso. O campo onde assenta. |
+| **Lousa** | `#7E8B91` | lousa. O unico acento. |
+| **Sombra** | `#5A5A55` | para a letra miuda. |
 
-O **simbolo e de uma cor so** - a que o fundo pedir, Forno ou Farinha -
-para aguentar ser carimbado em qualquer coisa. O acento nunca lhe toca:
-aparece nas duas palavras que ladeiam o simbolo e mais nada. Nao ha
-terracota nem creme quente, que e onde este tipo de marca costuma cair.
+O **simbolo e de uma cor so** - Betao ou Gesso, a que o fundo pedir -
+para aguentar ser carimbado em qualquer coisa.
+
+### Uma coisa a saber
+
+O utilizador pediu o ramo "imobiliario, design de interiores", que e o
+mesmo da limen ("Imobiliario e interiores"). Dois dos tres cards com o
+mesmo ramo liam-se como um erro, por isso a Briciola leva so a metade
+dos interiores: **"Design de interiores"**. Se preferir trocar, troca-se
+numa linha.
 
 ### Onde esta
 
 - O terceiro card do cabecalho, com a assinatura inteira.
-- O terceiro prato de construcao, com o simbolo nu sobre as guias: as
-  tres verticais e horizontais da caixa do disco e os tres raios por
-  onde as migalhas caem.
-- O descritor existe nas duas linguas: "Cozinha e mesa" / "Kitchen and
-  table", e a linha legal "Briciola Cozinha e Mesa, Lda." / "Briciola
-  Kitchen and Table, Lda.".
-
+- O terceiro prato de construcao, com o simbolo nu sobre as guias: onde
+  cada divisao comeca e acaba, e a linha por onde todas sobem.
+- O descritor existe nas duas linguas: "Interiores" / "Interiors", e a
+  linha legal "Briciola Design de Interiores, Lda." / "Briciola
+  Interior Design, Lda.".

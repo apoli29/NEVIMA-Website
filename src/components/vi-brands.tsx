@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import { Fraunces, Inter_Tight } from "next/font/google";
+import { Inter_Tight, Outfit } from "next/font/google";
 import type { T } from "./sbs-shared";
 import { pilarSans } from "./sbs-pilar";
 
@@ -9,11 +9,12 @@ import { pilarSans } from "./sbs-pilar";
     identity was drawn (2026-11-20). */
 const limenSans = Inter_Tight({ subsets: ["latin"], weight: ["300", "400"], variable: "--f-limen-sans", display: "swap" });
 
-/** Briciola's own face: an old-style serif with moderate contrast and
-    a soft skeleton, set light. Geranos signs in a razor-thin didone;
-    beside a mass as heavy as the disc, hairlines look unresolved, so
-    the contrast was pulled back and the warmth left in (2026-11-20). */
-const briciolaSerif = Fraunces({ subsets: ["latin"], weight: ["300", "400"], variable: "--f-briciola", display: "swap" });
+/** Briciola's own face: a geometric sans set heavy and lowercase. The
+    reference cuts its letters by hand, with uneven terminals and a
+    tilt; regularised into true geometry the same mass stops being
+    playful and starts being modern, which is what an estate agent
+    needs (2026-11-20). */
+const briciolaSans = Outfit({ subsets: ["latin"], weight: ["500", "700"], variable: "--f-briciola", display: "swap" });
 
 /* ==================================================================
    Three invented businesses, each with the mark it had and the mark
@@ -308,19 +309,21 @@ export const BRANDS: Brand[] = [
   {
     id: "briciola",
     name: "Briciola",
-    trade: (t) => t("Restaurant", "Restaura\u00e7\u00e3o"),
-    legal: (t) => t("Briciola Kitchen and Table, Lda.", "Briciola Cozinha e Mesa, Lda."),
+    /* limen already carries "Imobili\u00e1rio e interiores"; two of the
+       three cards cannot read the same, so Briciola leads with the
+       interiors half of what the user asked for. */
+    trade: (t) => t("Interior design", "Design de interiores"),
+    legal: (t) => t("Briciola Interior Design, Lda.", "Briciola Design de Interiores, Lda."),
     after: BriciolaAfter,
     newLogo: (t) => <BriciolaNewLogo t={t} />,
-    /* The disc's own box and its centre lines, and the three radii the
-       crumbs leave along. */
+    /* Where each room begins and ends, and the line they all rise
+       along. */
     guides: {
-      x: [10, 42, 74],
-      y: [14, 46, 78],
+      x: [10, 40, 66, 97],
+      y: [8, 22, 40, 62, 86],
       diag: [
-        [0, 35, 100, 62],
-        [0, 11, 100, 95],
-        [21, 0, 67, 100],
+        [0, 97, 100, 6],
+        [0, 0, 100, 100],
       ],
     },
   },
@@ -483,76 +486,66 @@ export function LimenNewLogo({ t }: { t: T }) {
   );
 }
 
-/* ---- Briciola, a restaurant ---------------------------------------
+/* ---- Briciola, an estate agent and interior designer --------------
 
    Invented on 2026-11-20 at the user's ask, and shown only as it ends
    up: there is no before for this one.
 
-   WHAT COMES FROM WHICH REFERENCE. From Pomodoro: the symbol held in
-   one filled geometric container, so the whole mark is a single shape
-   at any size, and the container opened by cuts that read as a
-   gesture rather than as drawing. From Geranos: the mark cut out of a
-   solid rather than outlined - what is taken away does the drawing -
-   the serif in caps tracked wide as the signature's voice, and the two
-   small words flanking the symbol, which is the device that turns a
-   symbol and a name into a lockup.
+   WHAT COMES FROM THE REFERENCE, which is three quarters of it: the
+   wordmark set in one heavy lowercase line, with the mass doing the
+   work and the counters kept small; the small shapes lifting out of
+   one letter and standing in for its dot; and a flat two-colour
+   system, a field and a mark on it, with nothing else.
 
-   WHAT IS OURS, AND WHY. The two references pull against each other:
-   Geranos is cold, editorial and achromatic; Pomodoro is hot,
-   hand-drawn and loud. Copied closely, the pair would fight. So the
-   cuts keep Pomodoro's radiating gesture but are drawn with Geranos'
-   precision, as true geometry rather than brush; the serif keeps
-   Geranos' caps and tracking but loses its razor contrast, which
-   hairlines would not survive beside a mass this heavy; and the
-   subject is the name itself - briciola is a crumb, so the disc breaks
-   at its lower right and three crumbs fall away from it, smaller as
-   they go. Nothing is a picture of food, which is what keeps it
-   mature.
+   WHAT IS OURS, AND WHY. The reference is a snack: hand-cut letters,
+   a tilt, crumbs flying, a loud yellow. An estate agent that wants to
+   read sophisticated and mature cannot borrow the joke. So the same
+   heavy lowercase is drawn as true geometry, with even weight and no
+   tilt - that one change moves it from playful to modern; what lifts
+   out of the letter is not a scatter of crumbs but four rooms, each a
+   different proportion, rising and getting smaller, which is the
+   trade rather than the snack; and the field is a quiet plaster
+   instead of the yellow, so the mark can sit on a wall, a plan or a
+   board without shouting.
 
-   THE COLOURS. Four, and only four: Forno for the ground, Farinha for
-   the paper, Miolo as the one accent and Carvao for the small print.
-   They are declared on .vi-logo-bri in globals.css. The symbol itself
-   is one colour, whichever the ground asks for, so it survives being
-   stamped on anything.                                               */
+   THE COLOURS. Four, declared on .vi-logo-bri in globals.css: Betao
+   for the mark, Gesso for the field, Lousa as the one accent and
+   Sombra for the small print. The symbol itself is one colour,
+   whichever the ground asks for.                                    */
 
-/** The loaf seen from above, breaking: a disc with three bites out of
-    its lower-right edge, and the three crumbs that left them. */
+/** The rooms lifting away: four rounded rectangles of different
+    proportions, rising to the right and getting smaller. Alone it is
+    the symbol; over the dotless i it is the wordmark's dot. */
 function BriciolaAfter() {
   return (
     <g>
-      {/* the whole, with what the crumbs took out of it */}
-      <path
-        {...sh(0)}
-        fillRule="evenodd"
-        d="M 10 46 A 32 32 0 1 0 74 46 A 32 32 0 1 0 10 46 Z
-           M 73.3 45.2 L 80.8 52.7 L 73.3 60.2 L 65.8 52.7 Z
-           M 67.2 59.7 L 73.2 65.7 L 67.2 71.7 L 61.2 65.7 Z
-           M 57 69.3 L 62 74.3 L 57 79.3 L 52 74.3 Z"
-      />
-      {/* and the crumbs themselves, falling away and getting smaller.
-          Three sizes, three distances: in step they read as a grid of
-          pixels, out of step they read as crumbs. */}
-      <path {...sh(1)} d="M 87 50.1 L 92.5 55.6 L 87 61.1 L 81.5 55.6 Z" />
-      <path {...sh(2)} d="M 79.8 72.1 L 83.3 75.6 L 79.8 79.1 L 76.3 75.6 Z" />
-      <path {...sh(3)} d="M 65.5 87.6 L 68 90.1 L 65.5 92.6 L 63 90.1 Z" />
+      <rect {...sh(0)} x="10" y="62" width="30" height="24" rx="6" />
+      <rect {...sh(1)} x="44" y="40" width="22" height="22" rx="5" />
+      <rect {...sh(2)} x="70" y="22" width="14" height="18" rx="4" />
+      <rect {...sh(3)} x="88" y="8" width="9" height="9" rx="3" />
     </g>
   );
 }
 
-/** The signature: the two small words flanking the symbol, the name
-    under them in caps, and the trade under that. */
+/** The signature: the word in one heavy lowercase line, its first i
+    left without a dot so the rooms can rise from it, and the trade
+    under the whole thing. */
 export function BriciolaNewLogo({ t }: { t: T }) {
   return (
-    <span className={`vi-logo vi-logo-stack vi-logo-bri ${briciolaSerif.variable}`}>
-      <span className="vi-logo-bri-top">
-        <i className="vi-logo-bri-flank">est</i>
-        <span className="vi-logo-mark">
-          <Mark brand={BRANDS[2]!} side="after" />
+    <span className={`vi-logo vi-logo-stack vi-logo-bri ${briciolaSans.variable}`}>
+      <span className="vi-logo-bri-word">
+        br
+        <span className="vi-logo-bri-i">
+          &#305;
+          <span className="vi-logo-bri-rise" aria-hidden="true">
+            <Mark brand={BRANDS[2]!} side="after" />
+          </span>
         </span>
-        <i className="vi-logo-bri-flank">2026</i>
+        ciola
       </span>
-      <span className="vi-logo-bri-word">Briciola</span>
-      <span className="vi-logo-bri-trade">{t("Kitchen and table", "Cozinha e mesa")}</span>
+      <span className="vi-logo-bri-trade">
+        {t("Interiors", "Interiores")}
+      </span>
     </span>
   );
 }
