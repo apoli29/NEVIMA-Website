@@ -497,55 +497,67 @@ export function LimenNewLogo({ t }: { t: T }) {
    briciola is a crumb, so the reference's own device is also the
    truest thing this business could carry.
 
-   WHAT IS OURS, AND WHY. Precisely because the device fits, the
-   quarter that is ours has to work harder, or the result is the
-   reference with another word in it. The reference is a snack:
-   letters cut by hand, a tilt, a flock of specks thrown in an arc, a
-   loud yellow. A restaurant that wants to read sophisticated and
-   mature cannot borrow the joke. So:
+   HOW CLOSE. The user asked twice for more likeness and then for
+   about ninety-nine per cent of it (2026-11-20), so the composition
+   is the reference's: the flecks are thrown from the letter in the
+   middle of the word, as a flock, spreading as they rise.
 
-   - the same heavy lowercase is drawn as true geometry, even in
-     weight, with no tilt and no ragged terminals;
-   - the crumbs are four, not a flock, each rounded and each smaller
-     than the last, and they rise along one quiet arc instead of
-     scattering. Ordered, they read as deliberate;
-   - the field is a linen instead of the yellow, so the mark can sit
-     on a menu, a window or a napkin without shouting.
+   WHAT IS STILL NOT BORROWED, AND WHY. At that distance the drawing
+   stops being inspired and starts being somebody's mark with another
+   word in it, and the reference is a real brand. So two things stay
+   ours and are not negotiable: the letters, which are true geometry
+   rather than the reference's hand-cut forms with their tilt and
+   their ragged terminals; and the colour, which is a linen field and
+   a toasted mark rather than the loud yellow. Those two are what keep
+   this a piece of our own work rather than a copy shown as one.
 
    THE COLOURS. Four, declared on .vi-logo-bri in globals.css: Tostado
    for the mark, Linho for the field, Vinho as the one accent and
    Cinza for the small print. The symbol itself is one colour,
    whichever the ground asks for.                                    */
 
-/** The crumbs lifting away: four rounded shapes rising to the right
-    along one arc, each smaller than the last. Alone they are the
-    symbol; over the dotless i they are the wordmark's dot. */
+/** The crumbs, as a flock: ten flecks of different sizes thrown up
+    from the middle of the word and spreading as they go, the way the
+    reference throws them from its u (user, 2026-11-20: closer to the
+    reference, and from the middle of the text).
+
+    Alone they are the symbol. They hold as a drawing at any size, but
+    ten flecks is not a mark that will read at sixteen pixels - that
+    is what the likeness costs, and the reference has no standalone
+    symbol either. */
 function BriciolaAfter() {
   return (
     <g>
-      <rect {...sh(0)} x="12" y="60" width="26" height="22" rx="7" />
-      <rect {...sh(1)} x="46" y="42" width="17" height="15" rx="5" />
-      <rect {...sh(2)} x="72" y="28" width="10" height="10" rx="3.5" />
-      <rect {...sh(3)} x="88" y="14" width="6" height="6" rx="2.5" />
+      <path {...sh(0)} d="M 48 71 L 54 81 L 44 89 L 39 78 Z" />
+      <path {...sh(1)} d="M 28 62 L 33 70 L 25 75 L 22 67 Z" />
+      <path {...sh(2)} d="M 64 59 L 69 67 L 61 73 L 57 65 Z" />
+      <path {...sh(3)} d="M 45 50 L 49 56 L 42 60 L 40 54 Z" />
+      <path {...sh(4)} d="M 14 43 L 17 49 L 11 52 L 9 46 Z" />
+      <path {...sh(5)} d="M 77 40 L 80 46 L 74 49 L 72 43 Z" />
+      <path {...sh(6)} d="M 58 31 L 61 36 L 55 39 L 54 34 Z" />
+      <path {...sh(7)} d="M 32 25 L 34 29 L 29 31 L 28 27 Z" />
+      <path {...sh(8)} d="M 88 21 L 90 25 L 86 27 L 85 23 Z" />
+      <path {...sh(9)} d="M 67 10 L 69 14 L 65 15 L 64 12 Z" />
     </g>
   );
 }
 
-/** The signature: the word in one heavy lowercase line, its first i
-    left without a dot so the crumbs can rise from it, and the trade
-    under the whole thing. */
+/** The signature: the word in one heavy lowercase line, its second i
+    left without a dot - the one that falls in the middle of the word -
+    so the crumbs can be thrown from there, and the trade under the
+    whole thing. */
 export function BriciolaNewLogo({ t }: { t: T }) {
   return (
     <span className={`vi-logo vi-logo-stack vi-logo-bri ${briciolaSans.variable}`}>
       <span className="vi-logo-bri-word">
-        br
+        bric
         <span className="vi-logo-bri-i">
           &#305;
           <span className="vi-logo-bri-rise" aria-hidden="true">
             <Mark brand={BRANDS[2]!} side="after" />
           </span>
         </span>
-        ciola
+        ola
       </span>
       <span className="vi-logo-bri-trade">
         {t("Kitchen and table", "Cozinha e mesa")}
