@@ -968,6 +968,18 @@ const MORPH_MS = 1250;
     last beat held twice, because there is no old mark to go back to. */
 const NO_BEFORE = [1, 2, 3, 3] as const;
 
+/** One clock for every card on the page (user, 2026-11-20: the
+    animation synchronised). Each card used to start its own interval
+    the moment it came into view, so the three in the header walked
+    out of phase by however long the scroll took between them.
+
+    The beat is read from the page's own start instead of counted, so
+    a card that arrives late joins the others mid-stride rather than
+    beginning a walk of its own, and nothing drifts: each wait is
+    measured to the next boundary, not set to a fixed length. */
+const MORPH_EPOCH = typeof performance === "undefined" ? 0 : performance.now();
+const beatNow = () => Math.floor(((typeof performance === "undefined" ? 0 : performance.now()) - MORPH_EPOCH) / MORPH_MS);
+
 /** The mark the business had, taken apart over the guides a mark is
     built on, and the mark it ends up with put together on them. Four
     steps: it stands on the white of its old website, it comes apart, the
@@ -979,14 +991,29 @@ const NO_BEFORE = [1, 2, 3, 3] as const;
 function Morph({ t, bare = false, whole = false, only }: { t: T; bare?: boolean; whole?: boolean; only?: Brand }) {
   const reduce = (useReducedMotion() ?? false) || useStill();
   const [ref, inView] = useInView<HTMLDivElement>(0.35);
-  const [n, setN] = useState(0);
+  const [tick, setTick] = useState(0);
+  /* Where this card came in, rounded down to a whole walk, so that a
+     card left to itself still opens on the first business and still
+     changes business on the first beat of a walk - while the beat
+     itself stays the page's, shared with every other card. */
+  const from = useRef<number | null>(null);
 
   useEffect(() => {
     if (!inView || reduce) return;
-    const tick = window.setInterval(() => setN((v) => v + 1), MORPH_MS);
-    return () => window.clearInterval(tick);
+    let id = 0;
+    const run = () => {
+      const b = beatNow();
+      if (from.current === null) from.current = b - (((b % 4) + 4) % 4);
+      setTick(b);
+      /* to the next boundary, never a fixed wait: that is what keeps
+         the cards together however long they have been running. */
+      id = window.setTimeout(run, MORPH_MS - ((performance.now() - MORPH_EPOCH) % MORPH_MS));
+    };
+    run();
+    return () => window.clearTimeout(id);
   }, [inView, reduce]);
 
+  const n = Math.max(0, tick - (from.current ?? tick));
   const beat = reduce ? 3 : n % 4;
   /* A card that is given a business keeps it; left to itself, the
      loop walks all of them. */

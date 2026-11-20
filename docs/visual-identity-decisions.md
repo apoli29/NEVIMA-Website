@@ -667,3 +667,48 @@ A palavra ganhou `.vi-logo-arrive`, que e a classe que faz a assinatura
 chegar com as formas em vez de estar la a espera delas. E so
 comportamento: ao contrario de `.vi-logo-new-name`, nao traz tipo de
 letra nenhum, por isso nao atropela a Didone.
+
+### O antes da Briciola, e os tres cartoes a andar juntos (2026-11-20)
+
+O utilizador pediu a animacao **sincronizada**. A sincronizacao
+sozinha nao chegava: a Briciola nao tinha um antes, andava tres tempos
+enquanto os outros andavam quatro, e dois cartoes ao lado um do outro
+a bater fora de compasso leem-se como avaria. O utilizador resolveu-o
+pela raiz - **pediu uma identidade antiga**, feita pela concorrencia
+da nevima, com ar de ha vinte anos. Com um antes, o cartao anda os
+mesmos quatro tempos e a sincronizacao passa a ser so uma questao de
+relogio.
+
+**O emblema que ela tinha.** Nao e uma piada a custa do ramo: sao as
+quatro coisas que este ficheiro diz, logo no cabecalho, que datam uma
+marca, e estao todas la de proposito - um desenho do oficio em vez de
+um sinal para ele (o chapeu de cozinheiro, e a faca e o garfo cruzados
+por baixo), um contorno dentro de outro (o anel dourado dentro do
+aro), um floreado (o traco sob os talheres) e uma moldura a volta de
+tudo (o disco). O degrade no disco e o relevo no nome sao habitos da
+epoca, e sao eles que o olho le como «de entao» antes de ler qualquer
+outra coisa. A assinatura: nome em serifada italica com relevo,
+"RESTAURANTE" em dourado espacado ao lado, e a linha da empresa em
+cinzento Arial por baixo - cada uma delas um habito e nao uma decisao.
+
+A linha dourada e mais comprida do que "Pilar INSURANCE" ou "Limen
+INTERIORS", por isso saia fora do cartao; leva um tamanho proprio
+(`9.2cqw` em vez de `11cqw`), que a poe a par das outras duas.
+
+**Um relogio so para a pagina.** Cada cartao punha um `setInterval`
+seu a andar quando entrava no ecra, por isso os tres do cabecalho
+ficavam desfasados pelo tempo que o scroll demorasse entre eles. Agora
+a batida e **lida do inicio da pagina em vez de contada**, e cada
+espera e medida ate a proxima fronteira em vez de ter uma duracao
+fixa - e isso que impede a deriva ao fim de alguns minutos. Um cartao
+que chegue tarde entra a meio da passada dos outros.
+
+O cartao guarda uma coisa sua: o beat em que entrou, arredondado para
+baixo a uma passada inteira. E o que faz com que um cartao deixado a
+si proprio continue a abrir no primeiro negocio e a trocar de negocio
+na primeira batida de uma passada, sem que a batida deixe de ser a da
+pagina.
+
+**O que fica de reserva.** `NO_BEFORE` e o caminho de tres tempos
+continuam no ficheiro: a Briciola ja nao precisa deles, mas o proximo
+negocio sem antes precisa.
