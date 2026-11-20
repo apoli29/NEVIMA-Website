@@ -149,7 +149,7 @@ function TerralBefore() {
   );
 }
 
-/** What it has: the land, and the two masses standing on it.
+/** What it has: two masses, and the void between them.
 
     Drawn from the user's reference (2026-11-19) at four fifths: the
     gable built out of solid masses rather than an outline, the thin
@@ -160,24 +160,25 @@ function TerralBefore() {
 
     The fifth that is ours: the bottom corners turn at 6, a step off
     Pilar's 8, so the two marks are the same family while the apex
-    stays sharp - that edge is the reference's own character. And the
-    bar of land underneath, which is what the name says (a terral is
-    the breeze that comes off the land) and what keeps the mark from
-    being one more picture of a house. It also gives the symbol three
-    pieces, so it can be built in three times.
+    stays sharp - that edge is the reference's own character.
 
-    The void between the masses is eight hundredths wide and the land
-    ten, which is what keeps both of them above a pixel when the mark
-    is set at sixteen - the size it has to survive. */
+    A bar of land ran under it until the user had it taken off
+    (2026-11-20). What is left is the two masses and the void, which is
+    the whole of the reference and nothing else. The mark was set out
+    to stand on that bar, so with it gone it was drawn again at the
+    size that fills the square, which is the size Pilar fills: side by
+    side the two now carry the same weight.
+
+    The void between the masses is eight hundredths wide, which is what
+    keeps it above a pixel when the mark is set at sixteen - the size
+    it has to survive. */
 function TerralAfter() {
   return (
     <g>
-      {/* the land */}
-      <rect {...sh(0)} x="14" y="90" width="72" height="10" rx="5" />
       {/* the wide mass, up the left slope to the apex */}
-      <path {...sh(1)} d="M22 44 L46 20 L46 82 H28 A6 6 0 0 1 22 76 Z" />
+      <path {...sh(0)} d="M14 40 L46 8 L46 92 H20 A6 6 0 0 1 14 86 Z" />
       {/* the narrow one, down the right slope */}
-      <path {...sh(2)} d="M54 28 L78 52 V76 A6 6 0 0 1 72 82 H54 Z" />
+      <path {...sh(1)} d="M54 16 L86 48 V86 A6 6 0 0 1 80 92 H54 Z" />
     </g>
   );
 }
@@ -210,14 +211,14 @@ export const BRANDS: Brand[] = [
     legal: (t) => t("Terral Properties, Lda.", "Terral Imobiliária, Lda."),
     before: TerralBefore,
     after: TerralAfter,
-    /* The walls, the apex, the baseline and the land, and the two
-       lines the slopes run along, carried past the mark. */
+    /* The walls, the apex and the baseline, and the two lines the
+       slopes run along, carried past the mark. */
     guides: {
-      x: [22, 46, 54, 78],
-      y: [20, 44, 82, 90],
+      x: [14, 46, 54, 86],
+      y: [8, 40, 92],
       diag: [
-        [2, 64, 66, 0],
-        [26, 0, 96, 70],
+        [0, 54, 54, 0],
+        [38, 0, 100, 62],
       ],
     },
   },

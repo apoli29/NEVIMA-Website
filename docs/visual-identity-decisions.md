@@ -316,3 +316,15 @@ o que foi feito aqui enxerta-se por cima.
 - `useStill()` é novo: liga o "Parar movimento" do rodapé, que a versão
   dele não lia (só tratava do `prefers-reduced-motion`).
 
+### A barra saiu (2026-11-20)
+
+O utilizador tirou a barra de terra. Fica o que era a referência e mais
+nada: as duas massas e o vazio entre elas. Como a marca tinha sido
+desenhada para assentar nessa barra, foi redesenhada ao tamanho que
+enche o quadrado — o mesmo que a Pilar enche — para as duas carregarem
+o mesmo peso lado a lado.
+
+Medidas novas: paredes de 14 a 86, vértice a 8, base a 92, vazio de 46
+a 54. Todos os ângulos continuam a 45° e o vazio continua com 8 de
+largura, que é o que o mantém acima de um pixel a 16 px.
+
