@@ -238,3 +238,81 @@ cinzento da pagina do back end.
 - O "Não." passa a ser revelado pelo próprio scroll (recorte e barra ligados ao progresso), em vez de uma transição disparada a 0,32: num scroll longo e rápido a transição podia não correr e o "Não." não aparecia.
 - (mais tarde, no mesmo dia) "Why it is worth it" foi cortado para cerca de um quinto e passou para dentro do cabeçalho, por baixo do filme: o título numa linha e uma frase ("Quando o logótipo e o símbolo estão desatualizados, até o website mais bem feito entra em contradição com eles. Por isso são desenhados com o website, para que tudo fale a mesma linguagem."). O utilizador pediu os cortes. A secção completa e as três opções ficam fora de uso em `Opening` e `WorthOptions`.
 - Tudo o que vem depois do cabeçalho ("Does it make sense…" e o preço) passou a fundo branco; o cartão cinzento "Not sure?" mantém-se.
+
+## Terral, o segundo exemplo (2026-11-19)
+
+O utilizador pediu um segundo negócio na página, com uma referência
+própria, e escolheu a Terral (mediação imobiliária).
+
+### O que ficou por preencher no pedido
+
+Perguntado antes de desenhar: o nome e o setor vinham como `[NOME]` e
+`[SETOR]`, e das "2 referências em anexo" só chegou uma. O utilizador
+escolheu a Terral e mandou avançar com a referência única.
+
+O pedido descrevia também um bloco "These I'd trust." e um contador
+01/04 no cartão da homepage. Nenhum dos dois existe no site. A skill
+`/improve-animations` não está instalada; a animação foi feita à mão
+com o easing e as durações da casa.
+
+### O símbolo
+
+Quatro quintos da referência: a empena construída com **massas
+sólidas** e não com contorno, o **vazio vertical** entre elas em vez de
+qualquer linha desenhada, o **vértice descentrado** (uma massa larga e
+outra estreita), todos os ângulos a 45°, e o conjunto assente no módulo
+de baixo da grelha.
+
+O quinto que é nosso: os cantos de baixo viram a 6 — um passo abaixo
+dos 8 da Pilar, para serem da mesma família — e o vértice fica afiado,
+que é o carácter da referência. E a **barra de terra** por baixo, que é
+o que o nome diz (um terral é a brisa que vem de terra) e o que impede
+o símbolo de ser mais um desenho de uma casa. Dá também três formas,
+logo três tempos de construção.
+
+Medidas, no quadrado de cem: paredes de 22 a 78, vértice a 20, base a
+82, terra de 14 a 86. O vazio tem 8 de largura e a terra 10 — é o que
+os mantém acima de um pixel quando a marca é posta a 16 px.
+
+### O prato de construção
+
+`MarkPlate`: fundo #1c1c1c, uma grelha de módulos de dez quase
+invisível, as guias da marca tracejadas em ciano (verticais e
+horizontais nos limites das formas, diagonais a prolongar os ângulos),
+a marca a branco ao centro e o ® à direita. Por baixo, o wordmark e a
+subline legal. As duas marcas levam o mesmo tratamento.
+
+O ciano é a única cor neste site que não é preto nem branco, e está cá
+pela razão por que um gabinete de desenho o usa: uma guia não pode
+confundir-se com a coisa que guia. Nunca toca na marca.
+
+A sequência, uma vez, quando o bloco é alcançado: a grelha aparece
+(0,5 s); as guias retas entram varridas da esquerda (0,7 s @ 250 ms);
+as diagonais de cima (0,6 s @ 750 ms); as formas preenchem-se pela
+ordem de construção (160 ms entre cada, a partir de 1,15 s); o ® e o
+wordmark chegam por último (1,9 s). Só `transform` e `opacity` — as
+guias mantêm o tracejado porque quem as faz entrar é um `clipPath` que
+escala, e não o `stroke-dasharray`.
+
+### O encontro com o trabalho do António
+
+No mesmo dia o António refez a página (cabeçalho novo com três cards,
+um filme, o "porque vale a pena" encurtado) e fez push primeiro. O
+merge deu oito conflitos no ficheiro da página.
+
+Decisão do utilizador (2026-11-20): **a versão dele fica como base** e
+o que foi feito aqui enxerta-se por cima.
+
+- A **Terral entra no segundo dos três cards**, que ele tinha deixado
+  a `[a preencher]` à espera exactamente disto. O `Morph` passou a
+  aceitar um negócio (`only`): um card que o recebe fica com ele, e o
+  loop sem negócio continua a percorrer todos.
+- Os **pratos de construção** ganharam secção própria entre o cabeçalho
+  e o "para quem é", porque a secção "The proposal", onde iam ficar,
+  deixou de ser renderizada.
+- O **cabeçalho com os dois cards antes/depois** que tinha sido feito
+  aqui foi abandonado: ele refez essa parte. O código está na branch
+  `vi/terral-keep`.
+- `useStill()` é novo: liga o "Parar movimento" do rodapé, que a versão
+  dele não lia (só tratava do `prefers-reduced-motion`).
+
