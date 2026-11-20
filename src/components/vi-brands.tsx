@@ -1,13 +1,19 @@
 "use client";
 
 import { useId } from "react";
-import { Inter_Tight } from "next/font/google";
+import { Fraunces, Inter_Tight } from "next/font/google";
 import type { T } from "./sbs-shared";
 import { pilarSans } from "./sbs-pilar";
 
 /** limen's own face: a tight neo-grotesk, regular weight, as its
     identity was drawn (2026-11-20). */
 const limenSans = Inter_Tight({ subsets: ["latin"], weight: ["300", "400"], variable: "--f-limen-sans", display: "swap" });
+
+/** Briciola's own face: an old-style serif with moderate contrast and
+    a soft skeleton, set light. Geranos signs in a razor-thin didone;
+    beside a mass as heavy as the disc, hairlines look unresolved, so
+    the contrast was pulled back and the warmth left in (2026-11-20). */
+const briciolaSerif = Fraunces({ subsets: ["latin"], weight: ["300", "400"], variable: "--f-briciola", display: "swap" });
 
 /* ==================================================================
    Three invented businesses, each with the mark it had and the mark
@@ -47,7 +53,8 @@ export type Brand = {
   trade: (t: T) => string;
   /** The subline under the wordmark, as it would be registered. */
   legal: (t: T) => string;
-  before: () => React.ReactElement;
+  /** A business shown only as it ends up has no before. */
+  before?: () => React.ReactElement;
   after: () => React.ReactElement;
   /** Where the mark's own edges fall, for the construction plate:
       verticals, horizontals, and the lines its angles run along. All
@@ -298,6 +305,25 @@ export const BRANDS: Brand[] = [
       ],
     },
   },
+  {
+    id: "briciola",
+    name: "Briciola",
+    trade: (t) => t("Restaurant", "Restaura\u00e7\u00e3o"),
+    legal: (t) => t("Briciola Kitchen and Table, Lda.", "Briciola Cozinha e Mesa, Lda."),
+    after: BriciolaAfter,
+    newLogo: (t) => <BriciolaNewLogo t={t} />,
+    /* The disc's own box and its centre lines, and the three radii the
+       crumbs leave along. */
+    guides: {
+      x: [10, 42, 74],
+      y: [14, 46, 78],
+      diag: [
+        [0, 35, 100, 62],
+        [0, 11, 100, 95],
+        [21, 0, 67, 100],
+      ],
+    },
+  },
 ];
 
 /** Kept, not thrown away. Terral was on the page from 2026-11-19 to
@@ -324,7 +350,7 @@ export const SPARE_BRANDS: Brand[] = [
 
 /** One mark, drawn at whatever size the box gives it. */
 export function Mark({ brand, side }: { brand: Brand; side: "before" | "after" }) {
-  const Draw = side === "before" ? brand.before : brand.after;
+  const Draw = side === "before" ? (brand.before ?? brand.after) : brand.after;
   return (
     <svg className="vi-mark-svg" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">
       <Draw />
@@ -453,6 +479,80 @@ export function LimenNewLogo({ t }: { t: T }) {
           {t("& Interiors", "& Interiores")}
         </span>
       </span>
+    </span>
+  );
+}
+
+/* ---- Briciola, a restaurant ---------------------------------------
+
+   Invented on 2026-11-20 at the user's ask, and shown only as it ends
+   up: there is no before for this one.
+
+   WHAT COMES FROM WHICH REFERENCE. From Pomodoro: the symbol held in
+   one filled geometric container, so the whole mark is a single shape
+   at any size, and the container opened by cuts that read as a
+   gesture rather than as drawing. From Geranos: the mark cut out of a
+   solid rather than outlined - what is taken away does the drawing -
+   the serif in caps tracked wide as the signature's voice, and the two
+   small words flanking the symbol, which is the device that turns a
+   symbol and a name into a lockup.
+
+   WHAT IS OURS, AND WHY. The two references pull against each other:
+   Geranos is cold, editorial and achromatic; Pomodoro is hot,
+   hand-drawn and loud. Copied closely, the pair would fight. So the
+   cuts keep Pomodoro's radiating gesture but are drawn with Geranos'
+   precision, as true geometry rather than brush; the serif keeps
+   Geranos' caps and tracking but loses its razor contrast, which
+   hairlines would not survive beside a mass this heavy; and the
+   subject is the name itself - briciola is a crumb, so the disc breaks
+   at its lower right and three crumbs fall away from it, smaller as
+   they go. Nothing is a picture of food, which is what keeps it
+   mature.
+
+   THE COLOURS. Four, and only four: Forno for the ground, Farinha for
+   the paper, Miolo as the one accent and Carvao for the small print.
+   They are declared on .vi-logo-bri in globals.css. The symbol itself
+   is one colour, whichever the ground asks for, so it survives being
+   stamped on anything.                                               */
+
+/** The loaf seen from above, breaking: a disc with three bites out of
+    its lower-right edge, and the three crumbs that left them. */
+function BriciolaAfter() {
+  return (
+    <g>
+      {/* the whole, with what the crumbs took out of it */}
+      <path
+        {...sh(0)}
+        fillRule="evenodd"
+        d="M 10 46 A 32 32 0 1 0 74 46 A 32 32 0 1 0 10 46 Z
+           M 73.3 45.2 L 80.8 52.7 L 73.3 60.2 L 65.8 52.7 Z
+           M 67.2 59.7 L 73.2 65.7 L 67.2 71.7 L 61.2 65.7 Z
+           M 57 69.3 L 62 74.3 L 57 79.3 L 52 74.3 Z"
+      />
+      {/* and the crumbs themselves, falling away and getting smaller.
+          Three sizes, three distances: in step they read as a grid of
+          pixels, out of step they read as crumbs. */}
+      <path {...sh(1)} d="M 87 50.1 L 92.5 55.6 L 87 61.1 L 81.5 55.6 Z" />
+      <path {...sh(2)} d="M 79.8 72.1 L 83.3 75.6 L 79.8 79.1 L 76.3 75.6 Z" />
+      <path {...sh(3)} d="M 65.5 87.6 L 68 90.1 L 65.5 92.6 L 63 90.1 Z" />
+    </g>
+  );
+}
+
+/** The signature: the two small words flanking the symbol, the name
+    under them in caps, and the trade under that. */
+export function BriciolaNewLogo({ t }: { t: T }) {
+  return (
+    <span className={`vi-logo vi-logo-stack vi-logo-bri ${briciolaSerif.variable}`}>
+      <span className="vi-logo-bri-top">
+        <i className="vi-logo-bri-flank">est</i>
+        <span className="vi-logo-mark">
+          <Mark brand={BRANDS[2]!} side="after" />
+        </span>
+        <i className="vi-logo-bri-flank">2026</i>
+      </span>
+      <span className="vi-logo-bri-word">Briciola</span>
+      <span className="vi-logo-bri-trade">{t("Kitchen and table", "Cozinha e mesa")}</span>
     </span>
   );
 }

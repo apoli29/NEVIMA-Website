@@ -9843,3 +9843,69 @@
     letter-spacing: 0.04em;
   }
 }
+
+@layer components {
+  /* ---- Briciola, a restaurant (2026-11-20) -------------------------
+     The invented identity the third card carries. Its four colours are
+     declared here and nowhere else, so the brand has one place:
+
+       Forno    #191513  the oven. The ground.
+       Farinha  #EDE9E0  flour. The paper, and the mark on the dark.
+       Miolo    #C9B79B  the crumb. The one accent, and only small.
+       Carvao   #6B625A  for the small print.
+
+     The symbol itself takes whichever of Forno or Farinha the ground
+     asks for - one colour, so it survives being stamped on anything.
+     The accent never touches it.                                    */
+  .vi-logo-bri {
+    --bri-forno: #191513;
+    --bri-farinha: #ede9e0;
+    --bri-miolo: #c9b79b;
+    --bri-carvao: #6b625a;
+    gap: 0.5em;
+    color: var(--bri-farinha);
+  }
+  .vi-logo-bri .vi-logo-mark { width: 2.1em; }
+
+  /* Geranos' device: the two small words either side of the symbol,
+     which is what turns a symbol and a name into a signature. */
+  .vi-logo-bri-top { display: flex; align-items: center; justify-content: center; gap: 0.75em; }
+  .vi-logo-bri-flank {
+    font-family: var(--font-mono);
+    font-style: normal;
+    font-size: 0.2em;
+    letter-spacing: 0.22em;
+    color: var(--bri-miolo);
+  }
+  .vi-logo-bri-word {
+    display: block;
+    font-family: var(--f-briciola), Georgia, serif;
+    font-weight: 300;
+    font-size: 0.44em;
+    line-height: 1;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    /* Tracked out to the right, so the word stays optically centred. */
+    text-indent: 0.2em;
+    color: var(--bri-farinha);
+  }
+  .vi-logo-bri-trade {
+    display: block;
+    margin-top: 0.55em;
+    font-family: var(--font-mono);
+    font-size: 0.16em;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--bri-carvao);
+  }
+
+  /* A card with no before holds at the end of the walk. */
+  .vi-morph[data-held] .vi-morph-old { display: none; }
+  /* The word tracked out is what measures this one, not the symbol. */
+  .vi-morph[data-whole] .vi-morph-new .vi-logo-bri { font-size: 17cqw; }
+
+  /* Three plates now, not two. */
+  @media (min-width: 980px) {
+    .vi-plates-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+}

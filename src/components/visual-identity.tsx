@@ -186,6 +186,21 @@ function Plates({ t }: { t: T }) {
     2026-11-19): the first carries Pilar's loop, the second Terral's,
     and the third stands empty for the case after it. One over the
     other on a phone. */
+/** A business that has no before: the card is the end of the walk,
+    held, with the guides already drawn behind it. */
+function Finished({ t, brand }: { t: T; brand: Brand }) {
+  return (
+    <div className="vi-morph" data-step="3" data-whole="" data-held="">
+      <span className="vi-morph-stage" aria-hidden="true">
+        <span className="vi-morph-grid">
+          <Grid drawn />
+        </span>
+        <span className="vi-morph-face vi-morph-new">{brand.newLogo?.(t)}</span>
+      </span>
+    </div>
+  );
+}
+
 function Cases3({ t }: { t: T }) {
   const pilar = BRANDS[0]!;
   // The mark exactly as the grey card of "Not sure?" shows it, in a much
@@ -198,10 +213,14 @@ function Cases3({ t }: { t: T }) {
      cards swapping businesses. Both are shown whole: the mark and the
      name together, side by side. */
   const limen = BRANDS[1]!;
+  /* The third is Briciola (user, 2026-11-20), shown only as it ends
+     up: it has no before, so the card stands still at the end of the
+     walk instead of taking one. */
+  const briciola = BRANDS[2]!;
   const items = [
     { key: "pilar", trade: pilar.trade(t), name: pilar.name, body: <Morph t={t} bare whole only={pilar} /> },
     { key: "limen", trade: limen.trade(t), name: limen.name, body: <Morph t={t} bare whole only={limen} /> },
-    { key: "next-1", trade: TO_FILL, name: TO_FILL, body: <span className="vi-trio-wait" aria-hidden="true" /> },
+    { key: "briciola", trade: briciola.trade(t), name: briciola.name, body: <Finished t={t} brand={briciola} /> },
   ];
   return (
     <div className="vi-trio">

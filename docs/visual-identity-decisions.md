@@ -411,3 +411,73 @@ cabeçalho, no lugar da Terral, **sem apagar a Terral dos ficheiros**.
   a limen, porque lê os mesmos `BRANDS`.
 - O nome por baixo do cartão da limen deixou de aparecer a cinzento: o
   cartão só fica marcado como vazio quando ainda espera um caso.
+
+## Briciola, o terceiro caso (2026-11-20)
+
+Pedida pelo utilizador para o terceiro card, que estava a `[a preencher]`.
+**Briciola** quer dizer migalha em italiano. Restauracao. Apresentada
+**so como fica depois** de passar por nos: este negocio nao tem um
+antes, e o card fica parado no fim do percurso em vez de o percorrer.
+
+### O que vem de cada referencia
+
+As duas referencias dadas pesam o mesmo.
+
+**Da Pomodoro:**
+- o simbolo guardado dentro de **um unico recipiente geometrico cheio**,
+  para a marca inteira ser uma forma so a qualquer tamanho;
+- o recipiente **aberto por cortes** que se leem como gesto e nao como
+  desenho.
+
+**Da Geranos:**
+- a marca **recortada de um solido** em vez de contornada: quem desenha
+  e o que se tira;
+- o **serif em capitais, espacejado**, como voz da assinatura;
+- as **duas palavras pequenas a ladear o simbolo** ("est" e "2026"), que
+  e o dispositivo que transforma um simbolo e um nome numa assinatura.
+
+### Os 20% que sao nossos, e porque
+
+As duas referencias puxam em sentidos contrarios: a Geranos e fria,
+editorial e sem cor; a Pomodoro e quente, desenhada a mao e alta.
+Copiadas de perto, o par brigava. Por isso:
+
+- os cortes mantem o gesto radial da Pomodoro mas sao tracados com a
+  **precisao da Geranos** - geometria verdadeira, nao pincel;
+- o serif mantem as capitais e o espacejamento da Geranos mas **perde o
+  contraste de navalha**: ao lado de uma massa tao pesada como o disco,
+  um serif de filete fica por resolver. A face e a **Fraunces**, light,
+  old-style de contraste moderado e esqueleto suave;
+- o assunto e o proprio nome: o disco **parte-se no canto inferior
+  direito** e tres migalhas caem dele, cada vez mais pequenas. Nada e
+  um desenho de comida, que e o que o mantem maduro;
+- as tres mordidas e as tres migalhas tem tamanhos e distancias
+  diferentes. Em passo certo liam-se como uma grelha de pixeis; fora de
+  passo leem-se como migalhas.
+
+### O sistema de cores
+
+Quatro, declaradas em `.vi-logo-bri` e em mais lado nenhum:
+
+| | | |
+| --- | --- | --- |
+| **Forno** | `#191513` | o forno. O fundo. |
+| **Farinha** | `#EDE9E0` | farinha. O papel, e a marca sobre o escuro. |
+| **Miolo** | `#C9B79B` | a migalha. O unico acento, e so em pequeno. |
+| **Carvao** | `#6B625A` | para a letra miuda. |
+
+O **simbolo e de uma cor so** - a que o fundo pedir, Forno ou Farinha -
+para aguentar ser carimbado em qualquer coisa. O acento nunca lhe toca:
+aparece nas duas palavras que ladeiam o simbolo e mais nada. Nao ha
+terracota nem creme quente, que e onde este tipo de marca costuma cair.
+
+### Onde esta
+
+- O terceiro card do cabecalho, com a assinatura inteira.
+- O terceiro prato de construcao, com o simbolo nu sobre as guias: as
+  tres verticais e horizontais da caixa do disco e os tres raios por
+  onde as migalhas caem.
+- O descritor existe nas duas linguas: "Cozinha e mesa" / "Kitchen and
+  table", e a linha legal "Briciola Cozinha e Mesa, Lda." / "Briciola
+  Kitchen and Table, Lda.".
+
