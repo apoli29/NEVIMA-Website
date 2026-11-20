@@ -9800,3 +9800,13 @@
     .vi-morph[data-whole] .vi-logo-tnew-name { transition: none; }
   }
 }
+
+@layer components {
+  /* The comparison is made with licensed photographs, and says so. */
+  .ps-pairs-note {
+    margin-top: clamp(1.5rem, 3vw, 2.25rem);
+    color: rgb(255 255 255 / 0.45);
+    text-transform: none;
+    letter-spacing: 0.04em;
+  }
+}
