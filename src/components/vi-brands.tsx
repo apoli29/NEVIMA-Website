@@ -316,7 +316,9 @@ export const BRANDS: Brand[] = [
     name: "Briciola",
     trade: (t) => t("Restaurants and hospitality", "Restaura\u00e7\u00e3o e hotelaria"),
     legal: (t) => t("Briciola Restaurants & Hospitality, Lda.", "Briciola Restaura\u00e7\u00e3o e Hotelaria, Lda."),
+    before: BriciolaBefore,
     after: BriciolaAfter,
+    oldLogo: (t) => <BriciolaOldLogo t={t} />,
     newLogo: (t) => <BriciolaNewLogo t={t} />,
     /* No guides, on purpose: this one is drawn with a brush, by eye,
        and it does not belong on a plate that says nothing is (user,
@@ -529,6 +531,52 @@ export function LimenNewLogo({ t }: { t: T }) {
    pages the mark is shown in the site's black and white, like Pilar's
    and limen's; the colour belongs to the brand's board.             */
 
+/** What it had: the badge a competitor drew for it twenty years ago
+    (user, 2026-11-20, who asked for one so the card could walk the
+    same four beats as the other two - a business with nothing before
+    has nothing to take apart).
+
+    It is not a joke at the trade's expense; it is the four things
+    that actually date a mark, which this file names at its head and
+    which every before here is built from. All four are present on
+    purpose: a drawn picture of the trade instead of a sign for it (a
+    toque, and a knife and fork crossed under it), an outline inside
+    an outline (the gold ring inside the gold rim), a flourish (the
+    swash under the cutlery), and a frame around the lot (the disc).
+    The gradient in the disc and the bevel on the name are the era's
+    own habits, and they are what the eye reads as "then" before it
+    has read anything else. */
+function BriciolaBefore() {
+  const id = useId().replace(/:/g, "");
+  return (
+    <g>
+      <defs>
+        <linearGradient id={`vi-bri-${id}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#8e2230" />
+          <stop offset="1" stopColor="#47101a" />
+        </linearGradient>
+      </defs>
+      <circle {...sh(0)} cx="50" cy="50" r="46" fill={`url(#vi-bri-${id})`} stroke="#c9a227" strokeWidth="2.5" />
+      <circle {...sh(1)} cx="50" cy="50" r="39.5" fill="none" stroke="#c9a227" strokeWidth="1" />
+      <path
+        {...sh(2)}
+        d="M30 48 C21 47 17 39 22 33 C18 26 25 19 33 22 C36 15 46 14 50 20 C54 14 64 15 67 22 C75 19 82 26 78 33 C83 39 79 47 70 48 Z"
+        fill="#f3ead7"
+      />
+      <rect {...sh(3)} x="31" y="48" width="38" height="10" rx="2" fill="#f3ead7" />
+      <g {...sh(4)} fill="#f3ead7" stroke="#f3ead7" strokeWidth="2.2" strokeLinecap="round">
+        <path d="M61 85 L48 68" fill="none" />
+        <path d="M49 69 L44 61 L41 65 L46 72 Z" stroke="none" />
+      </g>
+      <g {...sh(5)} fill="none" stroke="#f3ead7" strokeWidth="2.2" strokeLinecap="round">
+        <path d="M39 85 L52 68" />
+        <path d="M52 68 L55 63 M54 70 L58 65 M56 72 L60 67" strokeWidth="1.6" />
+      </g>
+      <path {...sh(6)} d="M29 88 C41 93 59 93 71 88" fill="none" stroke="#c9a227" strokeWidth="1.2" strokeLinecap="round" />
+    </g>
+  );
+}
+
 /** The symbol: a cloche under a brush sweep, three crumbs leaving it.
     Seven shapes - the sweep, the dome, the stem and knob, the plate
     line, and the three that fall - so the card can build it one at a
@@ -562,6 +610,27 @@ function BriciolaWord() {
         BRICIOLA
       </text>
     </svg>
+  );
+}
+
+/** How it signed before: the badge, the name in a bevelled italic
+    serif, the trade in letterspaced gold beside it, and the company
+    line under the two in grey. Every one of those is a habit of the
+    time rather than a decision, which is the point. */
+export function BriciolaOldLogo({ t }: { t: T }) {
+  return (
+    <span className="vi-logo vi-logo-briold">
+      <span className="vi-logo-mark">
+        <Mark brand={BRANDS[2]!} side="before" />
+      </span>
+      <span className="vi-logo-words">
+        <span className="vi-logo-briold-name">
+          <b>Briciola</b>
+          <i>{t("RESTAURANT", "RESTAURANTE")}</i>
+        </span>
+        <small>{t("Restaurant & Catering, Ltd.", "Restauração & Catering, Lda.")}</small>
+      </span>
+    </span>
   );
 }
 

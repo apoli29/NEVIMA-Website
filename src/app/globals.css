@@ -9833,16 +9833,39 @@
   .vi-morph[data-brand="limen"]:is([data-step="2"], [data-step="3"]) .vi-morph-stage { background: #1e1d1b; }
   .vi-morph[data-brand="limen"] .vi-morph-new { color: #f5f2ed; }
 
-  /* Briciola never had a website, so its card never shows the white of
-     one: the ground is its own inchiostro from the first beat to the
-     last, and the guides are read light on it at every step rather
-     than only once the room goes dark (user, 2026-11-20: the same
-     animation as the other two). */
-  .vi-morph[data-brand="briciola"] .vi-morph-stage { background: #16120f; }
+  /* Briciola's room, once the walk reaches it: its own inchiostro
+     rather than Pilar's navy. Before that the card is the white of
+     the website it had, like the other two - it was given a before on
+     2026-11-20 so that its card could walk the same four beats. */
+  .vi-morph[data-brand="briciola"]:is([data-step="2"], [data-step="3"]) .vi-morph-stage { background: #16120f; }
   .vi-morph[data-brand="briciola"] .vi-morph-new { color: #f4efe6; }
-  .vi-morph[data-brand="briciola"] .vi-g-rule { stroke: rgb(255 255 255 / 0.34); }
-  .vi-morph[data-brand="briciola"] .vi-g-faint { stroke: rgb(255 255 255 / 0.16); }
-  .vi-morph[data-brand="briciola"] .vi-g-dot { fill: rgb(255 255 255 / 0.38); }
+
+  /* The signature it had: the badge, the bevelled italic, the
+     letterspaced gold and the grey company line - the era's habits,
+     not decisions. */
+  .vi-logo-briold { gap: 0.32em; color: #6a1620; }
+  .vi-logo-briold .vi-logo-mark { width: 1.7em; }
+  .vi-logo-briold-name { display: flex; align-items: baseline; gap: 0.22em; }
+  .vi-logo-briold-name b {
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 1em;
+    color: #6a1620;
+    text-shadow: 0.045em 0.045em 0 #e8d2a8;
+  }
+  .vi-logo-briold-name i {
+    font-style: normal;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.34em;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    color: #b08a2e;
+  }
+  .vi-logo-briold small { display: block; font-family: Arial, Helvetica, sans-serif; font-size: 0.32em; color: #8a8a8a; }
+  /* "Briciola RESTAURANT" is a longer line than "Pilar INSURANCE" or
+     "Limen INTERIORS", and at the shared size it ran off the card. */
+  .vi-morph[data-whole] .vi-morph-old .vi-logo-briold { font-size: 9.2cqw; }
 }
 
 @layer components {
