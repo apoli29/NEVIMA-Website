@@ -1,8 +1,13 @@
 "use client";
 
 import { useId } from "react";
+import { Inter_Tight } from "next/font/google";
 import type { T } from "./sbs-shared";
 import { pilarSans } from "./sbs-pilar";
+
+/** limen's own face: a tight neo-grotesk, regular weight, as its
+    identity was drawn (2026-11-20). */
+const limenSans = Inter_Tight({ subsets: ["latin"], weight: ["300", "400"], variable: "--f-limen-sans", display: "swap" });
 
 /* ==================================================================
    Three invented businesses, each with the mark it had and the mark
@@ -187,7 +192,70 @@ function TerralAfter() {
   );
 }
 
+/* ---- 4. limen, real estate and interiors ------------------------- */
+
+/** What it had: a drawn roof over a four-paned window, a swash under
+    them and a double ring round the lot - the picture of the trade, the
+    outline in an outline, the flourish and the frame. */
+function LimenBefore() {
+  return (
+    <g>
+      <circle {...sh(0)} cx="50" cy="50" r="46" fill="none" stroke="currentColor" strokeWidth="2.5" />
+      <circle {...sh(1)} cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="1" />
+      <path {...sh(2)} d="M24 50 L50 28 L76 50" fill="none" stroke="currentColor" strokeWidth="4" strokeLinejoin="round" strokeLinecap="round" />
+      <path {...sh(3)} d="M40 48 H60 V68 H40 Z M50 48 V68 M40 58 H60" fill="none" stroke="currentColor" strokeWidth="2.5" />
+      <path {...sh(4)} d="M22 78 C40 88 62 88 80 72" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    </g>
+  );
+}
+
+/** What it has: a threshold drawn in plan - limen is Latin for it.
+
+    Drawn from the user's reference (2026-11-20, a numeral built of one
+    even stroke with square ends, set at the height of the name) at
+    about three quarters: the monoline, the square ends, the glyph that
+    is also a letter (the two walls read as an L).
+
+    The quarter that is ours: two walls in L that lock into a room with
+    two ways through, a door drawn in each as an architect draws one -
+    the leaf, and the arc it swings - in a line a quarter the walls'
+    weight, and a point of light in the middle. The user asked for it a
+    little less minimal and more sophisticated than the walls alone;
+    the two weights of line are what give it that. */
+function LimenAfter() {
+  return (
+    <g fill="none" stroke="currentColor">
+      <path {...sh(0)} d="M5.5 0V94.5H60M40 5.5H94.5V100" strokeWidth="11" strokeLinejoin="miter" />
+      <path {...sh(1)} d="M11 5.5A29 29 0 0 0 40 34.5V11M89 94.5A29 29 0 0 0 60 65.5V89" strokeWidth="2.6" />
+      <path {...sh(2)} d="M50 43.6L56.4 50L50 56.4L43.6 50Z" fill="currentColor" stroke="none" />
+    </g>
+  );
+}
+
 /* ================================================================== */
+
+/** Terral, kept whole and out of use: limen took its card on
+    2026-11-20 (user). */
+const TERRAL: Brand = {
+  id: "terral",
+  name: "Terral",
+  trade: (t) => t("Estate agent", "Mediação imobiliária"),
+  legal: (t) => t("Terral Properties, Lda.", "Terral Imobiliária, Lda."),
+  before: TerralBefore,
+  after: TerralAfter,
+  oldLogo: (t) => <TerralOldLogo t={t} />,
+  newLogo: (t) => <TerralNewLogo t={t} />,
+  /* The walls, the apex and the baseline, and the two lines the
+     slopes run along, carried past the mark. */
+  guides: {
+    x: [14, 46, 54, 86],
+    y: [8, 40, 92],
+    diag: [
+      [0, 54, 54, 0],
+      [38, 0, 100, 62],
+    ],
+  },
+};
 
 export const BRANDS: Brand[] = [
   {
@@ -211,29 +279,31 @@ export const BRANDS: Brand[] = [
     },
   },
   {
-    id: "terral",
-    name: "Terral",
-    trade: (t) => t("Estate agent", "Mediação imobiliária"),
-    legal: (t) => t("Terral Properties, Lda.", "Terral Imobiliária, Lda."),
-    before: TerralBefore,
-    after: TerralAfter,
-    oldLogo: (t) => <TerralOldLogo t={t} />,
-    newLogo: (t) => <TerralNewLogo t={t} />,
-    /* The walls, the apex and the baseline, and the two lines the
-       slopes run along, carried past the mark. */
+    id: "limen",
+    name: "limen",
+    trade: (t) => t("Real estate & interiors", "Imobiliário e interiores"),
+    legal: (t) => t("limen Real Estate & Interiors, Lda.", "limen Imobiliário & Interiores, Lda."),
+    before: LimenBefore,
+    after: LimenAfter,
+    oldLogo: (t) => <LimenOldLogo t={t} />,
+    newLogo: (t) => <LimenNewLogo t={t} />,
+    /* The walls' edges, where the doors hinge and where their leaves
+       end, and the diagonal the two openings sit on. */
     guides: {
-      x: [14, 46, 54, 86],
-      y: [8, 40, 92],
+      x: [0, 11, 40, 60, 89, 100],
+      y: [0, 11, 34.5, 65.5, 89, 100],
       diag: [
-        [0, 54, 54, 0],
-        [38, 0, 100, 62],
+        [0, 0, 100, 100],
+        [100, 0, 0, 100],
       ],
     },
   },
 ];
 
-/** Kept, not thrown away: drawn the same day, never shown. */
+/** Kept, not thrown away. Terral was on the page from 2026-11-19 to
+    2026-11-20; Aurora was drawn and never shown. */
 export const SPARE_BRANDS: Brand[] = [
+  TERRAL,
   {
     id: "aurora",
     name: "Aurora",
@@ -313,7 +383,7 @@ export function TerralOldLogo({ t }: { t: T }) {
   return (
     <span className="vi-logo vi-logo-stack vi-logo-told">
       <span className="vi-logo-mark">
-        <Mark brand={BRANDS[1]!} side="before" />
+        <Mark brand={TERRAL} side="before" />
       </span>
       <span className="vi-logo-words">
         <span className="vi-logo-told-name">
@@ -333,9 +403,56 @@ export function TerralNewLogo({ t }: { t: T }) {
   return (
     <span className="vi-logo vi-logo-stack vi-logo-tnew">
       <span className="vi-logo-mark">
-        <Mark brand={BRANDS[1]!} side="after" />
+        <Mark brand={TERRAL} side="after" />
       </span>
       <span className="vi-logo-tnew-name">{t("Terral", "Terral")}</span>
+    </span>
+  );
+}
+
+/* ---- limen's two signatures -------------------------------------- */
+
+/** How it signed before: the ringed picture, the name in a slanted
+    serif with a bevel, the trade tracked out beside it in a second
+    colour and the legal line in grey. Its colours are the business's
+    own, as Pilar's old blue is. */
+export function LimenOldLogo({ t }: { t: T }) {
+  return (
+    <span className="vi-logo vi-logo-lold">
+      <span className="vi-logo-mark">
+        <Mark brand={BRANDS[1]!} side="before" />
+      </span>
+      <span className="vi-logo-words">
+        <span className="vi-logo-lold-name">
+          <b>Limen</b>
+          <i>{t("INTERIORS", "INTERIORES")}</i>
+        </span>
+        <small>{t("Real Estate & Decoration, Lda.", "Imobiliária & Decoração, Lda.")}</small>
+      </span>
+    </span>
+  );
+}
+
+/** How it signs now, as its identity was drawn: the threshold at the
+    height of the name, the name in lower case, the ® over its end and
+    the trade in two short lines beside it, on the base line. In its
+    Linen, on its Basalt. */
+export function LimenNewLogo({ t }: { t: T }) {
+  return (
+    <span className={`vi-logo vi-logo-lnew ${limenSans.variable}`}>
+      <span className="vi-logo-mark">
+        <Mark brand={BRANDS[1]!} side="after" />
+      </span>
+      <span className="vi-logo-new-name vi-logo-lnew-name">
+        <span className="vi-logo-lnew-word">
+          limen<sup>&#174;</sup>
+        </span>
+        <span className="vi-logo-lnew-trade">
+          {t("Real Estate", "Imobiliário")}
+          <br />
+          {t("& Interiors", "& Interiores")}
+        </span>
+      </span>
     </span>
   );
 }

@@ -9802,6 +9802,39 @@
 }
 
 @layer components {
+  /* ---- limen's two signatures (2026-11-20) -------------------------
+     limen took Terral's card (user). Before: a ringed picture and a
+     bevelled serif, in the business's own wine and gold. After: the
+     threshold at the height of the name, lower case, the ® over its
+     end and the trade in two short lines on the base line, in its
+     Linen on its Basalt - not on Pilar's Noite.                     */
+  .vi-logo-lold { gap: 0.3em; color: #6d2a35; }
+  .vi-logo-lold .vi-logo-mark { width: 1.6em; }
+  .vi-logo-lold-name { display: flex; align-items: baseline; gap: 0.2em; }
+  .vi-logo-lold-name b { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-weight: 700; font-size: 1em; color: #6d2a35; text-shadow: 0.04em 0.04em 0 #e3c9cd; }
+  .vi-logo-lold-name i { font-style: normal; font-family: Arial, Helvetica, sans-serif; font-size: 0.4em; font-weight: 700; letter-spacing: 0.18em; color: #a8874a; }
+  .vi-logo-lold small { display: block; font-family: Arial, Helvetica, sans-serif; font-size: 0.34em; color: #8a8a8a; }
+
+  .vi-logo-lnew { align-items: last baseline; gap: 0.26em; color: #f5f2ed; }
+  .vi-logo-lnew .vi-logo-mark { width: 0.7em; }
+  .vi-logo-lnew-name {
+    display: flex;
+    align-items: last baseline;
+    gap: 0.34em;
+    font-family: var(--f-limen-sans), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+  .vi-logo-lnew-word { position: relative; letter-spacing: -0.045em; line-height: 1; }
+  .vi-logo-lnew-word sup { position: absolute; top: 0.04em; right: -0.26em; font-size: 0.14em; font-weight: 300; letter-spacing: 0; line-height: 1; vertical-align: baseline; }
+  .vi-logo-lnew-trade { font-size: 0.16em; line-height: 1.25; white-space: nowrap; }
+
+  .vi-morph[data-whole] .vi-morph-new .vi-logo-lnew { font-size: 18.5cqw; }
+  .vi-morph[data-brand="limen"]:is([data-step="2"], [data-step="3"]) .vi-morph-stage { background: #1e1d1b; }
+  .vi-morph[data-brand="limen"] .vi-morph-new { color: #f5f2ed; }
+}
+
+@layer components {
   /* The comparison is made with licensed photographs, and says so. */
   .ps-pairs-note {
     margin-top: clamp(1.5rem, 3vw, 2.25rem);
