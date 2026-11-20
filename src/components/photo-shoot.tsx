@@ -5,7 +5,6 @@ import { BeforeAfter } from "./project-report";
 import { ToneRoom } from "./tone-veil";
 import { Included, Coverage, Tailored } from "./shoot-sections";
 import { ProposalAsk } from "./about-faq";
-import { TO_FILL } from "@/lib/work";
 import { useT } from "@/lib/use-lang";
 import type { T } from "./sbs-shared";
 
@@ -29,10 +28,11 @@ import type { T } from "./sbs-shared";
    card keeps its shape, so dropping the real photograph in is the whole
    of the work: no layout changes, no code changes.
 
-   The packages are the studio's to set. Their fields read [a preencher]
-   until it does, which is what the rest of the site does with anything
-   the studio has not given yet (TO_FILL, lib/work.ts). No price is
-   invented here.
+   The packages are the studio's to set, and since 2026-11-20 (user)
+   the cards carry no price line at all: an empty [a preencher] under
+   three names was worse than nothing. What they are is written out -
+   photographs, hours, places, days - and the foot of the section says
+   where a figure comes from. No price is invented here.
 
    References through Inspo, turned into this site's own black, white,
    Satoshi and Geist Mono: Works Studio for three examples read side by
@@ -128,6 +128,10 @@ const PAIRS = [
   { id: "espaco", dir: "espaco", ratio: "3 / 2", en: "The place", pt: "O espaço" },
 ] as const;
 
+/** Out of use since 2026-11-20 (user): the three sliders and the
+    words over them came off the page. Kept whole, as this project
+    keeps its sections, so that putting them back is one line in
+    PhotoShoot. */
 function Compare({ t }: { t: T }) {
   return (
     <section aria-labelledby="ps-cmp-title" data-tone="dark" className="relative text-paper">
@@ -204,14 +208,15 @@ function packages(t: T) {
      actually bought, and the two first keep the same delivery. The
      names are the studio's ladder in the two languages.
 
-     The prices are still the studio's to give, and only the prices. */
+     The cards carry no price at all since 2026-11-20 (user): the
+     [a preencher] line came off rather than stand there empty, and
+     the foot of the section still says where a figure comes from. */
   return {
     rows,
     cards: [
       {
         id: "a",
         name: t("Essentials", "Essencial"),
-        price: TO_FILL,
         lit: false,
         values: [
           t("15 photographs", "15 fotografias"),
@@ -223,7 +228,6 @@ function packages(t: T) {
       {
         id: "b",
         name: t("Complete", "Completo"),
-        price: TO_FILL,
         lit: true,
         values: [
           t("30 photographs", "30 fotografias"),
@@ -235,7 +239,6 @@ function packages(t: T) {
       {
         id: "c",
         name: t("Extended", "Alargado"),
-        price: TO_FILL,
         lit: false,
         values: [
           t("50 photographs", "50 fotografias"),
@@ -276,8 +279,7 @@ function Packages({ t }: { t: T }) {
               <article className="ps-pack" data-lit={card.lit || undefined}>
                 <p className="mono-label ps-pack-kicker">{t(`Package ${i + 1}`, `Pacote ${i + 1}`)}</p>
                 <h3 className="ps-pack-name">{card.name}</h3>
-                <p className="ps-pack-price">{card.price}</p>
-                <dl className="ps-pack-rows">
+                        <dl className="ps-pack-rows">
                   {rows.map((row, r) => (
                     <div key={row}>
                       <dt className="mono-label">{row}</dt>
@@ -314,7 +316,10 @@ export function PhotoShoot() {
     <ToneRoom>
       <Head t={t} />
       <Opening t={t} />
-      <Compare t={t} />
+      {/* Compare, the same three things photographed twice, came off
+          the page on the user's ask (2026-11-20). It is whole below,
+          out of use, and the six photographs it reads are still in
+          public/photo-shoot/. */}
       <Included t={t} />
       <Packages t={t} />
       <Coverage t={t} />

@@ -194,3 +194,30 @@ Unsplash quase nao tem fotografia de produto deliberadamente ma, e o
 como uma fotografia falhada. Troca-se quando houver melhor, ou quando
 houver trabalho nosso.
 
+## O preco sai dos cartoes, e as duas maneiras saem da pagina (2026-11-20)
+
+Dois pedidos do utilizador.
+
+**O preco.** Os tres cartoes traziam uma linha de preco a dizer
+`[a preencher]`, por baixo do nome. Saiu. Um `[a preencher]` grande
+debaixo de tres nomes nao e um espaco reservado, e um buraco: o leitor
+le-o como «ainda nao sabem quanto custa». O que os cartoes tem para
+dizer esta escrito - fotografias, horas, locais, dias - e o pe da
+seccao continua a dizer que os precos sao do estudio e que o
+formulario calcula uma estimativa entretanto, com o botao ao lado. Nao
+ha buraco nenhum onde a linha estava: o nome passa direto para as
+linhas.
+
+A regra de estilo `.ps-pack-price` fica, fora de uso, para o dia em
+que o estudio der os numeros.
+
+**As duas maneiras de fotografar a mesma coisa.** A seccao inteira -
+o titulo «A diferenca nao esta na camara», o paragrafo e os tres
+comparadores antes/depois - saiu da pagina. Como tudo neste projeto,
+**nao foi apagada**: o componente `Compare` fica inteiro em
+`photo-shoot.tsx`, com uma nota no topo a dizer desde quando esta fora
+de uso, e volta com uma linha em `PhotoShoot`. As seis fotografias que
+ele le continuam em `public/photo-shoot/`.
+
+A pagina fica com cinco seccoes em vez de seis: abertura, o que a
+sessao inclui, os pacotes, onde trabalhamos e personalizacao.

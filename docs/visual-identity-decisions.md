@@ -795,3 +795,26 @@ figura fica inteira, coisa que cortar para preencher nao daria.
 
 Verificado a 1912x900 (palco 1912x900, sem scroll lateral) e a 375x812
 (palco 375x235).
+
+### Os dois telemoveis (2026-11-20)
+
+Esticar o palco a largura do ecra partiu o filme: passaram a
+aparecer **dois telemoveis**. O desenhado vive dentro do SVG, em
+coordenadas da sua `viewBox`; o nitido (`.vi-mg-screen`, que e HTML e
+mostra o website a serio) e a linha que a cara diz (`.vi-mg-say`) sao
+colocados em **percentagens do palco**. Enquanto o palco tem a forma
+do desenho, os dois caem no mesmo sitio; esticado, afastam-se e
+veem-se os dois.
+
+Cortar o palco para a forma do ecra tambem nao serve: o chao e os pes
+estao a 91% da altura do desenho e a cabeca a 26%, por isso tirar 25%
+num ecra largo perde uma ponta ou a outra.
+
+Fica assim: **o filme vai de extremidade a extremidade e o palco
+guarda os 16/10 do desenho**, medido pela altura e centrado
+(`height: min(100svh, 62.5vw); width: auto; margin-inline: auto`). O
+palco nao tem fundo proprio, por isso o que se ve ao lado e a
+gradiente do proprio filme, sem emenda: o campo ocupa o ecra e o
+desenho fica inteiro no meio dele. Num telemovel 62.5vw e mais baixo
+do que a janela, por isso o palco ocupa a largura toda, tal como
+sempre ocupou.
