@@ -256,7 +256,7 @@ function Cases3({ t }: { t: T }) {
 /** The title and the three cards, and nothing else. */
 function Head({ t }: { t: T }) {
   return (
-    <section data-tone="dark" className="relative isolate text-paper">
+    <section data-tone="dark" className="vi-head-sec relative isolate text-paper">
       <header className="shell ps-head" data-tone-body>
         <SlideIn ready>
           <h1 className="display max-w-[18ch] text-[clamp(2.5rem,6vw,4.75rem)] leading-[0.98] font-light">
