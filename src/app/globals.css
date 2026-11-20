@@ -6713,6 +6713,8 @@
     line-height: 1.1;
     letter-spacing: -0.02em;
   }
+  /* Out of use since 2026-11-20: the cards carry no price line. Kept
+     for the day the studio gives its figures. */
   .ps-pack-price {
     margin-top: 0.35rem;
     font-family: var(--font-title);
@@ -8943,15 +8945,28 @@
   /* At full width the inset hairline would draw a line across the
      whole screen, and the stage is already its own edge. */
   .vi-head-film .vi-mg { box-shadow: none; }
-  /* The height is set, not capped. A box with `aspect-ratio` whose
-     height is held back keeps the ratio by giving up WIDTH, so
-     `max-height` left the stage 1440 wide inside a 1912 film, with a
-     band of gradient down each side - the very thing this was meant
-     to fix. Setting the height outright and letting the width fill
-     is what actually reaches both edges. 62.5vw is the old 16/10, so
-     a phone is exactly as it was and only screens wide enough to
-     overflow the window get capped. */
-  .vi-head-film .vi-mg-stage { aspect-ratio: auto; height: min(100svh, 62.5vw); }
+  /* The stage keeps the drawing's own 16/10 and is sized by its
+     HEIGHT, then centred. It cannot simply be stretched to the width
+     of the screen: the crisp phone (.vi-mg-screen) and the line the
+     face speaks (.vi-mg-say) are placed in percentages of the stage,
+     and they only land on the drawn phone while the stage is the
+     drawing's shape. Stretched, the two phones came apart and the
+     film showed two - which is what the user saw.
+
+     Nor can it be cropped to fit: the floor and the feet sit at 91%
+     of the drawing's height and the head at 26%, so taking 25% off a
+     wide screen loses one end or the other.
+
+     So the field runs edge to edge and the drawing sits whole in the
+     middle of it. The stage carries no ground of its own, so what
+     shows beside it is the film's own gradient, with no seam. On a
+     phone 62.5vw is shorter than the window, so the stage is the full
+     width there, exactly as it always was. */
+  .vi-head-film .vi-mg-stage {
+    height: min(100svh, 62.5vw);
+    width: auto;
+    margin-inline: auto;
+  }
 
   /* each option framed and tagged, so the three read apart */
   .vi-opts { display: grid; gap: clamp(2.5rem, 5vw, 4rem); margin-top: clamp(2.5rem, 5vw, 4rem); }
