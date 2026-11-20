@@ -8901,13 +8901,13 @@
   .vi-morph[data-whole] .vi-morph-old .vi-logo-stack { font-size: 13cqw; }
   .vi-morph[data-whole] .vi-morph-new .vi-logo-stack { font-size: 28cqw; }
   .vi-morph[data-whole] .vi-logo-words,
-  .vi-morph[data-whole] .vi-logo-new-name { transition: opacity 0.5s ease, translate 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+  .vi-morph[data-whole] :is(.vi-logo-new-name, .vi-logo-arrive) { transition: opacity 0.5s ease, translate 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
   .vi-morph[data-whole]:is([data-step="1"], [data-step="2"], [data-step="3"]) .vi-morph-old .vi-logo-words { opacity: 0; translate: 0.6em 0; }
-  .vi-morph[data-whole] .vi-morph-new .vi-logo-new-name { opacity: 0; translate: -0.4em 0; }
-  .vi-morph[data-whole][data-step="3"] .vi-morph-new .vi-logo-new-name,
-  .vi-morph[data-whole][data-step="2"] .vi-morph-new .vi-logo-new-name { opacity: 1; translate: 0 0; transition-delay: 0.3s; }
+  .vi-morph[data-whole] .vi-morph-new :is(.vi-logo-new-name, .vi-logo-arrive) { opacity: 0; translate: -0.4em 0; }
+  .vi-morph[data-whole][data-step="3"] .vi-morph-new :is(.vi-logo-new-name, .vi-logo-arrive),
+  .vi-morph[data-whole][data-step="2"] .vi-morph-new :is(.vi-logo-new-name, .vi-logo-arrive) { opacity: 1; translate: 0 0; transition-delay: 0.3s; }
   @media (prefers-reduced-motion: reduce) {
-    .vi-morph[data-whole] .vi-logo-words, .vi-morph[data-whole] .vi-logo-new-name { transition: none; }
+    .vi-morph[data-whole] .vi-logo-words, .vi-morph[data-whole] :is(.vi-logo-new-name, .vi-logo-arrive) { transition: none; }
   }
 }
 
@@ -9832,6 +9832,17 @@
   .vi-morph[data-whole] .vi-morph-new .vi-logo-lnew { font-size: 18.5cqw; }
   .vi-morph[data-brand="limen"]:is([data-step="2"], [data-step="3"]) .vi-morph-stage { background: #1e1d1b; }
   .vi-morph[data-brand="limen"] .vi-morph-new { color: #f5f2ed; }
+
+  /* Briciola never had a website, so its card never shows the white of
+     one: the ground is its own inchiostro from the first beat to the
+     last, and the guides are read light on it at every step rather
+     than only once the room goes dark (user, 2026-11-20: the same
+     animation as the other two). */
+  .vi-morph[data-brand="briciola"] .vi-morph-stage { background: #16120f; }
+  .vi-morph[data-brand="briciola"] .vi-morph-new { color: #f4efe6; }
+  .vi-morph[data-brand="briciola"] .vi-g-rule { stroke: rgb(255 255 255 / 0.34); }
+  .vi-morph[data-brand="briciola"] .vi-g-faint { stroke: rgb(255 255 255 / 0.16); }
+  .vi-morph[data-brand="briciola"] .vi-g-dot { fill: rgb(255 255 255 / 0.38); }
 }
 
 @layer components {
@@ -9869,11 +9880,11 @@
     --bri-inchiostro: #15120f;
     --bri-panna: #f4efe6;
     --bri-cenere: #8a8178;
-    gap: 0.065em;
+    gap: 0.085em;
     color: var(--bri-panna);
   }
   /* The cloche over the word, a little under a third of its width. */
-  .vi-logo-bri-sym { display: block; width: 0.34em; }
+  .vi-logo-bri-sym { display: block; width: 0.52em; }
   /* The word is one drawing, so it scales as one and is narrowed the
      same amount everywhere. */
   .vi-logo-bri-svg { display: block; width: 1em; height: auto; }
@@ -9881,18 +9892,10 @@
     font-family: var(--f-briciola), Didot, "Bodoni MT", Georgia, serif;
     font-weight: 400;
   }
-  /* The line under the word is set in the same face, spaced out, not
-     in a mono label: one voice. */
-  .vi-logo-bri-trade {
-    display: block;
-    margin-top: 0.035em;
-    font-family: var(--f-briciola), Didot, "Bodoni MT", Georgia, serif;
-    font-size: 0.055em;
-    letter-spacing: 0.4em;
-    text-indent: 0.4em;
-    text-transform: uppercase;
-    color: var(--bri-cenere);
-  }
+  /* The line that used to read "Kitchen and table" came off on the
+     user's ask (2026-11-20); the trade is still printed above the
+     card. If it ever comes back it is set in the same face, spaced
+     out, never in a mono label - one voice.                        */
 
   /* A card with no before holds at the end of the walk. */
   .vi-morph[data-held] .vi-morph-old { display: none; }
