@@ -414,12 +414,12 @@ cabeçalho, no lugar da Terral, **sem apagar a Terral dos ficheiros**.
 
 ## Briciola, o terceiro caso (2026-11-20)
 
-Pedida para o terceiro card. Foi feita duas vezes no mesmo dia: a
-primeira para restauracao, a partir das referencias Geranos e
-Pomodoro; a segunda, que e esta, para **imobiliario e design de
-interiores**, a partir da referencia "crunch". A primeira esta no
-historico do git e nao ficou em codigo, para nao haver duas marcas com
-o mesmo nome no ficheiro.
+Pedida para o terceiro card e refeita tres vezes no mesmo dia: para
+restauracao a partir das referencias Geranos e Pomodoro; para
+interiores a partir da referencia "crunch"; e, finalmente, esta - a
+**referencia "crunch" com o ramo de volta a restauracao e hotelaria**.
+As duas primeiras estao no historico do git e nao ficaram em codigo,
+para nao haver tres marcas com o mesmo nome no ficheiro.
 
 Apresentada **so como fica depois** de passar por nos: este negocio
 nao tem um antes, e o card fica parado no fim do percurso em vez de o
@@ -429,30 +429,34 @@ percorrer.
 
 - o **nome numa so linha, minusculas e pesada**, com a massa a fazer o
   trabalho e os olhos das letras pequenos;
-- as **pecas pequenas a subir de uma das letras**, a ocupar o lugar do
-  ponto dela;
+- as **migalhas a subir de uma das letras**, a ocupar o lugar do ponto
+  dela;
 - um sistema **plano de duas cores**: um campo e uma marca sobre ele, e
   mais nada.
 
+O nome ajuda: *briciola* e migalha, por isso o proprio dispositivo da
+referencia e tambem a coisa mais verdadeira que este negocio podia
+carregar.
+
 ### O quarto que e nosso, e porque
 
-A referencia e um snack: letras cortadas a mao, uma inclinacao,
-migalhas a voar, um amarelo alto. Uma empresa de interiores que se
-quer ler sofisticada e madura nao pode pedir emprestada a piada. Por
-isso:
+Precisamente porque o dispositivo assenta, o quarto que e nosso tem de
+trabalhar mais, ou o resultado e a referencia com outra palavra la
+dentro. A referencia e um snack: letras cortadas a mao, uma
+inclinacao, um bando de pontinhos atirado em arco, um amarelo alto. Um
+restaurante que se quer ler sofisticado e maduro nao pode pedir
+emprestada a piada. Por isso:
 
 - as mesmas minusculas pesadas sao desenhadas como **geometria
   verdadeira** - peso igual, sem inclinacao, sem terminais irregulares.
-  So essa mudanca tira-lhe o brincalhao e poe-lhe o moderno. A face e a
-  **Outfit**, 700;
-- o que sobe da letra **nao sao migalhas mas quatro divisoes**, cada
-  uma com proporcao diferente, a subir e a diminuir - o oficio em vez
-  do snack. Sozinhas sao o simbolo; sobre o i sem ponto sao o ponto do
-  logotipo;
-- o **i perde o ponto** (e um i sem ponto, U+0131) para as divisoes
-  poderem subir dele, que e o que a referencia faz com o u;
-- o campo deixa de ser o amarelo alto e passa a um **gesso calmo**, para
-  a marca poder assentar numa parede, numa planta ou num quadro sem
+  A face e a **Outfit**, 700;
+- as migalhas sao **quatro, nao um bando**, cada uma arredondada e cada
+  uma menor do que a anterior, e sobem **por um arco so** em vez de se
+  espalharem. Ordenadas, leem-se como deliberadas;
+- o **i perde o ponto** (U+0131, i sem ponto) para as migalhas poderem
+  subir dele, que e o que a referencia faz com o u;
+- o campo deixa de ser o amarelo alto e passa a um **linho**, para a
+  marca poder assentar numa ementa, numa montra ou num guardanapo sem
   gritar.
 
 ### O sistema de cores
@@ -461,27 +465,20 @@ Quatro, declaradas em `.vi-logo-bri` e em mais lado nenhum:
 
 | | | |
 | --- | --- | --- |
-| **Betao** | `#1A1A18` | betao. A marca. |
-| **Gesso** | `#EAE7E0` | gesso. O campo onde assenta. |
-| **Lousa** | `#7E8B91` | lousa. O unico acento. |
-| **Sombra** | `#5A5A55` | para a letra miuda. |
+| **Tostado** | `#1E1814` | tostado. A marca. |
+| **Linho** | `#EDE8DE` | linho. O campo onde assenta. |
+| **Vinho** | `#5B2733` | o unico acento. |
+| **Cinza** | `#6A635C` | para a letra miuda. |
 
-O **simbolo e de uma cor so** - Betao ou Gesso, a que o fundo pedir -
-para aguentar ser carimbado em qualquer coisa.
-
-### Uma coisa a saber
-
-O utilizador pediu o ramo "imobiliario, design de interiores", que e o
-mesmo da limen ("Imobiliario e interiores"). Dois dos tres cards com o
-mesmo ramo liam-se como um erro, por isso a Briciola leva so a metade
-dos interiores: **"Design de interiores"**. Se preferir trocar, troca-se
-numa linha.
+O acento e um vinho e nao a argila quente para onde este tipo de marca
+costuma cair. O **simbolo e de uma cor so** - Tostado ou Linho, a que o
+fundo pedir - para aguentar ser carimbado em qualquer coisa.
 
 ### Onde esta
 
 - O terceiro card do cabecalho, com a assinatura inteira.
 - O terceiro prato de construcao, com o simbolo nu sobre as guias: onde
-  cada divisao comeca e acaba, e a linha por onde todas sobem.
-- O descritor existe nas duas linguas: "Interiores" / "Interiors", e a
-  linha legal "Briciola Design de Interiores, Lda." / "Briciola
-  Interior Design, Lda.".
+  cada migalha comeca e acaba, e o arco por onde todas sobem.
+- O descritor existe nas duas linguas: "Cozinha e mesa" / "Kitchen and
+  table", e a linha legal "Briciola Restauracao e Hotelaria, Lda." /
+  "Briciola Restaurants & Hospitality, Lda.".

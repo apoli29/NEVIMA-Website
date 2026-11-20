@@ -309,20 +309,16 @@ export const BRANDS: Brand[] = [
   {
     id: "briciola",
     name: "Briciola",
-    /* limen already carries "Imobili\u00e1rio e interiores"; two of the
-       three cards cannot read the same, so Briciola leads with the
-       interiors half of what the user asked for. */
-    trade: (t) => t("Interior design", "Design de interiores"),
-    legal: (t) => t("Briciola Interior Design, Lda.", "Briciola Design de Interiores, Lda."),
+    trade: (t) => t("Restaurants and hospitality", "Restaura\u00e7\u00e3o e hotelaria"),
+    legal: (t) => t("Briciola Restaurants & Hospitality, Lda.", "Briciola Restaura\u00e7\u00e3o e Hotelaria, Lda."),
     after: BriciolaAfter,
     newLogo: (t) => <BriciolaNewLogo t={t} />,
-    /* Where each room begins and ends, and the line they all rise
-       along. */
+    /* Where each crumb begins and ends, and the arc they rise along. */
     guides: {
-      x: [10, 40, 66, 97],
-      y: [8, 22, 40, 62, 86],
+      x: [12, 38, 72, 94],
+      y: [14, 28, 42, 60, 82],
       diag: [
-        [0, 97, 100, 6],
+        [0, 89, 100, 16],
         [0, 0, 100, 100],
       ],
     },
@@ -486,49 +482,57 @@ export function LimenNewLogo({ t }: { t: T }) {
   );
 }
 
-/* ---- Briciola, an estate agent and interior designer --------------
+/* ---- Briciola, a restaurant --------------------------------------
 
    Invented on 2026-11-20 at the user's ask, and shown only as it ends
-   up: there is no before for this one.
+   up: there is no before for this one. It was drawn once for
+   interiors before the user moved it to hospitality; the trade, the
+   colours and what rises from the letter changed with it.
 
    WHAT COMES FROM THE REFERENCE, which is three quarters of it: the
    wordmark set in one heavy lowercase line, with the mass doing the
-   work and the counters kept small; the small shapes lifting out of
-   one letter and standing in for its dot; and a flat two-colour
-   system, a field and a mark on it, with nothing else.
+   work and the counters kept small; the crumbs lifting out of one
+   letter and standing in for its dot; and a flat two-colour system, a
+   field and a mark on it, with nothing else. The name helps here -
+   briciola is a crumb, so the reference's own device is also the
+   truest thing this business could carry.
 
-   WHAT IS OURS, AND WHY. The reference is a snack: hand-cut letters,
-   a tilt, crumbs flying, a loud yellow. An estate agent that wants to
-   read sophisticated and mature cannot borrow the joke. So the same
-   heavy lowercase is drawn as true geometry, with even weight and no
-   tilt - that one change moves it from playful to modern; what lifts
-   out of the letter is not a scatter of crumbs but four rooms, each a
-   different proportion, rising and getting smaller, which is the
-   trade rather than the snack; and the field is a quiet plaster
-   instead of the yellow, so the mark can sit on a wall, a plan or a
-   board without shouting.
+   WHAT IS OURS, AND WHY. Precisely because the device fits, the
+   quarter that is ours has to work harder, or the result is the
+   reference with another word in it. The reference is a snack:
+   letters cut by hand, a tilt, a flock of specks thrown in an arc, a
+   loud yellow. A restaurant that wants to read sophisticated and
+   mature cannot borrow the joke. So:
 
-   THE COLOURS. Four, declared on .vi-logo-bri in globals.css: Betao
-   for the mark, Gesso for the field, Lousa as the one accent and
-   Sombra for the small print. The symbol itself is one colour,
+   - the same heavy lowercase is drawn as true geometry, even in
+     weight, with no tilt and no ragged terminals;
+   - the crumbs are four, not a flock, each rounded and each smaller
+     than the last, and they rise along one quiet arc instead of
+     scattering. Ordered, they read as deliberate;
+   - the field is a linen instead of the yellow, so the mark can sit
+     on a menu, a window or a napkin without shouting.
+
+   THE COLOURS. Four, declared on .vi-logo-bri in globals.css: Tostado
+   for the mark, Linho for the field, Vinho as the one accent and
+   Cinza for the small print. The symbol itself is one colour,
    whichever the ground asks for.                                    */
 
-/** The rooms lifting away: four rounded rectangles of different
-    proportions, rising to the right and getting smaller. Alone it is
-    the symbol; over the dotless i it is the wordmark's dot. */
+/** The crumbs lifting away: four rounded shapes rising to the right
+    along one arc, each smaller than the last. Alone they are the
+    symbol; over the dotless i they are the wordmark's dot. */
 function BriciolaAfter() {
   return (
     <g>
-      <rect {...sh(0)} x="10" y="62" width="30" height="24" rx="6" />
-      <rect {...sh(1)} x="44" y="40" width="22" height="22" rx="5" />
-      <rect {...sh(2)} x="70" y="22" width="14" height="18" rx="4" />
-      <rect {...sh(3)} x="88" y="8" width="9" height="9" rx="3" />
+      <rect {...sh(0)} x="12" y="60" width="26" height="22" rx="7" />
+      <rect {...sh(1)} x="46" y="42" width="17" height="15" rx="5" />
+      <rect {...sh(2)} x="72" y="28" width="10" height="10" rx="3.5" />
+      <rect {...sh(3)} x="88" y="14" width="6" height="6" rx="2.5" />
     </g>
   );
 }
 
 /** The signature: the word in one heavy lowercase line, its first i
-    left without a dot so the rooms can rise from it, and the trade
+    left without a dot so the crumbs can rise from it, and the trade
     under the whole thing. */
 export function BriciolaNewLogo({ t }: { t: T }) {
   return (
@@ -544,7 +548,7 @@ export function BriciolaNewLogo({ t }: { t: T }) {
         ciola
       </span>
       <span className="vi-logo-bri-trade">
-        {t("Interiors", "Interiores")}
+        {t("Kitchen and table", "Cozinha e mesa")}
       </span>
     </span>
   );
