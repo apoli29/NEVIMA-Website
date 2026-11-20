@@ -762,12 +762,36 @@ maximo da shell dos dois lados (`width: 100vw` com
 Duas coisas que acompanham isto e sem as quais a mudanca parece uma
 avaria:
 
-- `100vw` conta a barra de scroll, por isso o cabecalho passa a
-  `overflow-x: clip` - **`clip` e nao `hidden`**, para nao criar um
-  contexto de scroll que tiraria o sticky a seja o que for la dentro;
+- `100vw` conta a barra de scroll, por isso alguem tem de cortar o que
+  sobra ou a pagina ganha scroll lateral - **`clip` e nao `hidden`**,
+  para nao criar um contexto de scroll que tiraria o sticky a seja o
+  que for la dentro;
 - o fio de um pixel que emoldurava o filme saiu. Dentro da shell era
   uma moldura; a toda a largura seria um risco de lado a lado do ecra,
   e o palco ja e a sua propria aresta.
 
-A 1440x950 o palco fica em 1440x900, ou seja praticamente o ecra todo,
-porque a proporcao do filme (16/10) assim o da.
+**Duas coisas que correram mal e o utilizador apanhou**, ambas do
+mesmo tipo - a medicao dizia que estava certo e o ecra dizia que nao:
+
+1. **o corte estava no sitio errado.** Pus `overflow-x: clip` no
+   proprio cabecalho, que e exatamente a caixa de onde o filme tem de
+   sair; cortou-o de volta a largura da shell e deixou uma barra preta
+   de cada lado. O corte pertence a **seccao**, que ja vai de
+   extremidade a extremidade. O `getBoundingClientRect` nao apanha
+   isto: devolve a caixa de layout, nao o que e pintado, por isso a
+   medicao dizia 1440 de 1440 enquanto o ecra mostrava o contrario.
+2. **`max-height` encolhe a largura.** Uma caixa com `aspect-ratio`
+   cuja altura e travada mantem a proporcao **cedendo largura**: num
+   filme de 1912 o palco ficou com 1440 e a gradiente a sobrar dos
+   dois lados. A altura passou a ser posta e nao travada -
+   `aspect-ratio: auto; height: min(100svh, 62.5vw)`. Os `62.5vw` sao
+   os antigos 16/10, por isso um telemovel fica exatamente como
+   estava (375x235) e so os ecras largos o bastante para transbordar
+   a janela e que sao travados.
+
+Com a altura travada, a caixa e mais larga do que o desenho, e o
+desenho fica ao meio com a gradiente a correr ate as duas margens. A
+figura fica inteira, coisa que cortar para preencher nao daria.
+
+Verificado a 1912x900 (palco 1912x900, sem scroll lateral) e a 375x812
+(palco 375x235).
