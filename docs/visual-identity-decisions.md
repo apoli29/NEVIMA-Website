@@ -328,3 +328,31 @@ Medidas novas: paredes de 14 a 86, vértice a 8, base a 92, vazio de 46
 a 54. Todos os ângulos continuam a 45° e o vazio continua com 8 de
 largura, que é o que o mantém acima de um pixel a 16 px.
 
+### O nome onde estava a barra (2026-11-20)
+
+O utilizador deixou a decisao: "no lugar da antiga barra podes meter o
+nome da marca se achares que fique bem".
+
+**Dentro do simbolo, nao.** Um simbolo tem de funcionar sozinho e tem
+de aguentar 16 px; uma palavra de oito unidades por baixo de uma empena
+de oitenta e quatro desapareceria a esse tamanho e tirava ao simbolo o
+que o faz simbolo. E no prato de construcao as guias sao da geometria
+da marca, nao de tipo.
+
+**Como assinatura, sim** - e era isso que faltava. A Terral passou a
+ter o seu par de assinaturas, como a Pilar ja tinha: `TerralOldLogo` e
+`TerralNewLogo`. A nova e a marca com o nome **por baixo**, que e
+exactamente onde a barra estava; a antiga e a mesma coisa em serif com
+relevo, a palavra do oficio espacejada ao lado e a linha legal em
+cinzento - os tres habitos que datam uma assinatura. As cores da antiga
+sao da empresa, como o azul antigo da Pilar, nao nossas.
+
+A Pilar assina ao lado, a Terral assina por baixo: uma empena e uma
+palavra nao se deitam lado a lado sem uma delas ficar pequena.
+
+O `Brand` ganhou `oldLogo` e `newLogo` opcionais, e o `Morph` mostra a
+assinatura que o negocio tiver, caindo nos dois simbolos quando nao
+tem. Os dois cards do cabecalho ficaram presos ao seu negocio
+(`only`): sem isso o loop percorria todos e os dois cards trocavam de
+empresa entre si.
+
