@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { SlideIn } from "./enter";
 import { BeforeAfter } from "./project-report";
 import { ToneRoom } from "./tone-veil";
 import { ProposalAsk } from "./about-faq";
 import { useInView, type T } from "./sbs-shared";
-import { BRANDS, Mark, PilarNewLogo, PilarOldLogo } from "./vi-brands";
+import { STILL_KEY } from "./footer";
+import { BRANDS, Mark, PilarNewLogo, PilarOldLogo, type Brand } from "./vi-brands";
 import { TO_FILL } from "@/lib/work";
 import { useT } from "@/lib/use-lang";
 
@@ -49,21 +50,155 @@ import { useT } from "@/lib/use-lang";
    ruled cell). Their colour and type stay with them.
    ================================================================== */
 
+/* ---- what the visitor asked for ---------------------------------- */
+
+/** The footer offers to hold the moving things still and remembers it
+    (STILL_KEY). Everything on this page that runs on a clock reads it,
+    the same way the bar and the portfolio do; prefers-reduced-motion
+    is read beside it. */
+function useStill() {
+  const [still, setStill] = useState(false);
+  useEffect(() => {
+    try {
+      setStill(!!localStorage.getItem(STILL_KEY));
+    } catch {}
+  }, []);
+  return still;
+}
+
+/* ---- the symbol on the guides it was built on -------------------- */
+
+/** A dark plate, a grid of modules almost out of sight on it, the
+    mark's own edges and the lines its angles run along dashed over
+    that, and the mark itself in white with its mark of registration
+    beside it. Under the plate, the wordmark and the name as it would
+    be registered.
+
+    It builds itself once, when it is reached, in the order the mark is
+    drawn in: the modules come up, the straight guides are wiped in
+    from the left, the diagonals from the top, the mark's pieces fill
+    one after another, and the registration and the wordmark arrive
+    last. Nothing moves but transforms and opacities; the guides keep
+    their dashes because what wipes them in is a clip, not the dash
+    itself.
+
+    Asked to hold still - by the footer, or by the system - it is
+    simply there, built, with nothing running. */
+function MarkPlate({ brand, t, still }: { brand: Brand; t: T; still: boolean }) {
+  const [ref, inView] = useInView<HTMLElement>(0.35);
+  const [built, setBuilt] = useState(false);
+  const id = useId().replace(/:/g, "");
+
+  useEffect(() => {
+    if (inView) setBuilt(true);
+  }, [inView]);
+
+  const After = brand.after;
+  const mods = Array.from({ length: 9 }, (_, i) => (i + 1) * 10);
+
+  return (
+    <figure ref={ref} className="vi-plate" data-built={built || still || undefined} data-still={still || undefined}>
+      <span className="vi-plate-stage">
+        <svg className="vi-plate-svg" viewBox="0 0 100 100" aria-hidden="true">
+          <defs>
+            <clipPath id={`${id}-s`}>
+              <rect className="vi-plate-wipe vi-plate-wipe-x" x="-10" y="-10" width="120" height="120" />
+            </clipPath>
+            <clipPath id={`${id}-d`}>
+              <rect className="vi-plate-wipe vi-plate-wipe-y" x="-10" y="-10" width="120" height="120" />
+            </clipPath>
+          </defs>
+
+          {/* the modules the mark is set out on */}
+          <g className="vi-plate-mods">
+            {mods.map((at) => (
+              <line key={`v${at}`} x1={at} y1="0" x2={at} y2="100" />
+            ))}
+            {mods.map((at) => (
+              <line key={`h${at}`} x1="0" y1={at} x2="100" y2={at} />
+            ))}
+          </g>
+
+          {/* where the mark's own edges fall */}
+          <g className="vi-plate-guides" clipPath={`url(#${id}-s)`}>
+            {brand.guides.x.map((x) => (
+              <line key={`gx${x}`} x1={x} y1="-10" x2={x} y2="110" />
+            ))}
+            {brand.guides.y.map((y) => (
+              <line key={`gy${y}`} x1="-10" y1={y} x2="110" y2={y} />
+            ))}
+          </g>
+
+          {/* and the lines its angles run along, carried past it */}
+          <g className="vi-plate-guides" clipPath={`url(#${id}-d)`}>
+            {brand.guides.diag.map((d) => (
+              <line key={d.join()} x1={d[0]} y1={d[1]} x2={d[2]} y2={d[3]} />
+            ))}
+          </g>
+
+          <g className="vi-plate-mark">
+            <After />
+          </g>
+        </svg>
+        <span className="vi-plate-reg" aria-hidden="true">
+          &#174;
+        </span>
+      </span>
+      <figcaption className="vi-plate-say">
+        <span className="vi-plate-word">{brand.name}</span>
+        <span className="mono-label vi-plate-legal">{brand.legal(t)}</span>
+      </figcaption>
+    </figure>
+  );
+}
+
+/** The two symbols on the guides they were set out on. The section
+    "The proposal" used to hold them, and it is no longer on the page
+    (2026-11-19), so they stand on their own, between the header and
+    who the service is for. */
+function Plates({ t }: { t: T }) {
+  const still = useStill();
+  return (
+    <section aria-labelledby="vi-plates-title" data-tone="dark" className="relative text-paper">
+      <div className="shell ps-sec" data-tone-body>
+        <SlideIn ready>
+          <p className="mono-label text-paper/55">{t("How a mark is built", "Como se constr\u00f3i uma marca")}</p>
+          <h2 id="vi-plates-title" className="display ps-title">
+            <span className="font-light sm:block">{t("Nothing is drawn by eye:", "Nada \u00e9 desenhado a olho:")}</span>{" "}
+            <span className="font-medium sm:block">{t("every edge sits on a guide.", "cada aresta assenta numa guia.")}</span>
+          </h2>
+        </SlideIn>
+        <SlideIn ready distance={0} delay={0.1}>
+          <div className="vi-plates-row">
+            {BRANDS.map((brand) => (
+              <MarkPlate key={brand.id} brand={brand} t={t} still={still} />
+            ))}
+          </div>
+        </SlideIn>
+      </div>
+    </section>
+  );
+}
+
 /* ---- the header -------------------------------------------------- */
 
 /** Three of the grey card that closes "Does it make sense?" (user,
-    2026-11-19): the first carries Pilar's loop, the other two stand
-    empty for the two cases the studio is about to add. One over the
+    2026-11-19): the first carries Pilar's loop, the second Terral's,
+    and the third stands empty for the case after it. One over the
     other on a phone. */
 function Cases3({ t }: { t: T }) {
   const pilar = BRANDS[0]!;
   // The mark exactly as the grey card of "Not sure?" shows it, in a much
   // thinner rim of grey; the trade over it and the name under it, both
   // outside the card (user, 2026-11-19).
+  /* The second card is Terral's (user, 2026-11-19); the third waits
+     for the case after it. Only Pilar has both lockups drawn, so it is
+     the only one shown whole - Terral shows its two symbols. */
+  const terral = BRANDS[1]!;
   const items = [
     { key: "pilar", trade: pilar.trade(t), name: pilar.name, body: <Morph t={t} bare whole /> },
+    { key: "terral", trade: terral.trade(t), name: terral.name, body: <Morph t={t} bare only={terral} /> },
     { key: "next-1", trade: TO_FILL, name: TO_FILL, body: <span className="vi-trio-wait" aria-hidden="true" /> },
-    { key: "next-2", trade: TO_FILL, name: TO_FILL, body: <span className="vi-trio-wait" aria-hidden="true" /> },
   ];
   return (
     <div className="vi-trio">
@@ -626,7 +761,7 @@ const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 
     held section wrongly. With less motion, the title, "No." and the
     rest simply stand in order. */
 function Fits({ t }: { t: T }) {
-  const reduce = useReducedMotion() ?? false;
+  const reduce = (useReducedMotion() ?? false) || useStill();
   const run = useRef<HTMLDivElement>(null);
   const pin = useRef<HTMLDivElement>(null);
   const head = useRef<HTMLDivElement>(null);
@@ -796,8 +931,8 @@ const MORPH_MS = 1250;
     References through Inspo: Geex (forms sculpted and resolved on an
     empty ground) and Portal One (the construction geometry left in
     view). The composition only - the colour and the type are ours. */
-function Morph({ t, bare = false, whole = false }: { t: T; bare?: boolean; whole?: boolean }) {
-  const reduce = useReducedMotion() ?? false;
+function Morph({ t, bare = false, whole = false, only }: { t: T; bare?: boolean; whole?: boolean; only?: Brand }) {
+  const reduce = (useReducedMotion() ?? false) || useStill();
   const [ref, inView] = useInView<HTMLDivElement>(0.35);
   const [n, setN] = useState(0);
 
@@ -808,7 +943,9 @@ function Morph({ t, bare = false, whole = false }: { t: T; bare?: boolean; whole
   }, [inView, reduce]);
 
   const step = reduce ? 3 : n % 4;
-  const brand = BRANDS[Math.floor(n / 4) % BRANDS.length]!;
+  /* A card that is given a business keeps it; left to itself, the
+     loop walks all of them. */
+  const brand = only ?? BRANDS[Math.floor(n / 4) % BRANDS.length]!;
 
   return (
     <div
@@ -818,8 +955,8 @@ function Morph({ t, bare = false, whole = false }: { t: T; bare?: boolean; whole
       data-whole={whole || undefined}
       role="img"
       aria-label={t(
-        "Pilar's old mark taken apart and its new mark built on the guides.",
-        "A marca antiga da Pilar desfeita e a nova construída sobre as guias.",
+        `${brand.name}'s old mark taken apart and its new mark built on the guides.`,
+        `A marca antiga da ${brand.name} desfeita e a nova construída sobre as guias.`,
       )}
     >
       <span className="vi-morph-stage" aria-hidden="true">
@@ -957,6 +1094,7 @@ export function VisualIdentity() {
   return (
     <ToneRoom>
       <Head t={t} />
+      <Plates t={t} />
       <Fits t={t} />
       <Prices t={t} />
     </ToneRoom>

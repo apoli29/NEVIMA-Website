@@ -9641,3 +9641,105 @@
 .prc-viewport .border-ink\/15 { border-color: rgb(255 255 255 / 0.22); }
 .prc-viewport .idx-title { background: #ffffff; color: var(--color-ink); text-shadow: none; }
 .prc-viewport .cta-drop { text-shadow: none; }
+
+/* ---- the symbol on the guides it was built on (2026-11-19) ----------
+   A dark plate, a grid of modules almost out of sight, the mark's own
+   edges and the lines its angles run along dashed in cyan over it, and
+   the mark in white with its mark of registration beside it. Cyan is
+   the only colour on this site that is not black or white, and it is
+   here for the one reason a drawing office uses it: a guide must not
+   be mistaken for the thing it guides. It never touches the brand.   */
+@layer components {
+  .vi-plates-row {
+    display: grid;
+    gap: clamp(1.25rem, 3vw, 2rem);
+    margin-top: clamp(2rem, 4vw, 3rem);
+  }
+  @media (min-width: 720px) { .vi-plates-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  .vi-plate { margin: 0; }
+  .vi-plate-stage {
+    position: relative;
+    display: block;
+    aspect-ratio: 1 / 1;
+    background: #1c1c1c;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+  }
+  /* The mark keeps a clear margin of plate around it; the guides run
+     past that, as they do on a drawing. */
+  .vi-plate-svg { position: absolute; inset: 19%; width: 62%; height: 62%; overflow: visible; }
+
+  /* the modules: there, and all but unseen */
+  .vi-plate-mods line { stroke: rgb(255 255 255 / 0.05); stroke-width: 0.35; }
+  .vi-plate-mods { opacity: 0; transition: opacity 0.5s ease; }
+  .vi-plate[data-built] .vi-plate-mods { opacity: 1; }
+
+  /* the guides, dashed, in the drawing office's cyan */
+  .vi-plate-guides line {
+    stroke: #7fd6e3;
+    stroke-width: 0.35;
+    stroke-dasharray: 2 2;
+    opacity: 0.55;
+  }
+  /* What wipes them in is the clip, not the dash, so the dashes stay
+     dashes while the line arrives. */
+  .vi-plate-wipe { transform-box: fill-box; }
+  .vi-plate-wipe-x { transform-origin: left center; transform: scaleX(0); transition: transform 0.7s var(--ease-out-quint) 0.25s; }
+  .vi-plate-wipe-y { transform-origin: center top; transform: scaleY(0); transition: transform 0.6s var(--ease-out-quint) 0.75s; }
+  .vi-plate[data-built] .vi-plate-wipe-x { transform: scaleX(1); }
+  .vi-plate[data-built] .vi-plate-wipe-y { transform: scaleY(1); }
+
+  /* the mark, filling in the order it is drawn in */
+  .vi-plate-mark { fill: #ffffff; }
+  .vi-plate-mark .vi-sh { opacity: 0; scale: 0.92; }
+  .vi-plate[data-built] .vi-plate-mark .vi-sh {
+    opacity: 1;
+    scale: 1;
+    transition-delay: calc(1.15s + var(--n) * 0.16s);
+  }
+
+  .vi-plate-reg {
+    position: absolute;
+    right: 12%;
+    top: 50%;
+    font-size: clamp(0.6875rem, 1.1vw, 0.8125rem);
+    line-height: 1;
+    color: rgb(255 255 255 / 0.75);
+    translate: 0 -50%;
+    opacity: 0;
+    transition: opacity 0.5s ease 1.9s;
+  }
+  .vi-plate[data-built] .vi-plate-reg { opacity: 1; }
+
+  .vi-plate-say {
+    display: grid;
+    gap: 0.25rem;
+    margin-top: 0.9rem;
+    opacity: 0;
+    translate: 0 0.4rem;
+    transition: opacity 0.5s ease 1.95s, translate 0.6s var(--ease-out-quint) 1.95s;
+  }
+  .vi-plate[data-built] .vi-plate-say { opacity: 1; translate: 0 0; }
+  .vi-plate-word {
+    font-family: var(--font-title);
+    font-size: clamp(1.125rem, 2vw, 1.5rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .vi-plate-legal { color: rgb(255 255 255 / 0.45); text-transform: none; letter-spacing: 0.06em; }
+
+  /* Asked to hold still, it is simply there, built. */
+  .vi-plate[data-still] .vi-plate-mods,
+  .vi-plate[data-still] .vi-plate-wipe,
+  .vi-plate[data-still] .vi-plate-mark .vi-sh,
+  .vi-plate[data-still] .vi-plate-reg,
+  .vi-plate[data-still] .vi-plate-say { transition: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vi-plate-mods,
+    .vi-plate-wipe,
+    .vi-plate-reg,
+    .vi-plate-say { transition: none; }
+    .vi-plate .vi-sh { transition: none; }
+  }
+}

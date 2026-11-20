@@ -40,8 +40,14 @@ export type Brand = {
   /** The name is never translated; the trade beside it is. */
   name: string;
   trade: (t: T) => string;
+  /** The subline under the wordmark, as it would be registered. */
+  legal: (t: T) => string;
   before: () => React.ReactElement;
   after: () => React.ReactElement;
+  /** Where the mark's own edges fall, for the construction plate:
+      verticals, horizontals, and the lines its angles run along. All
+      in the same square of a hundred the marks are drawn in. */
+  guides: { x: number[]; y: number[]; diag: [number, number, number, number][] };
 };
 
 const sh = (n: number) => ({ className: "vi-sh", style: { ["--n" as string]: n } });
@@ -143,48 +149,97 @@ function TerralBefore() {
   );
 }
 
-/** What it has: the land and the sky, and the T that stands on them. */
+/** What it has: the land, and the two masses standing on it.
+
+    Drawn from the user's reference (2026-11-19) at four fifths: the
+    gable built out of solid masses rather than an outline, the thin
+    vertical void between them in place of any drawn line, the apex off
+    to the left so one mass is wide and the other narrow, every angle
+    at 45 degrees, and the whole thing sitting on the grid's bottom
+    module.
+
+    The fifth that is ours: the bottom corners turn at 6, a step off
+    Pilar's 8, so the two marks are the same family while the apex
+    stays sharp - that edge is the reference's own character. And the
+    bar of land underneath, which is what the name says (a terral is
+    the breeze that comes off the land) and what keeps the mark from
+    being one more picture of a house. It also gives the symbol three
+    pieces, so it can be built in three times.
+
+    The void between the masses is eight hundredths wide and the land
+    ten, which is what keeps both of them above a pixel when the mark
+    is set at sixteen - the size it has to survive. */
 function TerralAfter() {
   return (
     <g>
-      <rect {...sh(0)} x="8" y="10" width="84" height="16" rx="8" />
-      <rect {...sh(1)} x="42" y="26" width="16" height="64" rx="8" />
-      <rect {...sh(2)} x="8" y="74" width="26" height="16" rx="8" />
+      {/* the land */}
+      <rect {...sh(0)} x="14" y="90" width="72" height="10" rx="5" />
+      {/* the wide mass, up the left slope to the apex */}
+      <path {...sh(1)} d="M22 44 L46 20 L46 82 H28 A6 6 0 0 1 22 76 Z" />
+      {/* the narrow one, down the right slope */}
+      <path {...sh(2)} d="M54 28 L78 52 V76 A6 6 0 0 1 72 82 H54 Z" />
     </g>
   );
 }
 
 /* ================================================================== */
 
-/** Only Pilar is shown (user, 2026-11-18): the studio did not want
-    businesses invented beyond the one the site already runs on. The
-    other two stay drawn, out of use, so putting either one back is a
-    line in this list and nothing else. */
 export const BRANDS: Brand[] = [
   {
     id: "pilar",
     name: "Pilar",
     trade: (t) => t("Insurance broker", "Mediação de seguros"),
+    legal: (t) => t("Pilar Insurance, Lda.", "Pilar Seguros, Lda."),
     before: PilarBefore,
     after: PilarAfter,
-  },
-];
-
-/** Kept, not thrown away: the two the page carried for a day. */
-export const SPARE_BRANDS: Brand[] = [
-  {
-    id: "aurora",
-    name: "Aurora",
-    trade: (t) => t("Aesthetic clinic", "Clínica de estética"),
-    before: AuroraBefore,
-    after: AuroraAfter,
+    /* The pillar's own edges, and the square's diagonals, which is how
+       a mark on a grid is actually set out. */
+    guides: {
+      x: [0, 30, 38, 44, 76, 100],
+      y: [0, 24, 42, 66, 100],
+      diag: [
+        [0, 0, 100, 100],
+        [100, 0, 0, 100],
+      ],
+    },
   },
   {
     id: "terral",
     name: "Terral",
     trade: (t) => t("Estate agent", "Mediação imobiliária"),
+    legal: (t) => t("Terral Properties, Lda.", "Terral Imobiliária, Lda."),
     before: TerralBefore,
     after: TerralAfter,
+    /* The walls, the apex, the baseline and the land, and the two
+       lines the slopes run along, carried past the mark. */
+    guides: {
+      x: [22, 46, 54, 78],
+      y: [20, 44, 82, 90],
+      diag: [
+        [2, 64, 66, 0],
+        [26, 0, 96, 70],
+      ],
+    },
+  },
+];
+
+/** Kept, not thrown away: drawn the same day, never shown. */
+export const SPARE_BRANDS: Brand[] = [
+  {
+    id: "aurora",
+    name: "Aurora",
+    trade: (t) => t("Aesthetic clinic", "Clínica de estética"),
+    legal: (t) => t("Aurora Clinic, Lda.", "Clínica Aurora, Lda."),
+    before: AuroraBefore,
+    after: AuroraAfter,
+    guides: {
+      x: [6, 22, 50, 78, 94],
+      y: [30, 44, 62, 76, 86],
+      diag: [
+        [0, 0, 100, 100],
+        [100, 0, 0, 100],
+      ],
+    },
   },
 ];
 
