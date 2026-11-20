@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import { Inter_Tight, Outfit } from "next/font/google";
+import { Bodoni_Moda, Inter_Tight } from "next/font/google";
 import type { T } from "./sbs-shared";
 import { pilarSans } from "./sbs-pilar";
 
@@ -9,12 +9,12 @@ import { pilarSans } from "./sbs-pilar";
     identity was drawn (2026-11-20). */
 const limenSans = Inter_Tight({ subsets: ["latin"], weight: ["300", "400"], variable: "--f-limen-sans", display: "swap" });
 
-/** Briciola's own face: a geometric sans set heavy and lowercase. The
-    reference cuts its letters by hand, with uneven terminals and a
-    tilt; regularised into true geometry the same mass stops being
-    playful and starts being modern, which is what an estate agent
-    needs (2026-11-20). */
-const briciolaSans = Outfit({ subsets: ["latin"], weight: ["500", "700"], variable: "--f-briciola", display: "swap" });
+/** Briciola's own face: a Didone, uppercase, tall and narrowed. The
+    wordmark reference is a condensed Bodoni in a deep red; keeping the
+    hairlines thin and letting the line itself do the condensing is
+    what carries the reference without copying its letters
+    (2026-11-20). */
+const briciolaSans = Bodoni_Moda({ subsets: ["latin"], weight: ["400", "500"], variable: "--f-briciola", display: "swap" });
 
 /* ==================================================================
    Three invented businesses, each with the mark it had and the mark
@@ -313,12 +313,13 @@ export const BRANDS: Brand[] = [
     legal: (t) => t("Briciola Restaurants & Hospitality, Lda.", "Briciola Restaura\u00e7\u00e3o e Hotelaria, Lda."),
     after: BriciolaAfter,
     newLogo: (t) => <BriciolaNewLogo t={t} />,
-    /* Where each crumb begins and ends, and the arc they rise along. */
+    /* Where the fingers end, where the palm turns, and the forty-five
+       degrees everything that breaks runs along. */
     guides: {
-      x: [12, 38, 72, 94],
-      y: [14, 28, 42, 60, 82],
+      x: [21, 53, 86],
+      y: [20, 32, 70, 78],
       diag: [
-        [0, 89, 100, 16],
+        [100, 0, 0, 100],
         [0, 0, 100, 100],
       ],
     },
@@ -485,83 +486,96 @@ export function LimenNewLogo({ t }: { t: T }) {
 /* ---- Briciola, a restaurant --------------------------------------
 
    Invented on 2026-11-20 at the user's ask, and shown only as it ends
-   up: there is no before for this one. It was drawn once for
-   interiors before the user moved it to hospitality; the trade, the
-   colours and what rises from the letter changed with it.
+   up: there is no before for this one. Drawn from the two references
+   the user gave that day: a waiter inked in one loose brush line, and
+   PIATTO, a tall condensed Didone in a deep red on cream.
 
-   WHAT COMES FROM THE REFERENCE, which is three quarters of it: the
-   wordmark set in one heavy lowercase line, with the mass doing the
-   work and the counters kept small; the crumbs lifting out of one
-   letter and standing in for its dot; and a flat two-colour system, a
-   field and a mark on it, with nothing else. The name helps here -
-   briciola is a crumb, so the reference's own device is also the
-   truest thing this business could carry.
+   WHAT COMES FROM WHICH, since the two weigh the same and neither is
+   followed whole:
 
-   HOW CLOSE. The user asked twice for more likeness and then for
-   about ninety-nine per cent of it (2026-11-20), so the composition
-   is the reference's: the flecks are thrown from the letter in the
-   middle of the word, as a flock, spreading as they rise.
+     From the DRAWING, the symbol and the ink. A brush line of even
+     weight with round ends, nothing filled and nothing measured, and
+     the subject taken straight out of it - the cloche the waiter is
+     carrying, with the long sweep of his free arm kept as the arc
+     above it. The ink is the drawing's black, not the word's red.
 
-   WHAT IS STILL NOT BORROWED, AND WHY. At that distance the drawing
-   stops being inspired and starts being somebody's mark with another
-   word in it, and the reference is a real brand. So two things stay
-   ours and are not negotiable: the letters, which are true geometry
-   rather than the reference's hand-cut forms with their tilt and
-   their ragged terminals; and the colour, which is a linen field and
-   a toasted mark rather than the loud yellow. Those two are what keep
-   this a piece of our own work rather than a copy shown as one.
+     From the WORDMARK, the discipline. The name in one line of
+     Didone, uppercase, tall and condensed, with the hairlines left
+     thin; the deep red; and the cream the whole thing stands on. The
+     line under it is set in the same face, spaced out, rather than in
+     a mono label, so the signature speaks in one voice.
 
-   THE COLOURS. Four, declared on .vi-logo-bri in globals.css: Tostado
-   for the mark, Linho for the field, Vinho as the one accent and
-   Cinza for the small print. The symbol itself is one colour,
-   whichever the ground asks for.                                    */
+   WHAT IS OURS, THE TWENTY PER CENT. The two references pull apart:
+   one is a joke told in ink, the other is a cold, perfect letter. Put
+   together at full strength they read as two marks pinned side by
+   side. Three things close the gap.
 
-/** The crumbs, as a flock: ten flecks of different sizes thrown up
-    from the middle of the word and spreading as they go, the way the
-    reference throws them from its u (user, 2026-11-20: closer to the
-    reference, and from the middle of the text).
+     The drawing is cut down to what it is about. The reference is a
+     whole caricature - a figure, a face, a sweep, a tray; ours keeps
+     four strokes, and a mark that is four strokes can be stamped on
+     a napkin, which a caricature cannot.
 
-    Alone they are the symbol. They hold as a drawing at any size, but
-    ten flecks is not a mark that will read at sixteen pixels - that
-    is what the likeness costs, and the reference has no standalone
-    symbol either. */
+     The crumbs are added, and they are the bridge. The name is a
+     crumb, so three of them fall from under the cloche - which is
+     the one thing in the mark that is neither reference's and the
+     one thing that makes it this business and no other.
+
+     And the red is pulled back from the reference's brightness to a
+     rosso antico, with the drawing left in ink. That split is what
+     stops the two halves fighting: the mark is ink, the word is red,
+     the ground is cream, and nothing on the page is a third thing.
+
+   THE COLOURS, declared on .vi-logo-bri in globals.css and nowhere
+   else: Rosso Antico for the word, Inchiostro for the drawing, Panna
+   for the ground, Cenere for the small print. On this site's own
+   pages the mark is shown in the site's black and white, like Pilar's
+   and limen's; the colour belongs to the brand's board.             */
+
+/** The symbol: a cloche under a brush sweep, three crumbs leaving it.
+    Seven shapes - the sweep, the dome, the stem and knob, the plate
+    line, and the three that fall - so the card can build it one at a
+    time. It is drawn in line, not in fill: the reference is a brush,
+    and a brush has no outline to fill. */
 function BriciolaAfter() {
+  const ink = { fill: "none", stroke: "currentColor", strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
   return (
     <g>
-      <path {...sh(0)} d="M 48 71 L 54 81 L 44 89 L 39 78 Z" />
-      <path {...sh(1)} d="M 28 62 L 33 70 L 25 75 L 22 67 Z" />
-      <path {...sh(2)} d="M 64 59 L 69 67 L 61 73 L 57 65 Z" />
-      <path {...sh(3)} d="M 45 50 L 49 56 L 42 60 L 40 54 Z" />
-      <path {...sh(4)} d="M 14 43 L 17 49 L 11 52 L 9 46 Z" />
-      <path {...sh(5)} d="M 77 40 L 80 46 L 74 49 L 72 43 Z" />
-      <path {...sh(6)} d="M 58 31 L 61 36 L 55 39 L 54 34 Z" />
-      <path {...sh(7)} d="M 32 25 L 34 29 L 29 31 L 28 27 Z" />
-      <path {...sh(8)} d="M 88 21 L 90 25 L 86 27 L 85 23 Z" />
-      <path {...sh(9)} d="M 67 10 L 69 14 L 65 15 L 64 12 Z" />
+      <path {...sh(0)} {...ink} strokeWidth="4" d="M 6 29 C 20 7 58 1 92 18" />
+      <path {...sh(1)} {...ink} strokeWidth="4.6" d="M 21 70 C 21 44 36 32 53 32 C 70 32 86 45 86 70" />
+      <path {...sh(2)} {...ink} strokeWidth="3.4" d="M 53 32 L 53 27" />
+      <circle {...sh(3)} cx="53" cy="23.5" r="3.4" />
+      <path {...sh(4)} {...ink} strokeWidth="4.2" d="M 9 72 C 30 78 74 78 95 71" />
+      <path {...sh(5)} d="M 72.2 84.6 C 72.6 82.6 75.0 82.0 76.9 82.9 C 78.6 83.7 78.3 86.3 76.6 87.2 C 74.6 88.3 71.8 86.9 72.2 84.6 Z" />
+      <path {...sh(6)} d="M 85.1 92.0 C 85.4 90.7 87.0 90.2 88.1 90.9 C 89.2 91.6 89.0 93.4 87.8 93.9 C 86.4 94.5 84.8 93.4 85.1 92.0 Z" />
+      <path {...sh(7)} d="M 62.7 93.2 C 63.0 92.2 64.2 91.9 65.0 92.5 C 65.8 93.1 65.7 94.4 64.8 94.8 C 63.7 95.3 62.5 94.3 62.7 93.2 Z" />
     </g>
   );
 }
 
-/** The signature: the word in one heavy lowercase line, its second i
-    left without a dot - the one that falls in the middle of the word -
-    so the crumbs can be thrown from there, and the trade under the
-    whole thing. */
+/** The word, set as one drawing rather than as a span, so the mark
+    carries no assumption about what it is standing on and so the
+    condensing is the same everywhere: textLength holds the line to
+    one width whatever face ends up drawing it, which is also what
+    narrows the Didone the way the reference's is narrowed. */
+function BriciolaWord() {
+  return (
+    <svg className="vi-logo-bri-svg" viewBox="0 0 158 46" fill="currentColor" role="img" aria-label="Briciola">
+      <text x="2" y="40" fontSize="40" textLength="154" lengthAdjust="spacingAndGlyphs">
+        BRICIOLA
+      </text>
+    </svg>
+  );
+}
+
+/** The signature: the cloche over the word, the trade under it. */
 export function BriciolaNewLogo({ t }: { t: T }) {
   return (
     <span className={`vi-logo vi-logo-stack vi-logo-bri ${briciolaSans.variable}`}>
-      <span className="vi-logo-bri-word">
-        bric
-        <span className="vi-logo-bri-i">
-          &#305;
-          <span className="vi-logo-bri-rise" aria-hidden="true">
-            <Mark brand={BRANDS[2]!} side="after" />
-          </span>
-        </span>
-        ola
+      <span className="vi-logo-bri-sym" aria-hidden="true">
+        <Mark brand={BRANDS[2]!} side="after" />
       </span>
-      <span className="vi-logo-bri-trade">
-        {t("Kitchen and table", "Cozinha e mesa")}
-      </span>
+      <BriciolaWord />
+      <span className="vi-logo-bri-trade">{t("Kitchen and table", "Cozinha e mesa")}</span>
     </span>
   );
 }

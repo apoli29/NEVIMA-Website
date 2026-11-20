@@ -509,3 +509,108 @@ trabalho nosso e nao uma copia apresentada como tal.
 simbolo sozinho aguenta como desenho mas nao como icone miudo - e a
 referencia tambem nao tem simbolo separado.
 
+
+## Briciola, refeita a partir de duas referencias novas (2026-11-20, mais tarde)
+
+O utilizador trouxe **duas referencias novas** - trocou-as a meio - e
+pediu a identidade outra vez, com **80% de precisao em relacao as
+duas**, nenhuma a pesar mais do que a outra, e com um **sistema basico
+de cores** apresentado como um mini sistema visual. As versoes
+anteriores (Geranos/Pomodoro, "crunch" para interiores, "crunch" para
+restauracao, e uma tentativa a partir de uma mao vermelha com uma
+grotesca pesadissima) ficam no historico do git; em codigo fica so
+esta.
+
+As referencias:
+
+1. **o desenho** - um empregado de mesa feito a pincel numa linha so,
+   caricatura a tinta preta sobre creme, com a cloche numa mao e o
+   braco livre num arco largo por cima da cabeca;
+2. **o logotipo** - PIATTO, uma Didone alta e estreita em caixa alta,
+   num vermelho fundo sobre creme, com as hastes finas muito finas.
+
+### O que vem de cada uma
+
+**Do desenho, o simbolo e a tinta.** Uma linha de pincel de espessura
+quase constante com as pontas redondas, nada cheio e nada medido, e o
+assunto tirado de la de dentro: a **cloche** que o empregado carrega,
+com o **arco** do braco livre guardado por cima dela. A tinta e o
+preto do desenho, nao o vermelho da palavra.
+
+**Do logotipo, a disciplina.** O nome numa linha de **Didone**, caixa
+alta, alta e estreitada, com as hastes finas deixadas finas; o
+**vermelho fundo**; e o creme onde tudo assenta. A linha por baixo e
+composta na mesma face, aberta, em vez de numa monoespacada, para a
+assinatura falar numa voz so.
+
+### Os 20% que sao nossos
+
+As duas puxam para lados opostos: uma e uma piada contada a tinta, a
+outra e uma letra fria e perfeita. A toda a forca leem-se como duas
+marcas pregadas lado a lado. Tres coisas fecham a distancia:
+
+- **o desenho e reduzido ao que ele e.** A referencia e uma caricatura
+  inteira - figura, cara, arco, tabuleiro; a nossa fica em quatro
+  tracos, e uma marca de quatro tracos pode ser carimbada num
+  guardanapo, coisa que uma caricatura nao pode;
+- **as migalhas sao acrescentadas, e sao elas a ponte.** O nome e uma
+  migalha, por isso tres caem de debaixo da cloche. Sao a unica coisa
+  da marca que nao vem de nenhuma das duas referencias, e a unica que
+  faz disto este negocio e nao outro qualquer;
+- **o vermelho recua** do brilho da referencia para um *rosso antico*,
+  e o desenho fica a tinta. E essa divisao que impede as duas metades
+  de brigarem.
+
+### O sistema de cores
+
+Declarado em `.vi-logo-bri` (`globals.css`) e em mais lado nenhum:
+
+| | | |
+| --- | --- | --- |
+| **Rosso Antico** | `#9B2A2A` | a palavra. |
+| **Inchiostro** | `#15120F` | o desenho. |
+| **Panna** | `#F4EFE6` | o fundo onde os dois assentam. |
+| **Cenere** | `#8A8178` | a letra miuda. |
+
+A divisao e o sistema: **a marca e tinta, a palavra e vermelha, o
+fundo e creme**, e nada e uma terceira coisa. O simbolo e sempre de
+uma cor so, a que o fundo pedir.
+
+**Nas nossas paginas a marca continua a preto e branco**, como a da
+Pilar e a da limen: a cor pertence ao quadro da marca, nao a nossa
+pagina, que so admite o ciano das guias.
+
+### Como esta feito
+
+- **O simbolo** (`BriciolaAfter`): oito formas - o arco, a cupula, a
+  haste, o botao, a linha do prato e as tres migalhas - para o card
+  poder construi-lo uma de cada vez. E desenhado **a traco e nao a
+  cheio**: a referencia e um pincel, e um pincel nao tem contorno para
+  preencher.
+- **As migalhas sao formas desenhadas, nao elipses rodadas.** O
+  atributo `transform` numa forma com `.vi-sh` colide com o
+  `transform-box: fill-box` que a animacao usa, e a forma salta para
+  fora da chapa. Se alguma vez forem redesenhadas, tem de continuar
+  sem `transform`.
+- **A palavra** (`BriciolaWord`): composta em SVG e nao num `<span>`,
+  para a marca nao assumir nada sobre o que esta por baixo e para o
+  estreitamento ser o mesmo em todo o lado - o `textLength` segura a
+  linha a mesma largura seja qual for a face que a desenhe, e e isso
+  que estreita a Didone como a da referencia (cerca de 16%).
+- **O quadro**: `docs/briciola/sistema-visual.html`, um ficheiro so,
+  para abrir no browser - assinatura, construcao, o simbolo sobre os
+  tres fundos, cor, tipografia, as migalhas, aplicacoes e tamanho
+  minimo.
+
+### O que fica por decidir
+
+- A chapa de construcao diz «nada e desenhado a olho: cada aresta
+  assenta numa guia», e esta marca **e** desenhada a olho. As guias
+  marcam a largura da cupula, a linha do prato e o circulo em que a
+  cupula assenta, mas a frase fica a puxar contra o desenho. Ou a
+  Briciola sai dessa fila, ou a frase ganha uma excecao.
+- Se o quadro deve virar uma pagina do site ou ficar so como ficheiro
+  de referencia.
+- Se vale a pena um bloqueio horizontal (cloche a esquerda, palavra a
+  direita) para sitios baixos e largos: por agora so existe o
+  vertical.
