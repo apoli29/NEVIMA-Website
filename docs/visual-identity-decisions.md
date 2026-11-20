@@ -482,3 +482,30 @@ fundo pedir - para aguentar ser carimbado em qualquer coisa.
 - O descritor existe nas duas linguas: "Cozinha e mesa" / "Kitchen and
   table", e a linha legal "Briciola Restauracao e Hotelaria, Lda." /
   "Briciola Restaurants & Hospitality, Lda.".
+
+### Mais perto da referencia (2026-11-20)
+
+O utilizador pediu duas vezes mais semelhanca e depois **cerca de 99%**,
+com as migalhas **no meio do texto**. Ficou assim:
+
+- as migalhas saem do **segundo i**, que e a letra que cai no meio de
+  "briciola", e nao do primeiro. O i perde o ponto, elas ocupam-lhe o
+  lugar;
+- deixaram de ser quatro em arco ordenado e passaram a **um bando de
+  dez**, atirado para cima e a espalhar-se, como no *crunch*;
+- **nenhum dos dez e simetrico**: quatro pontos iguais leem-se como um
+  brilho, e um brilho nao e uma migalha.
+
+**O que continua a nao ser emprestado, e porque.** A 99% o desenho
+deixa de ser inspirado e passa a ser a marca de outra pessoa com outra
+palavra la dentro, e a referencia e uma marca real. Por isso duas
+coisas ficam nossas: **as letras**, que sao geometria verdadeira e nao
+as formas cortadas a mao da referencia, com a sua inclinacao e os seus
+terminais irregulares; e **a cor**, um campo de linho e uma marca
+tostada em vez do amarelo alto. Sao essas duas que mantem isto um
+trabalho nosso e nao uma copia apresentada como tal.
+
+**O que custa a semelhanca:** dez flocos pequenos nao leem a 16 px. O
+simbolo sozinho aguenta como desenho mas nao como icone miudo - e a
+referencia tambem nao tem simbolo separado.
+

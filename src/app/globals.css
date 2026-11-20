@@ -9861,6 +9861,10 @@
      whichever of Tostado or Linho the ground asks for - one colour, so
      it survives being stamped on anything.                          */
   .vi-logo-bri {
+    /* The flock is out of the flow, so the signature reserves its
+       height here; without it the card centres the word and crops the
+       crumbs off the top. */
+    padding-top: 1.4em;
     --bri-tostado: #1e1814;
     --bri-linho: #ede8de;
     --bri-vinho: #5b2733;
@@ -9884,12 +9888,12 @@
   .vi-logo-bri-rise {
     position: absolute;
     left: 50%;
-    bottom: calc(100% + 0.1em);
+    bottom: calc(100% + 0.02em);
     display: block;
-    width: 1.5em;
-    /* The biggest crumb sits a quarter along the cluster, so a
-       quarter back is what puts it over the stem of the i. */
-    translate: -25% 0;
+    /* A flock, so it is wider than the letter it leaves and sits
+       right on top of the word, as the reference's does. */
+    width: 2.7em;
+    translate: -47% 0;
   }
   .vi-logo-bri-trade {
     display: block;
@@ -9904,7 +9908,7 @@
   /* A card with no before holds at the end of the walk. */
   .vi-morph[data-held] .vi-morph-old { display: none; }
   /* The word tracked out is what measures this one, not the symbol. */
-  .vi-morph[data-whole] .vi-morph-new .vi-logo-bri { font-size: 22cqw; }
+  .vi-morph[data-whole] .vi-morph-new .vi-logo-bri { font-size: 32cqw; }
 
   /* Three plates now, not two. */
   @media (min-width: 980px) {
