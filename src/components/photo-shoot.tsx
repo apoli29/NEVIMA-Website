@@ -190,12 +190,51 @@ function packages(t: T) {
     t("How many places", "Número de locais"),
     t("Delivered in", "Prazo de entrega"),
   ];
+  /* What tells the three apart, settled with the user on 2026-11-20:
+     the count doubles and then grows less, which is the way these are
+     actually bought, and the two first keep the same delivery. The
+     names are the studio's ladder in the two languages.
+
+     The prices are still the studio's to give, and only the prices. */
   return {
     rows,
     cards: [
-      { id: "a", name: TO_FILL, price: TO_FILL, lit: false },
-      { id: "b", name: TO_FILL, price: TO_FILL, lit: true },
-      { id: "c", name: TO_FILL, price: TO_FILL, lit: false },
+      {
+        id: "a",
+        name: t("Essentials", "Essencial"),
+        price: TO_FILL,
+        lit: false,
+        values: [
+          t("15 photographs", "15 fotografias"),
+          t("2 hours", "2 horas"),
+          t("1 place", "1 local"),
+          t("7 days", "7 dias"),
+        ],
+      },
+      {
+        id: "b",
+        name: t("Complete", "Completo"),
+        price: TO_FILL,
+        lit: true,
+        values: [
+          t("30 photographs", "30 fotografias"),
+          t("4 hours", "4 horas"),
+          t("Up to 2 places", "Até 2 locais"),
+          t("7 days", "7 dias"),
+        ],
+      },
+      {
+        id: "c",
+        name: t("Extended", "Alargado"),
+        price: TO_FILL,
+        lit: false,
+        values: [
+          t("50 photographs", "50 fotografias"),
+          t("A full day", "Um dia inteiro"),
+          t("Up to 3 places", "Até 3 locais"),
+          t("10 days", "10 dias"),
+        ],
+      },
     ],
   };
 }
@@ -230,10 +269,10 @@ function Packages({ t }: { t: T }) {
                 <h3 className="ps-pack-name">{card.name}</h3>
                 <p className="ps-pack-price">{card.price}</p>
                 <dl className="ps-pack-rows">
-                  {rows.map((row) => (
+                  {rows.map((row, r) => (
                     <div key={row}>
                       <dt className="mono-label">{row}</dt>
-                      <dd>{TO_FILL}</dd>
+                      <dd>{card.values[r]}</dd>
                     </div>
                   ))}
                 </dl>
@@ -246,8 +285,8 @@ function Packages({ t }: { t: T }) {
           <div className="ps-pack-foot">
             <p className="mono-label">
               {t(
-                "The packages and their prices are the studio's to set; the form works an estimate out meanwhile.",
-                "Os pacotes e os preços são definidos pelo estúdio; entretanto, o formulário calcula uma estimativa.",
+                "The prices are the studio's to set; the form works an estimate out meanwhile.",
+                "Os preços são definidos pelo estúdio; entretanto, o formulário calcula uma estimativa.",
               )}
             </p>
             <ProposalAsk label={t("Get your free proposal", "Pedir proposta gratuita")} />

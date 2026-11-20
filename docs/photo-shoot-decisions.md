@@ -140,3 +140,27 @@ glass was taken.
   the words. The stage is hung on the box's middle with `position:
   absolute` and `translate(-50%, -50%)` instead. Measured at 375px: 37px
   clear above and 22px below.
+
+## Os pacotes, preenchidos (2026-11-20)
+
+Ficaram decididos com o utilizador. Os nomes foram deixados ao meu
+criterio ("essencial, basics alguma coisa assim do genero"): escolhi
+**Essencial / Completo / Alargado** (EN: Essentials / Complete /
+Extended). "Basico" le-se barato, e esta escada diz o tamanho sem
+desvalorizar o primeiro.
+
+| | Fotografias | Duracao | Locais | Prazo |
+| --- | --- | --- | --- | --- |
+| Essencial | 15 | 2 horas | 1 local | 7 dias |
+| Completo | 30 | 4 horas | ate 2 locais | 7 dias |
+| Alargado | 50 | um dia inteiro | ate 3 locais | 10 dias |
+
+A contagem dobra e depois cresce menos, que e a forma como estes
+pacotes sao comprados, e os dois primeiros mantem o mesmo prazo: o que
+muda do primeiro para o segundo e o tempo em cima do trabalho, nao o
+tempo em cima da edicao.
+
+**Os precos continuam por dar** e sao a unica coisa que ainda le
+`[a preencher]` nesta seccao. A linha do rodape passou a dizer isso
+mesmo, em vez de dizer que os pacotes tambem estavam por definir.
+
