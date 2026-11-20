@@ -59,8 +59,13 @@ export type Brand = {
   after: () => React.ReactElement;
   /** Where the mark's own edges fall, for the construction plate:
       verticals, horizontals, and the lines its angles run along. All
-      in the same square of a hundred the marks are drawn in. */
-  guides: { x: number[]; y: number[]; diag: [number, number, number, number][] };
+      in the same square of a hundred the marks are drawn in.
+
+      A mark that was not set out on guides has none, and the plates
+      row simply passes over it - the section promises that every edge
+      sits on a guide, and a drawn mark cannot keep that promise
+      (user, 2026-11-20). */
+  guides?: { x: number[]; y: number[]; diag: [number, number, number, number][] };
   /** The mark and the name together, as the business signed before and
       as it signs now. A brand without them is shown by its symbols. */
   oldLogo?: (t: T) => React.ReactElement;
@@ -313,16 +318,9 @@ export const BRANDS: Brand[] = [
     legal: (t) => t("Briciola Restaurants & Hospitality, Lda.", "Briciola Restaura\u00e7\u00e3o e Hotelaria, Lda."),
     after: BriciolaAfter,
     newLogo: (t) => <BriciolaNewLogo t={t} />,
-    /* Where the fingers end, where the palm turns, and the forty-five
-       degrees everything that breaks runs along. */
-    guides: {
-      x: [21, 53, 86],
-      y: [20, 32, 70, 78],
-      diag: [
-        [100, 0, 0, 100],
-        [0, 0, 100, 100],
-      ],
-    },
+    /* No guides, on purpose: this one is drawn with a brush, by eye,
+       and it does not belong on a plate that says nothing is (user,
+       2026-11-20). */
   },
 ];
 

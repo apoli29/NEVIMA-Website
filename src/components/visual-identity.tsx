@@ -84,7 +84,7 @@ function useStill() {
 
     Asked to hold still - by the footer, or by the system - it is
     simply there, built, with nothing running. */
-function MarkPlate({ brand, t, still }: { brand: Brand; t: T; still: boolean }) {
+function MarkPlate({ brand, t, still }: { brand: Brand & { guides: NonNullable<Brand["guides"]> }; t: T; still: boolean }) {
   const [ref, inView] = useInView<HTMLElement>(0.35);
   const [built, setBuilt] = useState(false);
   const id = useId().replace(/:/g, "");
@@ -152,10 +152,17 @@ function MarkPlate({ brand, t, still }: { brand: Brand; t: T; still: boolean }) 
   );
 }
 
-/** The two symbols on the guides they were set out on. The section
-    "The proposal" used to hold them, and it is no longer on the page
+/** The symbols on the guides they were set out on. The section "The
+    proposal" used to hold them, and it is no longer on the page
     (2026-11-19), so they stand on their own, between the header and
-    who the service is for. */
+    who the service is for.
+
+    Only the marks that were actually set out this way appear here.
+    The title promises that every edge sits on a guide, and Briciola's
+    is drawn with a brush, by eye; it was taken out rather than have
+    the plate claim something the drawing cannot keep (user,
+    2026-11-20). A brand with no `guides` is passed over, so this
+    sorts itself out as marks are added. */
 function Plates({ t }: { t: T }) {
   const still = useStill();
   return (
@@ -170,8 +177,13 @@ function Plates({ t }: { t: T }) {
         </SlideIn>
         <SlideIn ready distance={0} delay={0.1}>
           <div className="vi-plates-row">
-            {BRANDS.map((brand) => (
-              <MarkPlate key={brand.id} brand={brand} t={t} still={still} />
+            {BRANDS.filter((b) => b.guides).map((brand) => (
+              <MarkPlate
+                key={brand.id}
+                brand={brand as Brand & { guides: NonNullable<Brand["guides"]> }}
+                t={t}
+                still={still}
+              />
             ))}
           </div>
         </SlideIn>

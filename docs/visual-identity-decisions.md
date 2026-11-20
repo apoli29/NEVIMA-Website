@@ -604,13 +604,26 @@ pagina, que so admite o ciano das guias.
 
 ### O que fica por decidir
 
-- A chapa de construcao diz «nada e desenhado a olho: cada aresta
-  assenta numa guia», e esta marca **e** desenhada a olho. As guias
-  marcam a largura da cupula, a linha do prato e o circulo em que a
-  cupula assenta, mas a frase fica a puxar contra o desenho. Ou a
-  Briciola sai dessa fila, ou a frase ganha uma excecao.
 - Se o quadro deve virar uma pagina do site ou ficar so como ficheiro
   de referencia.
 - Se vale a pena um bloqueio horizontal (cloche a esquerda, palavra a
   direita) para sitios baixos e largos: por agora so existe o
   vertical.
+
+### Fora da fila das chapas (2026-11-20)
+
+A seccao «Como se constroi uma marca» promete que *nada e desenhado a
+olho: cada aresta assenta numa guia*, e a Briciola **e** desenhada a
+olho, a pincel. O utilizador mandou tira-la de la, e e a decisao certa:
+uma chapa com guias por baixo de um desenho a mao faz a frase mentir, e
+a frase vale mais do que ter tres chapas em vez de duas.
+
+Como esta feito, para nao voltar sozinho: as `guides` passaram a ser
+**opcionais** no tipo `Brand`, a Briciola deixou de as ter, e a fila
+filtra por `b.guides`. Uma marca nova que seja mesmo construida sobre
+guias entra na fila so por as declarar. A terceira coluna da fila
+voltou a depender do que la esta (`:has(> :nth-child(3))`), por isso
+tambem se repoe sozinha.
+
+A Briciola continua no terceiro card do cabecalho, com a assinatura
+inteira - o que saiu foi so a chapa de construcao.

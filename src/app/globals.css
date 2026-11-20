@@ -9899,8 +9899,10 @@
   /* The word tracked out is what measures this one, not the symbol. */
   .vi-morph[data-whole] .vi-morph-new .vi-logo-bri { font-size: 72cqw; }
 
-  /* Three plates now, not two. */
+  /* Two plates again: Briciola's mark is drawn by eye and came off
+     this row (user, 2026-11-20). The row counts what is in it, so
+     adding a third set-out mark puts the third column back. */
   @media (min-width: 980px) {
-    .vi-plates-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .vi-plates-row:has(> :nth-child(3)) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
 }
