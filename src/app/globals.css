@@ -8890,8 +8890,16 @@
 @layer components {
   .vi-morph[data-whole] .vi-morph-stage { container-type: inline-size; }
   .vi-morph[data-whole] .vi-morph-face { inset: 0; display: grid; place-items: center; }
-  .vi-morph[data-whole] .vi-morph-old .vi-logo { font-size: 10.5cqw; }
-  .vi-morph[data-whole] .vi-morph-new .vi-logo { font-size: 9.25cqw; }
+  /* Bigger in the card than they were (user, 2026-11-20: the logo was
+     small). A signature stacked reads smaller than one laid across, so
+     it is given a little more again. */
+  .vi-morph[data-whole] .vi-morph-old .vi-logo { font-size: 11cqw; }
+  .vi-morph[data-whole] .vi-morph-new .vi-logo { font-size: 10.75cqw; }
+  /* A signature laid across is measured by its width; one stacked by
+     its height, which is why it needs a good deal more to read as the
+     same size. */
+  .vi-morph[data-whole] .vi-morph-old .vi-logo-stack { font-size: 13cqw; }
+  .vi-morph[data-whole] .vi-morph-new .vi-logo-stack { font-size: 28cqw; }
   .vi-morph[data-whole] .vi-logo-words,
   .vi-morph[data-whole] .vi-logo-new-name { transition: opacity 0.5s ease, translate 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
   .vi-morph[data-whole]:is([data-step="1"], [data-step="2"], [data-step="3"]) .vi-morph-old .vi-logo-words { opacity: 0; translate: 0.6em 0; }
