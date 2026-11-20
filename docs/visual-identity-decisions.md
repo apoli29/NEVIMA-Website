@@ -356,3 +356,21 @@ tem. Os dois cards do cabecalho ficaram presos ao seu negocio
 (`only`): sem isso o loop percorria todos e os dois cards trocavam de
 empresa entre si.
 
+### O tamanho das assinaturas (2026-11-20)
+
+O utilizador: "o logo em geral esta pequeno". Subiram dentro dos cards,
+cada uma pelo que a mede:
+
+| | antes | depois | ocupa |
+| --- | --- | --- | --- |
+| Pilar, antiga | 10,5cqw | 11cqw | 88% da largura |
+| Pilar, nova | 9,25cqw | 10,75cqw | 85% da largura |
+| Terral, antiga | - | 13cqw | 88% da largura |
+| Terral, nova | - | 28cqw | 58% da altura |
+
+Uma assinatura deitada mede-se pela largura e uma empilhada pela
+altura, que e porque a da Terral leva mais do dobro em `cqw` para ler
+como do mesmo tamanho. Um primeiro acerto por igual pos a da Pilar a
+99% da largura e a antiga da Terral a 135%, cortada pelo `overflow`
+do card; os valores acima sao os medidos depois de corrigir.
+
