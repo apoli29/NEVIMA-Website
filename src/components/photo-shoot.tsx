@@ -133,7 +133,7 @@ function Compare({ t }: { t: T }) {
     <section aria-labelledby="ps-cmp-title" data-tone="dark" className="relative text-paper">
       <div className="shell ps-sec" data-tone-body>
         <SlideIn ready>
-          <p className="mono-label text-paper/55">{t("The same business, twice", "O mesmo negócio, duas vezes")}</p>
+          <p className="mono-label text-paper/55">{t("Two ways of photographing the same thing", "Duas maneiras de fotografar a mesma coisa")}</p>
           <h2 id="ps-cmp-title" className="display ps-title">
             <span className="font-light sm:block">{t("The difference is not the camera.", "A diferença não está na câmara.")}</span>{" "}
             <span className="font-medium sm:block">{t("It is the light and the time.", "Está na luz e no tempo.")}</span>
@@ -143,8 +143,8 @@ function Compare({ t }: { t: T }) {
         <SlideIn ready distance={0} delay={0.08}>
           <p className="ps-lede ps-lede-dark">
             {t(
-              "Three things every business has to show, photographed in a hurry and photographed by us. Move the cut to see one turn into the other.",
-              "Três coisas que qualquer negócio tem de mostrar, fotografadas à pressa e fotografadas por nós. Mover o corte para ver uma passar à outra.",
+              "Three things every business has to show. On one side the way they usually end up being photographed; on the other, the way they are worth photographing. Move the cut to go from one to the other.",
+              "Três coisas que qualquer negócio tem de mostrar. De um lado, a maneira como costumam acabar fotografadas; do outro, a maneira como vale a pena fotografá-las. Mover o corte para ir de uma à outra.",
             )}
           </p>
         </SlideIn>
@@ -174,6 +174,15 @@ function Compare({ t }: { t: T }) {
             );
           })}
         </div>
+
+        {/* These six are licensed photographs, not work of ours (user,
+            2026-11-20), and the page says so rather than letting them
+            pass for a portfolio. */}
+        <SlideIn ready distance={0} delay={0.3}>
+          <p className="mono-label ps-pairs-note">
+            {t("Example images, not work of ours.", "Imagens de exemplo, não trabalho nosso.")}
+          </p>
+        </SlideIn>
       </div>
     </section>
   );

@@ -164,3 +164,33 @@ tempo em cima da edicao.
 `[a preencher]` nesta seccao. A linha do rodape passou a dizer isso
 mesmo, em vez de dizer que os pacotes tambem estavam por definir.
 
+## As seis fotografias da comparacao (2026-11-20)
+
+O utilizador escolheu, de tres caminhos possiveis, o de **imagens
+livres dos dois lados**, sabendo que era o mais fraco: nenhum banco de
+imagens da pares do mesmo assunto, por isso a seccao deixou de poder
+prometer "o mesmo negocio, duas vezes".
+
+O que mudou no texto:
+
+- o rotulo passou a **"Duas maneiras de fotografar a mesma coisa"**;
+- a linha de entrada deixou de dizer "fotografadas a pressa e
+  fotografadas por nos" e passa a descrever os dois lados sem os
+  atribuir a ninguem;
+- por baixo da comparacao ficou uma linha em mono: **"Imagens de
+  exemplo, nao trabalho nosso."** Sem ela, seis fotografias
+  licenciadas a fazer de antes e depois leem-se como portefolio, e
+  isso nao e verdade.
+
+As seis sao da Unsplash, licenca livre confirmada pagina a pagina
+(nenhuma e Unsplash+), apresentadas ao utilizador antes de qualquer
+descarga como manda o CLAUDE.md. Os creditos estao na tabela do
+`public/photo-shoot/README.md`. Foram cortadas para 1:1, 4:5 e 3:2 com
+o `sharp`, lado maior 1600px, todas entre 15 kB e 177 kB.
+
+**O par do produto e o mais fraco e foi dito assim ao utilizador**: a
+Unsplash quase nao tem fotografia de produto deliberadamente ma, e o
+"antes" que la esta le-se como uma fotografia escura de proposito, nao
+como uma fotografia falhada. Troca-se quando houver melhor, ou quando
+houver trabalho nosso.
+
