@@ -9845,64 +9845,65 @@
 }
 
 @layer components {
-  /* ---- Briciola, a restaurant (2026-11-20) -------------------------
+  /* ---- Briciola, property and interiors (2026-11-20) --------------
      The invented identity the third card carries. Its four colours are
-     declared here and nowhere else, so the brand has one place:
+     declared here and nowhere else:
 
-       Forno    #191513  the oven. The ground.
-       Farinha  #EDE9E0  flour. The paper, and the mark on the dark.
-       Miolo    #C9B79B  the crumb. The one accent, and only small.
-       Carvao   #6B625A  for the small print.
+       Betao   #1A1A18  concrete. The mark.
+       Gesso   #EAE7E0  plaster. The field it sits on.
+       Lousa   #7E8B91  slate. The one accent.
+       Sombra  #5A5A55  for the small print.
 
-     The symbol itself takes whichever of Forno or Farinha the ground
-     asks for - one colour, so it survives being stamped on anything.
-     The accent never touches it.                                    */
+     The reference puts black on a loud yellow; the field here is a
+     quiet plaster instead, so the mark can sit on a wall, a plan or a
+     board without shouting. The symbol itself takes whichever of Betao
+     or Gesso the ground asks for - one colour, so it survives being
+     stamped on anything.                                            */
   .vi-logo-bri {
-    --bri-forno: #191513;
-    --bri-farinha: #ede9e0;
-    --bri-miolo: #c9b79b;
-    --bri-carvao: #6b625a;
+    --bri-betao: #1a1a18;
+    --bri-gesso: #eae7e0;
+    --bri-lousa: #7e8b91;
+    --bri-sombra: #5a5a55;
     gap: 0.5em;
-    color: var(--bri-farinha);
+    color: var(--bri-gesso);
   }
-  .vi-logo-bri .vi-logo-mark { width: 2.1em; }
-
-  /* Geranos' device: the two small words either side of the symbol,
-     which is what turns a symbol and a name into a signature. */
-  .vi-logo-bri-top { display: flex; align-items: center; justify-content: center; gap: 0.75em; }
-  .vi-logo-bri-flank {
-    font-family: var(--font-mono);
-    font-style: normal;
-    font-size: 0.2em;
-    letter-spacing: 0.22em;
-    color: var(--bri-miolo);
-  }
+  /* The word in one heavy lowercase line, the mass doing the work. */
   .vi-logo-bri-word {
     display: block;
-    font-family: var(--f-briciola), Georgia, serif;
-    font-weight: 300;
-    font-size: 0.44em;
+    font-family: var(--f-briciola), system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 0.5em;
     line-height: 1;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    /* Tracked out to the right, so the word stays optically centred. */
-    text-indent: 0.2em;
-    color: var(--bri-farinha);
+    letter-spacing: -0.035em;
+    color: var(--bri-gesso);
+  }
+  /* The i keeps its stem and loses its dot, so the rooms can rise
+     from it the way the reference's crumbs rise from its u. */
+  .vi-logo-bri-i { position: relative; display: inline-block; }
+  .vi-logo-bri-rise {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 0.1em);
+    display: block;
+    width: 1.5em;
+    /* The biggest room sits a quarter along the cluster, so a quarter
+       back is what puts it over the stem of the i. */
+    translate: -25% 0;
   }
   .vi-logo-bri-trade {
     display: block;
-    margin-top: 0.55em;
+    margin-top: 0.2em;
     font-family: var(--font-mono);
-    font-size: 0.16em;
+    font-size: 0.15em;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: var(--bri-carvao);
+    color: var(--bri-lousa);
   }
 
   /* A card with no before holds at the end of the walk. */
   .vi-morph[data-held] .vi-morph-old { display: none; }
   /* The word tracked out is what measures this one, not the symbol. */
-  .vi-morph[data-whole] .vi-morph-new .vi-logo-bri { font-size: 17cqw; }
+  .vi-morph[data-whole] .vi-morph-new .vi-logo-bri { font-size: 22cqw; }
 
   /* Three plates now, not two. */
   @media (min-width: 980px) {
