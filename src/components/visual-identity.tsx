@@ -192,12 +192,15 @@ function Cases3({ t }: { t: T }) {
   // thinner rim of grey; the trade over it and the name under it, both
   // outside the card (user, 2026-11-19).
   /* The second card is Terral's (user, 2026-11-19); the third waits
-     for the case after it. Only Pilar has both lockups drawn, so it is
-     the only one shown whole - Terral shows its two symbols. */
+     for the case after it. Each card is pinned to its own business -
+     left to itself the loop walks them all, which would have the two
+     cards swapping businesses. Both are shown whole: the mark and the
+     name together, Pilar's side by side and Terral's one over the
+     other. */
   const terral = BRANDS[1]!;
   const items = [
-    { key: "pilar", trade: pilar.trade(t), name: pilar.name, body: <Morph t={t} bare whole /> },
-    { key: "terral", trade: terral.trade(t), name: terral.name, body: <Morph t={t} bare only={terral} /> },
+    { key: "pilar", trade: pilar.trade(t), name: pilar.name, body: <Morph t={t} bare whole only={pilar} /> },
+    { key: "terral", trade: terral.trade(t), name: terral.name, body: <Morph t={t} bare whole only={terral} /> },
     { key: "next-1", trade: TO_FILL, name: TO_FILL, body: <span className="vi-trio-wait" aria-hidden="true" /> },
   ];
   return (
@@ -965,12 +968,13 @@ function Morph({ t, bare = false, whole = false, only }: { t: T; bare?: boolean;
         </span>
         {/* Whole in the header (user, 2026-11-19): the logo and the
             symbol together, the words leaving and arriving with the
-            shapes. Only Pilar has both lockups drawn. */}
+            shapes. A business without a pair of signatures falls back
+            to its two symbols. */}
         <span className="vi-morph-face vi-morph-old">
-          {whole ? <PilarOldLogo t={t} /> : <Mark brand={brand} side="before" />}
+          {whole && brand.oldLogo ? brand.oldLogo(t) : <Mark brand={brand} side="before" />}
         </span>
         <span className="vi-morph-face vi-morph-new">
-          {whole ? <PilarNewLogo t={t} /> : <Mark brand={brand} side="after" />}
+          {whole && brand.newLogo ? brand.newLogo(t) : <Mark brand={brand} side="after" />}
         </span>
       </span>
       {/* Bare in the header, where the name and the trade stand outside the card. */}

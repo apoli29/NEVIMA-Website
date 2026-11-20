@@ -48,6 +48,10 @@ export type Brand = {
       verticals, horizontals, and the lines its angles run along. All
       in the same square of a hundred the marks are drawn in. */
   guides: { x: number[]; y: number[]; diag: [number, number, number, number][] };
+  /** The mark and the name together, as the business signed before and
+      as it signs now. A brand without them is shown by its symbols. */
+  oldLogo?: (t: T) => React.ReactElement;
+  newLogo?: (t: T) => React.ReactElement;
 };
 
 const sh = (n: number) => ({ className: "vi-sh", style: { ["--n" as string]: n } });
@@ -193,6 +197,8 @@ export const BRANDS: Brand[] = [
     legal: (t) => t("Pilar Insurance, Lda.", "Pilar Seguros, Lda."),
     before: PilarBefore,
     after: PilarAfter,
+    oldLogo: (t) => <PilarOldLogo t={t} />,
+    newLogo: (t) => <PilarNewLogo t={t} />,
     /* The pillar's own edges, and the square's diagonals, which is how
        a mark on a grid is actually set out. */
     guides: {
@@ -211,6 +217,8 @@ export const BRANDS: Brand[] = [
     legal: (t) => t("Terral Properties, Lda.", "Terral Imobiliária, Lda."),
     before: TerralBefore,
     after: TerralAfter,
+    oldLogo: (t) => <TerralOldLogo t={t} />,
+    newLogo: (t) => <TerralNewLogo t={t} />,
     /* The walls, the apex and the baseline, and the two lines the
        slopes run along, carried past the mark. */
     guides: {
@@ -286,6 +294,48 @@ export function PilarNewLogo({ t }: { t: T }) {
         <Mark brand={BRANDS[0]!} side="after" />
       </span>
       <span className="vi-logo-new-name">{t("Pilar Insurance", "Pilar Seguros")}</span>
+    </span>
+  );
+}
+
+/* ---- Terral's two signatures ------------------------------------- */
+
+/** How it signed before: a serif name with a bevel under it, a word of
+    the trade tracked out beside it in a second colour, and the legal
+    line in grey - the three habits that date a signature. Its colours
+    are the business's own, not ours, as Pilar's old blue is.
+
+    It stands the mark over the name rather than beside it (user,
+    2026-11-20: the name goes where the bar of land used to be), which
+    is also the only way a gable and a word sit together without one of
+    them going small. */
+export function TerralOldLogo({ t }: { t: T }) {
+  return (
+    <span className="vi-logo vi-logo-stack vi-logo-told">
+      <span className="vi-logo-mark">
+        <Mark brand={BRANDS[1]!} side="before" />
+      </span>
+      <span className="vi-logo-words">
+        <span className="vi-logo-told-name">
+          <b>Terral</b>
+          <i>{t("PROPERTIES", "IMOBILI\u00c1RIA")}</i>
+        </span>
+        <small>{t("Property Brokerage, Lda.", "Media\u00e7\u00e3o Imobili\u00e1ria, Lda.")}</small>
+      </span>
+    </span>
+  );
+}
+
+/** How it signs now: the mark, and the name under it in the face the
+    website is set in, because the two were drawn together. White, so
+    it carries on any ground the business puts it on. */
+export function TerralNewLogo({ t }: { t: T }) {
+  return (
+    <span className="vi-logo vi-logo-stack vi-logo-tnew">
+      <span className="vi-logo-mark">
+        <Mark brand={BRANDS[1]!} side="after" />
+      </span>
+      <span className="vi-logo-tnew-name">{t("Terral", "Terral")}</span>
     </span>
   );
 }

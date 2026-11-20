@@ -9743,3 +9743,52 @@
     .vi-plate .vi-sh { transition: none; }
   }
 }
+
+@layer components {
+  /* ---- Terral's two signatures (2026-11-20) ------------------------
+     The name goes where the bar of land used to be, under the mark
+     (user). Pilar signs across; Terral signs down, which is the only
+     way a gable and a word sit together without one of them going
+     small. Its colours before are the business's own, as Pilar's old
+     blue is; after, it is white, so it carries on any ground.       */
+  .vi-logo-stack { flex-direction: column; gap: 0.34em; text-align: center; }
+  .vi-logo-stack .vi-logo-words { justify-items: center; }
+
+  .vi-logo-told { color: #1f5134; }
+  .vi-logo-told .vi-logo-mark { width: 1.5em; }
+  .vi-logo-told-name { display: flex; align-items: baseline; justify-content: center; gap: 0.22em; }
+  .vi-logo-told-name b {
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 700;
+    font-size: 1em;
+    color: #1f5134;
+    text-shadow: 0.04em 0.04em 0 #bcc9bd;
+  }
+  .vi-logo-told-name i {
+    font-style: normal;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.4em;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: #b08b2e;
+  }
+  .vi-logo-told small { display: block; font-family: Arial, Helvetica, sans-serif; font-size: 0.34em; color: #8a8a8a; }
+
+  .vi-logo-tnew { color: #ffffff; }
+  .vi-logo-tnew .vi-logo-mark { width: 1.15em; }
+  .vi-logo-tnew-name {
+    font-family: var(--font-title);
+    font-weight: 500;
+    font-size: 0.6em;
+    letter-spacing: 0.02em;
+    color: #ffffff;
+  }
+
+  /* The name arrives with the shapes, as Pilar's does. */
+  .vi-morph[data-whole] .vi-morph-new .vi-logo-tnew-name { opacity: 0; translate: 0 -0.3em; transition: opacity 0.5s ease, translate 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+  .vi-morph[data-whole][data-step="2"] .vi-morph-new .vi-logo-tnew-name,
+  .vi-morph[data-whole][data-step="3"] .vi-morph-new .vi-logo-tnew-name { opacity: 1; translate: 0 0; transition-delay: 0.3s; }
+  @media (prefers-reduced-motion: reduce) {
+    .vi-morph[data-whole] .vi-logo-tnew-name { transition: none; }
+  }
+}
