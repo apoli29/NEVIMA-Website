@@ -8914,7 +8914,20 @@
 /* ---- visual identity: the film in the header, and the words in three
    options to choose from (user, 2026-11-19) ------------------------ */
 @layer components {
+  /* The film runs the full width of the screen (user, 2026-11-20),
+     out of the shell it is written inside: the gutter and the shell's
+     own maximum are given back on both sides. 100vw counts the
+     scrollbar, so the header clips rather than scrolls sideways -
+     `clip`, not `hidden`, so nothing inside it loses a sticky. */
+  .ps-head { overflow-x: clip; }
+  .vi-head-film {
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+  }
   .vi-head-film .vi-mg { margin-top: clamp(2.5rem, 5vw, 4rem); }
+  /* At full width the inset hairline would draw a line across the
+     whole screen, and the stage is already its own edge. */
+  .vi-head-film .vi-mg { box-shadow: none; }
 
   /* each option framed and tagged, so the three read apart */
   .vi-opts { display: grid; gap: clamp(2.5rem, 5vw, 4rem); margin-top: clamp(2.5rem, 5vw, 4rem); }
@@ -9903,11 +9916,11 @@
     --bri-inchiostro: #15120f;
     --bri-panna: #f4efe6;
     --bri-cenere: #8a8178;
-    gap: 0.085em;
+    gap: 0.03em;
     color: var(--bri-panna);
   }
-  /* The cloche over the word, a little under a third of its width. */
-  .vi-logo-bri-sym { display: block; width: 0.52em; }
+  /* The cloche over the word, at three fifths of its width. */
+  .vi-logo-bri-sym { display: block; width: 0.6em; }
   /* The word is one drawing, so it scales as one and is narrowed the
      same amount everywhere. */
   .vi-logo-bri-svg { display: block; width: 1em; height: auto; }

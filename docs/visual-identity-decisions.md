@@ -712,3 +712,62 @@ pagina.
 **O que fica de reserva.** `NO_BEFORE` e o caminho de tres tempos
 continuam no ficheiro: a Briciola ja nao precisa deles, mas o proximo
 negocio sem antes precisa.
+
+### A chapa da Briciola volta, com guias verdadeiras (2026-11-20)
+
+O utilizador mandou tirar a Briciola da fila das chapas de manha e
+**pediu o terceiro lugar de volta** a tarde. Fica. A objeccao que
+levou a tira-la - a seccao promete que cada aresta assenta numa guia,
+e esta marca e desenhada a pincel - resolve-se olhando melhor para o
+desenho: **o pincel desenhou o traco, nao escolheu por onde ele vai.**
+A cupula e um arco com centro e raio, o botao assenta no eixo, e o
+prato e uma horizontal. As guias dizem isso e nao outra coisa:
+
+- `x: [21, 53, 86]` - os dois pes da cupula e o eixo onde o botao
+  assenta;
+- `y: [20, 32, 70, 78]` - o botao, onde a cupula arranca, onde aterra,
+  e a linha do prato;
+- as duas diagonais sao as linhas por onde a cupula e riscada, levadas
+  para fora do quadrado.
+
+Como a fila filtra por quem tem `guides` e a terceira coluna segue o
+que la esta, bastou devolver-lhe as guias: nao ha excepcao nenhuma em
+codigo.
+
+### A assinatura aperta (2026-11-20)
+
+O utilizador pediu o logotipo mais perto do simbolo e a cloche um
+pouco maior.
+
+O intervalo nao era so o `gap`: a caixa da palavra ia do topo da linha
+ate abaixo da base, e BRICIOLA nao tem minusculas nem descendentes,
+por isso tudo isso era espaco morto a afastar a cloche. A caixa passou
+a ser cortada as maiusculas (`viewBox="0 11 158 31"`), o `gap` desceu
+de `0.085em` para `0.03em`, e a cloche subiu de `0.52em` para `0.6em`
+da largura da palavra. Medido no browser: o intervalo passou de perto
+de cinquenta pixeis para oito.
+
+O quadro (`docs/briciola/sistema-visual.html`) foi alinhado com isto,
+e deixou de mostrar o descritor dentro da assinatura, porque a
+assinatura ja nao o tem - passou a dize-lo onde e verdade: o descritor
+compoe-se ao lado da marca, nao dentro dela.
+
+### O filme do cabecalho passa a ocupar o ecra (2026-11-20)
+
+O utilizador pediu-o em ecra inteiro. O filme esta escrito dentro da
+`shell` do cabecalho, por isso sai dela: devolve-se a goteira e o
+maximo da shell dos dois lados (`width: 100vw` com
+`margin-inline: calc(50% - 50vw)`).
+
+Duas coisas que acompanham isto e sem as quais a mudanca parece uma
+avaria:
+
+- `100vw` conta a barra de scroll, por isso o cabecalho passa a
+  `overflow-x: clip` - **`clip` e nao `hidden`**, para nao criar um
+  contexto de scroll que tiraria o sticky a seja o que for la dentro;
+- o fio de um pixel que emoldurava o filme saiu. Dentro da shell era
+  uma moldura; a toda a largura seria um risco de lado a lado do ecra,
+  e o palco ja e a sua propria aresta.
+
+A 1440x950 o palco fica em 1440x900, ou seja praticamente o ecra todo,
+porque a proporcao do filme (16/10) assim o da.

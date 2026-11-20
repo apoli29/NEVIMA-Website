@@ -320,9 +320,22 @@ export const BRANDS: Brand[] = [
     after: BriciolaAfter,
     oldLogo: (t) => <BriciolaOldLogo t={t} />,
     newLogo: (t) => <BriciolaNewLogo t={t} />,
-    /* No guides, on purpose: this one is drawn with a brush, by eye,
-       and it does not belong on a plate that says nothing is (user,
-       2026-11-20). */
+    /* Back on the plate (user, 2026-11-20, who asked for the third
+       place again after it had been taken out that same day), and the
+       guides are true ones rather than a decoration under a drawing:
+       the dome's two feet and the axis the knob stands on, the knob
+       itself, where the dome springs and where it lands, the plate
+       line, and the two lines the dome is struck along, carried out
+       of the square. A brush drew the stroke; it did not choose where
+       the stroke goes. */
+    guides: {
+      x: [21, 53, 86],
+      y: [20, 32, 70, 78],
+      diag: [
+        [69, 0, 0, 100],
+        [37, 0, 106, 100],
+      ],
+    },
   },
 ];
 
@@ -602,10 +615,16 @@ function BriciolaAfter() {
     carries no assumption about what it is standing on and so the
     condensing is the same everywhere: textLength holds the line to
     one width whatever face ends up drawing it, which is also what
-    narrows the Didone the way the reference's is narrowed. */
+    narrows the Didone the way the reference's is narrowed.
+
+    The box is cropped to the capitals (y 11 to 42 of a line set at
+    40) rather than to the line: BRICIOLA has no descender and no
+    lower case, so everything above and below the capitals was dead
+    space holding the cloche away from the word (user, 2026-11-20:
+    the logo closer to the symbol). */
 function BriciolaWord() {
   return (
-    <svg className="vi-logo-bri-svg" viewBox="0 0 158 46" fill="currentColor" role="img" aria-label="Briciola">
+    <svg className="vi-logo-bri-svg" viewBox="0 11 158 31" fill="currentColor" role="img" aria-label="Briciola">
       <text x="2" y="40" fontSize="40" textLength="154" lengthAdjust="spacingAndGlyphs">
         BRICIOLA
       </text>
