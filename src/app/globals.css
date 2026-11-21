@@ -10149,11 +10149,12 @@
   /* The film's black is the about page's folds (user, 2026-11-21), as
      the black cards are: set on the window the strip runs through, so
      the photograph stays sharp and still while the frames and the
-     holes go by over it. */
+     holes go by over it. Exposed 30% less than the cards (user,
+     2026-11-21): the photograph shows at 35% instead of 50%. */
   .sht-cs {
     background:
       radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(0 0 0 / 0.35)),
-      linear-gradient(rgb(0 0 0 / 0.5), rgb(0 0 0 / 0.5)),
+      linear-gradient(rgb(0 0 0 / 0.65), rgb(0 0 0 / 0.65)),
       url("/about/folds-1600.webp") center / cover no-repeat,
       #000000;
   }

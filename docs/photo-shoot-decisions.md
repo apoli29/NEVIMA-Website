@@ -286,3 +286,5 @@ Pedido do utilizador, decidido numa so ronda de duvidas.
 - O preto da fita passa a ser o fundo de pregas da About (utilizador,
   no mesmo dia), posto na janela por onde a fita passa: a fotografia
   fica nitida e parada, e os fotogramas e os furos correm por cima.
+- A exposicao das pregas na fita desce 30% (utilizador): a fotografia
+  aparece a 35% em vez dos 50% dos cartoes.
