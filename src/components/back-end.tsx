@@ -383,7 +383,7 @@ function Prices({ t }: { t: T }) {
   ];
 
   return (
-    <section aria-labelledby="be-price-title" data-tone="dark" className="relative text-paper">
+    <section aria-labelledby="be-price-title" data-tone="ink" className="relative text-paper">
       <div className="shell ps-sec" data-tone-body>
         <SlideIn ready>
           <p className="mono-label text-paper/55">{t("How it works", "Como funciona")}</p>

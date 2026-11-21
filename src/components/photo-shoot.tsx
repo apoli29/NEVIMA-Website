@@ -53,7 +53,8 @@ import type { T } from "./sbs-shared";
     of use as OldHead below. */
 function Head({ t }: { t: T }) {
   return (
-    <section data-tone="dark" className="vi-head-sec relative isolate text-paper">
+    <>
+    <section data-tone="ink" className="vi-head-sec relative isolate text-paper">
       <header className="shell ps-head" data-tone-body>
         <SlideIn ready>
           <h1 className="display max-w-[18ch] text-[clamp(2.5rem,6vw,4.75rem)] leading-[0.98] font-light">
@@ -65,6 +66,12 @@ function Head({ t }: { t: T }) {
             <ShootFilm t={t} />
           </div>
         </SlideIn>
+      </header>
+    </section>
+    {/* Why it is worth it, on the dark grey under the black of the
+        title and the film (user, 2026-11-21). */}
+    <section data-tone="dark" className="relative text-paper">
+      <div className="shell vi-worth-sec" data-tone-body>
         <SlideIn ready distance={0} delay={0.2}>
           <div className="vi-worth">
             <div>
@@ -82,8 +89,9 @@ function Head({ t }: { t: T }) {
             </p>
           </div>
         </SlideIn>
-      </header>
+      </div>
     </section>
+    </>
   );
 }
 

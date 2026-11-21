@@ -166,7 +166,7 @@ function MarkPlate({ brand, t, still }: { brand: Brand & { guides: NonNullable<B
 function Plates({ t }: { t: T }) {
   const still = useStill();
   return (
-    <section aria-labelledby="vi-plates-title" data-tone="dark" className="relative text-paper">
+    <section aria-labelledby="vi-plates-title" data-tone="ink" className="relative text-paper">
       <div className="shell ps-sec" data-tone-body>
         <SlideIn ready>
           <p className="mono-label text-paper/55">{t("How a mark is built", "Como se constr\u00f3i uma marca")}</p>
@@ -256,7 +256,8 @@ function Cases3({ t }: { t: T }) {
 /** The title and the three cards, and nothing else. */
 function Head({ t }: { t: T }) {
   return (
-    <section data-tone="dark" className="vi-head-sec relative isolate text-paper">
+    <>
+    <section data-tone="ink" className="vi-head-sec relative isolate text-paper">
       <header className="shell ps-head" data-tone-body>
         <SlideIn ready>
           <h1 className="display max-w-[18ch] text-[clamp(2.5rem,6vw,4.75rem)] leading-[0.98] font-light">
@@ -277,6 +278,12 @@ function Head({ t }: { t: T }) {
             and set under the film (user, 2026-11-19: a fifth of what the
             section took). The full text and its three options are kept,
             out of use, in Opening and WorthOptions below. */}
+      </header>
+    </section>
+    {/* Why it is worth it, on the dark grey under the black of the
+        title and the film (user, 2026-11-21). */}
+    <section data-tone="dark" className="relative text-paper">
+      <div className="shell vi-worth-sec" data-tone-body>
         <SlideIn ready distance={0} delay={0.2}>
           <div className="vi-worth">
             <div>
@@ -294,8 +301,9 @@ function Head({ t }: { t: T }) {
             </p>
           </div>
         </SlideIn>
-      </header>
+      </div>
     </section>
+    </>
   );
 }
 
