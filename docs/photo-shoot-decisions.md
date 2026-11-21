@@ -288,3 +288,14 @@ Pedido do utilizador, decidido numa so ronda de duvidas.
   fica nitida e parada, e os fotogramas e os furos correm por cima.
 - A exposicao das pregas na fita desce 30% (utilizador): a fotografia
   aparece a 35% em vez dos 50% dos cartoes.
+
+## Os tons do escuro (2026-11-21, utilizador)
+
+- As seccoes escuras que nao sao as primeiras passam ao tom `ink`
+  (#000), o mesmo da seccao Essencial+ vs Avancado do lado a lado:
+  a personalizacao aqui, "Como se constroi uma marca" na identidade
+  visual e "Como funciona" no back-end.
+- Na identidade visual e aqui, o cabecalho divide-se em dois: o topo
+  (titulo e filme, e os tres cartoes na identidade visual) fica preto
+  (`ink`), a acompanhar o filme em ecra inteiro; "Porque vale a pena"
+  fica por baixo, numa seccao propria em cinza escuro (`dark`).

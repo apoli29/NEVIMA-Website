@@ -10250,3 +10250,10 @@
   .sbx-metal::after { display: none; }
   .vi-sure .vi-sure-words { text-shadow: 0 0 14px rgb(0 0 0 / 0.7), 0 0 2px rgb(0 0 0 / 0.35); }
 }
+
+/* Why it is worth it, in its own section on the dark grey under the
+   black header (user, 2026-11-21) */
+@layer components {
+  .vi-worth-sec { padding-block: clamp(3rem, 6vw, 5rem) clamp(3.5rem, 7vw, 5.5rem); }
+  .vi-worth-sec .vi-worth { margin-top: 0; padding-top: 0; border-top: 0; }
+}

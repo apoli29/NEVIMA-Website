@@ -494,7 +494,7 @@ export function Tailored({ t }: { t: T }) {
   }, [inView, reduce]);
 
   return (
-    <section aria-labelledby="sht-fit-title" data-tone="dark" className="sht sht-fit relative text-paper">
+    <section aria-labelledby="sht-fit-title" data-tone="ink" className="sht sht-fit relative text-paper">
       <div ref={ref} className="shell" data-tone-body>
         <p className="mono-label text-paper/55">{t("Personalisation", "Personalização")}</p>
         <h2 id="sht-fit-title" className="display sht-title">
