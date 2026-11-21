@@ -299,3 +299,24 @@ Pedido do utilizador, decidido numa so ronda de duvidas.
   (titulo e filme, e os tres cartoes na identidade visual) fica preto
   (`ink`), a acompanhar o filme em ecra inteiro; "Porque vale a pena"
   fica por baixo, numa seccao propria em cinza escuro (`dark`).
+- Depois (utilizador): "Porque vale a pena" tambem a preto, e o
+  cabecalho inteiro sobre um so fundo: as pregas do filme passam para a
+  propria seccao do cabecalho (`.vi-head-sec`), por baixo do titulo e
+  do filme, e o cartao do filme fica transparente. Desvanecem para
+  #000 no fundo. Igual na identidade visual.
+- O filme da identidade visual passa pelas tres marcas dos cartoes
+  (Pilar, limen, Briciola), cada uma antiga e depois nova, com o nome
+  da marca no rodape.
+- O fundo dos dois cabecalhos usa a copia de 2400px a qualidade 100
+  (`folds-2400.webp`, a do ecra grande da About, feita do JPEG
+  original) em vez da de 1600px a 94 (utilizador). Pesa 1,2 MB em vez
+  de 280 kB e so e pedida nestas duas paginas.
+- Legibilidade (utilizador): o branco de "Porque vale a pena" ficava
+  sobre o cinzento da passagem para o mapa. A passagem comeca mais tarde
+  (`data-tone-from=0.4` no mapa) e a seccao tem mais preto por baixo
+  (30vh), por isso o texto sai do ecra antes de o fundo clarear.
+- Todos os topos que estavam em cinza escuro (`dark`) passam ao preto
+  (`ink`): lado a lado, back-end e SEO, como a identidade visual e esta.
+- Ajustado depois (utilizador: um ponto entre as duas versoes, 20%
+  acima do meio): a passagem comeca a 64% do ecra (era 75%, depois 40%)
+  e ficam 15vh de preto por baixo (eram ~5,5rem, depois 30vh).

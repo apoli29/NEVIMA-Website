@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { SlideIn } from "./enter";
 import { BeforeAfter } from "./project-report";
@@ -8,7 +8,7 @@ import { ToneRoom } from "./tone-veil";
 import { ProposalAsk } from "./about-faq";
 import { useInView, type T } from "./sbs-shared";
 import { STILL_KEY } from "./footer";
-import { BRANDS, Mark, PilarNewLogo, PilarOldLogo, type Brand } from "./vi-brands";
+import { BRANDS, Mark, type Brand } from "./vi-brands";
 import { TO_FILL } from "@/lib/work";
 import { useT } from "@/lib/use-lang";
 
@@ -280,9 +280,9 @@ function Head({ t }: { t: T }) {
             out of use, in Opening and WorthOptions below. */}
       </header>
     </section>
-    {/* Why it is worth it, on the dark grey under the black of the
-        title and the film (user, 2026-11-21). */}
-    <section data-tone="dark" className="relative text-paper">
+    {/* Why it is worth it, on the same black as the title and the film above
+        (user, 2026-11-21), as one ground with the film. */}
+    <section data-tone="ink" className="relative text-paper">
       <div className="shell vi-worth-sec" data-tone-body>
         <SlideIn ready distance={0} delay={0.2}>
           <div className="vi-worth">
@@ -506,13 +506,17 @@ function useTyped(text: string, on: boolean, still: boolean) {
 
 /** What the phone shows, close up: only the logo (user, 2026-11-19),
     the one it had on its white or the one it has on Pilar's Noite. */
-function Site({ t, side, on }: { t: T; side: "old" | "new"; on: boolean }) {
+function Site({ t, brand, side, on }: { t: T; brand: Brand; side: "old" | "new"; on: boolean }) {
   return (
-    <span className="vi-site" data-side={side} data-on={on || undefined}>
-      <span className="vi-site-logo">{side === "old" ? <PilarOldLogo t={t} /> : <PilarNewLogo t={t} />}</span>
+    <span className="vi-site" data-brand={brand.id} data-side={side} data-on={on || undefined}>
+      <span className="vi-site-logo">{side === "old" ? brand.oldLogo?.(t) : brand.newLogo?.(t)}</span>
     </span>
   );
 }
+
+/** The film walks the three businesses of the header's cards in turn
+    (user, 2026-11-21): Pilar, limen, Briciola, each old then new. */
+const FILM_BRANDS = BRANDS.filter((b) => b.oldLogo && b.newLogo);
 
 /** The client and the phone, as a short film (user, 2026-11-19: not the
     call card's structure, only its figure and its words). The figure is
@@ -532,11 +536,12 @@ function Glance({ t }: { t: T }) {
 
   useEffect(() => {
     if (still || !inView) return;
-    const id = window.setTimeout(() => setBeat((b) => (b + 1) % (TAKE.length * 2)), TAKE[beat % TAKE.length]!.ms);
+    const id = window.setTimeout(() => setBeat((b) => (b + 1) % (TAKE.length * 2 * FILM_BRANDS.length)), TAKE[beat % TAKE.length]!.ms);
     return () => window.clearTimeout(id);
   }, [beat, inView, still]);
 
-  const round = still ? 1 : Math.floor(beat / TAKE.length);
+  const round = still ? 1 : Math.floor(beat / TAKE.length) % 2;
+  const brand = FILM_BRANDS[still ? 0 : Math.floor(beat / (TAKE.length * 2)) % FILM_BRANDS.length]!;
   const shot: Shot = still ? "face" : TAKE[beat % TAKE.length]!.shot;
   const side = round === 0 ? "old" : "new";
   const up = shot !== "wide";
@@ -556,8 +561,8 @@ function Glance({ t }: { t: T }) {
       data-still={still || undefined}
       role="img"
       aria-label={t(
-        "A client looks Pilar up on a phone: the old identity puts them off, the new one wins them over.",
-        "Um cliente procura a Pilar no telemóvel: a identidade antiga afasta-o, a nova convence-o.",
+        "A client looks up Pilar, limen and Briciola on a phone, one after another: each old identity puts them off, each new one wins them over.",
+        "Um cliente procura a Pilar, a limen e a Briciola no telemóvel, uma a seguir à outra: cada identidade antiga afasta-o, cada nova convence-o.",
       )}
     >
       <div className="vi-mg-stage" aria-hidden="true">
@@ -586,7 +591,7 @@ function Glance({ t }: { t: T }) {
                   CSS, closes in. */}
               <rect x="431.5" y="184.25" width="43" height="78" rx="7.7" className="vi-mg-edge" />
               <rect x="431.75" y="184.5" width="42.5" height="77.5" rx="7.5" className="vi-mg-phone" />
-              <rect x="433.35" y="186.1" width="39.3" height="74.3" rx="6" className="vi-mg-glass" data-side={side} />
+              <rect x="433.35" y="186.1" width="39.3" height="74.3" rx="6" className="vi-mg-glass" data-brand={brand.id} data-side={side} />
             </g>
           </svg>
         </div>
@@ -594,8 +599,12 @@ function Glance({ t }: { t: T }) {
         {/* Inside the phone: the screen, crisp, once the camera is in. */}
         <div className="vi-mg-screen" data-on={shot === "screen" || undefined}>
           <span className="vi-mg-frame">
-            <Site t={t} side="old" on={side === "old"} />
-            <Site t={t} side="new" on={side === "new"} />
+            {FILM_BRANDS.map((b) => (
+              <Fragment key={b.id}>
+                <Site t={t} brand={b} side="old" on={b.id === brand.id && side === "old"} />
+                <Site t={t} brand={b} side="new" on={b.id === brand.id && side === "new"} />
+              </Fragment>
+            ))}
           </span>
         </div>
 
@@ -615,6 +624,7 @@ function Glance({ t }: { t: T }) {
           ))}
         </span>
         <span className="mono-label vi-mg-cap">
+          <b className="vi-mg-brand">{brand.name}</b>
           {side === "old" ? t("The identity they had", "A identidade que tinham") : t("The identity they have", "A identidade que passam a ter")}
         </span>
       </div>

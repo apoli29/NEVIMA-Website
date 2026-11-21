@@ -407,7 +407,7 @@ export function Coverage({ t }: { t: T }) {
   const gy = KM_Y(GAIA[0]);
 
   return (
-    <section aria-labelledby="sht-map-title" data-tone="light" className="sht sht-map relative">
+    <section aria-labelledby="sht-map-title" data-tone="light" data-tone-from="0.64" className="sht sht-map relative">
       <div className="shell sht-map-grid" data-tone-body>
         <div>
           <p className="mono-label text-ash-2">{t("Where we work", "Área de cobertura")}</p>
