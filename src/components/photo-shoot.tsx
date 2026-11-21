@@ -71,7 +71,7 @@ function Head({ t }: { t: T }) {
     {/* Why it is worth it, on the same black as the title and the film above
         (user, 2026-11-21), as one ground with the film. */}
     <section data-tone="ink" className="relative text-paper">
-      <div className="shell vi-worth-sec" data-tone-body>
+      <div className="shell vi-worth-sec ps-worth-sec" data-tone-body>
         <SlideIn ready distance={0} delay={0.2}>
           <div className="vi-worth">
             <div>

@@ -502,7 +502,7 @@ export function SideBySide() {
             pages are left exactly as they are: only Included and
             personalization dim as they go. */}
         <ToneRoom>
-        <div data-tone="dark" className="sbs-top relative isolate text-paper">
+        <div data-tone="ink" className="sbs-top relative isolate text-paper">
         <header className="shell pt-[calc(var(--section-gap)+2rem)] pb-[clamp(2.5rem,5vw,4rem)]">
           <SlideIn ready>
             <p className="mono-label text-paper/55">{t("Side by side", "Lado a lado")}</p>

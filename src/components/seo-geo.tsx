@@ -402,7 +402,7 @@ function SeoDemo({ t }: { t: T }) {
 
 function SeoHero({ t }: { t: T }) {
   return (
-    <section aria-labelledby="sg-title" data-tone="dark" className="relative text-paper">
+    <section aria-labelledby="sg-title" data-tone="ink" className="relative text-paper">
       <div className="shell sg-hero" data-tone-body>
         <div className="sg-hero-copy">
           <SlideIn ready>

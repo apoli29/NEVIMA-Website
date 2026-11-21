@@ -47,7 +47,7 @@ import { useT } from "@/lib/use-lang";
 
 function Head({ t }: { t: T }) {
   return (
-    <section data-tone="dark" className="relative isolate text-paper">
+    <section data-tone="ink" className="relative isolate text-paper">
       {/* Black, as it was and as the other service headers are (user,
           2026-11-18: the grey was only ever meant for the drawings).
           The title still sits at the top of it. */}

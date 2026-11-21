@@ -10298,3 +10298,11 @@
   .vi-site :is(.vi-logo-new-name, .vi-logo-arrive, .vi-logo-tnew-name, .vi-logo-words) { opacity: 1; translate: 0 0; }
   .vi-mg-brand { font-weight: 600; margin-right: 0.75em; color: #ffffff; }
 }
+
+/* The photo shoot's "why it is worth it" runs on in black long enough
+   that its words are off the screen before the map turns the ground
+   white (user, 2026-11-21: white type on the turning grey was
+   unreadable); the map's turn starts later too (data-tone-from). */
+@layer components {
+  .ps-worth-sec { padding-bottom: max(clamp(3.5rem, 7vw, 5.5rem), 30vh); }
+}

@@ -311,3 +311,9 @@ Pedido do utilizador, decidido numa so ronda de duvidas.
   (`folds-2400.webp`, a do ecra grande da About, feita do JPEG
   original) em vez da de 1600px a 94 (utilizador). Pesa 1,2 MB em vez
   de 280 kB e so e pedida nestas duas paginas.
+- Legibilidade (utilizador): o branco de "Porque vale a pena" ficava
+  sobre o cinzento da passagem para o mapa. A passagem comeca mais tarde
+  (`data-tone-from=0.4` no mapa) e a seccao tem mais preto por baixo
+  (30vh), por isso o texto sai do ecra antes de o fundo clarear.
+- Todos os topos que estavam em cinza escuro (`dark`) passam ao preto
+  (`ink`): lado a lado, back-end e SEO, como a identidade visual e esta.
