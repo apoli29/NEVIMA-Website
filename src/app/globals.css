@@ -10257,3 +10257,42 @@
   .vi-worth-sec { padding-block: clamp(3rem, 6vw, 5rem) clamp(3.5rem, 7vw, 5.5rem); }
   .vi-worth-sec .vi-worth { margin-top: 0; padding-top: 0; border-top: 0; }
 }
+
+/* The full-screen film runs on into the black under it (user,
+   2026-11-21): the folds fade to #000 at its foot, so the header and
+   "why it is worth it" read as one ground with the film. */
+@layer components {
+  /* One ground for the whole header, not two (user, 2026-11-21): the
+     film's folds are laid on the header itself, under the title (and
+     visual identity's three cards) as much as under the film, and the
+     film's own card goes clear, so the folds run on from the top of
+     the page into the film without a seam. They fade to #000 at the
+     foot, into "why it is worth it". The content is left as it was. */
+  .vi-head-sec {
+    background:
+      linear-gradient(to bottom, transparent 78%, #000000 100%),
+      radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(0 0 0 / 0.35)),
+      linear-gradient(rgb(0 0 0 / 0.5), rgb(0 0 0 / 0.5)),
+      url("/about/folds-1600.webp") center / cover no-repeat,
+      #000000;
+  }
+  .vi-head-film .vi-mg { background: transparent; }
+  .vi-head-film .vi-mg-foot { box-shadow: none; }
+}
+
+/* The film walks the three businesses (user, 2026-11-21): each phone
+   screen on its own brand's ground, the signatures at the sizes the
+   header's cards give them. */
+@layer components {
+  .vi-site[data-brand="limen"][data-side="new"] { background: #1e1d1b; color: #f5f2ed; }
+  .vi-site[data-brand="briciola"][data-side="new"] { background: #16120f; color: #f4efe6; }
+  .vi-site[data-side="new"] { color: #ffffff; }
+  .vi-mg-glass[data-brand="limen"][data-side="new"] { fill: #1e1d1b; }
+  .vi-mg-glass[data-brand="briciola"][data-side="new"] { fill: #16120f; }
+  .vi-site[data-side] .vi-site-logo .vi-logo-lnew { font-size: 17.8cqw; }
+  .vi-site[data-side] .vi-site-logo .vi-logo-briold { font-size: 8.9cqw; }
+  .vi-site[data-side] .vi-site-logo .vi-logo-bri { font-size: 62cqw; }
+  /* the new name and its line are shown whole on the phone */
+  .vi-site :is(.vi-logo-new-name, .vi-logo-arrive, .vi-logo-tnew-name, .vi-logo-words) { opacity: 1; translate: 0 0; }
+  .vi-mg-brand { font-weight: 600; margin-right: 0.75em; color: #ffffff; }
+}

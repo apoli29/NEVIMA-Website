@@ -831,3 +831,13 @@ sempre ocupou.
   antigo para o fundo de pregas da pagina About, como os outros
   cartoes pretos. O mesmo nos dois cartoes do lado a lado (`.sbx-metal`,
   e a luz que derivava neles saiu).
+
+## O filme pelas tres marcas, e um so fundo no cabecalho (2026-11-21)
+
+- O filme do cabecalho passa pela Pilar, pela limen e pela Briciola,
+  cada uma com a identidade antiga e a nova, cada ecra no fundo da sua
+  marca; o rodape diz o nome.
+- O topo (titulo, tres cartoes, filme) fica sobre as pregas do filme,
+  num so fundo continuo que desvanece para preto; "Porque vale a pena"
+  fica a preto por baixo. "Como se constroi uma marca" passa ao preto
+  (`ink`) do lado a lado.

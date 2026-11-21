@@ -68,9 +68,9 @@ function Head({ t }: { t: T }) {
         </SlideIn>
       </header>
     </section>
-    {/* Why it is worth it, on the dark grey under the black of the
-        title and the film (user, 2026-11-21). */}
-    <section data-tone="dark" className="relative text-paper">
+    {/* Why it is worth it, on the same black as the title and the film above
+        (user, 2026-11-21), as one ground with the film. */}
+    <section data-tone="ink" className="relative text-paper">
       <div className="shell vi-worth-sec" data-tone-body>
         <SlideIn ready distance={0} delay={0.2}>
           <div className="vi-worth">

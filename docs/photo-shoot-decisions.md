@@ -299,3 +299,11 @@ Pedido do utilizador, decidido numa so ronda de duvidas.
   (titulo e filme, e os tres cartoes na identidade visual) fica preto
   (`ink`), a acompanhar o filme em ecra inteiro; "Porque vale a pena"
   fica por baixo, numa seccao propria em cinza escuro (`dark`).
+- Depois (utilizador): "Porque vale a pena" tambem a preto, e o
+  cabecalho inteiro sobre um so fundo: as pregas do filme passam para a
+  propria seccao do cabecalho (`.vi-head-sec`), por baixo do titulo e
+  do filme, e o cartao do filme fica transparente. Desvanecem para
+  #000 no fundo. Igual na identidade visual.
+- O filme da identidade visual passa pelas tres marcas dos cartoes
+  (Pilar, limen, Briciola), cada uma antiga e depois nova, com o nome
+  da marca no rodape.
