@@ -1116,10 +1116,10 @@ function Prices({ t }: { t: T }) {
     },
     {
       n: "02",
-      head: t("What it costs", "Quanto custa"),
+      head: t("Where the figure is", "Onde está o valor"),
       body: t(
-        `${TO_FILL}. Whether it is charged on its own or inside a package with the website: ${TO_FILL}.`,
-        `${TO_FILL}. Se é cobrado à parte ou incluído num pacote com o website: ${TO_FILL}.`,
+        "In the free proposal: the form works it out with the rest of the website, the cost of each service set out on its own.",
+        "Na proposta gratuita: o formulário calcula-o com o resto do website, com o custo de cada serviço discriminado.",
       ),
     },
     {
@@ -1144,10 +1144,10 @@ function Prices({ t }: { t: T }) {
     <section aria-labelledby="vi-price-title" data-tone="light" className="relative vi-price-light">
       <div className="shell ps-sec" data-tone-body>
         <SlideIn ready>
-          <p className="mono-label text-ash-2">{t("How the price works", "Como funcionam os preços")}</p>
+          <p className="mono-label text-ash-2">{t("How it works", "Como funciona")}</p>
           <h2 id="vi-price-title" className="display ps-title">
             <span className="font-light sm:block">{t("The mark and the website", "A marca e o website")}</span>{" "}
-            <span className="font-medium sm:block">{t("are priced as one piece of work.", "são orçamentados como um só trabalho.")}</span>
+            <span className="font-medium sm:block">{t("are thought out as one piece of work.", "são pensados como um só trabalho.")}</span>
           </h2>
         </SlideIn>
 
@@ -1171,8 +1171,8 @@ function Prices({ t }: { t: T }) {
           <div className="vi-price-foot">
             <p className="mono-label">
               {t(
-                "The figures are the studio's to set; the form works an estimate out meanwhile.",
-                "Os valores são definidos pelo estúdio; entretanto, o formulário calcula uma estimativa.",
+                "Every figure is in the free proposal: the form works the estimate out, with the cost of every service set out.",
+                "Todos os valores estão na proposta gratuita: o formulário calcula a estimativa, com o custo de cada serviço discriminado.",
               )}
             </p>
             <ProposalAsk label={t("Get your free proposal", "Pedir proposta gratuita")} />

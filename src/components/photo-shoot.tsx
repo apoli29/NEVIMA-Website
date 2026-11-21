@@ -4,6 +4,7 @@ import { SlideIn } from "./enter";
 import { BeforeAfter } from "./project-report";
 import { ToneRoom } from "./tone-veil";
 import { Included, Coverage, Tailored } from "./shoot-sections";
+import { ShootFilm } from "./shoot-film";
 import { ProposalAsk } from "./about-faq";
 import { useT } from "@/lib/use-lang";
 import type { T } from "./sbs-shared";
@@ -42,12 +43,57 @@ import type { T } from "./sbs-shared";
 
 /* ---- the header ------------------------------------------------- */
 
+/** Set as the visual identity page's is (user, 2026-11-21): only the
+    title, then the film full across the screen (ShootFilm, in
+    shoot-film.tsx: António sets the scene, Emanuel photographs a
+    product and a shop, and the client sees the website), then why it
+    is worth it in one line of title and one of text - what the
+    opening section used to say at length. The old header, with its
+    mono label, the studio's sentence and the three facts, is kept out
+    of use as OldHead below. */
+function Head({ t }: { t: T }) {
+  return (
+    <section data-tone="dark" className="vi-head-sec relative isolate text-paper">
+      <header className="shell ps-head" data-tone-body>
+        <SlideIn ready>
+          <h1 className="display max-w-[18ch] text-[clamp(2.5rem,6vw,4.75rem)] leading-[0.98] font-light">
+            {t("Photo Shoot", "Sessão Fotográfica")}
+          </h1>
+        </SlideIn>
+        <SlideIn ready distance={0} delay={0.12}>
+          <div className="vi-head-film">
+            <ShootFilm t={t} />
+          </div>
+        </SlideIn>
+        <SlideIn ready distance={0} delay={0.2}>
+          <div className="vi-worth">
+            <div>
+              <p className="mono-label text-paper/55">{t("Why it is worth it", "Porque vale a pena")}</p>
+              <h2 className="display vi-worth-title">
+                {t("A website is believed by its photographs first.", "Um website acredita-se primeiro pelas fotografias.")}
+              </h2>
+            </div>
+            <p className="vi-worth-say">
+              {t(
+                "Photographs taken in a hurry, in whatever light there was, are what a client sees before reading a word. A session done properly gives the website pictures of its own, ",
+                "Fotografias tiradas à pressa, com a luz que havia, são o que o cliente vê antes de ler uma palavra. Uma sessão feita a sério dá ao website imagens que lhe pertencem, ",
+              )}
+              <b>{t("and they go on serving social media, advertising and whatever comes next.", "e que continuam a servir as redes sociais, os anúncios e o que vier a seguir.")}</b>
+            </p>
+          </div>
+        </SlideIn>
+      </header>
+    </section>
+  );
+}
+
+/** The header as it stood until 2026-11-21; out of use. */
 /** Set exactly as the side-by-side page's is (user, 2026-11-17: the two
     headers are to read as one system): the same dark ground, the same
     room above and below it, the same mono label, the same display size
     and the same two SlideIns. The photograph that stood here, its cut
     corner and its credit are gone. */
-function Head({ t }: { t: T }) {
+export function OldHead({ t }: { t: T }) {
   const facts = [
     { v: t("Mainland Portugal", "Portugal continental"), l: t("Where it is available", "Onde está disponível") },
     { v: t("30 km of Gaia", "30 km de Gaia"), l: t("Travel included within", "Deslocação incluída até") },
@@ -88,7 +134,9 @@ function Head({ t }: { t: T }) {
 
 /* ---- the opening ------------------------------------------------ */
 
-function Opening({ t }: { t: T }) {
+/** Out of use since 2026-11-21 (user): its essentials moved into the
+    header, under the film. */
+export function Opening({ t }: { t: T }) {
   return (
     <section data-tone="light" className="relative">
       <div className="shell ps-open" data-tone-body>
@@ -254,10 +302,10 @@ function packages(t: T) {
 function Packages({ t }: { t: T }) {
   const { rows, cards } = packages(t);
   return (
-    <section aria-labelledby="ps-pack-title" data-tone="dark" className="relative text-paper">
+    <section aria-labelledby="ps-pack-title" data-tone="light" className="ps-packs-light relative">
       <div className="shell ps-sec" data-tone-body>
         <SlideIn ready>
-          <p className="mono-label text-paper/55">{t("Packages", "Pacotes")}</p>
+          <p className="mono-label text-ash-2">{t("Packages", "Pacotes")}</p>
           <h2 id="ps-pack-title" className="display ps-title">
             <span className="font-light sm:block">{t("Three ways to do the same thing,", "Três maneiras de fazer o mesmo,")}</span>{" "}
             <span className="font-medium sm:block">{t("by the size of what there is to show.", "conforme o tamanho do que há para mostrar.")}</span>
@@ -265,7 +313,7 @@ function Packages({ t }: { t: T }) {
         </SlideIn>
 
         <SlideIn ready distance={0} delay={0.08}>
-          <p className="ps-lede ps-lede-dark">
+          <p className="ps-lede">
             {t(
               "What tells them apart is how many photographs are delivered, how long the session runs, how many places it covers and how soon the files arrive.",
               "O que os distingue é quantas fotografias são entregues, quanto tempo dura a sessão, quantos locais cobre e em quanto tempo chegam os ficheiros.",
@@ -296,8 +344,8 @@ function Packages({ t }: { t: T }) {
           <div className="ps-pack-foot">
             <p className="mono-label">
               {t(
-                "The prices are the studio's to set; the form works an estimate out meanwhile.",
-                "Os preços são definidos pelo estúdio; entretanto, o formulário calcula uma estimativa.",
+                "What each package costs is in the free proposal: the form works the estimate out, with the cost of every service set out.",
+                "O valor de cada pacote está na proposta gratuita: o formulário calcula a estimativa, com o custo de cada serviço discriminado.",
               )}
             </p>
             <ProposalAsk label={t("Get your free proposal", "Pedir proposta gratuita")} />
@@ -315,7 +363,8 @@ export function PhotoShoot() {
   return (
     <ToneRoom>
       <Head t={t} />
-      <Opening t={t} />
+      {/* The opening came off on 2026-11-21 (user): its essentials are
+          in the header, under the film. Opening is kept above. */}
       {/* Compare, the same three things photographed twice, came off
           the page on the user's ask (2026-11-20). It is whole below,
           out of use, and the six photographs it reads are still in

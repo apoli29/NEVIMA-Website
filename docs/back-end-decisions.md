@@ -551,3 +551,9 @@ com os cards empilhados, não aparecem.
 - "Why should small businesses invest…" passou a branco, com os três cartões a preto sólido e o meteoro entre eles a tinta (`.be-why-light`).
 - Em "What a company gains" os textos subiram (a frase de abertura e as linhas de cada ganho).
 - "Need something more specific?" volta a ter o botão do formulário (o utilizador pediu-o, revendo a decisão anterior de o tirar).
+
+## Sem precos (2026-11-21, utilizador)
+
+"Como funcionam os precos" passa a "Como funciona". Os dois valores
+`[a preencher]` dizem "Na proposta", e o pe manda para o formulario,
+que calcula a estimativa com o custo de cada servico discriminado.

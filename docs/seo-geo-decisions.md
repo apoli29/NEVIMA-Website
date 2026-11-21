@@ -44,3 +44,9 @@ References through Awwwards: Miguel Recio (editorial figure captions in mono), C
 
 - The calculator with the figures left the page: the card now says what each level includes (basic, one-off, monthly), each with a tag ("Included" / "In the proposal"), and that the figures are set in the free proposal from the size of the website. The user picked this over hiding the figures behind a button or showing only "from €80".
 - The calculator is kept whole, out of use, as `PriceCalculator` in `seo-geo.tsx`; putting it back is one line in `SeoGeo`.
+
+## Sem precos (2026-11-21, utilizador)
+
+A seccao "Preco / Quanto custa" passa a "Como funciona / Tres niveis, a
+medida do website". O trabalho pontual e calculado "a partir do proprio
+website" (ja nao "do valor do website"), e o pe manda para o formulario.
