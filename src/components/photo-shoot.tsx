@@ -320,9 +320,13 @@ export function PhotoShoot() {
           the page on the user's ask (2026-11-20). It is whole below,
           out of use, and the six photographs it reads are still in
           public/photo-shoot/. */}
+      {/* Where we work comes straight after the opening (user,
+          2026-11-21), where it used to sit between the packages and
+          personalization: whether we even travel to you is settled
+          before anything is offered, not after it has been priced. */}
+      <Coverage t={t} />
       <Included t={t} />
       <Packages t={t} />
-      <Coverage t={t} />
       <Tailored t={t} />
     </ToneRoom>
   );
