@@ -283,3 +283,6 @@ Pedido do utilizador, decidido numa so ronda de duvidas.
 - Personalizacao no escuro: os quatro mostradores ja nao tem caixa
   preta (o `#0b0b0b` lia-se como um remendo no escuro do veu e cortava
   o primeiro rotulo a esquerda). As divisorias sao bordas.
+- O preto da fita passa a ser o fundo de pregas da About (utilizador,
+  no mesmo dia), posto na janela por onde a fita passa: a fotografia
+  fica nitida e parada, e os fotogramas e os furos correm por cima.

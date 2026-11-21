@@ -10146,6 +10146,17 @@
     mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
   }
   .sht-in { overflow-x: clip; }
+  /* The film's black is the about page's folds (user, 2026-11-21), as
+     the black cards are: set on the window the strip runs through, so
+     the photograph stays sharp and still while the frames and the
+     holes go by over it. */
+  .sht-cs {
+    background:
+      radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(0 0 0 / 0.35)),
+      linear-gradient(rgb(0 0 0 / 0.5), rgb(0 0 0 / 0.5)),
+      url("/about/folds-1600.webp") center / cover no-repeat,
+      #000000;
+  }
   .sht-cs-track {
     --sht-cs-hole: repeating-linear-gradient(90deg, rgb(255 255 255 / 0.86) 0 10px, transparent 10px 24px);
     display: flex;
@@ -10153,8 +10164,7 @@
     padding-block: 30px;
     background:
       var(--sht-cs-hole) 0 11px / 100% 7px no-repeat,
-      var(--sht-cs-hole) 0 calc(100% - 11px) / 100% 7px no-repeat,
-      #0b0b0b;
+      var(--sht-cs-hole) 0 calc(100% - 11px) / 100% 7px no-repeat;
     will-change: transform;
   }
   /* the hand takes the strip (useStrip in shoot-sections.tsx) */
