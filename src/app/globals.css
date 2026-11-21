@@ -10304,5 +10304,5 @@
    white (user, 2026-11-21: white type on the turning grey was
    unreadable); the map's turn starts later too (data-tone-from). */
 @layer components {
-  .ps-worth-sec { padding-bottom: max(clamp(3.5rem, 7vw, 5.5rem), 30vh); }
+  .ps-worth-sec { padding-bottom: max(clamp(3.5rem, 7vw, 5.5rem), 15vh); }
 }

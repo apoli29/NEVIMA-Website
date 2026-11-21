@@ -317,3 +317,6 @@ Pedido do utilizador, decidido numa so ronda de duvidas.
   (30vh), por isso o texto sai do ecra antes de o fundo clarear.
 - Todos os topos que estavam em cinza escuro (`dark`) passam ao preto
   (`ink`): lado a lado, back-end e SEO, como a identidade visual e esta.
+- Ajustado depois (utilizador: um ponto entre as duas versoes, 20%
+  acima do meio): a passagem comeca a 64% do ecra (era 75%, depois 40%)
+  e ficam 15vh de preto por baixo (eram ~5,5rem, depois 30vh).
