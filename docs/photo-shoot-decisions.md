@@ -221,3 +221,19 @@ ele le continuam em `public/photo-shoot/`.
 
 A pagina fica com cinco seccoes em vez de seis: abertura, o que a
 sessao inclui, os pacotes, onde trabalhamos e personalizacao.
+
+## «Onde trabalhamos» sobe para debaixo da abertura (2026-11-21)
+
+O utilizador mandou por o mapa logo a seguir ao texto de abertura
+(«Um website acredita-se primeiro pelas fotografias»). Estava entre os
+pacotes e a personalizacao.
+
+A ordem fica: cabecalho, abertura, onde trabalhamos, o que a sessao
+inclui, os pacotes, personalizacao. Faz sentido: **se sequer nos
+deslocamos ate la e uma coisa que se resolve antes de haver uma
+proposta, nao depois de ela estar com preco.** Quem esta fora dos 30
+km sabe-o na segunda ecra em vez de o descobrir no fim.
+
+Os tons ficam escuro, claro, claro, claro, escuro, claro. Sao tres
+claros seguidos onde antes eram dois, mas o veu do `ToneRoom` so
+reage a mudanca, por isso nao ha nada a corrigir.
