@@ -307,3 +307,7 @@ Pedido do utilizador, decidido numa so ronda de duvidas.
 - O filme da identidade visual passa pelas tres marcas dos cartoes
   (Pilar, limen, Briciola), cada uma antiga e depois nova, com o nome
   da marca no rodape.
+- O fundo dos dois cabecalhos usa a copia de 2400px a qualidade 100
+  (`folds-2400.webp`, a do ecra grande da About, feita do JPEG
+  original) em vez da de 1600px a 94 (utilizador). Pesa 1,2 MB em vez
+  de 280 kB e so e pedida nestas duas paginas.

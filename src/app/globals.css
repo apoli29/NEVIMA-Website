@@ -10268,12 +10268,14 @@
      film's own card goes clear, so the folds run on from the top of
      the page into the film without a seam. They fade to #000 at the
      foot, into "why it is worth it". The content is left as it was. */
+  /* the 2400px copy, at quality 100 from the original (user,
+     2026-11-21): full screen, the 1600px copy at 94 was too little */
   .vi-head-sec {
     background:
       linear-gradient(to bottom, transparent 78%, #000000 100%),
       radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(0 0 0 / 0.35)),
       linear-gradient(rgb(0 0 0 / 0.5), rgb(0 0 0 / 0.5)),
-      url("/about/folds-1600.webp") center / cover no-repeat,
+      url("/about/folds-2400.webp") center / cover no-repeat,
       #000000;
   }
   .vi-head-film .vi-mg { background: transparent; }
