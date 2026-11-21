@@ -818,3 +818,16 @@ gradiente do proprio filme, sem emenda: o campo ocupa o ecra e o
 desenho fica inteiro no meio dele. Num telemovel 62.5vw e mais baixo
 do que a janela, por isso o palco ocupa a largura toda, tal como
 sempre ocupou.
+
+## Sem precos, e os cartoes cinzentos nas pregas (2026-11-21)
+
+- As paginas de servicos explicam como funcionam e nao falam de
+  precos; o formulario e que os mostra (utilizador). "Como funcionam os
+  precos" passa a "Como funciona"; a linha "Quanto custa" passa a
+  "Onde esta o valor" (na proposta gratuita, com o custo de cada
+  servico discriminado). As propostas e revisoes `[a preencher]` ficam:
+  sao processo, nao preco.
+- Os tres cartoes do cabecalho e o "Com duvidas?" saem do cinzento
+  antigo para o fundo de pregas da pagina About, como os outros
+  cartoes pretos. O mesmo nos dois cartoes do lado a lado (`.sbx-metal`,
+  e a luz que derivava neles saiu).

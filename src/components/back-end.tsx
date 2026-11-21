@@ -9,7 +9,6 @@ import { useInView, type T } from "./sbs-shared";
 import { HoursBars, SavedHours, WeekDonut } from "./back-end-charts";
 import { DepthSystem, SPEED } from "./back-end-depth";
 import { DragRun, GainStory, GlowTrail, PriceLine, SceneClient, SceneDay, SceneKept } from "./back-end-motion";
-import { TO_FILL } from "@/lib/work";
 import { useT } from "@/lib/use-lang";
 
 /* ==================================================================
@@ -359,7 +358,7 @@ function Prices({ t }: { t: T }) {
       id: "build",
       glyph: "build" as const,
       name: t("A one-off build", "Um valor de implementação"),
-      value: TO_FILL,
+      value: t("In the proposal", "Na proposta"),
       per: t("once", "uma vez"),
       body: t(
         "It follows from which solutions are chosen and from how much they have to be tied to one another.",
@@ -374,7 +373,7 @@ function Prices({ t }: { t: T }) {
       id: "month",
       glyph: "month" as const,
       name: t("A monthly service", "Um serviço mensal"),
-      value: TO_FILL,
+      value: t("In the proposal", "Na proposta"),
       per: t("a month", "por mês"),
       body: t(
         "A token figure on purpose, and it can be one because what we build is thought out so that the upkeep it needs is low.",
@@ -387,7 +386,7 @@ function Prices({ t }: { t: T }) {
     <section aria-labelledby="be-price-title" data-tone="dark" className="relative text-paper">
       <div className="shell ps-sec" data-tone-body>
         <SlideIn ready>
-          <p className="mono-label text-paper/55">{t("How the price works", "Como funcionam os preços")}</p>
+          <p className="mono-label text-paper/55">{t("How it works", "Como funciona")}</p>
           <h2 id="be-price-title" className="display be-why-title">
             <span className="font-light sm:block">{t("One build, then a small", "Uma implementação, depois um")}</span>{" "}
             <span className="font-medium sm:block">{t("monthly service.", "serviço mensal pequeno.")}</span>
@@ -402,8 +401,8 @@ function Prices({ t }: { t: T }) {
           <div className="be-price-foot">
             <p className="mono-label">
               {t(
-                "The two figures are the studio's to set; the form works an estimate out meanwhile.",
-                "Os dois valores são definidos pelo estúdio; entretanto, o formulário calcula uma estimativa.",
+                "Every figure is in the free proposal: the form works the estimate out, with the cost of every service set out.",
+                "Todos os valores estão na proposta gratuita: o formulário calcula a estimativa, com o custo de cada serviço discriminado.",
               )}
             </p>
             <ProposalAsk label={t("Get your free proposal", "Pedir proposta gratuita")} />

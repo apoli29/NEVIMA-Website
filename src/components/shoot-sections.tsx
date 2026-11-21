@@ -75,7 +75,155 @@ function included(t: T) {
   ];
 }
 
+/** The six, cut to one line each (user, 2026-11-21: the rows were too
+    much to read). The full sentences are kept in included() above, out
+    of use, with RowsIncluded. */
+function sheet(t: T) {
+  return [
+    {
+      name: t("A briefing meeting, free", "Reunião de briefing, gratuita"),
+      line: t("No commitment: the business, who it speaks to and where the photographs will live.", "Sem compromisso: o negócio, a quem se dirige e onde as fotografias vão viver."),
+    },
+    {
+      name: t("Art direction", "Direção de arte"),
+      line: t("What, in what order, with what light and props: planned before the day.", "O quê, por que ordem, com que luz e adereços: planeado antes do dia."),
+    },
+    {
+      name: t("The session itself", "A sessão fotográfica"),
+      line: t("At the place agreed, lit the way that place needs.", "No local combinado, com a iluminação que o local exigir."),
+    },
+    {
+      name: t("Editing and retouching", "Edição e retoque"),
+      line: t("Lightroom, then Photoshop, one photograph at a time, so it still looks true.", "Lightroom e depois Photoshop, uma a uma, para continuar a parecer verdadeira."),
+    },
+    {
+      name: t("Delivery in an online gallery", "Entrega em galeria online"),
+      line: t("Full resolution and sizes made for the web, ready to download.", "Alta resolução e tamanhos próprios para web, prontas a descarregar."),
+    },
+    {
+      name: t("The right to use them", "Direitos de utilização"),
+      line: t("Once paid for, entirely the client’s: website, social media, print.", "Depois de pagas, inteiramente do cliente: website, redes sociais, impressos."),
+    },
+  ];
+}
+
+/** What the session includes, as a strip of film (user, 2026-11-21,
+    after Formafantasma's index and Linear's strips, found through
+    Inspo): it runs from one edge of the screen to the other and keeps
+    moving, the way film goes through a gate. No pictograms in the
+    frames (user: more premium without them): each frame is its edge
+    number, its name large and its one line. The strip is written
+    twice so the loop has no seam; the copy is hidden from screen
+    readers. Pressed and dragged, it follows the hand (user,
+    2026-11-21); with less motion it stands still and only the hand
+    moves it. */
+/** One lap of the strip (one copy of the six), in seconds. Twice as
+    fast as it first ran (user, 2026-11-21). */
+const STRIP_LAP_S = 35;
+
+/** The strip runs on its own clock, and a hand can take it: pressed
+    and dragged, it follows the pointer; let go, it runs on from there.
+    Written straight on the track, one number a frame. */
+function useStrip() {
+  const reduce = useReducedMotion() ?? false;
+  const box = useRef<HTMLDivElement>(null);
+  const track = useRef<HTMLDivElement>(null);
+  const [dragging, setDragging] = useState(false);
+  useEffect(() => {
+    const el = box.current;
+    const tr = track.current;
+    if (!el || !tr) return;
+    let x = 0;
+    let last = performance.now();
+    let frame = 0;
+    let held = false;
+    let from = 0;
+    let seen = true;
+    const half = () => tr.scrollWidth / 2 || 1;
+    const wrap = () => {
+      const h = half();
+      x = ((x % h) + h) % h;
+    };
+    const tick = (now: number) => {
+      const dt = Math.min(now - last, 64) / 1000;
+      last = now;
+      if (!held && !reduce && seen) x += (half() / STRIP_LAP_S) * dt;
+      wrap();
+      tr.style.transform = `translate3d(${-x}px, 0, 0)`;
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    const watch = new IntersectionObserver(([e]) => (seen = !!e?.isIntersecting));
+    watch.observe(el);
+    const down = (event: PointerEvent) => {
+      if (event.button !== 0) return;
+      held = true;
+      from = event.clientX;
+      el.setPointerCapture(event.pointerId);
+      setDragging(true);
+    };
+    const move = (event: PointerEvent) => {
+      if (!held) return;
+      x -= event.clientX - from;
+      from = event.clientX;
+    };
+    const up = (event: PointerEvent) => {
+      if (!held) return;
+      held = false;
+      if (el.hasPointerCapture(event.pointerId)) el.releasePointerCapture(event.pointerId);
+      setDragging(false);
+    };
+    el.addEventListener("pointerdown", down);
+    el.addEventListener("pointermove", move);
+    el.addEventListener("pointerup", up);
+    el.addEventListener("pointercancel", up);
+    return () => {
+      cancelAnimationFrame(frame);
+      watch.disconnect();
+      el.removeEventListener("pointerdown", down);
+      el.removeEventListener("pointermove", move);
+      el.removeEventListener("pointerup", up);
+      el.removeEventListener("pointercancel", up);
+    };
+  }, [reduce]);
+  return { box, track, dragging };
+}
+
 export function Included({ t }: { t: T }) {
+  const rows = sheet(t);
+  const strip = useStrip();
+  const frames = (copy: boolean) =>
+    rows.map((row, i) => (
+      <li key={`${copy ? "b" : "a"}${row.name}`} className="sht-cs-frame">
+        <span className="mono-label sht-cs-n">{String(i + 1).padStart(2, "0")}A</span>
+        <span className="sht-cs-name">{row.name}</span>
+        <span className="sht-cs-line">{row.line}</span>
+      </li>
+    ));
+  return (
+    <section aria-labelledby="sht-in-title" data-tone="light" className="sht sht-in relative">
+      <div className="shell" data-tone-body>
+        <p className="mono-label text-ash-2">{t("What the session includes", "O que a sessão inclui")}</p>
+        <h2 id="sht-in-title" className="display sht-title">
+          <span className="font-light sm:block">{t("Six things,", "Seis coisas,")}</span>{" "}
+          <span className="font-medium sm:block">{t("none of them extra.", "nenhuma delas à parte.")}</span>
+        </h2>
+      </div>
+
+      <div ref={strip.box} className="sht-cs" data-tone-body data-dragging={strip.dragging || undefined}>
+        <div ref={strip.track} className="sht-cs-track">
+          <ol className="sht-cs-run">{frames(false)}</ol>
+          <ol className="sht-cs-run" aria-hidden="true">
+            {frames(true)}
+          </ol>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** The six rows, as they stood until 2026-11-21; out of use. */
+export function RowsIncluded({ t }: { t: T }) {
   const rows = included(t);
   return (
     <section aria-labelledby="sht-in-title" data-tone="light" className="sht sht-in relative">
@@ -270,8 +418,8 @@ export function Coverage({ t }: { t: T }) {
 
           <p className="ps-lede sht-lede">
             {t(
-              "Where we go, and what getting there costs.",
-              "Onde vamos, e o que custa lá chegar.",
+              "Where we go, and how the travel is handled.",
+              "Onde vamos, e como fica a deslocação.",
             )}
           </p>
 
@@ -295,7 +443,7 @@ export function Coverage({ t }: { t: T }) {
               <span aria-hidden="true" className="sht-key sht-key-far" />
               <span>
                 <strong>{t("The rest of mainland Portugal", "O resto de Portugal continental")}</strong>
-                <em>{t("Travel charged per km, as set in the proposal", "Deslocação cobrada ao km, como fica definido na proposta")}</em>
+                <em>{t("Travel set out in the free proposal", "Deslocação definida na proposta gratuita")}</em>
               </span>
             </li>
           </ul>
@@ -346,15 +494,15 @@ export function Tailored({ t }: { t: T }) {
   }, [inView, reduce]);
 
   return (
-    <section aria-labelledby="sht-fit-title" data-tone="light" className="sht sht-fit relative">
+    <section aria-labelledby="sht-fit-title" data-tone="dark" className="sht sht-fit relative text-paper">
       <div ref={ref} className="shell" data-tone-body>
-        <p className="mono-label text-ash-2">{t("Personalisation", "Personalização")}</p>
+        <p className="mono-label text-paper/55">{t("Personalisation", "Personalização")}</p>
         <h2 id="sht-fit-title" className="display sht-title">
           <span className="font-light sm:block">{t("Every session is shaped", "Cada sessão é pensada")}</span>{" "}
           <span className="font-medium sm:block">{t("around the brand.", "à medida de cada marca.")}</span>
         </h2>
 
-        <p className="ps-lede sht-lede">
+        <p className="ps-lede ps-lede-dark sht-lede">
           {t(
             "Nothing here is a closed package: the session is drawn around what the brand has to show.",
             "Nada aqui é um pacote fechado: a sessão é desenhada à volta do que a marca tem para mostrar.",

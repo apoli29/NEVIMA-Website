@@ -9984,3 +9984,269 @@
     .vi-plates-row:has(> :nth-child(3)) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
 }
+
+/* ---- the photo shoot's film (shoot-film.tsx) ---------------------------
+   The visual identity film's frame (.vi-mg) with its own scenes: the
+   product, the shop and the website, a white line on the folds. Every
+   move is a transition or an animation on transform and opacity.       */
+@layer components {
+  .psf .vi-mg-art { overflow: hidden; }
+  .psf-scene { opacity: 0; transition: opacity 0.6s ease; }
+  .psf-scene[data-on] { opacity: 1; }
+  .psf-line { fill: none; stroke: rgb(255 255 255 / 0.86); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+  .psf-faint { fill: none; stroke: rgb(255 255 255 / 0.22); stroke-width: 1.4; stroke-dasharray: 4 6; vector-effect: non-scaling-stroke; }
+  .psf-floor { stroke: rgb(255 255 255 / 0.14); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .psf-dot { fill: #ffffff; }
+  .psf-body { fill: #0a0a0a; stroke: rgb(255 255 255 / 0.86); stroke-width: 2.2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+  .psf-box { fill: rgb(255 255 255 / 0.1); }
+  .psf-feel { fill: none; stroke: #ffffff; stroke-width: 2.4; stroke-linecap: round; vector-effect: non-scaling-stroke; opacity: 0; transition: opacity 0.3s ease; }
+  .psf-mouth { fill: #ffffff; }
+  .psf-face[data-mood="none"] .psf-feel[data-for="none"],
+  .psf-face[data-mood="bad"] .psf-feel[data-for="bad"],
+  .psf-face[data-mood="good"] .psf-feel[data-for="good"],
+  .psf-face[data-mood="wow"] .psf-feel[data-for="wow"] { opacity: 1; }
+
+  /* the camera, at the chest, then at the eye */
+  .psf-cam { translate: 0 64px; transition: translate 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+  .psf-cam[data-up] { translate: 0 0; }
+
+  /* the hand on the light or the shelf, only while it is set */
+  .psf-reach { opacity: 0; transition: opacity 0.4s ease; }
+  .psf-scene[data-step="set"] .psf-reach,
+  .psf-scene[data-step="relight"] .psf-reach { opacity: 1; }
+
+  /* the product: the cup put down, the light turned on it, and turned
+     lower for the second take */
+  .psf-scene[data-step="set"] .psf-cup { animation: psf-down 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.35s backwards; }
+  .psf-steam { opacity: 0.6; }
+  .psf-lamp { transform-box: view-box; transform-origin: 270px 258px; rotate: -24deg; transition: rotate 1.1s cubic-bezier(0.65, 0, 0.35, 1); }
+  .psf-scene[data-step="set"] .psf-lamp { rotate: 0deg; transition-delay: 0.6s; }
+  .psf-scene[data-step="aim"] .psf-lamp { rotate: 0deg; }
+  .psf-scene[data-step="relight"] .psf-lamp { rotate: 9deg; }
+  .psf-beam { fill: rgb(255 255 255 / 0.07); stroke: none; transition: fill 0.6s ease; }
+  .psf-scene[data-step="relight"] .psf-beam { fill: rgb(255 255 255 / 0.13); }
+
+  /* the shop: the blinds go up, the light comes in, the plant goes in
+     its place */
+  .psf-slat { stroke: rgb(255 255 255 / 0.5); stroke-width: 1.4; vector-effect: non-scaling-stroke; }
+  .psf-blinds { transform-box: view-box; transform-origin: 155px 132px; scale: 1 0.16; }
+  .psf-scene[data-step="set"] .psf-blinds { animation: psf-blinds 1.4s cubic-bezier(0.65, 0, 0.35, 1) 0.2s backwards; }
+  .psf-sun { fill: rgb(255 255 255 / 0.08); }
+  .psf-scene[data-step="set"] .psf-sun { animation: psf-fade 1.2s ease 0.7s backwards; }
+  .psf-scene[data-step="set"] .psf-plant { animation: psf-slide 1s cubic-bezier(0.22, 1, 0.36, 1) 0.9s backwards; }
+
+  /* the laptop's screen, lit */
+  .psf-glow { fill: rgb(255 255 255 / 0.12); stroke: none; animation: psf-pulse 2.4s ease-in-out infinite; }
+
+  /* the flash, at the end of the beat */
+  .psf-flash { position: absolute; inset: 0; background: #ffffff; opacity: 0; pointer-events: none; animation: psf-flash var(--ms, 1.3s) linear forwards; }
+
+  /* the print, crisp, over the drawing */
+  .psf-prints { position: absolute; inset: 0; display: grid; place-items: center; background: rgb(0 0 0 / 0); transition: background 0.4s ease; pointer-events: none; }
+  .psf-prints[data-on] { background: rgb(0 0 0 / 0.55); }
+  .psf-print {
+    grid-area: 1 / 1;
+    display: block;
+    width: min(56%, 34rem);
+    padding: 2.2% 2.2% 0;
+    background: #f4f4f2;
+    box-shadow: 0 40px 70px -30px rgb(0 0 0 / 0.9);
+    opacity: 0;
+    translate: 0 1.25rem;
+    rotate: -2deg;
+    transition: opacity 0.35s ease, translate 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .psf-print[data-on] { opacity: 1; translate: 0 0; transition-delay: 0.15s; }
+  .psf-pic { display: block; width: 100%; height: auto; }
+  .psf-print-cap { display: block; padding: 0.7em 0 0.9em; color: #2b2b2b; text-shadow: none; letter-spacing: 0.06em; }
+
+  /* the website, in the laptop */
+  .psf-screen { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
+  .psf-screen[data-on] { opacity: 1; transition: opacity 0.45s ease 0.8s; }
+  .psf-site {
+    position: relative;
+    display: block;
+    width: 52%;
+    aspect-ratio: 90 / 64;
+    padding: 3% 4% 4%;
+    background: #0d0d0e;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.3);
+    text-shadow: none;
+  }
+  .psf-site-bar { display: flex; gap: 4px; }
+  .psf-site-bar i { width: 6px; height: 6px; border-radius: 50%; background: rgb(255 255 255 / 0.3); }
+  .psf-site-head { display: flex; align-items: center; gap: 6%; margin-top: 5%; }
+  .psf-site-name { width: 22%; height: 0.5rem; background: #ffffff; }
+  .psf-site-rule { flex: 1; height: 1px; background: rgb(255 255 255 / 0.2); }
+  .psf-site-grid { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 5%; margin-top: 8%; }
+  .psf-frame {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    padding: 5%;
+    background: #f4f4f2;
+    aspect-ratio: 3 / 4;
+  }
+  .psf-frame .psf-pic { width: 100%; height: 100%; }
+  .psf-frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / 0.75) 50%, transparent 70%) no-repeat;
+    background-size: 250% 100%;
+    background-position: 160% 0;
+  }
+  .psf-site[data-on] .psf-frame { animation: psf-shine 2.2s ease-in-out calc(1s + var(--i) * 0.25s) infinite; }
+  .psf-site[data-on] .psf-frame::after { animation: psf-sheen 2.2s ease-in-out calc(1s + var(--i) * 0.25s) infinite; }
+  .psf-spark { position: absolute; width: 7%; aspect-ratio: 1; fill: #ffffff; opacity: 0; scale: 0.3; pointer-events: none; }
+  .psf-site[data-on] .psf-spark { animation: psf-spark 1.8s ease-in-out calc(1.2s + var(--d)) infinite; }
+
+  .psf-cap b { font-weight: 600; margin-right: 0.75em; color: #ffffff; }
+
+  @keyframes psf-down { from { opacity: 0; translate: 0 -40px; } }
+  @keyframes psf-blinds { from { scale: 1 1; } }
+  @keyframes psf-fade { from { opacity: 0; } }
+  @keyframes psf-slide { from { opacity: 0; translate: -46px 0; } }
+  @keyframes psf-pulse { 50% { fill: rgb(255 255 255 / 0.22); } }
+  @keyframes psf-flash { 0%, 78% { opacity: 0; } 84% { opacity: 0.9; } 100% { opacity: 0; } }
+  @keyframes psf-shine {
+    0%, 100% { box-shadow: 0 0 0 1px rgb(255 255 255 / 0.4), 0 0 10px 0 rgb(255 255 255 / 0.15); }
+    50% { box-shadow: 0 0 0 1px #ffffff, 0 0 34px 6px rgb(255 255 255 / 0.55); }
+  }
+  @keyframes psf-sheen { 0% { background-position: 160% 0; } 60%, 100% { background-position: -60% 0; } }
+  @keyframes psf-spark { 0%, 100% { opacity: 0; scale: 0.3; rotate: 0deg; } 50% { opacity: 1; scale: 1; rotate: 45deg; } }
+
+  .psf[data-still] .psf-scene,
+  .psf[data-still] .psf-cam,
+  .psf[data-still] .psf-lamp { transition: none; }
+
+  @media (max-width: 639.98px) {
+    .psf-print { width: 72%; }
+    .psf-cap b { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .psf-scene, .psf-cam, .psf-lamp, .psf-print, .psf-prints, .psf-screen, .psf-feel, .psf-reach { transition: none; }
+    .psf-scene .psf-cup, .psf-scene .psf-blinds, .psf-scene .psf-sun, .psf-scene .psf-plant,
+    .psf-glow, .psf-frame, .psf-frame::after, .psf-spark { animation: none !important; }
+    .psf-site .psf-frame { box-shadow: 0 0 0 1px #ffffff, 0 0 28px 4px rgb(255 255 255 / 0.45); }
+  }
+}
+
+/* ---- the photo shoot, 2026-11-21 (user) -------------------------------
+   What the session includes as a contact sheet; the packages on white;
+   personalization on the dark.                                        */
+@layer components {
+  /* The strip runs edge to edge and keeps moving; its sprocket holes
+     are drawn on the track, so they move with the frames. */
+  .sht-cs {
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  }
+  .sht-in { overflow-x: clip; }
+  /* The film's black is the about page's folds (user, 2026-11-21), as
+     the black cards are: set on the window the strip runs through, so
+     the photograph stays sharp and still while the frames and the
+     holes go by over it. Exposed 30% less than the cards (user,
+     2026-11-21): the photograph shows at 35% instead of 50%. */
+  .sht-cs {
+    background:
+      radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(0 0 0 / 0.35)),
+      linear-gradient(rgb(0 0 0 / 0.65), rgb(0 0 0 / 0.65)),
+      url("/about/folds-1600.webp") center / cover no-repeat,
+      #000000;
+  }
+  .sht-cs-track {
+    --sht-cs-hole: repeating-linear-gradient(90deg, rgb(255 255 255 / 0.86) 0 10px, transparent 10px 24px);
+    display: flex;
+    width: max-content;
+    padding-block: 30px;
+    background:
+      var(--sht-cs-hole) 0 11px / 100% 7px no-repeat,
+      var(--sht-cs-hole) 0 calc(100% - 11px) / 100% 7px no-repeat;
+    will-change: transform;
+  }
+  /* the hand takes the strip (useStrip in shoot-sections.tsx) */
+  .sht-cs { cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+  .sht-cs[data-dragging] { cursor: grabbing; }
+  .sht-cs-run { display: flex; gap: 8px; padding-right: 8px; margin: 0; list-style: none; }
+  .sht-cs-frame {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 1.25rem;
+    width: clamp(17rem, 26vw, 23rem);
+    min-height: clamp(15rem, 21vw, 18.5rem);
+    padding: clamp(1.25rem, 2vw, 1.75rem);
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+  .sht-cs-n { color: var(--color-ash-2); letter-spacing: 0.08em; }
+  .sht-cs-name {
+    align-self: end;
+    max-width: 14ch;
+    font-family: var(--font-title);
+    font-size: clamp(1.5rem, 2.1vw, 2rem);
+    font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+  .sht-cs-line {
+    max-width: 32ch;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--color-hair);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--color-ash);
+    text-wrap: pretty;
+  }
+
+  /* the packages, on white: the two outer cards on the folds, the
+     middle one white inside black rules */
+  .ps-packs-light .ps-packs { background: var(--color-ink); border-color: var(--color-ink); }
+  .ps-packs-light .ps-pack:not([data-lit]) { color: var(--color-paper); }
+  .ps-packs-light .ps-pack-foot .mono-label { color: var(--color-ash); }
+
+  /* personalization, on the dark */
+  /* no ground of their own (user, 2026-11-21: the black boxes read as
+     a patch on the room's dark): the rules are borders instead of the
+     gap showing through */
+  .sht-fit .sht-dials { gap: 0; background: none; border-block-color: rgb(255 255 255 / 0.16); }
+  .sht-fit .sht-dial { background: none; }
+  .sht-fit .sht-dial + .sht-dial { border-top: 1px solid rgb(255 255 255 / 0.16); }
+  @media (min-width: 720px) {
+    .sht-fit .sht-dial + .sht-dial { border-top: 0; }
+    .sht-fit .sht-dial:nth-child(even) { border-left: 1px solid rgb(255 255 255 / 0.16); }
+    .sht-fit .sht-dial:nth-child(n + 3) { border-top: 1px solid rgb(255 255 255 / 0.16); }
+    .sht-fit .sht-dial:nth-child(odd) { padding-left: 0; }
+  }
+  @media (min-width: 1100px) {
+    .sht-fit .sht-dial:nth-child(n + 2) { border-left: 1px solid rgb(255 255 255 / 0.16); }
+    .sht-fit .sht-dial:nth-child(n + 3) { border-top: 0; }
+    .sht-fit .sht-dial:nth-child(odd) { padding-left: clamp(1rem, 2vw, 1.75rem); }
+    .sht-fit .sht-dial:first-child { padding-left: 0; }
+  }
+  .sht-fit .sht-dial-label { color: rgb(255 255 255 / 0.55); }
+
+}
+
+/* ---- the last cards on the old grey, onto the folds (user, 2026-11-21)
+   The visual identity page's three header cards and its "Not sure?"
+   card, and the side-by-side page's personalization card, take the
+   ground every other black card on the service pages has: the about
+   page's folds, dimmed by half, under the same vignette.              */
+@layer components {
+  :is(.vi-trio-card, .vi-sure, .vi-fit .vi-sure, .sbx-metal),
+  .sbp-card::before {
+    background:
+      radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(0 0 0 / 0.35)),
+      linear-gradient(rgb(0 0 0 / 0.5), rgb(0 0 0 / 0.5)),
+      url("/about/folds-1600.webp") center / cover no-repeat,
+      #000000;
+  }
+  /* the drifting light the metal ground carried goes with it */
+  .sbx-metal::after { display: none; }
+  .vi-sure .vi-sure-words { text-shadow: 0 0 14px rgb(0 0 0 / 0.7), 0 0 2px rgb(0 0 0 / 0.35); }
+}

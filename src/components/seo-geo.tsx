@@ -992,17 +992,17 @@ function Price({ t }: { t: T }) {
           <div className="sg-price-grid">
             <div className="sg-price-copy">
               <SlideIn ready>
-                <p className="mono-label text-paper/55">{t("Price", "Preço")}</p>
+                <p className="mono-label text-paper/55">{t("How it works", "Como funciona")}</p>
                 <h2 id="sg-price" className="display mt-6 text-paper text-[clamp(2rem,4.2vw,3.5rem)] leading-[1.02]">
-                  <span className="block font-light">{t("What it costs,", "Quanto custa,")}</span>
+                  <span className="block font-light">{t("Three levels,", "Três níveis,")}</span>
                   <span className="block font-medium">{t("measured by the website.", "à medida do website.")}</span>
                 </h2>
               </SlideIn>
               <SlideIn ready distance={0} delay={0.08}>
                 <p className="sg-lede mt-8 text-paper/70">
                   {t(
-                    "Basic SEO comes with every website. The one-off work is worked out from the website’s price, and the monthly service from the one-off work.",
-                    "O SEO básico vem com todos os websites. O trabalho pontual é calculado a partir do valor do website, e o serviço mensal a partir do trabalho pontual.",
+                    "Basic SEO comes with every website. The one-off work is worked out from the website itself, and the monthly service from the one-off work.",
+                    "O SEO básico vem com todos os websites. O trabalho pontual é calculado a partir do próprio website, e o serviço mensal a partir do trabalho pontual.",
                   )}
                 </p>
               </SlideIn>
@@ -1028,8 +1028,8 @@ function Price({ t }: { t: T }) {
               <div className="sg-calc-foot">
                 <p className="max-w-[40ch] text-[0.875rem] leading-[1.55] text-ash">
                   {t(
-                    "The figures are set in the free proposal, from the size of the website.",
-                    "Os valores ficam definidos na proposta gratuita, a partir do tamanho do website.",
+                    "The figures for each level are in the free proposal: the form works them out from the size of the website, with the cost of every service set out.",
+                    "Os valores de cada nível estão na proposta gratuita: o formulário calcula-os a partir do tamanho do website, com o custo de cada serviço discriminado.",
                   )}
                 </p>
                 <ProposalAsk label={t("Get your free proposal", "Pedir proposta gratuita")} />

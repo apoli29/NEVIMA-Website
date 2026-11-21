@@ -237,3 +237,54 @@ km sabe-o na segunda ecra em vez de o descobrir no fim.
 Os tons ficam escuro, claro, claro, claro, escuro, claro. Sao tres
 claros seguidos onde antes eram dois, mas o veu do `ToneRoom` so
 reage a mudanca, por isso nao ha nada a corrigir.
+
+## O cabecalho com filme, a fita e os tons (2026-11-21)
+
+Pedido do utilizador, decidido numa so ronda de duvidas.
+
+- **O cabecalho e o da identidade visual**: so o H1, o filme a toda a
+  largura e "Porque vale a pena" numa linha de titulo e uma de texto.
+  O fundo cinzento claro que aparecia era o veu a meio da passagem
+  (o cabecalho era baixo demais); com o filme, fica no escuro das
+  outras paginas. A abertura saiu (`Opening`, fora de uso) e o
+  cabecalho antigo ficou como `OldHead`. As tres "facts" sairam: o mapa
+  e os direitos ja dizem o mesmo.
+- **O filme** (`shoot-film.tsx`, `.psf-*` sobre a moldura `.vi-mg`):
+  produto, loja e resultado. O Antonio prepara o ambiente e da o
+  feedback sensorial; o Emanuel fotografa. No produto a primeira
+  fotografia sai chapada e torta ("Falta luz de lado."), a luz roda e a
+  segunda e aprovada ("Agora sente-se o calor."); na loja as persianas
+  sobem e a planta vai para o lugar ("Acolhedora. Fica esta."). No fim,
+  o pedido do utilizador: o cliente ve o website e as fotografias
+  brilham nas molduras, com faiscas, e diz "Incrivel. A minha loja
+  nunca pareceu tao bem." Sem negocio inventado: o website nao tem
+  nome. Com menos movimento fica no ultimo plano.
+- **"O que a sessao inclui" e uma fita de filme** de ponta a ponta do
+  ecra, sempre a andar (35 s por volta, o dobro da velocidade a pedido do utilizador, para debaixo do cursor), com os
+  furos desenhados na propria fita. Cada fotograma tem o numero de
+  borda, o nome grande e uma so linha. Os icones sairam a pedido do
+  utilizador (mais premium sem eles). As linhas longas ficam em
+  `RowsIncluded`, fora de uso. Referencias pelo Inspo: o indice da
+  Formafantasma e as faixas da Linear (pouco havia de direto).
+- **Tons**: escuro, claro (mapa), claro (inclui), **claro (pacotes)**,
+  **escuro (personalizacao)**. Os pacotes no branco: os dois de fora
+  nas pregas, o do meio branco entre regras pretas. O "cinzento
+  escuro" pedido e o escuro do veu (`#0b0b0b`), o mesmo das outras
+  paginas.
+- **Sem precos** (regra nova para todas as paginas de servicos): o
+  mapa diz "Deslocacao definida na proposta gratuita" em vez de "cobrada
+  ao km", e o pe dos pacotes manda para o formulario, que calcula a
+  estimativa com o custo de cada servico discriminado.
+- Depois (utilizador, no mesmo dia): a fita corre ao dobro da
+  velocidade (35 s por volta) e **arrasta-se**: carregar e puxar move-a
+  com a mao, e ao largar continua a correr dali. Passou a ser movida por
+  codigo (`useStrip`), nao por animacao CSS. Com menos movimento fica
+  parada e so a mao a move.
+- Personalizacao no escuro: os quatro mostradores ja nao tem caixa
+  preta (o `#0b0b0b` lia-se como um remendo no escuro do veu e cortava
+  o primeiro rotulo a esquerda). As divisorias sao bordas.
+- O preto da fita passa a ser o fundo de pregas da About (utilizador,
+  no mesmo dia), posto na janela por onde a fita passa: a fotografia
+  fica nitida e parada, e os fotogramas e os furos correm por cima.
+- A exposicao das pregas na fita desce 30% (utilizador): a fotografia
+  aparece a 35% em vez dos 50% dos cartoes.
